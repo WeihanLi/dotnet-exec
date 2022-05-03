@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "dotnet-exec": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\projects\\sources\\SamplesInPractice\\net6sample\\RandomSharedSample\\Program.cs\""
+    }
+  }
+}

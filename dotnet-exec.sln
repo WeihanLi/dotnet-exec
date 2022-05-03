@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{93FF0703-CB28-47B0-AB46-86E80B7A53F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnet-exec", "src\dotnet-exec\dotnet-exec.csproj", "{07B7AD92-68A6-4744-9C9D-0874ACC0895C}"
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{07B7AD92-68A6-4744-9C9D-0874ACC0895C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07B7AD92-68A6-4744-9C9D-0874ACC0895C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07B7AD92-68A6-4744-9C9D-0874ACC0895C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{07B7AD92-68A6-4744-9C9D-0874ACC0895C}.Debug|x64.Build.0 = Debug|Any CPU
+		{07B7AD92-68A6-4744-9C9D-0874ACC0895C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{07B7AD92-68A6-4744-9C9D-0874ACC0895C}.Debug|x86.Build.0 = Debug|Any CPU
+		{07B7AD92-68A6-4744-9C9D-0874ACC0895C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07B7AD92-68A6-4744-9C9D-0874ACC0895C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07B7AD92-68A6-4744-9C9D-0874ACC0895C}.Release|x64.ActiveCfg = Release|Any CPU
+		{07B7AD92-68A6-4744-9C9D-0874ACC0895C}.Release|x64.Build.0 = Release|Any CPU
+		{07B7AD92-68A6-4744-9C9D-0874ACC0895C}.Release|x86.ActiveCfg = Release|Any CPU
+		{07B7AD92-68A6-4744-9C9D-0874ACC0895C}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{07B7AD92-68A6-4744-9C9D-0874ACC0895C} = {93FF0703-CB28-47B0-AB46-86E80B7A53F7}
+	EndGlobalSection
+EndGlobal
