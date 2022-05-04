@@ -13,6 +13,9 @@ public class IntegrationTests
     }
 
     [Theory]
+    [InlineData("ConfigurationManagerSample")]
+    [InlineData("JsonNodeSample")]
+    [InlineData("LinqSample")]
     [InlineData("MainMethodSample")]
     [InlineData("RandomSharedSample")]
     [InlineData("TopLevelSample")]

@@ -4,9 +4,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using WeihanLi.Common.Models;
@@ -45,17 +42,13 @@ public class SimpleCodeCompiler : ICodeCompiler
         var syntaxTree = CSharpSyntaxTree.ParseText(combinedCode, new CSharpParseOptions(execOptions.LanguageVersion));
         var references = new[]
             {
-                typeof(object).Assembly,
-                typeof(Console).Assembly,
-                typeof(IEnumerable<>).Assembly,
-                typeof(Action).Assembly,
-                typeof(LambdaExpression).Assembly,
-                typeof(TableAttribute).Assembly,
-                typeof(DescriptionAttribute).Assembly,
-                typeof(Result).Assembly,
-                typeof(HttpClient).Assembly,
-                typeof(System.Text.Json.JsonSerializer).Assembly,
-                Assembly.Load("System.Runtime"),
+                typeof(Microsoft.Extensions.Configuration.IConfigurationBuilder).Assembly,
+                typeof(Microsoft.Extensions.Configuration.ConfigurationBuilder).Assembly,
+                typeof(Microsoft.Extensions.DependencyInjection.ServiceCollection).Assembly,
+                typeof(Microsoft.Extensions.Logging.LoggerFactory).Assembly,
+                typeof(Microsoft.Extensions.Options.IOptions<>).Assembly,
+                typeof(Newtonsoft.Json.JsonConvert).Assembly,
+                typeof(Result).Assembly,              
             }
             .Select(assembly => assembly.Location)
             .Distinct()
@@ -65,7 +58,8 @@ public class SimpleCodeCompiler : ICodeCompiler
 
         var assemblyName = $"dotnet-exec.dynamic.{GuidIdGenerator.Instance.NewId()}";
         var compilation = CSharpCompilation.Create(assemblyName)
-            .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: execOptions.Configuration, allowUnsafe: true))
+            .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: execOptions.Configuration, allowUnsafe: true))            
+            .AddReferences(Basic.Reference.Assemblies.Net60.All)
             .AddReferences(references)
             .AddSyntaxTrees(syntaxTree);
 

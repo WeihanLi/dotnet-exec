@@ -17,10 +17,11 @@
       <Using Include="$(RootNamespace)" />
   </ItemGroup>
   <ItemGroup>
+      <PackageReference Include="Basic.Reference.Assemblies" />
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Console" />
       <PackageReference Include="System.CommandLine" />
       <PackageReference Include="WeihanLi.Common" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Console" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTest" />

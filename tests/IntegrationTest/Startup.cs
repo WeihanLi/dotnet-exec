@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Xunit.DependencyInjection.Logging;
 
 namespace IntegrationTest;
 
@@ -15,5 +16,10 @@ public class Startup
         services.AddSingleton<ICodeCompiler, SimpleCodeCompiler>();
         services.AddSingleton<ICodeExecutor, CodeExecutor>();
         services.AddSingleton<CommandHandler>();
+    }
+
+    public void Configure(IServiceProvider provider)
+    {
+        XunitTestOutputLoggerProvider.Register(provider);
     }
 }
