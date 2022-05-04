@@ -1,11 +1,15 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+﻿// Copyright (c) Weihan Li. All rights reserved.
+// Licensed under the MIT license.
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Immutable;
 
 namespace Exec;
 
 public sealed class ExecOptions
 {
-    private const string DefaultTargetFramework = 
+    internal const string DefaultTargetFramework = 
 #if NET7_0
       "net7.0"
 #else
@@ -18,6 +22,8 @@ public sealed class ExecOptions
     private static readonly Option<string> EntryPointOption = new("--entry", () => "MainTest", "Entry point");
     private static readonly Option<LanguageVersion> LanguageVersionOption =
         new("--lang-version", () => LanguageVersion.Default, "Language version");
+    private static readonly Option<OptimizationLevel> ConfigurationOption =
+        new(new[]{ "-c", "--configuration" }, () => OptimizationLevel.Debug, "Compile configuration/OptimizationLevel");
 
     //
     private static readonly ImmutableHashSet<string> DefaultGlobalUsing = new HashSet<string>()
@@ -35,11 +41,12 @@ public sealed class ExecOptions
 
     public string ScriptFile { get; set; } = "Program.cs";
 
-    public string TargetFramework { get; set; } = "net6.0";
+    public string TargetFramework { get; set; } = DefaultTargetFramework;
 
     public string EntryPoint { get; set; } = "MainTest";
 
     public LanguageVersion LanguageVersion { get; set; }
+    public OptimizationLevel Configuration { get; set; }
 
     public HashSet<string> GlobalUsing { get; } = new(DefaultGlobalUsing);
 
@@ -53,6 +60,7 @@ public sealed class ExecOptions
         yield return TargetFrameworkOption;
         yield return EntryPointOption;
         yield return LanguageVersionOption;
+        yield return ConfigurationOption;
     }
 
     public void BindCommandLineArguments(ParseResult parseResult)
@@ -60,5 +68,7 @@ public sealed class ExecOptions
         ScriptFile = Guard.NotNull(parseResult.GetValueForArgument(FilePathArgument));        
         EntryPoint = Guard.NotNull(parseResult.GetValueForOption(EntryPointOption));
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption).GetValueOrDefault(DefaultTargetFramework);
+        LanguageVersion = parseResult.GetValueForOption(LanguageVersionOption);
+        Configuration = parseResult.GetValueForOption(ConfigurationOption);
     }
 }

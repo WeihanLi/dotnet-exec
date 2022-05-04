@@ -15,6 +15,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Xunit.DependencyInjection" Version="8.5.0" />
     <PackageReference Include="coverlet.collector" Version="3.1.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -23,6 +24,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\dotnet-exec\dotnet-exec.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="CodeSamples\*.cs" />
+    <Content Include="CodeSamples\*.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

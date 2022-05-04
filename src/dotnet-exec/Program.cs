@@ -1,10 +1,7 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
+﻿// Copyright (c) Weihan Li. All rights reserved.
+// Licensed under the MIT license.
+
+using Microsoft.Extensions.DependencyInjection;
 using WeihanLi.Common.Models;
 
 var command = new Command("dotnet-exec");
@@ -17,6 +14,11 @@ foreach (var option in ExecOptions.GetOptions())
 {
     command.AddOption(option);
 }
+
+var services = new ServiceCollection();
+services.AddSingleton<ICodeCompiler, SimpleCodeCompiler>();
+services.AddSingleton<ICodeExecutor, CodeExecutor>();
+var provider = services.BuildServiceProvider();
 
 command.SetHandler(async (ParseResult parseResult, IConsole console) =>
 {
@@ -31,56 +33,19 @@ command.SetHandler(async (ParseResult parseResult, IConsole console) =>
     }
     var sourceText = await File.ReadAllTextAsync(options.ScriptFile).ConfigureAwait(false);
     // 3. compile and run
-    var syntaxTree = CSharpSyntaxTree.ParseText(sourceText, new CSharpParseOptions(LanguageVersion.Latest));
-    var references = new[]
-        {
-            typeof(object).Assembly,
-            typeof(Action).Assembly,
-            typeof(LambdaExpression).Assembly,
-            typeof(TableAttribute).Assembly,
-            typeof(DescriptionAttribute).Assembly,
-            typeof(Result).Assembly,
-            Assembly.Load("System.Runtime"),
-        }
-        .Select(assembly => assembly.Location)
-        .Distinct()
-        .Select(l => MetadataReference.CreateFromFile(l))
-        .Cast<MetadataReference>()
-        .ToArray();
-
-    var assemblyName = $"dotnet-exec.dynamic.{GuidIdGenerator.Instance.NewId()}";
-    var compilation = CSharpCompilation.Create(assemblyName)
-        .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication, usings: options.GlobalUsing))
-        .AddReferences(references)
-        .AddSyntaxTrees(syntaxTree);
-    await using var ms = new MemoryStream();
-    var compilationResult = compilation.Emit(ms);
-    if (compilationResult.Success)
+    var compiler = provider.GetRequiredService<ICodeCompiler>();
+    var compileResult = await compiler.Compile(sourceText, options);
+    if (compileResult.Status != ResultStatus.Success)
     {
-        var assemblyBytes = ms.ToArray();
-        var assembly = Assembly.Load(assemblyBytes);
-        var entryMethod = assembly.EntryPoint;
-        if (entryMethod is null && options.EntryPoint.IsNotNullOrEmpty())
-        {
-            entryMethod = assembly.GetTypes()
-                .Select(x => x.GetMethods(BindingFlags.Static))
-                .SelectMany(x => x)
-                .FirstOrDefault(x => x.Name.Equals(options.EntryPoint))
-                ;
-        }
-        if (entryMethod is not null)
-        {
-            var parameters = entryMethod.GetParameters();
-            entryMethod.Invoke(null, parameters.IsNullOrEmpty() ? Array.Empty<object>() : args);
-        }
+        throw new ArgumentException($"Compile error:{Environment.NewLine}{compileResult.Msg}");
     }
-
-    var error = new StringBuilder(compilationResult.Diagnostics.Length * 1024);
-    foreach (var t in compilationResult.Diagnostics)
+    Guard.NotNull(compileResult.Data);
+    var executor = provider.GetRequiredService<ICodeExecutor>();    
+    var executeResult = await executor.Execute(compileResult.Data, args, options);
+    if (executeResult.Status != ResultStatus.Success)
     {
-        error.AppendLine($"{t.GetMessage()}");
+        throw new InvalidOperationException($"Execute error:{Environment.NewLine}{executeResult.Msg}");
     }
-    throw new ArgumentException($"Compile error:{Environment.NewLine}{error}");
 });
 
 await command.InvokeAsync(args);
