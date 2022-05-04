@@ -1,15 +1,33 @@
 # dotnet-exec
 
-[![dotnet-exec](https://img.shields.io/nuget/v/dotnet-exec)](https://www.nuget.org/packages/dotnet-exec/)
+[![dotnet-execute](https://img.shields.io/nuget/v/dotnet-execute)](https://www.nuget.org/packages/dotnet-execute/)
 
-[![dotnet-exec Latest](https://img.shields.io/nuget/vpre/dotnet-exec)](https://www.nuget.org/packages/dotnet-exec/absoluteLatest)
+[![dotnet-execute Latest](https://img.shields.io/nuget/vpre/dotnet-execute)](https://www.nuget.org/packages/dotnet-execute/absoluteLatest)
 
 [![default](https://github.com/WeihanLi/dotnet-exec/actions/workflows/dotnetcore.yml/badge.svg)](https://github.com/WeihanLi/dotnet-exec/actions/workflows/dotnetcore.yml)
+
+## Intro
 
 `dotnet-exec` is a command line tool for custom C# program entry point
 
 ``` sh
+dotnet-exec -f HttpPathJsonSample.cs
+
 dotnet-exec -f HttpPathJsonSample.cs --entry MainTest
 ```
 
-By default, it's using the 
+## Install
+
+```sh
+dotnet tool update -g dotnet-execute
+```
+
+## More
+
+### LanguageVersion
+
+By default, it's using the latest language version, you can use the `Preview` version with `--lang-version=Preview`
+
+### EntryPoint
+
+By default, it would use `MainTest` as the entry point, you can customize with `--entry` option
