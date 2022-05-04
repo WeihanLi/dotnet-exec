@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using Exec;
-
 namespace IntegrationTest;
 
 public class IntegrationTests
@@ -28,7 +26,7 @@ public class IntegrationTests
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(execOptions);        
+        var result = await _handler.Execute(execOptions);
         Assert.Equal(0, result);
         Assert.NotNull(output.StandardOutput);
         Assert.NotEmpty(output.StandardOutput);

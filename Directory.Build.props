@@ -1,27 +1,30 @@
 <Project>
-    <Import Project="./build/version.props"/>
-    <PropertyGroup>
-        <LangVersion>preview</LangVersion>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <PackageIcon>icon.png</PackageIcon>
-        <PackageTags>execute script</PackageTags>
-        <GenerateDocumentationFile>false</GenerateDocumentationFile>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/WeihanLi/dotnet-exec</RepositoryUrl>
-        <PackageProjectUrl>https://github.com/WeihanLi/dotnet-exec</PackageProjectUrl>
-        <Product>dotnet-exec</Product>
-        <Authors>WeihanLi</Authors>
-        <PackageReleaseNotes>https://github.com/WeihanLi/dotnet-exec/tree/main/docs/ReleaseNotes.md</PackageReleaseNotes>
-        <Copyright>Copyright 2022 (c) WeihanLi</Copyright>
-    </PropertyGroup>
-    <ItemGroup>
-        <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" Visible="false" PackagePath=""/>
-    </ItemGroup>
-    <ItemGroup>
-        <Using Include="WeihanLi.Common"/>
-        <Using Include="WeihanLi.Common.Helpers"/>
-        <Using Include="WeihanLi.Extensions"/>
-    </ItemGroup>
+  <Import Project="./build/version.props"/>
+  <PropertyGroup>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>execute script exec</PackageTags>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/WeihanLi/dotnet-exec</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/WeihanLi/dotnet-exec</PackageProjectUrl>
+    <Product>dotnet-exec</Product>
+    <Authors>WeihanLi</Authors>
+    <PackageReleaseNotes>https://github.com/WeihanLi/dotnet-exec/tree/main/docs/ReleaseNotes.md</PackageReleaseNotes>
+    <Copyright>Copyright 2022 (c) WeihanLi</Copyright>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" Visible="false" PackagePath=""/>
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" Visible="false" PackagePath=""/>
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Exec"/>
+    <Using Include="WeihanLi.Common"/>
+    <Using Include="WeihanLi.Common.Helpers"/>
+    <Using Include="WeihanLi.Extensions"/>
+  </ItemGroup>
 </Project>

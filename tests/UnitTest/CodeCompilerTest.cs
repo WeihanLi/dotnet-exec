@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using Exec;
 using Microsoft.CodeAnalysis.CSharp;
 using WeihanLi.Common.Models;
 using Xunit.Abstractions;
@@ -16,7 +15,7 @@ public class CodeCompilerTest
     {
         _outputHelper = outputHelper;
     }
-    
+
     [Theory]
     [InlineData(@"public static void Main(int num){}")]
     [InlineData(@"public class Program{ public static int Main(){} }")]
@@ -45,7 +44,7 @@ Console.WriteLine(args.StringJoin(Environment.NewLine));
         _outputHelper.WriteLine($"{result.Msg}");
         Assert.Equal(ResultStatus.Success, result.Status);
     }
-    
+
     [Theory]
     [InlineData(""""
 public class SomeTest

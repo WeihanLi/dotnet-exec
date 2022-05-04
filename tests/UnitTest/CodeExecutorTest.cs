@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using Exec;
 using WeihanLi.Common.Models;
 using Xunit.Abstractions;
 
@@ -16,7 +15,7 @@ public class CodeExecutorTest
     {
         _outputHelper = outputHelper;
     }
-    
+
     [Theory]
     [InlineData("Console.WriteLine(123);")]
     [InlineData("using WeihanLi.Extensions; Console.WriteLine(args.StringJoin(\", \"));")]
@@ -24,7 +23,7 @@ public class CodeExecutorTest
     {
         var execOptions = new ExecOptions()
         {
-            Arguments = new[]{ "--hello", "world" }
+            Arguments = new[] { "--hello", "world" }
         };
         var result = await _compiler.Compile(code, execOptions);
         Assert.True(result.IsSuccess());
