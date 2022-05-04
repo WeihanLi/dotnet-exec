@@ -4,7 +4,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using Microsoft.CodeAnalysis.Text;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
@@ -19,7 +18,7 @@ public interface ICodeCompiler
     Task<Result<Assembly>> Compile(string code, ExecOptions execOptions);
 }
 
-public class SimpleCodeCompiler: ICodeCompiler
+public class SimpleCodeCompiler : ICodeCompiler
 {
     private static readonly HashSet<string> SpecialConsoleDiagnosticIds = new() { "CS5001", "CS0028" };
     public async Task<Result<Assembly>> Compile(string code, ExecOptions execOptions)
@@ -66,15 +65,12 @@ public class SimpleCodeCompiler: ICodeCompiler
 
         var assemblyName = $"dotnet-exec.dynamic.{GuidIdGenerator.Instance.NewId()}";
         var compilation = CSharpCompilation.Create(assemblyName)
-            .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: execOptions.Configuration, allowUnsafe:true))
+            .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: execOptions.Configuration, allowUnsafe: true))
             .AddReferences(references)
             .AddSyntaxTrees(syntaxTree);
 
         await using var ms = new MemoryStream();
-        var emitResult = compilation.Emit(ms, options: new EmitOptions()
-        {
-            
-        });
+        var emitResult = compilation.Emit(ms);
         if (emitResult.Success)
         {
             return (compilation, emitResult, Assembly.Load(ms.ToArray()));
@@ -85,10 +81,10 @@ public class SimpleCodeCompiler: ICodeCompiler
             ms.SetLength(0);
             compilation = compilation.WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
             emitResult = compilation.Emit(ms);
-            return (compilation, emitResult, emitResult.Success ? Assembly.Load(ms.ToArray()): null);
+            return (compilation, emitResult, emitResult.Success ? Assembly.Load(ms.ToArray()) : null);
         }
         return (compilation, emitResult, null);
     }
 
-    
+
 }

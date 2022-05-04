@@ -9,7 +9,7 @@ namespace Exec;
 
 public sealed class ExecOptions
 {
-    internal const string DefaultTargetFramework = 
+    internal const string DefaultTargetFramework =
 #if NET7_0
       "net7.0"
 #else
@@ -23,9 +23,9 @@ public sealed class ExecOptions
     private static readonly Option<LanguageVersion> LanguageVersionOption =
         new("--lang-version", () => LanguageVersion.Default, "Language version");
     private static readonly Option<OptimizationLevel> ConfigurationOption =
-        new(new[]{ "-c", "--configuration" }, () => OptimizationLevel.Debug, "Compile configuration/OptimizationLevel");
+        new(new[] { "-c", "--configuration" }, () => OptimizationLevel.Debug, "Compile configuration/OptimizationLevel");
     private static readonly Option<string> ArgumentsOption =
-        new(new[]{ "--args", "--arguments" },  "Input arguments");
+        new(new[] { "--args", "--arguments" }, "Input arguments");
     private static readonly Option DebugOption = new("--debug", "Enable debug logs for debugging purpose");
 
     //
@@ -72,7 +72,7 @@ public sealed class ExecOptions
 
     public void BindCommandLineArguments(ParseResult parseResult)
     {
-        ScriptFile = Guard.NotNull(parseResult.GetValueForArgument(FilePathArgument));        
+        ScriptFile = Guard.NotNull(parseResult.GetValueForArgument(FilePathArgument));
         EntryPoint = Guard.NotNull(parseResult.GetValueForOption(EntryPointOption));
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption).GetValueOrDefault(DefaultTargetFramework);
         LanguageVersion = parseResult.GetValueForOption(LanguageVersionOption);

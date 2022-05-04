@@ -7,7 +7,7 @@ using WeihanLi.Common.Models;
 
 namespace Exec;
 
-public sealed class CommandHandler: ICommandHandler
+public sealed class CommandHandler : ICommandHandler
 {
     private readonly ILogger _logger;
     private readonly ICodeCompiler _compiler;
@@ -19,11 +19,11 @@ public sealed class CommandHandler: ICommandHandler
         _compiler = compiler;
         _executor = executor;
     }
-    
+
     public async Task<int> InvokeAsync(InvocationContext context)
     {
         var parseResult = context.ParseResult;
-        
+
         // 1. options binding
         var options = new ExecOptions();
         options.BindCommandLineArguments(parseResult);
@@ -38,7 +38,7 @@ public sealed class CommandHandler: ICommandHandler
 
     public async Task<int> Execute(ExecOptions options)
     {
-         var sourceText = await File.ReadAllTextAsync(options.ScriptFile).ConfigureAwait(false);
+        var sourceText = await File.ReadAllTextAsync(options.ScriptFile).ConfigureAwait(false);
         // 3. compile and run
         var compileResult = await _compiler.Compile(sourceText, options);
         if (!compileResult.IsSuccess())
