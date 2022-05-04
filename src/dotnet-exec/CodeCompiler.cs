@@ -48,7 +48,7 @@ public class SimpleCodeCompiler : ICodeCompiler
                 typeof(Microsoft.Extensions.Logging.LoggerFactory).Assembly,
                 typeof(Microsoft.Extensions.Options.IOptions<>).Assembly,
                 typeof(Newtonsoft.Json.JsonConvert).Assembly,
-                typeof(Result).Assembly,              
+                typeof(Result).Assembly,
             }
             .Select(assembly => assembly.Location)
             .Distinct()
@@ -58,7 +58,7 @@ public class SimpleCodeCompiler : ICodeCompiler
 
         var assemblyName = $"dotnet-exec.dynamic.{GuidIdGenerator.Instance.NewId()}";
         var compilation = CSharpCompilation.Create(assemblyName)
-            .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: execOptions.Configuration, allowUnsafe: true))            
+            .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: execOptions.Configuration, allowUnsafe: true))
             .AddReferences(Basic.Reference.Assemblies.Net60.All)
             .AddReferences(references)
             .AddSyntaxTrees(syntaxTree);

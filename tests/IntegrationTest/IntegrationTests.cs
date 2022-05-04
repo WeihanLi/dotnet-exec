@@ -28,7 +28,7 @@ public class IntegrationTests
         var execOptions = new ExecOptions()
         {
             ScriptFile = fullPath,
-            Arguments = new[]{ "--hello", "world" }
+            Arguments = new[] { "--hello", "world" }
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
