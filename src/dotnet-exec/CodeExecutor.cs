@@ -15,8 +15,6 @@ public class CodeExecutor: ICodeExecutor
 {
     public async Task<Result> Execute(Assembly assembly, ExecOptions options)
     {
-        await Task.CompletedTask;
-        
         var entryMethod = assembly.EntryPoint;
         if (entryMethod is null && options.EntryPoint.IsNotNullOrEmpty())
         {

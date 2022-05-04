@@ -25,7 +25,7 @@ public sealed class ExecOptions
     private static readonly Option<OptimizationLevel> ConfigurationOption =
         new(new[]{ "-c", "--configuration" }, () => OptimizationLevel.Debug, "Compile configuration/OptimizationLevel");
     private static readonly Option<string> ArgumentsOption =
-        new(new[]{ "--args" },  "Arguments");
+        new(new[]{ "--args", "--arguments" },  "Input arguments");
     private static readonly Option DebugOption = new("--debug", "Enable debug logs for debugging purpose");
 
     //
@@ -67,6 +67,7 @@ public sealed class ExecOptions
         yield return EntryPointOption;
         yield return LanguageVersionOption;
         yield return ConfigurationOption;
+        yield return ArgumentsOption;
     }
 
     public void BindCommandLineArguments(ParseResult parseResult)

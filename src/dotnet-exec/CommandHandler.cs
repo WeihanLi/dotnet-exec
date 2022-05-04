@@ -36,14 +36,14 @@ public sealed class CommandHandler: ICommandHandler
         var sourceText = await File.ReadAllTextAsync(options.ScriptFile).ConfigureAwait(false);
         // 3. compile and run
         var compileResult = await _compiler.Compile(sourceText, options);
-        if (compileResult.IsSuccess())
+        if (!compileResult.IsSuccess())
         {
             _logger.LogError($"Compile error:{Environment.NewLine}{compileResult.Msg}");
             return -2;
         }
         Guard.NotNull(compileResult.Data);
         var executeResult = await _executor.Execute(compileResult.Data, options);
-        if (executeResult.IsSuccess())
+        if (!executeResult.IsSuccess())
         {
             _logger.LogError($"Execute error:{Environment.NewLine}{executeResult.Msg}");
             return -3;
