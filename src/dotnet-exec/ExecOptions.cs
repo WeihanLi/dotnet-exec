@@ -24,6 +24,7 @@ public sealed class ExecOptions
         new("--lang-version", () => LanguageVersion.Default, "Language version");
     private static readonly Option<OptimizationLevel> ConfigurationOption =
         new(new[]{ "-c", "--configuration" }, () => OptimizationLevel.Debug, "Compile configuration/OptimizationLevel");
+    private static readonly Option DebugOption = new("--debug", "Enable debug logs for debugging purpose");
 
     //
     private static readonly ImmutableHashSet<string> DefaultGlobalUsing = new HashSet<string>()
@@ -57,6 +58,7 @@ public sealed class ExecOptions
 
     public static IEnumerable<Option> GetOptions()
     {
+        yield return DebugOption;
         yield return TargetFrameworkOption;
         yield return EntryPointOption;
         yield return LanguageVersionOption;
