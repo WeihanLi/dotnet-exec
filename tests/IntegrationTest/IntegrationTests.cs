@@ -13,8 +13,10 @@ public class IntegrationTests
     }
 
     [Theory]
-    [InlineData(nameof(RandomSharedSample))]
-    public async Task RandomSharedSample(string sampleFileName)
+    [InlineData("MainMethodSample")]
+    [InlineData("RandomSharedSample")]
+    [InlineData("TopLevelSample")]
+    public async Task SamplesTest(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
         var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", filePath);
@@ -22,7 +24,8 @@ public class IntegrationTests
 
         var execOptions = new ExecOptions()
         {
-            ScriptFile = fullPath
+            ScriptFile = fullPath,
+            Arguments = new[]{ "--hello", "world" }
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
