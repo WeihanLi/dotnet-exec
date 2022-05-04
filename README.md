@@ -11,9 +11,9 @@
 `dotnet-exec` is a command line tool for custom C# program entry point
 
 ``` sh
-dotnet-exec -f HttpPathJsonSample.cs
+dotnet-exec HttpPathJsonSample.cs
 
-dotnet-exec -f HttpPathJsonSample.cs --entry MainTest
+dotnet-exec HttpPathJsonSample.cs --entry MainTest
 ```
 
 ## Install
