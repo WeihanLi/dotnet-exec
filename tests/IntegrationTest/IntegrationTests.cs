@@ -2,20 +2,18 @@
 // Licensed under the MIT license.
 
 using Exec;
-using WeihanLi.Common.Models;
 
 namespace IntegrationTest;
 
 public class IntegrationTests
 {
-    private readonly ICodeExecutor _executor;
-    private readonly ICodeCompiler _compiler;
+    private readonly CommandHandler _handler;
 
-    public IntegrationTests(ICodeExecutor executor, ICodeCompiler compiler)
+    public IntegrationTests(CommandHandler handler)
     {
-        _executor = executor;
-        _compiler = compiler;
+        _handler = handler;
     }
+
     [Theory]
     [InlineData(nameof(RandomSharedSample))]
     public async Task RandomSharedSample(string sampleFileName)
@@ -24,16 +22,14 @@ public class IntegrationTests
         var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", filePath);
         Assert.True(File.Exists(fullPath));
 
-        var execOptions = new ExecOptions();
-        
-        var codeText = await File.ReadAllTextAsync(fullPath);
-        var compileResult = await _compiler.Compile(codeText, execOptions);
-        Assert.NotNull(compileResult.Data);
-        Guard.NotNull(compileResult.Data);
+        var execOptions = new ExecOptions()
+        {
+            ScriptFile = fullPath
+        };
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _executor.Execute(compileResult.Data, execOptions);
-        Assert.True(result.IsSuccess());
+        var result = await _handler.Execute(execOptions);        
+        Assert.Equal(0, result);
         Assert.NotNull(output.StandardOutput);
         Assert.NotEmpty(output.StandardOutput);
     }

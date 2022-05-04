@@ -33,7 +33,12 @@ public sealed class CommandHandler: ICommandHandler
             _logger.LogError($"The file {options.ScriptFile} does not exists");
             return -1;
         }
-        var sourceText = await File.ReadAllTextAsync(options.ScriptFile).ConfigureAwait(false);
+        return await Execute(options);
+    }
+
+    public async Task<int> Execute(ExecOptions options)
+    {
+         var sourceText = await File.ReadAllTextAsync(options.ScriptFile).ConfigureAwait(false);
         // 3. compile and run
         var compileResult = await _compiler.Compile(sourceText, options);
         if (!compileResult.IsSuccess())
