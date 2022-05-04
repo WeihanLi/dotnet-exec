@@ -8,12 +8,12 @@ namespace Exec;
 
 public interface ICodeExecutor
 {
-    Task<Result> Execute(Assembly assembly, string[] args, ExecOptions options);
+    Task<Result> Execute(Assembly assembly, ExecOptions options);
 }
 
 public class CodeExecutor: ICodeExecutor
 {
-    public async Task<Result> Execute(Assembly assembly, string[] args, ExecOptions options)
+    public async Task<Result> Execute(Assembly assembly, ExecOptions options)
     {
         await Task.CompletedTask;
         
@@ -40,7 +40,7 @@ public class CodeExecutor: ICodeExecutor
                 }
                 else if (parameters.Length == 1 && parameters[0].ParameterType == typeof(string[]))
                 {
-                    returnValue = entryMethod.Invoke(null, new object?[]{ args });
+                    returnValue = entryMethod.Invoke(null, new object?[]{ options.Arguments });
                     executed = true;
                 }
                 switch (returnValue)

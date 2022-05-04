@@ -24,6 +24,8 @@ public sealed class ExecOptions
         new("--lang-version", () => LanguageVersion.Default, "Language version");
     private static readonly Option<OptimizationLevel> ConfigurationOption =
         new(new[]{ "-c", "--configuration" }, () => OptimizationLevel.Debug, "Compile configuration/OptimizationLevel");
+    private static readonly Option<string> ArgumentsOption =
+        new(new[]{ "--args" },  "Arguments");
     private static readonly Option DebugOption = new("--debug", "Enable debug logs for debugging purpose");
 
     //
@@ -45,6 +47,8 @@ public sealed class ExecOptions
     public string TargetFramework { get; set; } = DefaultTargetFramework;
 
     public string EntryPoint { get; set; } = "MainTest";
+
+    public string[] Arguments { get; set; } = Array.Empty<string>();
 
     public LanguageVersion LanguageVersion { get; set; }
     public OptimizationLevel Configuration { get; set; }
@@ -72,5 +76,7 @@ public sealed class ExecOptions
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption).GetValueOrDefault(DefaultTargetFramework);
         LanguageVersion = parseResult.GetValueForOption(LanguageVersionOption);
         Configuration = parseResult.GetValueForOption(ConfigurationOption);
+        Arguments = CommandLineStringSplitter.Instance
+            .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
     }
 }

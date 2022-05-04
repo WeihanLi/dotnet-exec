@@ -22,13 +22,16 @@ public class CodeExecutorTest
     [InlineData("using WeihanLi.Extensions; Console.WriteLine(args.StringJoin(\", \"));")]
     public async Task ExecuteWithDefaultEntry(string code)
     {
-        var execOptions = new ExecOptions();
+        var execOptions = new ExecOptions()
+        {
+            Arguments = new[]{ "--hello", "world" }
+        };
         var result = await _compiler.Compile(code, execOptions);
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);
         var executor = new CodeExecutor();
-        var executeResult = await executor.Execute(result.Data, new[]{ "--hello", "world" }, execOptions);
+        var executeResult = await executor.Execute(result.Data, execOptions);
         _outputHelper.WriteLine($"{executeResult.Msg}");
         Assert.True(executeResult.IsSuccess());
     }
@@ -62,7 +65,7 @@ internal class SomeTest
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);
         var executor = new CodeExecutor();
-        var executeResult = await executor.Execute(result.Data, Array.Empty<string>(), execOptions);
+        var executeResult = await executor.Execute(result.Data, execOptions);
         _outputHelper.WriteLine($"{executeResult.Msg}");
         Assert.True(executeResult.IsSuccess());
     }

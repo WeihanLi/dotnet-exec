@@ -32,7 +32,7 @@ public class IntegrationTests
         Guard.NotNull(compileResult.Data);
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _executor.Execute(compileResult.Data, Array.Empty<string>(), execOptions);
+        var result = await _executor.Execute(compileResult.Data, execOptions);
         Assert.True(result.IsSuccess());
         Assert.NotNull(output.StandardOutput);
         Assert.NotEmpty(output.StandardOutput);
