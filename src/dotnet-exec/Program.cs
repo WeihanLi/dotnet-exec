@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using Microsoft.Extensions.DependencyInjection;
+using System.CommandLine.IO;
 using WeihanLi.Common.Models;
 
 var command = new Command("dotnet-exec");
@@ -28,7 +29,7 @@ command.SetHandler(async (ParseResult parseResult, IConsole console) =>
     // 2. construct project
     if (!File.Exists(options.ScriptFile))
     {
-        console.Error.Write($"The file {options.ScriptFile} does not exists");
+        console.Error.WriteLine($"The file {options.ScriptFile} does not exists");
         return;
     }
     var sourceText = await File.ReadAllTextAsync(options.ScriptFile).ConfigureAwait(false);
@@ -37,14 +38,15 @@ command.SetHandler(async (ParseResult parseResult, IConsole console) =>
     var compileResult = await compiler.Compile(sourceText, options);
     if (compileResult.Status != ResultStatus.Success)
     {
-        throw new ArgumentException($"Compile error:{Environment.NewLine}{compileResult.Msg}");
+        console.Error.WriteLine($"Compile error:{Environment.NewLine}{compileResult.Msg}");
+        return;
     }
     Guard.NotNull(compileResult.Data);
     var executor = provider.GetRequiredService<ICodeExecutor>();    
     var executeResult = await executor.Execute(compileResult.Data, args, options);
     if (executeResult.Status != ResultStatus.Success)
     {
-        throw new InvalidOperationException($"Execute error:{Environment.NewLine}{executeResult.Msg}");
+        console.Error.WriteLine($"Execute error:{Environment.NewLine}{executeResult.Msg}");
     }
 });
 
