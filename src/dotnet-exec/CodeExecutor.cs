@@ -32,15 +32,25 @@ public class CodeExecutor: ICodeExecutor
             var parameters = entryMethod.GetParameters();
             try
             {
+                object? returnValue = null;
                 if (parameters.IsNullOrEmpty())
                 {
-                    entryMethod.Invoke(null, Array.Empty<object?>());
+                    returnValue = entryMethod.Invoke(null, Array.Empty<object?>());
                     executed = true;
                 }
-                if (parameters.Length == 1 && parameters[0].ParameterType == typeof(string[]))
+                else if (parameters.Length == 1 && parameters[0].ParameterType == typeof(string[]))
                 {
-                    entryMethod.Invoke(null, new object?[]{ args });
+                    returnValue = entryMethod.Invoke(null, new object?[]{ args });
                     executed = true;
+                }
+                switch (returnValue)
+                {
+                    case Task task:
+                        await task.ConfigureAwait(false);
+                        break;
+                    case ValueTask valueTask:
+                        await valueTask.ConfigureAwait(false);
+                        break;
                 }
             }
             catch (Exception e)
