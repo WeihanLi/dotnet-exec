@@ -22,7 +22,7 @@ public sealed class CommandHandler : ICommandHandler
 
     public async Task<int> InvokeAsync(InvocationContext context)
     {
-        var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource();
         Console.CancelKeyPress += (_, args) =>
         {
             cts.Cancel();
