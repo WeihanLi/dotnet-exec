@@ -22,7 +22,14 @@ services.AddLogging(builder =>
     builder.SetMinimumLevel(debugEnabled ? LogLevel.Debug : LogLevel.Warning);
 });
 services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>().CreateLogger("dotnet-exec"));
-services.AddSingleton<ICodeCompiler, SimpleCodeCompiler>();
+if (args.Contains("--advanced") || args.Contains("-a"))
+{
+    services.AddSingleton<ICodeCompiler, AdvancedCodeCompiler>();    
+}
+else
+{
+    services.AddSingleton<ICodeCompiler, SimpleCodeCompiler>();    
+}
 services.AddSingleton<ICodeExecutor, CodeExecutor>();
 services.AddSingleton<CommandHandler>();
 

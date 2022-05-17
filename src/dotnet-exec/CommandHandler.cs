@@ -22,11 +22,19 @@ public sealed class CommandHandler : ICommandHandler
 
     public async Task<int> InvokeAsync(InvocationContext context)
     {
+        var cts = new CancellationTokenSource();
+        Console.CancelKeyPress += (_, args) =>
+        {
+            cts.Cancel();
+            Thread.Sleep(1000);
+        };
         var parseResult = context.ParseResult;
 
         // 1. options binding
         var options = new ExecOptions();
         options.BindCommandLineArguments(parseResult);
+        options.CancellationToken = cts.Token;
+
         // 2. construct project
         if (!File.Exists(options.ScriptFile))
         {
@@ -40,7 +48,7 @@ public sealed class CommandHandler : ICommandHandler
     {
         var sourceText = await File.ReadAllTextAsync(options.ScriptFile).ConfigureAwait(false);
         // 3. compile and run
-        var compileResult = await _compiler.Compile(sourceText, options);
+        var compileResult = await _compiler.Compile(options, sourceText);
         if (!compileResult.IsSuccess())
         {
             _logger.LogError($"Compile error:{Environment.NewLine}{compileResult.Msg}");

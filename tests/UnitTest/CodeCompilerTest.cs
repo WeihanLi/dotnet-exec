@@ -22,7 +22,7 @@ public class CodeCompilerTest
     public async Task CompileFailed(string code)
     {
         var compiler = new SimpleCodeCompiler();
-        var result = await compiler.Compile(code, new ExecOptions());
+        var result = await compiler.Compile(new ExecOptions(), code);
         Assert.Equal(ResultStatus.ProcessFail, result.Status);
         _outputHelper.WriteLine(result.Msg);
     }
@@ -40,7 +40,7 @@ Console.WriteLine(args.StringJoin(Environment.NewLine));
     public async Task CompileWithCustomEntryPoint(string code)
     {
         var compiler = new SimpleCodeCompiler();
-        var result = await compiler.Compile(code, new ExecOptions());
+        var result = await compiler.Compile(new ExecOptions(), code);
         _outputHelper.WriteLine($"{result.Msg}");
         Assert.Equal(ResultStatus.Success, result.Status);
     }
@@ -69,10 +69,10 @@ Console.WriteLine("""
     public async Task CompileWithPreviewLanguageFeature(string code)
     {
         var compiler = new SimpleCodeCompiler();
-        var result = await compiler.Compile(code, new ExecOptions()
+        var result = await compiler.Compile(new ExecOptions()
         {
             LanguageVersion = LanguageVersion.Preview
-        });
+        }, code);
         _outputHelper.WriteLine($"{result.Msg}");
         Assert.Equal(ResultStatus.Success, result.Status);
     }

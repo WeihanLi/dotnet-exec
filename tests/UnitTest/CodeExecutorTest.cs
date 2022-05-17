@@ -25,7 +25,7 @@ public class CodeExecutorTest
         {
             Arguments = new[] { "--hello", "world" }
         };
-        var result = await _compiler.Compile(code, execOptions);
+        var result = await _compiler.Compile(execOptions, code);
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);
@@ -59,7 +59,7 @@ internal class SomeTest
     public async Task ExecuteWithCustomEntry(string code)
     {
         var execOptions = new ExecOptions();
-        var result = await _compiler.Compile(code, execOptions);
+        var result = await _compiler.Compile(execOptions, code);
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);

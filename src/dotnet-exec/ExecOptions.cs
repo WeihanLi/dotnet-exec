@@ -19,6 +19,7 @@ public sealed class ExecOptions
 
     private static readonly Argument<string> FilePathArgument = new("file", "CSharp program to execute");
     private static readonly Option<string> TargetFrameworkOption = new(new[] { "-f", "--framework" }, () => DefaultTargetFramework, "Project target framework");
+    private static readonly Option<string> StartupTypeOption = new("--startup-type", "Startup type");
     private static readonly Option<string> EntryPointOption = new("--entry", () => "MainTest", "Entry point");
     private static readonly Option<LanguageVersion> LanguageVersionOption =
         new("--lang-version", () => LanguageVersion.Default, "Language version");
@@ -27,6 +28,7 @@ public sealed class ExecOptions
     private static readonly Option<string> ArgumentsOption =
         new(new[] { "--args", "--arguments" }, "Input arguments");
     private static readonly Option DebugOption = new("--debug", "Enable debug logs for debugging purpose");
+    private static readonly Option<string> ProjectOption = new("--project", "Project file path");
 
     //
     private static readonly ImmutableHashSet<string> DefaultGlobalUsing = new HashSet<string>()
@@ -46,14 +48,19 @@ public sealed class ExecOptions
 
     public string TargetFramework { get; set; } = DefaultTargetFramework;
 
+    public string StartupType { get; set; } = string.Empty;
     public string EntryPoint { get; set; } = "MainTest";
 
     public string[] Arguments { get; set; } = Array.Empty<string>();
+
+    public string ProjectPath { get; set; } = string.Empty;
 
     public LanguageVersion LanguageVersion { get; set; }
     public OptimizationLevel Configuration { get; set; }
 
     public HashSet<string> GlobalUsing { get; } = new(DefaultGlobalUsing);
+
+    public CancellationToken CancellationToken { get; set; }
 
     public static IEnumerable<Argument> GetArguments()
     {
@@ -64,20 +71,24 @@ public sealed class ExecOptions
     {
         yield return DebugOption;
         yield return TargetFrameworkOption;
+        yield return StartupTypeOption;
         yield return EntryPointOption;
         yield return LanguageVersionOption;
         yield return ConfigurationOption;
         yield return ArgumentsOption;
+        yield return ProjectOption;
     }
 
     public void BindCommandLineArguments(ParseResult parseResult)
     {
         ScriptFile = Guard.NotNull(parseResult.GetValueForArgument(FilePathArgument));
+        StartupType = parseResult.GetValueForOption(StartupTypeOption) ?? string.Empty;
         EntryPoint = Guard.NotNull(parseResult.GetValueForOption(EntryPointOption));
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption).GetValueOrDefault(DefaultTargetFramework);
         LanguageVersion = parseResult.GetValueForOption(LanguageVersionOption);
         Configuration = parseResult.GetValueForOption(ConfigurationOption);
         Arguments = CommandLineStringSplitter.Instance
             .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
+        ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
     }
 }
