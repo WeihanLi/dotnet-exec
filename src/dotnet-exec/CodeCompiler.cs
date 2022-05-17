@@ -104,39 +104,16 @@ public class AdvancedCodeCompiler : ICodeCompiler
 
         var compilation = await project.GetCompilationAsync(execOptions.CancellationToken);
         Guard.NotNull(compilation);
-        var entryPoint = compilation.GetEntryPoint(execOptions.CancellationToken);
-         if (!"<top-level-statements-entry-point>".Equals(entryPoint?.ToString()))
-        {
-            var id = Guid.NewGuid().ToString("N");
-            project.AddDocument("DynamicMain.generated.cs", $@"
-namespace Dynamic_{id}
-{{
-  internal class Program
-  {{
-    public static void Main(string[] args)
-    {{
-        {execOptions.StartupType}.{execOptions.EntryPoint}();
-        System.Console.ReadLine();
-    }}
-  }}
-}}
-");
-            project = project.WithCompilationOptions(Guard.NotNull(project.CompilationOptions)
-                .WithMainTypeName($"Dynamic_{id}.Program"));
-            compilation = await project.GetCompilationAsync(execOptions.CancellationToken);
-        }
-        else
-        {
-            var documentIds = project.Documents.Where(d =>
-                    d.FilePath.IsNotNullOrEmpty() 
-                    && !d.FilePath.Equals(execOptions.ScriptFile)
-                    && !InternalHelper.GlobalUsingFileNames.Contains(Path.GetFileName(d.FilePath))
-                    && !d.FilePath.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}"))
-                .Select(d => d.Id)
-                .ToImmutableArray(); 
-            project = project.RemoveDocuments(documentIds);
-            compilation = await project.GetCompilationAsync(execOptions.CancellationToken);
-        }
+
+        var documentIds = project.Documents.Where(d =>
+                d.FilePath.IsNotNullOrEmpty() 
+                && !d.FilePath.Equals(execOptions.ScriptFile)
+                && !InternalHelper.GlobalUsingFileNames.Contains(Path.GetFileName(d.FilePath))
+                && !d.FilePath.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}"))
+            .Select(d => d.Id)
+            .ToImmutableArray(); 
+        project = project.RemoveDocuments(documentIds);
+        compilation = await project.GetCompilationAsync(execOptions.CancellationToken);
 
         Guard.NotNull(compilation);
         var ms = new MemoryStream();
@@ -196,7 +173,7 @@ namespace Dynamic_{id}
 
         if (project.IsNullOrEmpty())
         {
-            project = Directory.GetFiles(dir, "*.csproj").First();
+            project = Directory.GetFiles(dir!, "*.csproj").First();
         }
 
         return project;
