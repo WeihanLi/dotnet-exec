@@ -29,6 +29,7 @@ public sealed class ExecOptions
         new(new[] { "--args", "--arguments" }, "Input arguments");
     private static readonly Option DebugOption = new("--debug", "Enable debug logs for debugging purpose");
     private static readonly Option<string> ProjectOption = new("--project", "Project file path");
+    private static readonly Option AdvancedOption = new(new[]{ "-a", "--advanced" }, "Advanced mode");
 
     //
     private static readonly ImmutableHashSet<string> DefaultGlobalUsing = new HashSet<string>()
@@ -77,6 +78,7 @@ public sealed class ExecOptions
         yield return ConfigurationOption;
         yield return ArgumentsOption;
         yield return ProjectOption;
+        yield return AdvancedOption;
     }
 
     public void BindCommandLineArguments(ParseResult parseResult)
