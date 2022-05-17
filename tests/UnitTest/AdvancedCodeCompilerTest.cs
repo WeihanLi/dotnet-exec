@@ -7,7 +7,7 @@ namespace UnitTest;
 
 public class AdvancedCodeCompilerTest
 {
-    [Fact]
+    [Fact(Skip = "localOnly")]
     public async Task CompileTest()
     {
         var codeCompiler = new AdvancedCodeCompiler();
