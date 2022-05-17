@@ -1,3 +1,4 @@
+using System;
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
@@ -60,7 +61,7 @@ Task("restore")
     .Description("Restore")
     .Does(() => 
     {
-      foreach(var project in srcProjects)
+      foreach (var project in srcProjects)
       {
          DotNetRestore(project.FullPath);
       }
@@ -72,11 +73,12 @@ Task("build")
     .IsDependentOn("restore")
     .Does(() =>
     {
-      var buildSetting = new DotNetBuildSettings{
+      var buildSetting = new DotNetBuildSettings
+      {
          NoRestore = true,
          Configuration = configuration
       };
-      foreach(var project in srcProjects)
+      foreach (var project in srcProjects)
       {
          DotNetBuild(project.FullPath, buildSetting);
       }
@@ -91,7 +93,7 @@ Task("test")
       {
         NoRestore = false
       };
-      foreach(var project in testProjects)
+      foreach (var project in testProjects)
       {
         DotNetTest(project.FullPath, testSettings);
       }
@@ -111,7 +113,7 @@ Task("pack")
          NoRestore = true,
          NoBuild = true
       };
-      if(branchName != "main" && stable != "true"){
+      if (branchName != "main" && stable != "true"){
          settings.VersionSuffix = $"preview-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
       }
       foreach (var project in srcProjects)
@@ -123,20 +125,24 @@ Task("pack")
 
 bool PublishArtifacts(ICakeContext context)
 {
-   if(context.Environment.Platform.IsUnix())
+   if (context.Environment.Platform.IsUnix())
    {
       return false;
    }
-   if(branchName == "main" || branchName == "preview" || !string.IsNullOrEmpty(apiKey))
+   if (string.IsNullOrEmpty(apiKey))
+   {
+      apiKey = EnvironmentVariable("Nuget__ApiKey");
+   }
+   if (!string.IsNullOrEmpty(apiKey))
    {
       var pushSetting =new DotNetNuGetPushSettings
       {
          Source = EnvironmentVariable("Nuget__SourceUrl") ?? "https://api.nuget.org/v3/index.json",
-         ApiKey = EnvironmentVariable("Nuget__ApiKey") ?? apiKey,
+         ApiKey = apiKey,
          SkipDuplicate = true
       };
       var packages = GetFiles($"{artifacts}/*.nupkg");
-      foreach(var package in packages)
+      foreach (var package in packages)
       {
          DotNetNuGetPush(package.FullPath, pushSetting);
       }
