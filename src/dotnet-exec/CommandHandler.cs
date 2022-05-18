@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.Logging;
 using System.CommandLine.Invocation;
+using System.Text.Json;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -35,10 +36,12 @@ public sealed class CommandHandler : ICommandHandler
         options.BindCommandLineArguments(parseResult);
         options.CancellationToken = cts.Token;
 
+        _logger.LogDebug("options: {options}", JsonSerializer.Serialize(options));
+
         // 2. construct project
         if (!File.Exists(options.ScriptFile))
         {
-            _logger.LogError($"The file {options.ScriptFile} does not exists");
+            _logger.LogError("The file {ScriptFile} does not exists", options.ScriptFile);
             return -1;
         }
         return await Execute(options);

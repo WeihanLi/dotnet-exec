@@ -4,6 +4,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 
 namespace Exec;
 
@@ -21,15 +22,19 @@ public sealed class ExecOptions
     private static readonly Option<string> TargetFrameworkOption = new(new[] { "-f", "--framework" }, () => DefaultTargetFramework, "Project target framework");
     private static readonly Option<string> StartupTypeOption = new("--startup-type", "Startup type");
     private static readonly Option<string> EntryPointOption = new("--entry", () => "MainTest", "Entry point");
+
     private static readonly Option<LanguageVersion> LanguageVersionOption =
         new("--lang-version", () => LanguageVersion.Default, "Language version");
+
     private static readonly Option<OptimizationLevel> ConfigurationOption =
         new(new[] { "-c", "--configuration" }, () => OptimizationLevel.Debug, "Compile configuration/OptimizationLevel");
+
     private static readonly Option<string> ArgumentsOption =
         new(new[] { "--args", "--arguments" }, "Input arguments");
+
     private static readonly Option DebugOption = new("--debug", "Enable debug logs for debugging purpose");
     private static readonly Option<string> ProjectOption = new("--project", "Project file path");
-    private static readonly Option AdvancedOption = new(new[]{ "-a", "--advanced" }, "Advanced mode");
+    private static readonly Option AdvancedOption = new(new[] { "-a", "--advanced" }, "Advanced mode");
 
     //
     private static readonly ImmutableHashSet<string> DefaultGlobalUsing = new HashSet<string>()
@@ -59,8 +64,10 @@ public sealed class ExecOptions
     public LanguageVersion LanguageVersion { get; set; }
     public OptimizationLevel Configuration { get; set; }
 
+    [JsonIgnore]
     public HashSet<string> GlobalUsing { get; } = new(DefaultGlobalUsing);
 
+    [JsonIgnore]
     public CancellationToken CancellationToken { get; set; }
 
     public static IEnumerable<Argument> GetArguments()
@@ -84,6 +91,12 @@ public sealed class ExecOptions
     public void BindCommandLineArguments(ParseResult parseResult)
     {
         ScriptFile = Guard.NotNull(parseResult.GetValueForArgument(FilePathArgument));
+        var dir = Path.GetDirectoryName(ScriptFile);
+        if (dir.IsNullOrEmpty())
+        {
+            ScriptFile = Path.Combine(Directory.GetCurrentDirectory(), ScriptFile);
+        }
+
         StartupType = parseResult.GetValueForOption(StartupTypeOption) ?? string.Empty;
         EntryPoint = Guard.NotNull(parseResult.GetValueForOption(EntryPointOption));
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption).GetValueOrDefault(DefaultTargetFramework);

@@ -106,12 +106,12 @@ public class AdvancedCodeCompiler : ICodeCompiler
         Guard.NotNull(compilation);
 
         var documentIds = project.Documents.Where(d =>
-                d.FilePath.IsNotNullOrEmpty() 
+                d.FilePath.IsNotNullOrEmpty()
                 && !d.FilePath.Equals(execOptions.ScriptFile)
                 && !InternalHelper.GlobalUsingFileNames.Contains(Path.GetFileName(d.FilePath))
                 && !d.FilePath.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}"))
             .Select(d => d.Id)
-            .ToImmutableArray(); 
+            .ToImmutableArray();
         project = project.RemoveDocuments(documentIds);
         compilation = await project.GetCompilationAsync(execOptions.CancellationToken);
 
@@ -130,6 +130,8 @@ public class AdvancedCodeCompiler : ICodeCompiler
                 project = project.WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
                 compilation = await project.GetCompilationAsync(execOptions.CancellationToken);
                 Guard.NotNull(compilation);
+                ms.Seek(0, SeekOrigin.Begin);
+                ms.SetLength(0);
                 emitResult = compilation.Emit(ms);
                 if (emitResult.Success)
                 {
