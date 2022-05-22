@@ -35,20 +35,8 @@ public sealed class ExecOptions
     private static readonly Option DebugOption = new("--debug", "Enable debug logs for debugging purpose");
     private static readonly Option<string> ProjectOption = new("--project", "Project file path");
     private static readonly Option AdvancedOption = new(new[] { "-a", "--advanced" }, "Advanced mode");
+    private static readonly Option WebReferencesOption = new(new[] { "-w", "--web" }, "Reference web mode");
 
-    //
-    private static readonly ImmutableHashSet<string> DefaultGlobalUsing = new HashSet<string>()
-        {
-            "System",
-            "System.Collections.Generic",
-            "System.IO",
-            "System.Linq",
-            "System.Net.Http",
-            "System.Text",
-            "System.Threading",
-            "System.Threading.Tasks",
-        }
-        .ToImmutableHashSet();
 
     public string ScriptFile { get; set; } = "Program.cs";
 
@@ -61,11 +49,10 @@ public sealed class ExecOptions
 
     public string ProjectPath { get; set; } = string.Empty;
 
+    public bool IncludeWebReferences { get; set; }
+
     public LanguageVersion LanguageVersion { get; set; }
     public OptimizationLevel Configuration { get; set; }
-
-    [JsonIgnore]
-    public HashSet<string> GlobalUsing { get; } = new(DefaultGlobalUsing);
 
     [JsonIgnore]
     public CancellationToken CancellationToken { get; set; }
@@ -86,6 +73,7 @@ public sealed class ExecOptions
         yield return ArgumentsOption;
         yield return ProjectOption;
         yield return AdvancedOption;
+        yield return WebReferencesOption;
     }
 
     public void BindCommandLineArguments(ParseResult parseResult)
@@ -105,5 +93,6 @@ public sealed class ExecOptions
         Arguments = CommandLineStringSplitter.Instance
             .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
+        IncludeWebReferences = parseResult.HasOption(WebReferencesOption);
     }
 }

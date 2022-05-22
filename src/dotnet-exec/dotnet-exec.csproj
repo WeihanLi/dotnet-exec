@@ -17,7 +17,6 @@
       <Using Include="$(RootNamespace)" />
   </ItemGroup>
   <ItemGroup>
-      <PackageReference Include="Basic.Reference.Assemblies" />
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
       <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
       <PackageReference Include="Microsoft.Build.Locator" />
