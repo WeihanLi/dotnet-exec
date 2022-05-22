@@ -23,7 +23,7 @@ public class AdvancedCodeCompilerTest
     [InlineData(@"C:\projects\sources\SamplesInPractice\MathProblems\MathProblems.csproj", @"C:\projects\sources\SamplesInPractice\MathProblems\CombinationAndPermutation.cs")]
     public async Task CompileTest(string projectPath, string scriptFile)
     {
-        var codeCompiler = new AdvancedCodeCompiler();
+        var codeCompiler = new AdvancedCodeCompiler(NullLogger.Instance);
         
         var result = await codeCompiler.Compile(new ExecOptions()
         {
@@ -35,5 +35,8 @@ public class AdvancedCodeCompilerTest
             _outputHelper.WriteLine(result.Msg);
         
         Assert.True(result.IsSuccess());
+
+        var types = Guard.NotNull(result.Data).GetTypes();
+        Assert.NotEmpty(types);
     }
 }
