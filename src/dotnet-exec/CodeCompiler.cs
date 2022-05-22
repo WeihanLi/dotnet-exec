@@ -58,7 +58,7 @@ public class SimpleCodeCompiler : ICodeCompiler
         var compilation = await project
             .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: execOptions.Configuration, nullableContextOptions: NullableContextOptions.Annotations))
             .GetCompilationAsync();
-        return await Guard.NotNull(compilation).GetCompilationAssemblyResult();
+        return await Guard.NotNull(compilation).GetCompilationAssemblyResult(execOptions.CancellationToken);
     }
 }
 
@@ -99,7 +99,7 @@ public class AdvancedCodeCompiler : ICodeCompiler
             ;
         
         var compilation = await project.GetCompilationAsync(execOptions.CancellationToken);
-        return await Guard.NotNull(compilation).GetCompilationAssemblyResult();
+        return await Guard.NotNull(compilation).GetCompilationAssemblyResult(execOptions.CancellationToken);
     }
 
     private string GetProjectFile(string projectFile)

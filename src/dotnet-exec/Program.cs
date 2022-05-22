@@ -32,6 +32,7 @@ else
 }
 services.AddSingleton<ICodeExecutor, CodeExecutor>();
 services.AddSingleton<CommandHandler>();
+services.AddSingleton<HttpClient>();
 
 await using var provider = services.BuildServiceProvider();
 command.Handler = provider.GetRequiredService<CommandHandler>();

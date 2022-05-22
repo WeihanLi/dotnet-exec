@@ -16,6 +16,7 @@ public class Startup
         services.AddSingleton<ICodeCompiler, SimpleCodeCompiler>();
         services.AddSingleton<ICodeExecutor, CodeExecutor>();
         services.AddSingleton<CommandHandler>();
+        services.AddSingleton<HttpClient>();
     }
 
     public void Configure(IServiceProvider provider)
