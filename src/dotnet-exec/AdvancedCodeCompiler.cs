@@ -47,8 +47,7 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
         var documentIds = project.Documents.Where(d =>
                 d.FilePath.IsNotNullOrEmpty()
                 && !d.FilePath.Equals(execOptions.ScriptFile)
-                && !InternalHelper.GlobalUsingFileNames.Contains(Path.GetFileName(d.FilePath))
-                && !d.FilePath.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}"))
+                && d.FilePath.EndsWith($"{Path.DirectorySeparatorChar}Program.cs"))
             .Select(d => d.Id)
             .ToImmutableArray();
         

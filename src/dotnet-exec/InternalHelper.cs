@@ -15,15 +15,7 @@ namespace Exec;
 internal static class InternalHelper
 {
     private static readonly HashSet<string> SpecialConsoleDiagnosticIds = new() { "CS5001", "CS0028" };
-    public static readonly HashSet<string> GlobalUsingFileNames = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "GlobalUsing.cs", 
-        "GlobalUsings.cs",
-        "Imports.cs",
-        "_Imports.cs"
-    };
 
-    
     public static async Task<Result<Assembly>> GetCompilationAssemblyResult(this Compilation compilation, CancellationToken cancellationToken = default)
     {
         var result = await GetCompilationResult(compilation, cancellationToken);
