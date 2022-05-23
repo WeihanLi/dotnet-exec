@@ -13,7 +13,45 @@ public interface ICodeCompiler
     Task<Result<Assembly>> Compile(ExecOptions execOptions, string? code = null);
 }
 
-public class SimpleCodeCompiler : ICodeCompiler
+public sealed class SimpleCodeCompiler : ICodeCompiler
+{
+    public async Task<Result<Assembly>> Compile(ExecOptions execOptions, string? code = null)
+    {
+        var projectName = $"dotnet-exec_{Guid.NewGuid():N}";
+        var assemblyName = $"{projectName}.dll";
+
+        var parseOptions = new CSharpParseOptions(execOptions.LanguageVersion);
+        var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions.IncludeWebReferences);
+        var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, cancellationToken: execOptions.CancellationToken);
+        if (string.IsNullOrEmpty(code))
+        {
+            code = await File.ReadAllTextAsync(execOptions.ScriptFile, execOptions.CancellationToken);
+        }
+        var scriptSyntaxTree = CSharpSyntaxTree.ParseText(code, parseOptions, cancellationToken: execOptions.CancellationToken);
+
+        var assemblyLocations = InternalHelper.ResolveFrameworkReferences(
+                execOptions.IncludeWebReferences
+                    ? FrameworkName.Web
+                    : FrameworkName.Default, execOptions.TargetFramework)
+            .SelectMany(x => x)
+            .Distinct()
+            .ToArray();
+        var references = assemblyLocations.Select(l => MetadataReference.CreateFromFile(l));
+
+        var compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication,
+            optimizationLevel: execOptions.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
+        compilationOptions.EnableReferencesSupersedeLowerVersions();
+
+        var compilation = CSharpCompilation.Create(assemblyName, new[]
+        {
+            globalUsingSyntaxTree,
+            scriptSyntaxTree
+        }, references, compilationOptions);
+        return await Guard.NotNull(compilation).GetCompilationAssemblyResult(execOptions.CancellationToken);
+    }
+}
+
+internal sealed class WorkspaceBasedCodeCompiler : ICodeCompiler
 {
     public async Task<Result<Assembly>> Compile(ExecOptions execOptions, string? code = null)
     {
@@ -38,14 +76,15 @@ public class SimpleCodeCompiler : ICodeCompiler
             ? scriptDocument.WithFilePath(execOptions.ScriptFile)
             : scriptDocument.WithTextLoader(new PlainTextLoader(code));
 
-        var references = InternalHelper.ResolveFrameworkReferences(
+        var assemblyLocations = InternalHelper.ResolveFrameworkReferences(
                 execOptions.IncludeWebReferences
                     ? FrameworkName.Web
-                    : FrameworkName.Default, execOptions.TargetFramework, true)
+                    : FrameworkName.Default, execOptions.TargetFramework)
             .SelectMany(x => x)
             .Distinct()
-            .Select(l => MetadataReference.CreateFromFile(l));
+            .ToArray();
 
+        var references = assemblyLocations.Select(l => MetadataReference.CreateFromFile(l));
         projectInfo = projectInfo
                 .WithParseOptions(new CSharpParseOptions(execOptions.LanguageVersion))
                 .WithDocuments(new[] { globalUsingDocument, scriptDocument })
@@ -53,8 +92,12 @@ public class SimpleCodeCompiler : ICodeCompiler
             ;
         using var workspace = new AdhocWorkspace();
         var project = workspace.AddProject(projectInfo);
+        var compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication,
+            optimizationLevel: execOptions.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
+        compilationOptions.EnableReferencesSupersedeLowerVersions();
+
         var compilation = await project
-            .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: execOptions.Configuration, nullableContextOptions: NullableContextOptions.Annotations))
+            .WithCompilationOptions(compilationOptions)
             .GetCompilationAsync();
         return await Guard.NotNull(compilation).GetCompilationAssemblyResult(execOptions.CancellationToken);
     }

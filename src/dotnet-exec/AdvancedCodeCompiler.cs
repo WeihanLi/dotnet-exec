@@ -51,12 +51,13 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
             .Select(d => d.Id)
             .ToImmutableArray();
 
-        var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions.IncludeWebReferences);
-        var globalUsingDoc = project.AddDocument("__GlobalUsings", SourceText.From(globalUsingCode));
-        project = globalUsingDoc.Project.RemoveDocuments(documentIds)
-                .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: execOptions.Configuration, nullableContextOptions: NullableContextOptions.Annotations))
-            ;
-        var compilation = await project.GetCompilationAsync(execOptions.CancellationToken);
+        project = project.RemoveDocuments(documentIds);
+
+        var compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication,
+            optimizationLevel: execOptions.Configuration, nullableContextOptions: NullableContextOptions.Enable);
+        compilationOptions.EnableReferencesSupersedeLowerVersions();
+        
+        var compilation = await project.WithCompilationOptions(compilationOptions).GetCompilationAsync(execOptions.CancellationToken);
         return await Guard.NotNull(compilation).GetCompilationAssemblyResult(execOptions.CancellationToken);
     }
 

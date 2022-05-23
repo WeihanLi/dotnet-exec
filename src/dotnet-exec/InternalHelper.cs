@@ -55,7 +55,7 @@ internal static class InternalHelper
         return (compilation, emitResult, null);
     }
 
-    private static IEnumerable<string> GetGlobalUsings(bool includeWebReferences)
+    private static IEnumerable<string> GetGlobalUsings(bool includeWebReferences, bool includeAdditional)
     {
         yield return "System";
         yield return "System.Collections.Generic";
@@ -65,9 +65,6 @@ internal static class InternalHelper
         yield return "System.Text";
         yield return "System.Threading";
         yield return "System.Threading.Tasks";
-
-        yield return "WeihanLi.Common";
-        yield return "WeihanLi.Common.Helpers";
 
         if (includeWebReferences)
         {
@@ -81,11 +78,18 @@ internal static class InternalHelper
             yield return "Microsoft.Extensions.Hosting";
             yield return "Microsoft.Extensions.Logging";
         }
+
+        if (includeAdditional)
+        {
+            yield return "WeihanLi.Common";
+            yield return "WeihanLi.Common.Logging";
+            yield return "WeihanLi.Common.Helpers";
+        }
     }
 
-    public static string GetGlobalUsingsCodeText(bool includeWebReferences)
+    public static string GetGlobalUsingsCodeText(bool includeWebReferences, bool includeAdditional = true)
     {
-        return GetGlobalUsings(includeWebReferences)
+        return GetGlobalUsings(includeWebReferences, includeAdditional)
             .Select(u => $"global using {u};").StringJoin(Environment.NewLine);
     }
 
@@ -161,8 +165,15 @@ internal static class InternalHelper
         };
     }
 
-    public static IEnumerable<string[]> ResolveFrameworkReferences(string frameworkName, string targetFramework, bool includeAdditionalReferences)
+    public static IEnumerable<string[]> ResolveFrameworkReferences(string frameworkName, string targetFramework, bool includeAdditionalReferences = true)
     {
+        var dependency = GetDependencyFramework(frameworkName);
+        if (!string.IsNullOrEmpty(dependency))
+        {
+            yield return ResolveFrameworkReferencesInternal(dependency, targetFramework);
+        }
+        yield return ResolveFrameworkReferencesInternal(frameworkName, targetFramework);
+
         if (includeAdditionalReferences)
         {
             yield return new[]
@@ -171,12 +182,6 @@ internal static class InternalHelper
                 typeof(JsonConvert).Assembly.Location
             };
         }
-        var dependency = GetDependencyFramework(frameworkName);
-        if (!string.IsNullOrEmpty(dependency))
-        {
-            yield return ResolveFrameworkReferencesInternal(dependency, targetFramework);
-        }
-        yield return ResolveFrameworkReferencesInternal(frameworkName, targetFramework);
     }
 
     private static string[] ResolveFrameworkReferencesInternal(string frameworkName, string targetFramework)
@@ -191,6 +196,16 @@ internal static class InternalHelper
         var targetVersionDir = versions.OrderByDescending(x => x).First();
         var targetReferenceDir = Path.Combine(targetVersionDir, "ref", targetFramework);
         return Directory.GetFiles(targetReferenceDir, "*.dll");
+    }
+
+    public static CSharpCompilationOptions EnableReferencesSupersedeLowerVersions(this CSharpCompilationOptions compilationOptions)
+    {
+        // https://github.com/dotnet/roslyn/blob/a51b65c86bb0f42a79c47798c10ad75d5c343f92/src/Compilers/Core/Portable/Compilation/CompilationOptions.cs#L183
+        typeof(CompilationOptions)
+            .GetProperty("ReferencesSupersedeLowerVersions", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .SetMethod!
+            .Invoke(compilationOptions, new object[] { true });
+        return compilationOptions;
     }
 }
 

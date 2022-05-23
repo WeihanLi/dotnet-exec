@@ -1,15 +1,19 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using Xunit.Abstractions;
+
 namespace IntegrationTest;
 
 public class IntegrationTests
 {
     private readonly CommandHandler _handler;
+    private readonly ITestOutputHelper _outputHelper;
 
-    public IntegrationTests(CommandHandler handler)
+    public IntegrationTests(CommandHandler handler, ITestOutputHelper outputHelper)
     {
         _handler = handler;
+        _outputHelper = outputHelper;
     }
 
     [Theory]
@@ -19,6 +23,8 @@ public class IntegrationTests
     [InlineData("MainMethodSample")]
     [InlineData("RandomSharedSample")]
     [InlineData("TopLevelSample")]
+    // [InlineData("HostApplicationBuilderSample")]
+    [InlineData("DumpAssemblyInfoSample")]
     public async Task SamplesTest(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
@@ -37,5 +43,7 @@ public class IntegrationTests
         Assert.Equal(0, result);
         Assert.NotNull(output.StandardOutput);
         Assert.NotEmpty(output.StandardOutput);
+
+        _outputHelper.WriteLine(output.StandardOutput);
     }
 }
