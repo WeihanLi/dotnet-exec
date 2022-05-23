@@ -9,7 +9,7 @@ namespace Exec;
 internal static class Interop
 {
     public static readonly bool RunningOnWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-    
+
     public static class Unix
     {
         // Ansi marshaling on Unix is actually UTF8

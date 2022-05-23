@@ -15,7 +15,7 @@ public class AdvancedCodeCompilerTest
     {
         _outputHelper = outputHelper;
     }
-    
+
     [Theory(
         Skip = "localOnly"
         )]
@@ -24,16 +24,16 @@ public class AdvancedCodeCompilerTest
     public async Task CompileTest(string projectPath, string scriptFile)
     {
         var codeCompiler = new AdvancedCodeCompiler(NullLogger.Instance);
-        
+
         var result = await codeCompiler.Compile(new ExecOptions()
         {
             ProjectPath = projectPath,
             ScriptFile = scriptFile
         }, string.Empty);
-        
-        if(result.Msg.IsNotNullOrEmpty())
+
+        if (result.Msg.IsNotNullOrEmpty())
             _outputHelper.WriteLine(result.Msg);
-        
+
         Assert.True(result.IsSuccess());
 
         var types = Guard.NotNull(result.Data).GetTypes();

@@ -24,11 +24,11 @@ services.AddLogging(builder =>
 services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>().CreateLogger("dotnet-exec"));
 if (args.Contains("--advanced") || args.Contains("-a"))
 {
-    services.AddSingleton<ICodeCompiler, AdvancedCodeCompiler>();    
+    services.AddSingleton<ICodeCompiler, AdvancedCodeCompiler>();
 }
 else
 {
-    services.AddSingleton<ICodeCompiler, SimpleCodeCompiler>();    
+    services.AddSingleton<ICodeCompiler, SimpleCodeCompiler>();
 }
 services.AddSingleton<ICodeExecutor, CodeExecutor>();
 services.AddSingleton<CommandHandler>();

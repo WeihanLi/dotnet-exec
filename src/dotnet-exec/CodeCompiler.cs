@@ -20,32 +20,32 @@ public class SimpleCodeCompiler : ICodeCompiler
         var projectName = $"dotnet-exec_{Guid.NewGuid():N}";
         var assemblyName = $"{projectName}.dll";
         var projectInfo = ProjectInfo.Create(
-            ProjectId.CreateNewId(), 
-            VersionStamp.Default, 
+            ProjectId.CreateNewId(),
+            VersionStamp.Default,
             projectName,
             assemblyName,
             LanguageNames.CSharp);
 
         var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions.IncludeWebReferences);
         var globalUsingDocument = DocumentInfo.Create(
-            DocumentId.CreateNewId(projectInfo.Id, "__GlobalUsings"), 
-            "__GlobalUsings", 
+            DocumentId.CreateNewId(projectInfo.Id, "__GlobalUsings"),
+            "__GlobalUsings",
             loader: new PlainTextLoader(globalUsingCode));
-        
+
         var scriptDocument = DocumentInfo.Create(DocumentId.CreateNewId(projectInfo.Id),
             Path.GetFileNameWithoutExtension(execOptions.ScriptFile));
-        scriptDocument = string.IsNullOrEmpty(code) 
-            ? scriptDocument.WithFilePath(execOptions.ScriptFile) 
+        scriptDocument = string.IsNullOrEmpty(code)
+            ? scriptDocument.WithFilePath(execOptions.ScriptFile)
             : scriptDocument.WithTextLoader(new PlainTextLoader(code));
-        
+
         var references = InternalHelper.ResolveFrameworkReferences(
                 execOptions.IncludeWebReferences
                     ? FrameworkName.Web
                     : FrameworkName.Default, execOptions.TargetFramework, true)
-            .SelectMany(x=> x)
+            .SelectMany(x => x)
             .Distinct()
             .Select(l => MetadataReference.CreateFromFile(l));
-        
+
         projectInfo = projectInfo
                 .WithParseOptions(new CSharpParseOptions(execOptions.LanguageVersion))
                 .WithDocuments(new[] { globalUsingDocument, scriptDocument })

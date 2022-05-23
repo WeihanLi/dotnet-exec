@@ -60,11 +60,11 @@ public sealed class CommandHandler : ICommandHandler
             if (!File.Exists(options.ScriptFile))
             {
                 _logger.LogError("The file {ScriptFile} does not exists", options.ScriptFile);
-                return -1;                
+                return -1;
             }
             sourceText = await File.ReadAllTextAsync(options.ScriptFile, options.CancellationToken);
         }
-        
+
         // 2. compile assembly
         var compileResult = await _compiler.Compile(options, sourceText);
         if (!compileResult.IsSuccess())

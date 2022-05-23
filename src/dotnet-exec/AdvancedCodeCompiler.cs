@@ -30,19 +30,19 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
     public async Task<Result<Assembly>> Compile(ExecOptions execOptions, string? code = null)
     {
         var projectPath = GetProjectFile(execOptions.ProjectPath);
-        var dotnetPath = InternalHelper.GetDotnetPath();        
+        var dotnetPath = InternalHelper.GetDotnetPath();
         var result = await CommandExecutor.ExecuteAndCaptureAsync(dotnetPath, $"restore {projectPath}", Path.GetDirectoryName(projectPath));
         if (result.ExitCode != 0)
         {
             return Result.Fail<Assembly>($"{result.StandardError}{Environment.NewLine}{result.StandardOut}".Trim(), ResultStatus.ProcessFail);
         }
-        
+
         using var workspace = MSBuildWorkspace.Create();
         workspace.WorkspaceFailed += (_, args) =>
         {
             _logger.LogError($"Workspace failed, {args.Diagnostic.Kind}, {args.Diagnostic.Message}");
         };
-        
+
         var project = await workspace.OpenProjectAsync(projectPath, cancellationToken: execOptions.CancellationToken);
         var documentIds = project.Documents.Where(d =>
                 d.FilePath.IsNotNullOrEmpty()
@@ -50,7 +50,7 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
                 && d.FilePath.EndsWith($"{Path.DirectorySeparatorChar}Program.cs"))
             .Select(d => d.Id)
             .ToImmutableArray();
-        
+
         var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions.IncludeWebReferences);
         var globalUsingDoc = project.AddDocument("__GlobalUsings", SourceText.From(globalUsingCode));
         project = globalUsingDoc.Project.RemoveDocuments(documentIds)

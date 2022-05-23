@@ -31,7 +31,7 @@ internal static class InternalHelper
         }
         return Result.Fail<Assembly>(error.ToString(), ResultStatus.ProcessFail);
     }
-    
+
     private static async Task<(Compilation Compilation, EmitResult EmitResult, Assembly? Assembly)> GetCompilationResult(Compilation compilation, CancellationToken cancellationToken = default)
     {
         await using var ms = new MemoryStream();
@@ -54,7 +54,7 @@ internal static class InternalHelper
 
         return (compilation, emitResult, null);
     }
-    
+
     private static IEnumerable<string> GetGlobalUsings(bool includeWebReferences)
     {
         yield return "System";
@@ -88,7 +88,7 @@ internal static class InternalHelper
         return GetGlobalUsings(includeWebReferences)
             .Select(u => $"global using {u};").StringJoin(Environment.NewLine);
     }
-    
+
     public static string GetDotnetPath()
     {
         var commandNameWithExtension = $"dotnet{(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : string.Empty)}";
@@ -141,7 +141,7 @@ internal static class InternalHelper
             return _dotnetDirectory;
         }
     }
-    
+
     private static string GetReferenceDirName(string frameworkName)
     {
         return frameworkName switch
@@ -151,7 +151,7 @@ internal static class InternalHelper
             _ => "Microsoft.NETCore.App.Ref"
         };
     }
-    
+
     private static string? GetDependencyFramework(string frameworkName)
     {
         return frameworkName switch
@@ -169,20 +169,20 @@ internal static class InternalHelper
             {
                 typeof(Guard).Assembly.Location,
                 typeof(JsonConvert).Assembly.Location
-            };   
+            };
         }
         var dependency = GetDependencyFramework(frameworkName);
         if (!string.IsNullOrEmpty(dependency))
         {
-             yield return ResolveFrameworkReferencesInternal(dependency, targetFramework);
+            yield return ResolveFrameworkReferencesInternal(dependency, targetFramework);
         }
         yield return ResolveFrameworkReferencesInternal(frameworkName, targetFramework);
     }
-    
+
     private static string[] ResolveFrameworkReferencesInternal(string frameworkName, string targetFramework)
     {
         var packsDir = Path.Combine(DotnetDirectory, "packs");
-        var referencePackDirName = GetReferenceDirName(frameworkName); 
+        var referencePackDirName = GetReferenceDirName(frameworkName);
         var frameworkDir = Path.Combine(packsDir, referencePackDirName);
 
         var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();

@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Exec;
 
-public sealed class PlainTextLoader: TextLoader
+public sealed class PlainTextLoader : TextLoader
 {
     private readonly TextAndVersion _textAndVersion;
 
@@ -14,7 +14,7 @@ public sealed class PlainTextLoader: TextLoader
     {
         _textAndVersion = TextAndVersion.Create(SourceText.From(text), VersionStamp.Default);
     }
-    
+
     public override Task<TextAndVersion> LoadTextAndVersionAsync(Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
     {
         return Task.FromResult(_textAndVersion);
