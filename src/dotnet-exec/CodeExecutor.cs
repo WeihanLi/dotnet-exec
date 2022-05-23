@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 using WeihanLi.Common.Models;
 
@@ -13,8 +14,32 @@ public interface ICodeExecutor
 
 public class CodeExecutor : ICodeExecutor
 {
+    private readonly ILogger _logger;
+
+    public CodeExecutor(ILogger logger)
+    {
+        _logger = logger;
+    }
+    
     public async Task<Result> Execute(Assembly assembly, ExecOptions options)
     {
+        var references = assembly.GetReferencedAssemblies()
+            .Select(assemblyName =>
+            {
+                try
+                {
+                    return $"{assemblyName.Name}({assemblyName.Version}  {Assembly.Load(assemblyName).Location})";
+                }
+                catch (Exception e)
+                {
+                    _logger.LogWarning(e, $"Load assembly failed, {assemblyName.Name}({assemblyName.Version})");
+                }
+
+                return null;
+            })
+            .WhereNotNull()
+            .StringJoin(Environment.NewLine);
+        _logger.LogDebug("Referenced assemblies:{assemblies}", references);
         var entryMethod = assembly.EntryPoint;
         if (entryMethod is null && options.EntryPoint.IsNotNullOrEmpty())
         {
@@ -28,6 +53,7 @@ public class CodeExecutor : ICodeExecutor
         if (entryMethod is not null)
         {
             var parameters = entryMethod.GetParameters();
+            _logger.LogDebug("Entry is found, {entryName}, {returnType}", entryMethod.GetDisplayName(), entryMethod.ReturnType.FullName);
             try
             {
                 object? returnValue = null;

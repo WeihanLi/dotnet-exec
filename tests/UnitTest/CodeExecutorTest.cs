@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using WeihanLi.Common.Models;
 using Xunit.Abstractions;
 
@@ -29,7 +31,7 @@ public class CodeExecutorTest
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);
-        var executor = new CodeExecutor();
+        var executor = new CodeExecutor(NullLogger.Instance);
         var executeResult = await executor.Execute(result.Data, execOptions);
         _outputHelper.WriteLine($"{executeResult.Msg}");
         Assert.True(executeResult.IsSuccess());
@@ -63,7 +65,7 @@ internal class SomeTest
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);
-        var executor = new CodeExecutor();
+        var executor = new CodeExecutor(NullLogger.Instance);
         var executeResult = await executor.Execute(result.Data, execOptions);
         _outputHelper.WriteLine($"{executeResult.Msg}");
         Assert.True(executeResult.IsSuccess());

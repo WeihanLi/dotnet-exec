@@ -8,7 +8,7 @@
 
 ## Intro
 
-`dotnet-exec` is a command line tool for custom C# program entry point
+`dotnet-exec` is a command line tool for excuting C# program with custom entry point
 
 ``` sh
 dotnet-exec HttpPathJsonSample.cs

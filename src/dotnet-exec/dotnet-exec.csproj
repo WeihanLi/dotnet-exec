@@ -9,6 +9,7 @@
     <PackAsTool>true</PackAsTool>
     <PackageId>dotnet-execute</PackageId>
     <ToolCommandName>dotnet-exec</ToolCommandName>
+    <Description>`dotnet-exec` is a command line tool for excuting C# program with custom entry point</Description>
   </PropertyGroup>
 
   <ItemGroup>

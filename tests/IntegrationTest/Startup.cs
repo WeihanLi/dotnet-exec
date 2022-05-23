@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 
 namespace IntegrationTest;
@@ -11,16 +12,17 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddLogging();
+        services.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
         services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>().CreateLogger("dotnet-exec"));
         services.AddSingleton<ICodeCompiler, SimpleCodeCompiler>();
         services.AddSingleton<ICodeExecutor, CodeExecutor>();
+        services.AddSingleton<AdvancedCodeCompiler>();
         services.AddSingleton<CommandHandler>();
         services.AddSingleton<HttpClient>();
     }
 
-    public void Configure(IServiceProvider provider)
+    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor outputHelperAccessor)
     {
-        XunitTestOutputLoggerProvider.Register(provider);
+        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(outputHelperAccessor, (_, _) => true));
     }
 }

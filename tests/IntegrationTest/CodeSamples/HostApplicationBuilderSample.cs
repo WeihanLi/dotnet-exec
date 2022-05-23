@@ -22,7 +22,7 @@ public class HostApplicationBuilderSample
             };
         });
 
-        builder.Configuration.AddJsonFile("env.json", true);
+        // builder.Configuration.AddJsonFile("env.json", true);
 
         builder.Services.AddHostedService<TestHostedService>();
 
