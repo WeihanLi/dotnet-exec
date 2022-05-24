@@ -19,9 +19,10 @@ var services = new ServiceCollection();
 services.AddLogging(builder =>
 {
     builder.AddConsole();
-    builder.SetMinimumLevel(debugEnabled ? LogLevel.Debug : LogLevel.Warning);
+    builder.SetMinimumLevel(debugEnabled ? LogLevel.Debug : LogLevel.Error);
 });
-services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>().CreateLogger("dotnet-exec"));
+services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>()
+    .CreateLogger("dotnet-exec"));
 if (args.Contains("--advanced") || args.Contains("-a"))
 {
     services.AddSingleton<ICodeCompiler, AdvancedCodeCompiler>();
