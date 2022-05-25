@@ -23,7 +23,7 @@ public class IntegrationTests
     [InlineData("MainMethodSample")]
     [InlineData("RandomSharedSample")]
     [InlineData("TopLevelSample")]
-    // [InlineData("HostApplicationBuilderSample")]
+    [InlineData("HostApplicationBuilderSample")]
     [InlineData("DumpAssemblyInfoSample")]
     public async Task SamplesTest(string sampleFileName)
     {

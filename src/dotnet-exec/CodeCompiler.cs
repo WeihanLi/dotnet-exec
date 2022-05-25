@@ -3,19 +3,18 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Reflection;
 using WeihanLi.Common.Models;
 
 namespace Exec;
 
 public interface ICodeCompiler
 {
-    Task<Result<Assembly>> Compile(ExecOptions execOptions, string? code = null);
+    Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null);
 }
 
 public sealed class SimpleCodeCompiler : ICodeCompiler
 {
-    public async Task<Result<Assembly>> Compile(ExecOptions execOptions, string? code = null)
+    public async Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null)
     {
         var projectName = $"dotnet-exec_{Guid.NewGuid():N}";
         var assemblyName = $"{projectName}.dll";
@@ -53,7 +52,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
 
 internal sealed class WorkspaceBasedCodeCompiler : ICodeCompiler
 {
-    public async Task<Result<Assembly>> Compile(ExecOptions execOptions, string? code = null)
+    public async Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null)
     {
         var projectName = $"dotnet-exec_{Guid.NewGuid():N}";
         var assemblyName = $"{projectName}.dll";

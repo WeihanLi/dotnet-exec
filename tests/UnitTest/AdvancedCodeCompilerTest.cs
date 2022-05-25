@@ -1,4 +1,5 @@
-﻿// Copyright (c) Weihan Li. All rights reserved.
+﻿using System.Reflection;
+// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
 using Microsoft.Extensions.Logging.Abstractions;
@@ -36,7 +37,8 @@ public class AdvancedCodeCompilerTest
 
         Assert.True(result.IsSuccess());
 
-        var types = Guard.NotNull(result.Data).GetTypes();
+        var assembly = Assembly.Load(Guard.NotNull(result.Data).Stream.ToArray());
+        var types = assembly.GetTypes();
         Assert.NotEmpty(types);
     }
 }

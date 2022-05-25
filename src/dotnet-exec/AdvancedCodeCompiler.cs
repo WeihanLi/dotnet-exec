@@ -5,10 +5,8 @@ using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.MSBuild;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.Logging;
 using System.Collections.Immutable;
-using System.Reflection;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -27,14 +25,14 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
         _logger = logger;
     }
 
-    public async Task<Result<Assembly>> Compile(ExecOptions execOptions, string? code = null)
+    public async Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null)
     {
         var projectPath = GetProjectFile(execOptions.ProjectPath);
         var dotnetPath = InternalHelper.GetDotnetPath();
         var result = await CommandExecutor.ExecuteAndCaptureAsync(dotnetPath, $"restore {projectPath}", Path.GetDirectoryName(projectPath));
         if (result.ExitCode != 0)
         {
-            return Result.Fail<Assembly>($"{result.StandardError}{Environment.NewLine}{result.StandardOut}".Trim(), ResultStatus.ProcessFail);
+            return Result.Fail<CompileResult>($"{result.StandardError}{Environment.NewLine}{result.StandardOut}".Trim(), ResultStatus.ProcessFail);
         }
 
         using var workspace = MSBuildWorkspace.Create();

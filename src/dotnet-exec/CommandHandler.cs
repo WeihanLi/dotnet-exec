@@ -3,6 +3,8 @@
 
 using Microsoft.Extensions.Logging;
 using System.CommandLine.Invocation;
+using System.Reflection;
+using System.Runtime.Loader;
 using System.Text.Json;
 using WeihanLi.Common.Models;
 
@@ -74,12 +76,26 @@ public sealed class CommandHandler : ICommandHandler
         }
         Guard.NotNull(compileResult.Data);
         // 3. execute
-        var executeResult = await _executor.Execute(compileResult.Data, options);
-        if (!executeResult.IsSuccess())
+        var assemblyLoadContext = new AssemblyLoadContext("dotnet-exec");
+        compileResult.Data.Stream.Seek(0, SeekOrigin.Begin);
+        var assembly = assemblyLoadContext.LoadFromStream(compileResult.Data.Stream);
+
+        try
         {
-            _logger.LogError($"Execute error:{Environment.NewLine}{executeResult.Msg}");
-            return -3;
+            using var scope = assemblyLoadContext.EnterContextualReflection();
+            var executeResult = await _executor.Execute(assembly, options);
+            if (!executeResult.IsSuccess())
+            {
+                _logger.LogError($"Execute error:{Environment.NewLine}{executeResult.Msg}");
+                return -3;
+            }
+
+            return 0;
         }
-        return 0;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Execute code error");
+            return -999;
+        }
     }
 }

@@ -16,12 +16,16 @@ internal static class InternalHelper
 {
     private static readonly HashSet<string> SpecialConsoleDiagnosticIds = new() { "CS5001", "CS0028" };
 
-    public static async Task<Result<Assembly>> GetCompilationAssemblyResult(this Compilation compilation, CancellationToken cancellationToken = default)
+    public static async Task<Result<CompileResult>> GetCompilationAssemblyResult(this Compilation compilation, CancellationToken cancellationToken = default)
     {
         var result = await GetCompilationResult(compilation, cancellationToken);
         if (result.EmitResult.Success)
         {
-            return Result.Success(Guard.NotNull(result.Assembly));
+            var references = compilation.References.OfType<PortableExecutableReference>()
+                .Where(x => x.FilePath.IsNotNullOrEmpty())
+                .Select(r => r.FilePath!)
+                .ToArray();
+            return Result.Success(new CompileResult(compilation.AssemblyName ?? "dotnet-exec", references, Guard.NotNull(result.Assembly)));
         }
         var error = new StringBuilder();
         foreach (var diag in result.EmitResult.Diagnostics)
@@ -29,16 +33,18 @@ internal static class InternalHelper
             var message = CSharpDiagnosticFormatter.Instance.Format(diag);
             error.AppendLine($"{diag.Id}-{diag.Severity}-{message}");
         }
-        return Result.Fail<Assembly>(error.ToString(), ResultStatus.ProcessFail);
+        return Result.Fail<CompileResult>(error.ToString(), ResultStatus.ProcessFail);
     }
 
-    private static async Task<(Compilation Compilation, EmitResult EmitResult, Assembly? Assembly)> GetCompilationResult(Compilation compilation, CancellationToken cancellationToken = default)
+    private static async Task<(Compilation Compilation, EmitResult EmitResult, MemoryStream? Assembly)> GetCompilationResult(Compilation compilation, CancellationToken cancellationToken = default)
     {
-        await using var ms = new MemoryStream();
+        await Task.CompletedTask;
+        
+        var ms = new MemoryStream();
         var emitResult = compilation.Emit(ms, cancellationToken: cancellationToken);
         if (emitResult.Success)
         {
-            return (compilation, emitResult, Assembly.Load(ms.ToArray()));
+            return (compilation, emitResult, ms);
         }
 
         if (emitResult.Diagnostics.Any(d => InternalHelper.SpecialConsoleDiagnosticIds.Contains(d.Id)))
@@ -49,9 +55,8 @@ internal static class InternalHelper
             var options = compilation.Options.WithOutputKind(OutputKind.DynamicallyLinkedLibrary);
             emitResult = compilation.WithOptions(options)
                 .Emit(ms, cancellationToken: cancellationToken);
-            return (compilation, emitResult, emitResult.Success ? Assembly.Load(ms.ToArray()) : null);
+            return (compilation, emitResult, emitResult.Success ? ms : null);
         }
-
         return (compilation, emitResult, null);
     }
 

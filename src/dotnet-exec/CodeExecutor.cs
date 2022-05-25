@@ -23,23 +23,6 @@ public class CodeExecutor : ICodeExecutor
     
     public async Task<Result> Execute(Assembly assembly, ExecOptions options)
     {
-        var references = assembly.GetReferencedAssemblies()
-            .Select(assemblyName =>
-            {
-                try
-                {
-                    return $"{assemblyName.Name}({assemblyName.Version}  {Assembly.Load(assemblyName).Location})";
-                }
-                catch (Exception e)
-                {
-                    _logger.LogWarning(e, $"Load assembly failed, {assemblyName.Name}({assemblyName.Version})");
-                }
-
-                return null;
-            })
-            .WhereNotNull()
-            .StringJoin(Environment.NewLine);
-        _logger.LogDebug("Referenced assemblies:{assemblies}", references);
         var entryMethod = assembly.EntryPoint;
         if (entryMethod is null && options.EntryPoint.IsNotNullOrEmpty())
         {
@@ -53,7 +36,7 @@ public class CodeExecutor : ICodeExecutor
         if (entryMethod is not null)
         {
             var parameters = entryMethod.GetParameters();
-            _logger.LogDebug("Entry is found, {entryName}, {returnType}", entryMethod.GetDisplayName(), entryMethod.ReturnType.FullName);
+            _logger.LogDebug("Entry is found, {entryName}, returnType: {returnType}", $"{entryMethod.DeclaringType!.FullName}.{entryMethod.Name}", entryMethod.ReturnType.FullName);
             try
             {
                 object? returnValue = null;
