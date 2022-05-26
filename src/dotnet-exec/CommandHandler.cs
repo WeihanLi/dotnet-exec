@@ -3,7 +3,6 @@
 
 using Microsoft.Extensions.Logging;
 using System.CommandLine.Invocation;
-using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
 using WeihanLi.Common.Models;
@@ -76,7 +75,10 @@ public sealed class CommandHandler : ICommandHandler
         }
         Guard.NotNull(compileResult.Data);
         // 3. execute
-        var assemblyLoadContext = new AssemblyLoadContext("dotnet-exec");
+        var assemblyLoadContext = 
+                // new CustomLoadContext(compileResult.Data.References)
+                new AssemblyLoadContext(InternalHelper.ApplicationName)
+            ;
         compileResult.Data.Stream.Seek(0, SeekOrigin.Begin);
         var assembly = assemblyLoadContext.LoadFromStream(compileResult.Data.Stream);
 

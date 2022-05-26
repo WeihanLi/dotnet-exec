@@ -16,7 +16,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
 {
     public async Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null)
     {
-        var projectName = $"dotnet-exec_{Guid.NewGuid():N}";
+        var projectName = $"{InternalHelper.ApplicationName}_{Guid.NewGuid():N}";
         var assemblyName = $"{projectName}.dll";
 
         var parseOptions = new CSharpParseOptions(execOptions.LanguageVersion);
@@ -54,7 +54,7 @@ internal sealed class WorkspaceBasedCodeCompiler : ICodeCompiler
 {
     public async Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null)
     {
-        var projectName = $"dotnet-exec_{Guid.NewGuid():N}";
+        var projectName = $"{InternalHelper.ApplicationName}_{Guid.NewGuid():N}";
         var assemblyName = $"{projectName}.dll";
         var projectInfo = ProjectInfo.Create(
             ProjectId.CreateNewId(),

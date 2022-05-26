@@ -16,6 +16,8 @@ internal static class InternalHelper
 {
     private static readonly HashSet<string> SpecialConsoleDiagnosticIds = new() { "CS5001", "CS0028" };
 
+    public const string ApplicationName = "dotnet-exec";
+
     public static async Task<Result<CompileResult>> GetCompilationAssemblyResult(this Compilation compilation, CancellationToken cancellationToken = default)
     {
         var result = await GetCompilationResult(compilation, cancellationToken);
