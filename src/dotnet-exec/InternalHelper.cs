@@ -24,10 +24,10 @@ internal static class InternalHelper
         if (result.EmitResult.Success)
         {
             var references = compilation.References.OfType<PortableExecutableReference>()
-                .Where(x => x.FilePath.IsNotNullOrEmpty())
+                .Where(x => x.FilePath.IsNotNullOrEmpty() && File.Exists(x.FilePath))
                 .Select(r => r.FilePath!)
                 .ToArray();
-            return Result.Success(new CompileResult(compilation.AssemblyName ?? "dotnet-exec", references, Guard.NotNull(result.Assembly)));
+            return Result.Success(new CompileResult(result.Compilation, result.EmitResult, Guard.NotNull(result.Assembly), references));
         }
         var error = new StringBuilder();
         foreach (var diag in result.EmitResult.Diagnostics)
