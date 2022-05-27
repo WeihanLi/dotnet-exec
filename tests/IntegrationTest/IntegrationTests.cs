@@ -55,7 +55,7 @@ public class IntegrationTests
         _outputHelper.WriteLine(output.StandardOutput);
     }
 
-    [Theory]
+    [Theory(Skip = "AssemblyLoadContext")]
     [InlineData("Console.WriteLine(\"Hello .NET\");")]
     public async Task AssemblyLoadContextTest(string code)
     {
