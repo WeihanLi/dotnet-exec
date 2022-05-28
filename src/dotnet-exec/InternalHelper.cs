@@ -41,7 +41,7 @@ internal static class InternalHelper
     private static async Task<(Compilation Compilation, EmitResult EmitResult, MemoryStream? Assembly)> GetCompilationResult(Compilation compilation, CancellationToken cancellationToken = default)
     {
         await Task.CompletedTask;
-        
+
         var ms = new MemoryStream();
         var emitResult = compilation.Emit(ms, cancellationToken: cancellationToken);
         if (emitResult.Success)

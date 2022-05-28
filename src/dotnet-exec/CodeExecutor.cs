@@ -20,7 +20,7 @@ public class CodeExecutor : ICodeExecutor
     {
         _logger = logger;
     }
-    
+
     public async Task<Result> Execute(Assembly assembly, ExecOptions options)
     {
         var entryMethod = assembly.EntryPoint;

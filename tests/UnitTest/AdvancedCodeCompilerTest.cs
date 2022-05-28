@@ -1,8 +1,8 @@
-﻿using System.Reflection;
-// Copyright (c) Weihan Li. All rights reserved.
+﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Reflection;
 using WeihanLi.Common.Models;
 using Xunit.Abstractions;
 

@@ -13,8 +13,8 @@ public class IntegrationTests
     private readonly ICodeExecutor _executor;
     private readonly ITestOutputHelper _outputHelper;
 
-    public IntegrationTests(CommandHandler handler, 
-        ICodeCompiler compiler, 
+    public IntegrationTests(CommandHandler handler,
+        ICodeCompiler compiler,
         ICodeExecutor executor,
         ITestOutputHelper outputHelper)
     {
@@ -66,8 +66,7 @@ public class IntegrationTests
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
 
-        var assemblyLoadContext = new CustomLoadContext(Guard.NotNull(result.Data).References)
-            ;
+        var assemblyLoadContext = new CustomLoadContext(Guard.NotNull(result.Data).References);
         result.Data.Stream.Seek(0, SeekOrigin.Begin);
         var assembly = assemblyLoadContext.LoadFromStream(result.Data.Stream);
         Assert.NotNull(assembly);

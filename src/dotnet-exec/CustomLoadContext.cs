@@ -24,7 +24,7 @@ public sealed class CustomLoadContext : AssemblyLoadContext
 
     protected override Assembly? Load(AssemblyName assemblyName)
     {
-        if (assemblyName.Name != null 
+        if (assemblyName.Name != null
             && _assemblyPaths.TryGetValue(assemblyName.Name, out var assemblyPath))
         {
             return LoadFromAssemblyPath(assemblyPath);

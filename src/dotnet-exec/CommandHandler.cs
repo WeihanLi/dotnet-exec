@@ -75,7 +75,7 @@ public sealed class CommandHandler : ICommandHandler
         }
         Guard.NotNull(compileResult.Data);
         // 3. execute
-        var assemblyLoadContext = 
+        var assemblyLoadContext =
                 // new CustomLoadContext(compileResult.Data.References)
                 new AssemblyLoadContext(InternalHelper.ApplicationName)
             ;

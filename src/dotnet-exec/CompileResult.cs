@@ -15,7 +15,7 @@ public sealed class CompileResult
         Stream = stream;
         References = references;
     }
-    
+
     public Compilation Compilation { get; }
     public EmitResult EmitResult { get; }
 
