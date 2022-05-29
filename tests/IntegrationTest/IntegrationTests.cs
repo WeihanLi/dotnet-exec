@@ -9,17 +9,17 @@ namespace IntegrationTest;
 public class IntegrationTests
 {
     private readonly CommandHandler _handler;
-    private readonly ICodeCompiler _compiler;
+    private readonly ICompilerFactory _compilerFactory;
     private readonly ICodeExecutor _executor;
     private readonly ITestOutputHelper _outputHelper;
 
     public IntegrationTests(CommandHandler handler,
-        ICodeCompiler compiler,
+        ICompilerFactory compilerFactory,
         ICodeExecutor executor,
         ITestOutputHelper outputHelper)
     {
         _handler = handler;
-        _compiler = compiler;
+        _compilerFactory = compilerFactory;
         _executor = executor;
         _outputHelper = outputHelper;
     }
@@ -74,7 +74,8 @@ public class IntegrationTests
     public async Task AssemblyLoadContextTest(string code)
     {
         var options = new ExecOptions();
-        var result = await _compiler.Compile(options, code);
+        var compiler = _compilerFactory.GetCompiler(options.CompilerType);
+        var result = await compiler.Compile(options, code);
         if (result.Msg.IsNotNullOrEmpty())
             _outputHelper.WriteLine(result.Msg);
         Assert.True(result.IsSuccess());

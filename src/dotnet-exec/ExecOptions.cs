@@ -109,5 +109,9 @@ public sealed class ExecOptions
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
         IncludeWebReferences = parseResult.HasOption(WebReferencesOption);
         CompilerType = parseResult.GetValueForOption(CompilerTypeOption) ?? "Default";
+        if (parseResult.HasOption(AdvancedOption))
+        {
+            CompilerType = "advanced";
+        }
     }
 }

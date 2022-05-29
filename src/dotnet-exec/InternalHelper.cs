@@ -32,14 +32,6 @@ internal static class InternalHelper
         services.AddSingleton<SimpleCodeCompiler>();
         services.AddSingleton<AdhocWorkspaceCodeCompiler>();
         services.AddSingleton<AdvancedCodeCompiler>();
-        if (args.Contains("--advanced") || args.Contains("-a"))
-        {
-            services.AddSingleton<ICodeCompiler>(sp => sp.GetRequiredService<AdvancedCodeCompiler>());
-        }
-        else
-        {
-            services.AddSingleton<ICodeCompiler>(sp => sp.GetRequiredService<SimpleCodeCompiler>());
-        }
         services.AddSingleton<ICompilerFactory, CompilerFactory>();
         services.AddSingleton<ICodeExecutor, CodeExecutor>();
         services.AddSingleton<CommandHandler>();
