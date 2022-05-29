@@ -19,10 +19,10 @@ public sealed class CompilerFactory : ICompilerFactory
 
     public ICodeCompiler GetCompiler(string compilerType)
     {
-        return compilerType switch
+        return compilerType.ToLower() switch
         {
             "advanced" => _serviceProvider.GetServiceOrCreateInstance<AdvancedCodeCompiler>(),
-            "adhoc" => _serviceProvider.GetServiceOrCreateInstance<AdhocWorkspaceCodeCompiler>(),
+            "workspace" => _serviceProvider.GetServiceOrCreateInstance<AdhocWorkspaceCodeCompiler>(),
             _ => _serviceProvider.GetServiceOrCreateInstance<SimpleCodeCompiler>()
         };
     }
