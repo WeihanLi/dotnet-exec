@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 var command = new Command("dotnet-exec");
 foreach (var item in ExecOptions.GetArguments())

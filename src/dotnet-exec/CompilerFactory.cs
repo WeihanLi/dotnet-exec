@@ -16,7 +16,7 @@ public sealed class CompilerFactory : ICompilerFactory
     {
         _serviceProvider = serviceProvider;
     }
-    
+
     public ICodeCompiler GetCompiler(string compilerType)
     {
         return compilerType switch
