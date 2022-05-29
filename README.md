@@ -8,18 +8,32 @@
 
 ## Intro
 
-`dotnet-exec` is a command line tool for excuting C# program with custom entry point
-
-``` sh
-dotnet-exec HttpPathJsonSample.cs
-
-dotnet-exec HttpPathJsonSample.cs --entry MainTest
-```
+`dotnet-exec` is a command line tool for executing C# program with custom entry point
 
 ## Install
 
 ```sh
 dotnet tool update -g dotnet-execute
+```
+
+## Examples
+
+Execute local file:
+
+``` sh
+dotnet-exec HttpPathJsonSample.cs
+```
+
+Execute local file with custom entry point:
+
+``` sh
+dotnet-exec HttpPathJsonSample.cs --entry MainTest
+```
+
+Execute remote file:
+
+``` sh
+dotnet-exec https://github.com/WeihanLi/SamplesInPractice/blob/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs
 ```
 
 ## More
@@ -31,3 +45,15 @@ By default, it's using the latest language version, you can use the `Preview` ve
 ### EntryPoint
 
 By default, it would use `MainTest` as the entry point, you can customize with `--entry` option
+
+### TargetFramework
+
+By default, it would use `net7.0` if you've installed .NET 7 SDK, otherwise use .NET 6 instead, you can customize with the `-f`/`--framework` option
+
+### CompilerType
+
+By default, it would use the `SimpleCodeCompiler` to compile the code, you can customize with the `--compiler-type` option, and you can use `-a`/`--advanced` for `--compiler-type=advanced`
+
+### Web Framework
+
+By default, the compiler would include the default framework `Microsoft.NETCore.App` reference, if you want to include the `Microsoft.AspNetCore.App` framework reference, you can use the `-w`/`--web` option
