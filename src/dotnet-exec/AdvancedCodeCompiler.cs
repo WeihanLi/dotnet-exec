@@ -51,8 +51,8 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
 
         project = project.RemoveDocuments(documentIds);
 
-        var compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication,
-            optimizationLevel: execOptions.Configuration, nullableContextOptions: NullableContextOptions.Enable);
+        var compilationOptions = project.CompilationOptions?.WithOutputKind(OutputKind.ConsoleApplication) 
+                                 ?? new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel:execOptions.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
         compilationOptions.EnableReferencesSupersedeLowerVersions();
 
         var compilation = await project.WithCompilationOptions(compilationOptions).GetCompilationAsync(execOptions.CancellationToken);

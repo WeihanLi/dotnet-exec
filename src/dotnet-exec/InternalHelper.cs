@@ -227,14 +227,13 @@ internal static class InternalHelper
         return Directory.GetFiles(targetReferenceDir, "*.dll");
     }
 
-    public static CSharpCompilationOptions EnableReferencesSupersedeLowerVersions(this CSharpCompilationOptions compilationOptions)
+    public static void EnableReferencesSupersedeLowerVersions(this CompilationOptions compilationOptions)
     {
         // https://github.com/dotnet/roslyn/blob/a51b65c86bb0f42a79c47798c10ad75d5c343f92/src/Compilers/Core/Portable/Compilation/CompilationOptions.cs#L183
         typeof(CompilationOptions)
             .GetProperty("ReferencesSupersedeLowerVersions", BindingFlags.Instance | BindingFlags.NonPublic)!
             .SetMethod!
             .Invoke(compilationOptions, new object[] { true });
-        return compilationOptions;
     }
 }
 
