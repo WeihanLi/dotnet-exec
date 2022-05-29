@@ -47,27 +47,23 @@ public sealed class CommandHandler : ICommandHandler
 
     public async Task<int> Execute(ExecOptions options)
     {
-        string? sourceText;
         if (options.ScriptFile.IsNullOrWhiteSpace())
         {
             _logger.LogError("The file {ScriptFile} can not be empty", options.ScriptFile);
             return -1;
         }
-        if (options.ScriptFile.StartsWith("http://") || options.ScriptFile.StartsWith("https://"))
+
+        // fetch script
+        var fetchResult = await FetchScriptContent(options.ScriptFile, options.CancellationToken);
+        if (!fetchResult.IsSuccess())
         {
-            sourceText = await _httpClient.GetStringAsync(options.ScriptFile, options.CancellationToken);
-        }
-        else
-        {
-            if (!File.Exists(options.ScriptFile))
-            {
-                _logger.LogError("The file {ScriptFile} does not exists", options.ScriptFile);
-                return -1;
-            }
-            sourceText = await File.ReadAllTextAsync(options.ScriptFile, options.CancellationToken);
+            _logger.LogError(fetchResult.Msg);
+            return -1;
         }
 
-        // 2. compile assembly
+        var sourceText = fetchResult.Data;
+
+        // compile assembly
         var compiler = _compilerFactory.GetCompiler(options.CompilerType);
         var compileResult = await compiler.Compile(options, sourceText);
         if (!compileResult.IsSuccess())
@@ -76,7 +72,8 @@ public sealed class CommandHandler : ICommandHandler
             return -2;
         }
         Guard.NotNull(compileResult.Data);
-        // 3. execute
+
+        // execute
         var assemblyLoadContext =
                 // new CustomLoadContext(compileResult.Data.References)
                 new AssemblyLoadContext(InternalHelper.ApplicationName)
@@ -101,5 +98,44 @@ public sealed class CommandHandler : ICommandHandler
             _logger.LogError(ex, "Execute code error");
             return -999;
         }
+    }
+
+    private async Task<Result<string>> FetchScriptContent(string scriptFile, CancellationToken cancellationToken)
+    {
+        string sourceText;
+        try
+        {
+            if (Uri.TryCreate(scriptFile, UriKind.Absolute, out var uri) && !uri.IsFile)
+            {
+                var scriptUrl = uri.Host switch
+                {
+                    "github.com" => scriptFile
+                        .Replace($"://{uri.Host}/", $"://raw.githubusercontent.com/")
+                        .Replace("/blob/", "/")
+                        .Replace("/tree/", "/"),
+                    "gist.github.com" => scriptFile
+                        .Replace($"://{uri.Host}/", $"://gist.githubusercontent.com/")
+                        + "/raw",
+                    _ => scriptFile
+                };
+                sourceText = await _httpClient.GetStringAsync(scriptUrl, cancellationToken);
+            }
+            else
+            {
+                if (!File.Exists(scriptFile))
+                {
+                    _logger.LogError("The file {ScriptFile} does not exists", scriptFile);
+                    return Result.Fail<string>("File path not exits");
+                }
+
+                sourceText = await File.ReadAllTextAsync(scriptFile, cancellationToken);
+            }
+        }
+        catch (Exception e)
+        {
+            return Result.Fail<string>($"Fail to fetch script content, {e}", ResultStatus.ProcessFail);
+        }
+
+        return Result.Success<string>(sourceText);
     }
 }
