@@ -14,20 +14,27 @@ public sealed class ExecOptions
 #if NET7_0
       "net7.0"
 #else
-      "net6.0"
+            "net6.0"
 #endif
-    ;
+        ;
 
     private static readonly Argument<string> FilePathArgument = new("file", "CSharp program to execute");
-    private static readonly Option<string> TargetFrameworkOption = new(new[] { "-f", "--framework" }, () => DefaultTargetFramework, "Project target framework");
+
+    private static readonly Option<string> TargetFrameworkOption = new(new[] { "-f", "--framework" },
+        () => DefaultTargetFramework, "Project target framework");
+
     private static readonly Option<string> StartupTypeOption = new("--startup-type", "Startup type");
     private static readonly Option<string> EntryPointOption = new("--entry", () => "MainTest", "Entry point");
+
+    private static readonly Option<string> CompilerTypeOption =
+        new("--compiler-type", () => "Default", "The compiler to use");
 
     private static readonly Option<LanguageVersion> LanguageVersionOption =
         new("--lang-version", () => LanguageVersion.Default, "Language version");
 
     private static readonly Option<OptimizationLevel> ConfigurationOption =
-        new(new[] { "-c", "--configuration" }, () => OptimizationLevel.Debug, "Compile configuration/OptimizationLevel");
+        new(new[] { "-c", "--configuration" }, () => OptimizationLevel.Debug,
+            "Compile configuration/OptimizationLevel");
 
     private static readonly Option<string> ArgumentsOption =
         new(new[] { "--args", "--arguments" }, "Input arguments");
@@ -37,6 +44,11 @@ public sealed class ExecOptions
     private static readonly Option AdvancedOption = new(new[] { "-a", "--advanced" }, "Advanced mode");
     private static readonly Option WebReferencesOption = new(new[] { "-w", "--web" }, "Reference web mode");
 
+
+    static ExecOptions()
+    {
+        CompilerTypeOption.AddCompletions("advanced", "workspace", "default");
+    }
 
     public string ScriptFile { get; set; } = "Program.cs";
 
@@ -54,8 +66,9 @@ public sealed class ExecOptions
     public LanguageVersion LanguageVersion { get; set; }
     public OptimizationLevel Configuration { get; set; }
 
-    [JsonIgnore]
-    public CancellationToken CancellationToken { get; set; }
+    public string CompilerType { get; set; } = "Default";
+
+    [JsonIgnore] public CancellationToken CancellationToken { get; set; }
 
     public static IEnumerable<Argument> GetArguments()
     {
@@ -74,6 +87,7 @@ public sealed class ExecOptions
         yield return ProjectOption;
         yield return AdvancedOption;
         yield return WebReferencesOption;
+        yield return CompilerTypeOption;
     }
 
     public void BindCommandLineArguments(ParseResult parseResult)
@@ -87,12 +101,14 @@ public sealed class ExecOptions
 
         StartupType = parseResult.GetValueForOption(StartupTypeOption) ?? string.Empty;
         EntryPoint = Guard.NotNull(parseResult.GetValueForOption(EntryPointOption));
-        TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption).GetValueOrDefault(DefaultTargetFramework);
+        TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption)
+            .GetValueOrDefault(DefaultTargetFramework);
         LanguageVersion = parseResult.GetValueForOption(LanguageVersionOption);
         Configuration = parseResult.GetValueForOption(ConfigurationOption);
         Arguments = CommandLineStringSplitter.Instance
             .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
         IncludeWebReferences = parseResult.HasOption(WebReferencesOption);
+        CompilerType = parseResult.GetValueForOption(CompilerTypeOption) ?? "Default";
     }
 }

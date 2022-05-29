@@ -12,13 +12,8 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
-        services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>().CreateLogger("dotnet-exec"));
-        services.AddSingleton<ICodeCompiler, SimpleCodeCompiler>();
-        services.AddSingleton<ICodeExecutor, CodeExecutor>();
-        services.AddSingleton<AdvancedCodeCompiler>();
-        services.AddSingleton<CommandHandler>();
-        services.AddSingleton<HttpClient>();
+        services.RegisterApplicationServices(new[] { "--debug" })
+            .AddLogging(builder => builder.ClearProviders());
     }
 
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor outputHelperAccessor)

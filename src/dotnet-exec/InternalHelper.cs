@@ -4,6 +4,8 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -17,6 +19,34 @@ internal static class InternalHelper
     private static readonly HashSet<string> SpecialConsoleDiagnosticIds = new() { "CS5001", "CS0028" };
 
     public const string ApplicationName = "dotnet-exec";
+
+    public static IServiceCollection RegisterApplicationServices(this IServiceCollection services, string[] args)
+    {
+        services.AddLogging(builder =>
+        {
+            builder.AddConsole();
+            builder.SetMinimumLevel(args.Contains("--debug") ? LogLevel.Debug : LogLevel.Error);
+        });
+        services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>()
+            .CreateLogger("dotnet-exec"));
+        services.AddSingleton<SimpleCodeCompiler>();
+        services.AddSingleton<AdhocWorkspaceCodeCompiler>();
+        services.AddSingleton<AdvancedCodeCompiler>();
+        if (args.Contains("--advanced") || args.Contains("-a"))
+        {
+            services.AddSingleton<ICodeCompiler>(sp => sp.GetRequiredService<AdvancedCodeCompiler>());
+        }
+        else
+        {
+            services.AddSingleton<ICodeCompiler>(sp => sp.GetRequiredService<SimpleCodeCompiler>());
+        }
+        services.AddSingleton<ICompilerFactory, CompilerFactory>();
+        services.AddSingleton<ICodeExecutor, CodeExecutor>();
+        services.AddSingleton<CommandHandler>();
+        services.AddSingleton<HttpClient>();
+
+        return services;
+    }
 
     public static async Task<Result<CompileResult>> GetCompilationAssemblyResult(this Compilation compilation, CancellationToken cancellationToken = default)
     {

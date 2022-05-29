@@ -14,27 +14,8 @@ foreach (var option in ExecOptions.GetOptions())
     command.AddOption(option);
 }
 
-var debugEnabled = args.Contains("--debug", StringComparer.OrdinalIgnoreCase);
 var services = new ServiceCollection();
-services.AddLogging(builder =>
-{
-    builder.AddConsole();
-    builder.SetMinimumLevel(debugEnabled ? LogLevel.Debug : LogLevel.Error);
-});
-services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>()
-    .CreateLogger("dotnet-exec"));
-if (args.Contains("--advanced") || args.Contains("-a"))
-{
-    services.AddSingleton<ICodeCompiler, AdvancedCodeCompiler>();
-}
-else
-{
-    services.AddSingleton<ICodeCompiler, SimpleCodeCompiler>();
-}
-services.AddSingleton<ICodeExecutor, CodeExecutor>();
-services.AddSingleton<CommandHandler>();
-services.AddSingleton<HttpClient>();
-
+services.RegisterApplicationServices(args);
 await using var provider = services.BuildServiceProvider();
 command.Handler = provider.GetRequiredService<CommandHandler>();
 await command.InvokeAsync(args);

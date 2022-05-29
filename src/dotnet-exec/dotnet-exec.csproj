@@ -27,5 +27,6 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTest" />
+    <InternalsVisibleTo Include="IntegrationTest" />
   </ItemGroup>
 </Project>

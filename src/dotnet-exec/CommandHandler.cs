@@ -12,14 +12,14 @@ namespace Exec;
 public sealed class CommandHandler : ICommandHandler
 {
     private readonly ILogger _logger;
-    private readonly ICodeCompiler _compiler;
+    private readonly ICompilerFactory _compilerFactory;
     private readonly ICodeExecutor _executor;
     private readonly HttpClient _httpClient;
 
-    public CommandHandler(ILogger logger, ICodeCompiler compiler, ICodeExecutor executor, HttpClient httpClient)
+    public CommandHandler(ILogger logger, ICompilerFactory compilerFactory, ICodeExecutor executor, HttpClient httpClient)
     {
         _logger = logger;
-        _compiler = compiler;
+        _compilerFactory = compilerFactory;
         _executor = executor;
         _httpClient = httpClient;
     }
@@ -27,8 +27,9 @@ public sealed class CommandHandler : ICommandHandler
     public async Task<int> InvokeAsync(InvocationContext context)
     {
         using var cts = new CancellationTokenSource();
-        Console.CancelKeyPress += (_, args) =>
+        Console.CancelKeyPress += (_, _) =>
         {
+            // ReSharper disable once AccessToDisposedClosure
             cts.Cancel();
             Thread.Sleep(1000);
         };
@@ -67,7 +68,8 @@ public sealed class CommandHandler : ICommandHandler
         }
 
         // 2. compile assembly
-        var compileResult = await _compiler.Compile(options, sourceText);
+        var compiler = _compilerFactory.GetCompiler(options.CompilerType);
+        var compileResult = await compiler.Compile(options, sourceText);
         if (!compileResult.IsSuccess())
         {
             _logger.LogError($"Compile error:{Environment.NewLine}{compileResult.Msg}");

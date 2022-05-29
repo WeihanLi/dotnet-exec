@@ -50,7 +50,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
     }
 }
 
-internal sealed class WorkspaceBasedCodeCompiler : ICodeCompiler
+internal sealed class AdhocWorkspaceCodeCompiler : ICodeCompiler
 {
     public async Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null)
     {
