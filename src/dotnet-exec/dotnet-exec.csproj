@@ -6,6 +6,7 @@
     <RootNamespace>Exec</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
     <PackAsTool>true</PackAsTool>
     <PackageId>dotnet-execute</PackageId>
     <ToolCommandName>dotnet-exec</ToolCommandName>
