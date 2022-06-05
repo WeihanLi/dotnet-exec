@@ -17,7 +17,7 @@ public sealed class ExecOptions
 #endif
         ;
 
-    private static readonly Argument<string> FilePathArgument = new("file", "CSharp program to execute");
+    private static readonly Argument<string> FilePathArgument = new("script", "CSharp program to execute");
 
     private static readonly Option<string> TargetFrameworkOption = new(new[] { "-f", "--framework" },
         () => DefaultTargetFramework, "Project target framework");
@@ -48,7 +48,7 @@ public sealed class ExecOptions
         CompilerTypeOption.AddCompletions("advanced", "workspace", "default");
     }
 
-    public string ScriptFile { get; set; } = "Program.cs";
+    public string Script { get; set; } = "Program.cs";
 
     public string TargetFramework { get; set; } = DefaultTargetFramework;
 
@@ -90,13 +90,7 @@ public sealed class ExecOptions
 
     public void BindCommandLineArguments(ParseResult parseResult)
     {
-        ScriptFile = Guard.NotNull(parseResult.GetValueForArgument(FilePathArgument));
-        var dir = Path.GetDirectoryName(ScriptFile);
-        if (dir.IsNullOrEmpty())
-        {
-            ScriptFile = Path.Combine(Directory.GetCurrentDirectory(), ScriptFile);
-        }
-
+        Script = Guard.NotNull(parseResult.GetValueForArgument(FilePathArgument));
         StartupType = parseResult.GetValueForOption(StartupTypeOption) ?? string.Empty;
         EntryPoint = Guard.NotNull(parseResult.GetValueForOption(EntryPointOption));
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption)

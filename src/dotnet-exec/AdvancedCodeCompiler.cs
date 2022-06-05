@@ -43,7 +43,7 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
         var project = await workspace.OpenProjectAsync(projectPath, cancellationToken: execOptions.CancellationToken);
         var documentIds = project.Documents.Where(d =>
                 d.FilePath.IsNotNullOrEmpty()
-                && !d.FilePath.Equals(execOptions.ScriptFile)
+                && !d.FilePath.Equals(execOptions.Script)
                 && d.FilePath.EndsWith($"{Path.DirectorySeparatorChar}Program.cs"))
             .Select(d => d.Id)
             .ToImmutableArray();

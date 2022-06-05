@@ -39,14 +39,14 @@ public sealed class CommandHandler : ICommandHandler
 
     public async Task<int> Execute(ExecOptions options)
     {
-        if (options.ScriptFile.IsNullOrWhiteSpace())
+        if (options.Script.IsNullOrWhiteSpace())
         {
-            _logger.LogError("The file {ScriptFile} can not be empty", options.ScriptFile);
+            _logger.LogError("The file {ScriptFile} can not be empty", options.Script);
             return -1;
         }
 
         // fetch script
-        var fetchResult = await FetchScriptContent(options.ScriptFile, options.CancellationToken);
+        var fetchResult = await FetchScriptContent(options.Script, options.CancellationToken);
         if (!fetchResult.IsSuccess())
         {
             _logger.LogError(fetchResult.Msg);
@@ -85,11 +85,12 @@ public sealed class CommandHandler : ICommandHandler
 
     private async Task<Result<string>> FetchScriptContent(string scriptFile, CancellationToken cancellationToken)
     {
-        string sourceText;
         if (scriptFile.StartsWith("code:") || scriptFile.StartsWith("text:"))
         {
             return Result.Success<string>(scriptFile[5..]);
         }
+     
+        string sourceText;
         try
         {
             if (Uri.TryCreate(scriptFile, UriKind.Absolute, out var uri) && !uri.IsFile)

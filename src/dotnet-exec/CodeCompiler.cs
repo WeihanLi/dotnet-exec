@@ -24,7 +24,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
         var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, cancellationToken: execOptions.CancellationToken);
         if (string.IsNullOrEmpty(code))
         {
-            code = await File.ReadAllTextAsync(execOptions.ScriptFile, execOptions.CancellationToken);
+            code = await File.ReadAllTextAsync(execOptions.Script, execOptions.CancellationToken);
         }
         var scriptSyntaxTree = CSharpSyntaxTree.ParseText(code, parseOptions, cancellationToken: execOptions.CancellationToken);
 
@@ -71,9 +71,9 @@ internal sealed class AdhocWorkspaceCodeCompiler : ICodeCompiler
             loader: new PlainTextLoader(globalUsingCode));
 
         var scriptDocument = DocumentInfo.Create(DocumentId.CreateNewId(projectInfo.Id),
-            Path.GetFileNameWithoutExtension(execOptions.ScriptFile));
+            Path.GetFileNameWithoutExtension(execOptions.Script));
         scriptDocument = string.IsNullOrEmpty(code)
-            ? scriptDocument.WithFilePath(execOptions.ScriptFile)
+            ? scriptDocument.WithFilePath(execOptions.Script)
             : scriptDocument.WithTextLoader(new PlainTextLoader(code));
 
         var assemblyLocations = InternalHelper.ResolveFrameworkReferences(

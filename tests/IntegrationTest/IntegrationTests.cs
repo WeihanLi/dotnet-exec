@@ -43,7 +43,7 @@ public class IntegrationTests
 
         var execOptions = new ExecOptions()
         {
-            ScriptFile = fullPath,
+            Script = fullPath,
             Arguments = new[] { "--hello", "world" },
             IncludeWebReferences = true
         };
@@ -64,9 +64,21 @@ public class IntegrationTests
     public async Task RemoteScriptExecute(string fileUrl)
     {
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(new ExecOptions() { ScriptFile = fileUrl });
+        var result = await _handler.Execute(new ExecOptions() { Script = fileUrl });
         Assert.Equal(0, result);
         _outputHelper.WriteLine(output.StandardOutput);
+    }
+
+    [Theory]
+    [InlineData("code:Console.Write(\"Hello .NET\");")]
+    [InlineData("text:Console.Write(\"Hello .NET\");")]
+    public async Task CodeTextExecute(string code)
+    {
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(new ExecOptions() { Script = code });
+        Assert.Equal(0, result);
+        _outputHelper.WriteLine(output.StandardOutput);
+        Assert.Equal("Hello .NET", output.StandardOutput);
     }
 
     [Theory(Skip = "AssemblyLoadContext")]

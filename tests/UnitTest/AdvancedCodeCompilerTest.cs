@@ -29,7 +29,7 @@ public class AdvancedCodeCompilerTest
         var result = await codeCompiler.Compile(new ExecOptions()
         {
             ProjectPath = projectPath,
-            ScriptFile = scriptFile
+            Script = scriptFile
         }, string.Empty);
 
         if (result.Msg.IsNotNullOrEmpty())
