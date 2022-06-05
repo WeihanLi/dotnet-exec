@@ -89,7 +89,7 @@ public sealed class CommandHandler : ICommandHandler
         {
             return Result.Success<string>(scriptFile[5..]);
         }
-     
+
         string sourceText;
         try
         {
