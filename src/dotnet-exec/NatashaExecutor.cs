@@ -1,16 +1,20 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using Microsoft.Extensions.Logging;
 using System.Reflection;
 
 namespace Exec;
 
-public sealed class NatashaCodeExecutor: CodeExecutor
+public sealed class NatashaExecutor: CodeExecutor
 {
+    static NatashaExecutor()
+    {
+        NatashaInitializer.Preheating();
+    }
+    
     private readonly ILogger _logger;
 
-    public NatashaCodeExecutor(ILogger logger): base(logger)
+    public NatashaExecutor(ILogger logger): base(logger)
     {
         _logger = logger;
     }

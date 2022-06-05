@@ -71,7 +71,7 @@ public class IntegrationTests
 
     [Theory(Skip = "AssemblyLoadContext")]
     [InlineData("Console.WriteLine(\"Hello .NET\");")]
-    public async Task AssemblyLoadContextTest(string code)
+    public async Task AssemblyLoadContextExecutorTest(string code)
     {
         var options = new ExecOptions();
         var compiler = _compilerFactory.GetCompiler(options.CompilerType);
@@ -82,6 +82,26 @@ public class IntegrationTests
         Assert.NotNull(result.Data);
 
         var executor = new AssemblyLoadContextExecutor(NullLogger.Instance);
+        var executeResult = await executor.Execute(Guard.NotNull(result.Data), options);
+        if (executeResult.Msg.IsNotNullOrEmpty())
+            _outputHelper.WriteLine(executeResult.Msg);
+        Assert.True(executeResult.IsSuccess());
+    }
+    
+    
+    [Theory(Skip = "AssemblyLoadContext")]
+    [InlineData("Console.WriteLine(\"Hello .NET\");")]
+    public async Task NatashaExecutorTest(string code)
+    {
+        var options = new ExecOptions();
+        var compiler = _compilerFactory.GetCompiler(options.CompilerType);
+        var result = await compiler.Compile(options, code);
+        if (result.Msg.IsNotNullOrEmpty())
+            _outputHelper.WriteLine(result.Msg);
+        Assert.True(result.IsSuccess());
+        Assert.NotNull(result.Data);
+
+        var executor = new NatashaExecutor(NullLogger.Instance);
         var executeResult = await executor.Execute(Guard.NotNull(result.Data), options);
         if (executeResult.Msg.IsNotNullOrEmpty())
             _outputHelper.WriteLine(executeResult.Msg);

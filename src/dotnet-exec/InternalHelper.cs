@@ -34,7 +34,7 @@ internal static class InternalHelper
         services.AddSingleton<AdvancedCodeCompiler>();
         services.AddSingleton<ICompilerFactory, CompilerFactory>();
         services.AddSingleton<ICodeExecutor, CodeExecutor>();
-        services.AddSingleton<NatashaCodeExecutor>();
+        services.AddSingleton<NatashaExecutor>();
         services.AddSingleton<CommandHandler>();
         services.AddSingleton<HttpClient>();
         
