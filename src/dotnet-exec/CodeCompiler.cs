@@ -28,10 +28,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
         }
         var scriptSyntaxTree = CSharpSyntaxTree.ParseText(code, parseOptions, cancellationToken: execOptions.CancellationToken);
 
-        var assemblyLocations = InternalHelper.ResolveFrameworkReferences(
-                execOptions.IncludeWebReferences
-                    ? FrameworkName.Web
-                    : FrameworkName.Default, execOptions.TargetFramework)
+        var assemblyLocations = InternalHelper.ResolveFrameworkReferences(execOptions.IncludeWebReferences, execOptions.TargetFramework)
             .SelectMany(x => x)
             .Distinct()
             .ToArray();
@@ -76,10 +73,7 @@ internal sealed class AdhocWorkspaceCodeCompiler : ICodeCompiler
             ? scriptDocument.WithFilePath(execOptions.Script)
             : scriptDocument.WithTextLoader(new PlainTextLoader(code));
 
-        var assemblyLocations = InternalHelper.ResolveFrameworkReferences(
-                execOptions.IncludeWebReferences
-                    ? FrameworkName.Web
-                    : FrameworkName.Default, execOptions.TargetFramework)
+        var assemblyLocations = InternalHelper.ResolveFrameworkReferences(execOptions.IncludeWebReferences, execOptions.TargetFramework)
             .SelectMany(x => x)
             .Distinct()
             .ToArray();

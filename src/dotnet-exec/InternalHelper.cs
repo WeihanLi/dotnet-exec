@@ -208,7 +208,7 @@ internal static class InternalHelper
         => ResolveFrameworkReferences(includeWebReferences ? FrameworkName.Web : FrameworkName.Default, targetFramework,
             includeAdditionalReferences);
 
-    public static IEnumerable<string[]> ResolveFrameworkReferences(string frameworkName, string targetFramework,
+    private static IEnumerable<string[]> ResolveFrameworkReferences(string frameworkName, string targetFramework,
         bool includeAdditionalReferences = true)
     {
         var dependency = GetDependencyFramework(frameworkName);
