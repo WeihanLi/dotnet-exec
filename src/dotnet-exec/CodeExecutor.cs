@@ -79,13 +79,12 @@ public class CodeExecutor : ICodeExecutor
 
     }
 
-    public async Task<Result> Execute(CompileResult compileResult, ExecOptions options)
+    public virtual async Task<Result> Execute(CompileResult compileResult, ExecOptions options)
     {
         var assembly = await GetAssembly(compileResult, options);
         return await ExecuteAssembly(assembly, options);
     }
 }
-
 
 public sealed class AssemblyLoadContextExecutor : CodeExecutor
 {
