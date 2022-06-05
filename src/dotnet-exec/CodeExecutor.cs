@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using Microsoft.Extensions.Logging;
 using System.Reflection;
-using System.Runtime.Loader;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -25,7 +23,7 @@ public class CodeExecutor : ICodeExecutor
     protected virtual Task<Assembly> GetAssembly(CompileResult compileResult, ExecOptions options)
     {
         var assembly = Assembly.Load(compileResult.Stream.ToArray());
-        return Task.FromResult(assembly);   
+        return Task.FromResult(assembly);
     }
 
     private async Task<Result> ExecuteAssembly(Assembly assembly, ExecOptions options)
@@ -78,9 +76,9 @@ public class CodeExecutor : ICodeExecutor
         }
 
         return executed ? Result.Success() : Result.Fail("No valid EntryPoint found");
-    
+
     }
-    
+
     public async Task<Result> Execute(CompileResult compileResult, ExecOptions options)
     {
         var assembly = await GetAssembly(compileResult, options);

@@ -5,16 +5,16 @@ using System.Reflection;
 
 namespace Exec;
 
-public sealed class NatashaExecutor: CodeExecutor
+public sealed class NatashaExecutor : CodeExecutor
 {
     static NatashaExecutor()
     {
         NatashaInitializer.Preheating();
     }
-    
+
     private readonly ILogger _logger;
 
-    public NatashaExecutor(ILogger logger): base(logger)
+    public NatashaExecutor(ILogger logger) : base(logger)
     {
         _logger = logger;
     }

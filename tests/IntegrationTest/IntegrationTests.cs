@@ -87,8 +87,8 @@ public class IntegrationTests
             _outputHelper.WriteLine(executeResult.Msg);
         Assert.True(executeResult.IsSuccess());
     }
-    
-    
+
+
     [Theory(Skip = "AssemblyLoadContext")]
     [InlineData("Console.WriteLine(\"Hello .NET\");")]
     public async Task NatashaExecutorTest(string code)

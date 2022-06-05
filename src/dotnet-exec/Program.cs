@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using Microsoft.Extensions.DependencyInjection;
-
 var command = new Command("dotnet-exec");
 foreach (var item in ExecOptions.GetArguments())
 {

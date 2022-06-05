@@ -1,11 +1,7 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using Microsoft.CodeAnalysis;
-using Microsoft.Extensions.Logging;
 using System.CommandLine.Invocation;
-using System.Reflection;
-using System.Runtime.Loader;
 using System.Text.Json;
 using WeihanLi.Common.Models;
 
@@ -63,7 +59,7 @@ public sealed class CommandHandler : ICommandHandler
             _logger.LogError(fetchResult.Msg);
             return -1;
         }
-        
+
         // compile assembly
         var sourceText = fetchResult.Data;
         var compiler = _compilerFactory.GetCompiler(options.CompilerType);

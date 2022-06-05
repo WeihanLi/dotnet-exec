@@ -4,8 +4,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -37,7 +35,7 @@ internal static class InternalHelper
         services.AddSingleton<NatashaExecutor>();
         services.AddSingleton<CommandHandler>();
         services.AddSingleton<HttpClient>();
-        
+
         return services;
     }
 

@@ -5,7 +5,6 @@ using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.MSBuild;
-using Microsoft.Extensions.Logging;
 using System.Collections.Immutable;
 using WeihanLi.Common.Models;
 
@@ -51,8 +50,8 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
 
         project = project.RemoveDocuments(documentIds);
 
-        var compilationOptions = project.CompilationOptions?.WithOutputKind(OutputKind.ConsoleApplication) 
-                                 ?? new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel:execOptions.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
+        var compilationOptions = project.CompilationOptions?.WithOutputKind(OutputKind.ConsoleApplication)
+                                 ?? new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: execOptions.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
         compilationOptions.EnableReferencesSupersedeLowerVersions();
 
         var compilation = await project.WithCompilationOptions(compilationOptions).GetCompilationAsync(execOptions.CancellationToken);
