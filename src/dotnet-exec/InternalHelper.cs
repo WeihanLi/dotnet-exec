@@ -119,6 +119,8 @@ internal static class InternalHelper
             yield return "WeihanLi.Common";
             yield return "WeihanLi.Common.Logging";
             yield return "WeihanLi.Common.Helpers";
+            yield return "WeihanLi.Extensions";
+            yield return "WeihanLi.Extensions.Dump";
         }
     }
 
