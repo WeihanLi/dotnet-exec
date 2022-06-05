@@ -7,10 +7,8 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.2.0" />
     <PackageVersion Include="Microsoft.Build.Locator" Version="1.4.1" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.0-preview.4.22229.4" />
     <PackageVersion Include="DotNetCore.Natasha.CSharp" Version="4.2.0" />
-    <PackageVersion Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="WeihanLi.Common" Version="1.0.52" />
   </ItemGroup>
   <ItemGroup>

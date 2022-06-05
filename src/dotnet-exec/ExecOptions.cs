@@ -38,11 +38,10 @@ public sealed class ExecOptions
     private static readonly Option<string> ArgumentsOption =
         new(new[] { "--args", "--arguments" }, "Input arguments");
 
-    private static readonly Option DebugOption = new("--debug", "Enable debug logs for debugging purpose");
+    private static readonly Option<bool> DebugOption = new("--debug", "Enable debug logs for debugging purpose");
     private static readonly Option<string> ProjectOption = new("--project", "Project file path");
-    private static readonly Option AdvancedOption = new(new[] { "-a", "--advanced" }, "Advanced mode");
-    private static readonly Option WebReferencesOption = new(new[] { "-w", "--web" }, "Reference web mode");
-
+    private static readonly Option<bool> AdvancedOption = new(new[] { "-a", "--advanced" }, "Advanced mode");
+    private static readonly Option<bool> WebReferencesOption = new(new[] { "-w", "--web" }, () => true, "Reference web mode");
 
     static ExecOptions()
     {

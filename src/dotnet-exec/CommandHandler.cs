@@ -25,19 +25,12 @@ public sealed class CommandHandler : ICommandHandler
 
     public async Task<int> InvokeAsync(InvocationContext context)
     {
-        using var cts = new CancellationTokenSource();
-        Console.CancelKeyPress += (_, _) =>
-        {
-            // ReSharper disable once AccessToDisposedClosure
-            cts.Cancel();
-            Thread.Sleep(1000);
-        };
         var parseResult = context.ParseResult;
 
         // 1. options binding
         var options = new ExecOptions();
         options.BindCommandLineArguments(parseResult);
-        options.CancellationToken = cts.Token;
+        options.CancellationToken = context.GetCancellationToken();
 
         _logger.LogDebug("options: {options}", JsonSerializer.Serialize(options));
 
@@ -132,4 +125,6 @@ public sealed class CommandHandler : ICommandHandler
 
         return Result.Success<string>(sourceText);
     }
+
+    public int Invoke(InvocationContext context) => InvokeAsync(context).GetAwaiter().GetResult();
 }
