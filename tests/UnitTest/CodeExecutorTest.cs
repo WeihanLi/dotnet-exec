@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using Microsoft.Extensions.Logging.Abstractions;
-using System.Reflection;
 using WeihanLi.Common.Models;
 using Xunit.Abstractions;
 
@@ -32,8 +31,7 @@ public class CodeExecutorTest
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);
         var executor = new CodeExecutor(NullLogger.Instance);
-        var assembly = Assembly.Load(result.Data.Stream.ToByteArray());
-        var executeResult = await executor.Execute(assembly, execOptions);
+        var executeResult = await executor.Execute(result.Data, execOptions);
         _outputHelper.WriteLine($"{executeResult.Msg}");
         Assert.True(executeResult.IsSuccess());
     }
@@ -67,8 +65,7 @@ internal class SomeTest
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);
         var executor = new CodeExecutor(NullLogger.Instance);
-        var assembly = Assembly.Load(result.Data.Stream.ToByteArray());
-        var executeResult = await executor.Execute(assembly, execOptions);
+        var executeResult = await executor.Execute(result.Data, execOptions);
         _outputHelper.WriteLine($"{executeResult.Msg}");
         Assert.True(executeResult.IsSuccess());
     }

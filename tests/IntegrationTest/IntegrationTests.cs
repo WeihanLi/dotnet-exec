@@ -33,6 +33,7 @@ public class IntegrationTests
     [InlineData("TopLevelSample")]
     [InlineData("HostApplicationBuilderSample")]
     [InlineData("DumpAssemblyInfoSample")]
+    [InlineData("WebApiSample")]
     public async Task SamplesTest(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
@@ -80,11 +81,10 @@ public class IntegrationTests
         Assert.NotNull(result.Data);
 
         var assemblyLoadContext = new CustomLoadContext(Guard.NotNull(result.Data).References);
-        result.Data.Stream.Seek(0, SeekOrigin.Begin);
         var assembly = assemblyLoadContext.LoadFromStream(result.Data.Stream);
         Assert.NotNull(assembly);
 
-        var executeResult = await _executor.Execute(assembly, options);
+        var executeResult = await _executor.Execute(result.Data, options);
         if (executeResult.Msg.IsNotNullOrEmpty())
             _outputHelper.WriteLine(executeResult.Msg);
         Assert.True(executeResult.IsSuccess());

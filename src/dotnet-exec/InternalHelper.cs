@@ -34,33 +34,40 @@ internal static class InternalHelper
         services.AddSingleton<AdvancedCodeCompiler>();
         services.AddSingleton<ICompilerFactory, CompilerFactory>();
         services.AddSingleton<ICodeExecutor, CodeExecutor>();
+        services.AddSingleton<NatashaCodeExecutor>();
         services.AddSingleton<CommandHandler>();
         services.AddSingleton<HttpClient>();
-
+        
         return services;
     }
 
-    public static async Task<Result<CompileResult>> GetCompilationAssemblyResult(this Compilation compilation, CancellationToken cancellationToken = default)
+    public static async Task<Result<CompileResult>> GetCompilationAssemblyResult(this Compilation compilation,
+        CancellationToken cancellationToken = default)
     {
         var result = await GetCompilationResult(compilation, cancellationToken);
         if (result.EmitResult.Success)
         {
             var references = compilation.References.OfType<PortableExecutableReference>()
-                .Where(x => x.FilePath.IsNotNullOrEmpty() && File.Exists(x.FilePath))
+                .Where(x => x.FilePath.IsNotNullOrEmpty())
                 .Select(r => r.FilePath!)
                 .ToArray();
-            return Result.Success(new CompileResult(result.Compilation, result.EmitResult, Guard.NotNull(result.Assembly), references));
+            Guard.NotNull(result.Assembly).Seek(0, SeekOrigin.Begin);
+            return Result.Success(new CompileResult(result.Compilation, result.EmitResult,
+                result.Assembly, references));
         }
+
         var error = new StringBuilder();
         foreach (var diag in result.EmitResult.Diagnostics)
         {
             var message = CSharpDiagnosticFormatter.Instance.Format(diag);
             error.AppendLine($"{diag.Id}-{diag.Severity}-{message}");
         }
+
         return Result.Fail<CompileResult>(error.ToString(), ResultStatus.ProcessFail);
     }
 
-    private static async Task<(Compilation Compilation, EmitResult EmitResult, MemoryStream? Assembly)> GetCompilationResult(Compilation compilation, CancellationToken cancellationToken = default)
+    private static async Task<(Compilation Compilation, EmitResult EmitResult, MemoryStream? Assembly)>
+        GetCompilationResult(Compilation compilation, CancellationToken cancellationToken = default)
     {
         await Task.CompletedTask;
 
@@ -71,7 +78,7 @@ internal static class InternalHelper
             return (compilation, emitResult, ms);
         }
 
-        if (emitResult.Diagnostics.Any(d => InternalHelper.SpecialConsoleDiagnosticIds.Contains(d.Id)))
+        if (emitResult.Diagnostics.Any(d => SpecialConsoleDiagnosticIds.Contains(d.Id)))
         {
             ms.Seek(0, SeekOrigin.Begin);
             ms.SetLength(0);
@@ -81,6 +88,7 @@ internal static class InternalHelper
                 .Emit(ms, cancellationToken: cancellationToken);
             return (compilation, emitResult, emitResult.Success ? ms : null);
         }
+
         return (compilation, emitResult, null);
     }
 
@@ -124,7 +132,8 @@ internal static class InternalHelper
 
     public static string GetDotnetPath()
     {
-        var commandNameWithExtension = $"dotnet{(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : string.Empty)}";
+        var commandNameWithExtension =
+            $"dotnet{(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : string.Empty)}";
         var searchPaths = Guard.NotNull(Environment.GetEnvironmentVariable("PATH"))
             .Split(new[] { Path.PathSeparator }, options: StringSplitOptions.RemoveEmptyEntries)
             .Select(p => p.Trim('"'))
@@ -162,6 +171,7 @@ internal static class InternalHelper
     }
 
     private static string _dotnetDirectory = string.Empty;
+
     private static string DotnetDirectory
     {
         get
@@ -170,6 +180,7 @@ internal static class InternalHelper
             {
                 return _dotnetDirectory;
             }
+
             _dotnetDirectory = GetDotnetDirectory();
             return _dotnetDirectory;
         }
@@ -194,22 +205,25 @@ internal static class InternalHelper
         };
     }
 
-    public static IEnumerable<string[]> ResolveFrameworkReferences(string frameworkName, string targetFramework, bool includeAdditionalReferences = true)
+    public static IEnumerable<string[]> ResolveFrameworkReferences(bool includeWebReferences, string targetFramework,
+        bool includeAdditionalReferences = true)
+        => ResolveFrameworkReferences(includeWebReferences ? FrameworkName.Web : FrameworkName.Default, targetFramework,
+            includeAdditionalReferences);
+
+    public static IEnumerable<string[]> ResolveFrameworkReferences(string frameworkName, string targetFramework,
+        bool includeAdditionalReferences = true)
     {
         var dependency = GetDependencyFramework(frameworkName);
         if (!string.IsNullOrEmpty(dependency))
         {
             yield return ResolveFrameworkReferencesInternal(dependency, targetFramework);
         }
+
         yield return ResolveFrameworkReferencesInternal(frameworkName, targetFramework);
 
         if (includeAdditionalReferences)
         {
-            yield return new[]
-            {
-                typeof(Guard).Assembly.Location,
-                typeof(JsonConvert).Assembly.Location
-            };
+            yield return new[] { typeof(Guard).Assembly.Location, typeof(JsonConvert).Assembly.Location };
         }
     }
 

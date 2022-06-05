@@ -35,7 +35,8 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
             .SelectMany(x => x)
             .Distinct()
             .ToArray();
-        var references = assemblyLocations.Select(l => MetadataReference.CreateFromFile(l));
+        var references = assemblyLocations
+            .Select(l => MetadataReference.CreateFromFile(l, MetadataReferenceProperties.Assembly));
 
         var compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication,
             optimizationLevel: execOptions.Configuration, nullableContextOptions: NullableContextOptions.Annotations);

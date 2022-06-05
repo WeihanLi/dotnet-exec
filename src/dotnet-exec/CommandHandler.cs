@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using System.CommandLine.Invocation;
+using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
 using WeihanLi.Common.Models;
@@ -16,7 +18,8 @@ public sealed class CommandHandler : ICommandHandler
     private readonly ICodeExecutor _executor;
     private readonly HttpClient _httpClient;
 
-    public CommandHandler(ILogger logger, ICompilerFactory compilerFactory, ICodeExecutor executor, HttpClient httpClient)
+    public CommandHandler(ILogger logger, ICompilerFactory compilerFactory, ICodeExecutor executor,
+        HttpClient httpClient)
     {
         _logger = logger;
         _compilerFactory = compilerFactory;
@@ -60,10 +63,9 @@ public sealed class CommandHandler : ICommandHandler
             _logger.LogError(fetchResult.Msg);
             return -1;
         }
-
-        var sourceText = fetchResult.Data;
-
+        
         // compile assembly
+        var sourceText = fetchResult.Data;
         var compiler = _compilerFactory.GetCompiler(options.CompilerType);
         var compileResult = await compiler.Compile(options, sourceText);
         if (!compileResult.IsSuccess())
@@ -71,20 +73,12 @@ public sealed class CommandHandler : ICommandHandler
             _logger.LogError($"Compile error:{Environment.NewLine}{compileResult.Msg}");
             return -2;
         }
+
         Guard.NotNull(compileResult.Data);
-
         // execute
-        var assemblyLoadContext =
-                // new CustomLoadContext(compileResult.Data.References)
-                new AssemblyLoadContext(InternalHelper.ApplicationName)
-            ;
-        compileResult.Data.Stream.Seek(0, SeekOrigin.Begin);
-        var assembly = assemblyLoadContext.LoadFromStream(compileResult.Data.Stream);
-
         try
         {
-            using var scope = assemblyLoadContext.EnterContextualReflection();
-            var executeResult = await _executor.Execute(assembly, options);
+            var executeResult = await _executor.Execute(compileResult.Data, options);
             if (!executeResult.IsSuccess())
             {
                 _logger.LogError($"Execute error:{Environment.NewLine}{executeResult.Msg}");
@@ -103,6 +97,10 @@ public sealed class CommandHandler : ICommandHandler
     private async Task<Result<string>> FetchScriptContent(string scriptFile, CancellationToken cancellationToken)
     {
         string sourceText;
+        if (scriptFile.StartsWith("code:") || scriptFile.StartsWith("text:"))
+        {
+            return Result.Success<string>(scriptFile[5..]);
+        }
         try
         {
             if (Uri.TryCreate(scriptFile, UriKind.Absolute, out var uri) && !uri.IsFile)
@@ -114,8 +112,8 @@ public sealed class CommandHandler : ICommandHandler
                         .Replace("/blob/", "/")
                         .Replace("/tree/", "/"),
                     "gist.github.com" => scriptFile
-                        .Replace($"://{uri.Host}/", $"://gist.githubusercontent.com/")
-                        + "/raw",
+                                             .Replace($"://{uri.Host}/", $"://gist.githubusercontent.com/")
+                                         + "/raw",
                     _ => scriptFile
                 };
                 sourceText = await _httpClient.GetStringAsync(scriptUrl, cancellationToken);

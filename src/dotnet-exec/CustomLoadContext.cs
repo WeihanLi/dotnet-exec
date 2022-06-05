@@ -11,7 +11,7 @@ public sealed class CustomLoadContext : AssemblyLoadContext
 {
     private readonly Dictionary<string, string> _assemblyPaths;
 
-    public CustomLoadContext(string[] assemblyPaths)
+    public CustomLoadContext(IEnumerable<string> assemblyPaths) : base(InternalHelper.ApplicationName)
     {
         _assemblyPaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var assemblyPath in assemblyPaths)
@@ -25,9 +25,11 @@ public sealed class CustomLoadContext : AssemblyLoadContext
     protected override Assembly? Load(AssemblyName assemblyName)
     {
         if (assemblyName.Name != null
-            && _assemblyPaths.TryGetValue(assemblyName.Name, out var assemblyPath))
+            && _assemblyPaths.TryGetValue(assemblyName.Name, out var assemblyPath)
+            )
         {
             return LoadFromAssemblyPath(assemblyPath);
+            // return Assembly.LoadFile(assemblyPath);
         }
         return null;
     }
