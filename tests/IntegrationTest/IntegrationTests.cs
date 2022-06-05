@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using Microsoft.Extensions.Logging.Abstractions;
 using WeihanLi.Common.Models;
 using Xunit.Abstractions;
 
@@ -80,11 +81,8 @@ public class IntegrationTests
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
 
-        var assemblyLoadContext = new CustomLoadContext(Guard.NotNull(result.Data).References);
-        var assembly = assemblyLoadContext.LoadFromStream(result.Data.Stream);
-        Assert.NotNull(assembly);
-
-        var executeResult = await _executor.Execute(result.Data, options);
+        var executor = new AssemblyLoadContextExecutor(NullLogger.Instance);
+        var executeResult = await executor.Execute(Guard.NotNull(result.Data), options);
         if (executeResult.Msg.IsNotNullOrEmpty())
             _outputHelper.WriteLine(executeResult.Msg);
         Assert.True(executeResult.IsSuccess());
