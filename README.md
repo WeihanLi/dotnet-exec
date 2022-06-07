@@ -36,6 +36,13 @@ Execute remote file:
 dotnet-exec https://github.com/WeihanLi/SamplesInPractice/blob/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs
 ```
 
+Execute raw code:
+
+``` sh
+dotnet-exec 'code:Console.WriteLine(1+1);'
+```
+
+
 ## More
 
 ### LanguageVersion
