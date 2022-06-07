@@ -8,7 +8,7 @@
 
 ## Intro
 
-`dotnet-exec` is a command line tool for executing C# program with custom entry point
+`dotnet-exec` is a command line tool for executing C# program without a project file, and you can have custom entry point other than `Main` method
 
 ## Install
 
@@ -42,7 +42,6 @@ Execute raw code:
 dotnet-exec 'code:Console.WriteLine(1+1);'
 ```
 
-
 ## More
 
 ### LanguageVersion
@@ -60,7 +59,3 @@ By default, it would use `net7.0` if you've installed .NET 7 SDK, otherwise use 
 ### CompilerType
 
 By default, it would use the `SimpleCodeCompiler` to compile the code, you can customize with the `--compiler-type` option, and you can use `-a`/`--advanced` for `--compiler-type=advanced`
-
-### Web Framework
-
-By default, the compiler would include the default framework `Microsoft.NETCore.App` reference, if you want to include the `Microsoft.AspNetCore.App` framework reference, you can use the `-w`/`--web` option
