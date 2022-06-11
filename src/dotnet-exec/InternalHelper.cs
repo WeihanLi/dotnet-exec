@@ -119,7 +119,7 @@ internal static class InternalHelper
             // Include Windows Desktop SDK for Windows only
             yield return "System.Windows.Forms";
         }
-        
+
         if (includeAdditional)
         {
             yield return "WeihanLi.Common";
@@ -223,7 +223,7 @@ internal static class InternalHelper
         {
             yield return new[]
             {
-                typeof(Guard).Assembly.Location, 
+                typeof(Guard).Assembly.Location,
                 typeof(JsonConvert).Assembly.Location
             };
         }

@@ -8,13 +8,13 @@ namespace Exec;
 
 public partial class ExecOptions
 {
-     internal const string DefaultTargetFramework =
+    internal const string DefaultTargetFramework =
 #if NET7_0
       "net7.0"
 #else
-            "net6.0"
+           "net6.0"
 #endif
-        ;
+       ;
 
     private static readonly Argument<string> FilePathArgument = new("script", "CSharp program to execute");
 
@@ -53,7 +53,7 @@ public partial class ExecOptions
     {
         CompilerTypeOption.AddCompletions("advanced", "workspace", "default");
     }
-    
+
     public void BindCommandLineArguments(ParseResult parseResult)
     {
         Script = Guard.NotNull(parseResult.GetValueForArgument(FilePathArgument));
