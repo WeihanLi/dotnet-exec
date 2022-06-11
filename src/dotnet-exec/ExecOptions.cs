@@ -42,6 +42,10 @@ public sealed class ExecOptions
     private static readonly Option<string> ProjectOption = new("--project", "Project file path");
     private static readonly Option<bool> AdvancedOption = new(new[] { "-a", "--advanced" }, "Advanced mode");
     private static readonly Option<bool> WebReferencesOption = new(new[] { "-w", "--web" }, () => true, "Reference web mode");
+    private static readonly Option<string[]> AdditionalReferencesOption = new(new[] { "-r", "--reference" }, "Additional references")
+    {
+        Arity = ArgumentArity.ZeroOrMore
+    };
 
     static ExecOptions()
     {
@@ -60,6 +64,8 @@ public sealed class ExecOptions
     public string ProjectPath { get; set; } = string.Empty;
 
     public bool IncludeWebReferences { get; set; }
+
+    public string[]? AdditionalReferences { get; set; }
 
     public LanguageVersion LanguageVersion { get; set; }
     public OptimizationLevel Configuration { get; set; }
@@ -86,6 +92,7 @@ public sealed class ExecOptions
         yield return AdvancedOption;
         yield return WebReferencesOption;
         yield return CompilerTypeOption;
+        yield return AdditionalReferencesOption;
     }
 
     public void BindCommandLineArguments(ParseResult parseResult)
@@ -106,5 +113,6 @@ public sealed class ExecOptions
         {
             CompilerType = "advanced";
         }
+        AdditionalReferences = parseResult.GetValueForOption(AdditionalReferencesOption);
     }
 }
