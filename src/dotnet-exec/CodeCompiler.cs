@@ -20,7 +20,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
         var assemblyName = $"{projectName}.dll";
 
         var parseOptions = new CSharpParseOptions(execOptions.LanguageVersion);
-        var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions.IncludeWebReferences);
+        var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions.IncludeWideReferences);
         var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, cancellationToken: execOptions.CancellationToken);
         if (string.IsNullOrEmpty(code))
         {
@@ -28,7 +28,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
         }
         var scriptSyntaxTree = CSharpSyntaxTree.ParseText(code, parseOptions, cancellationToken: execOptions.CancellationToken);
 
-        var assemblyLocations = InternalHelper.ResolveFrameworkReferences(execOptions.IncludeWebReferences, execOptions.TargetFramework)
+        var assemblyLocations = InternalHelper.ResolveFrameworkReferences(execOptions.TargetFramework, execOptions.IncludeWideReferences)
             .SelectMany(x => x)
             .Distinct()
             .ToArray();
@@ -61,7 +61,7 @@ internal sealed class AdhocWorkspaceCodeCompiler : ICodeCompiler
             assemblyName,
             LanguageNames.CSharp);
 
-        var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions.IncludeWebReferences);
+        var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions.IncludeWideReferences);
         var globalUsingDocument = DocumentInfo.Create(
             DocumentId.CreateNewId(projectInfo.Id, "__GlobalUsings"),
             "__GlobalUsings",
@@ -73,7 +73,7 @@ internal sealed class AdhocWorkspaceCodeCompiler : ICodeCompiler
             ? scriptDocument.WithFilePath(execOptions.Script)
             : scriptDocument.WithTextLoader(new PlainTextLoader(code));
 
-        var assemblyLocations = InternalHelper.ResolveFrameworkReferences(execOptions.IncludeWebReferences, execOptions.TargetFramework)
+        var assemblyLocations = InternalHelper.ResolveFrameworkReferences(execOptions.TargetFramework, execOptions.IncludeWideReferences)
             .SelectMany(x => x)
             .Distinct()
             .ToArray();

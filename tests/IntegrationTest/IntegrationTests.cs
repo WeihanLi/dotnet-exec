@@ -45,7 +45,7 @@ public class IntegrationTests
         {
             Script = fullPath,
             Arguments = new[] { "--hello", "world" },
-            IncludeWebReferences = true
+            IncludeWideReferences = true
         };
 
         using var output = await ConsoleOutput.CaptureAsync();

@@ -26,7 +26,7 @@ internal static class InternalHelper
             builder.SetMinimumLevel(args.Contains("--debug") ? LogLevel.Debug : LogLevel.Error);
         });
         services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>()
-            .CreateLogger("dotnet-exec"));
+            .CreateLogger(ApplicationName));
         services.AddSingleton<SimpleCodeCompiler>();
         services.AddSingleton<AdhocWorkspaceCodeCompiler>();
         services.AddSingleton<AdvancedCodeCompiler>();
@@ -90,8 +90,10 @@ internal static class InternalHelper
         return (compilation, emitResult, null);
     }
 
-    private static IEnumerable<string> GetGlobalUsings(bool includeWebReferences, bool includeAdditional)
+    // https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview#implicit-using-directives
+    private static IEnumerable<string> GetGlobalUsings(bool includeAdditional)
     {
+        // Default SDK
         yield return "System";
         yield return "System.Collections.Generic";
         yield return "System.IO";
@@ -101,19 +103,23 @@ internal static class InternalHelper
         yield return "System.Threading";
         yield return "System.Threading.Tasks";
 
-        if (includeWebReferences)
-        {
-            yield return "System.Net.Http.Json";
-            yield return "Microsoft.AspNetCore.Builder";
-            yield return "Microsoft.AspNetCore.Hosting";
-            yield return "Microsoft.AspNetCore.Http";
-            yield return "Microsoft.AspNetCore.Routing";
-            yield return "Microsoft.Extensions.Configuration";
-            yield return "Microsoft.Extensions.DependencyInjection";
-            yield return "Microsoft.Extensions.Hosting";
-            yield return "Microsoft.Extensions.Logging";
-        }
+        // Web
+        yield return "System.Net.Http.Json";
+        yield return "Microsoft.AspNetCore.Builder";
+        yield return "Microsoft.AspNetCore.Hosting";
+        yield return "Microsoft.AspNetCore.Http";
+        yield return "Microsoft.AspNetCore.Routing";
+        yield return "Microsoft.Extensions.Configuration";
+        yield return "Microsoft.Extensions.DependencyInjection";
+        yield return "Microsoft.Extensions.Hosting";
+        yield return "Microsoft.Extensions.Logging";
 
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Include Windows Desktop SDK for Windows only
+            yield return "System.Windows.Forms";
+        }
+        
         if (includeAdditional)
         {
             yield return "WeihanLi.Common";
@@ -124,9 +130,9 @@ internal static class InternalHelper
         }
     }
 
-    public static string GetGlobalUsingsCodeText(bool includeWebReferences, bool includeAdditional = true)
+    public static string GetGlobalUsingsCodeText(bool includeAdditional = true)
     {
-        return GetGlobalUsings(includeWebReferences, includeAdditional)
+        return GetGlobalUsings(includeAdditional)
             .Select(u => $"global using {u};").StringJoin(Environment.NewLine);
     }
 
@@ -196,34 +202,30 @@ internal static class InternalHelper
         };
     }
 
-    private static string? GetDependencyFramework(string frameworkName)
+    private static IEnumerable<string> GetDependencyFrameworks()
     {
-        return frameworkName switch
+        yield return "Microsoft.NETCore.App";
+        yield return "Microsoft.AspNetCore.App";
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            "Microsoft.NETCore.App" => null,
-            _ => "Microsoft.NETCore.App"
-        };
+            yield return "Microsoft.WindowsDesktop.App";
+        }
     }
 
-    public static IEnumerable<string[]> ResolveFrameworkReferences(bool includeWebReferences, string targetFramework,
-        bool includeAdditionalReferences = true)
-        => ResolveFrameworkReferences(includeWebReferences ? FrameworkName.Web : FrameworkName.Default, targetFramework,
-            includeAdditionalReferences);
-
-    private static IEnumerable<string[]> ResolveFrameworkReferences(string frameworkName, string targetFramework,
+    public static IEnumerable<string[]> ResolveFrameworkReferences(string targetFramework,
         bool includeAdditionalReferences = true)
     {
-        var dependency = GetDependencyFramework(frameworkName);
-        if (!string.IsNullOrEmpty(dependency))
+        foreach (var frameworkName in GetDependencyFrameworks())
         {
-            yield return ResolveFrameworkReferencesInternal(dependency, targetFramework);
+            yield return ResolveFrameworkReferencesInternal(frameworkName, targetFramework);
         }
-
-        yield return ResolveFrameworkReferencesInternal(frameworkName, targetFramework);
-
         if (includeAdditionalReferences)
         {
-            yield return new[] { typeof(Guard).Assembly.Location, typeof(JsonConvert).Assembly.Location };
+            yield return new[]
+            {
+                typeof(Guard).Assembly.Location, 
+                typeof(JsonConvert).Assembly.Location
+            };
         }
     }
 
