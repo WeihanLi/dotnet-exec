@@ -196,19 +196,19 @@ internal static class InternalHelper
     {
         return frameworkName switch
         {
-            "Microsoft.AspNetCore.App" => "Microsoft.AspNetCore.App.Ref",
-            "Microsoft.WindowsDesktop.App" => "Microsoft.WindowsDesktop.App.Ref",
+            FrameworkName.Web => "Microsoft.AspNetCore.App.Ref",
+            FrameworkName.WindowsDesktop => "Microsoft.WindowsDesktop.App.Ref",
             _ => "Microsoft.NETCore.App.Ref"
         };
     }
 
     private static IEnumerable<string> GetDependencyFrameworks()
     {
-        yield return "Microsoft.NETCore.App";
-        yield return "Microsoft.AspNetCore.App";
+        yield return FrameworkName.Default;
+        yield return FrameworkName.Web;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            yield return "Microsoft.WindowsDesktop.App";
+            yield return FrameworkName.WindowsDesktop;
         }
     }
 
@@ -258,4 +258,6 @@ internal static class FrameworkName
     public const string Default = "Microsoft.NETCore.App";
 
     public const string Web = "Microsoft.AspNetCore.App";
+
+    public const string WindowsDesktop = "Microsoft.WindowsDesktop.App";
 }
