@@ -27,6 +27,7 @@ public class CodeExecutorTest
             Arguments = new[] { "--hello", "world" }
         };
         var result = await _compiler.Compile(execOptions, code);
+        _outputHelper.WriteLine($"{result.Msg}");
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);

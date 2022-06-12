@@ -20,7 +20,7 @@ public sealed class AdhocWorkspaceCodeCompiler : ICodeCompiler
             assemblyName,
             LanguageNames.CSharp);
 
-        var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions.IncludeWideReferences);
+        var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions);
         var globalUsingDocument = DocumentInfo.Create(
             DocumentId.CreateNewId(projectInfo.Id, "__GlobalUsings"),
             "__GlobalUsings",
@@ -32,9 +32,7 @@ public sealed class AdhocWorkspaceCodeCompiler : ICodeCompiler
             ? scriptDocument.WithFilePath(execOptions.Script)
             : scriptDocument.WithTextLoader(new PlainTextLoader(code));
 
-        var assemblyLocations = InternalHelper.ResolveFrameworkReferences(execOptions.TargetFramework, execOptions.IncludeWideReferences)
-            .SelectMany(x => x)
-            .Distinct()
+        var assemblyLocations = InternalHelper.ResolveReferences(execOptions)
             .ToArray();
 
         var references = assemblyLocations.Select(l => MetadataReference.CreateFromFile(l));

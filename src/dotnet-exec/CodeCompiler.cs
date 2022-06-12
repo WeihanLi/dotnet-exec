@@ -20,21 +20,15 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
         var assemblyName = $"{projectName}.dll";
 
         var parseOptions = new CSharpParseOptions(execOptions.LanguageVersion);
-        var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions.IncludeWideReferences);
+        var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions);
         var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, cancellationToken: execOptions.CancellationToken);
         if (string.IsNullOrEmpty(code))
         {
             code = await File.ReadAllTextAsync(execOptions.Script, execOptions.CancellationToken);
         }
         var scriptSyntaxTree = CSharpSyntaxTree.ParseText(code, parseOptions, cancellationToken: execOptions.CancellationToken);
-
-        var assemblyLocations = InternalHelper.ResolveFrameworkReferences(execOptions.TargetFramework, execOptions.IncludeWideReferences)
-            .SelectMany(x => x)
-            .Distinct()
-            .ToArray();
-        var references = assemblyLocations
+        var references = InternalHelper.ResolveReferences(execOptions)
             .Select(l => MetadataReference.CreateFromFile(l, MetadataReferenceProperties.Assembly));
-
         var compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication,
             optimizationLevel: execOptions.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
         compilationOptions.EnableReferencesSupersedeLowerVersions();

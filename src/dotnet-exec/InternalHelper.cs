@@ -134,10 +134,29 @@ internal static class InternalHelper
         }
     }
 
-    public static string GetGlobalUsingsCodeText(bool includeAdditional = true)
+    public static string GetGlobalUsingsCodeText(ExecOptions execOptions)
     {
-        return GetGlobalUsings(includeAdditional)
-            .Select(u => $"global using {u};").StringJoin(Environment.NewLine);
+        var usings = new HashSet<string>(GetGlobalUsings(execOptions.IncludeWideReferences));
+        if (execOptions.Usings.HasValue())
+        {
+            foreach (var @using in execOptions.Usings)
+            {
+                if (@using.StartsWith('-'))
+                {
+                    usings.Remove(@using[1..]);
+                }
+                else
+                {
+                    usings.Add(@using);
+                }
+            }
+        }
+
+        var usingText = usings.Select(x => $"global using {x};").StringJoin(Environment.NewLine);
+        if (execOptions.LanguageVersion != LanguageVersion.Preview)
+            return usingText;
+        // Generate System.Runtime.Versioning.RequiresPreviewFeatures attribute on assembly level
+        return $"{usingText}{Environment.NewLine}[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]";
     }
 
     public static string GetDotnetPath()
@@ -216,20 +235,26 @@ internal static class InternalHelper
         }
     }
 
-    public static IEnumerable<string[]> ResolveFrameworkReferences(string targetFramework,
+    public static IEnumerable<string> ResolveReferences(ExecOptions execOptions)
+    {
+        // TODO: handle execOptions.AdditionalReferences
+        return ResolveFrameworkReferences(execOptions.TargetFramework, execOptions.IncludeWideReferences)
+            .SelectMany(_ => _)
+            .Distinct()
+            ;
+    }
+
+    private static IEnumerable<string[]> ResolveFrameworkReferences(string targetFramework,
         bool includeAdditionalReferences = true)
     {
         foreach (var frameworkName in GetDependencyFrameworks())
         {
             yield return ResolveFrameworkReferencesInternal(frameworkName, targetFramework);
         }
+
         if (includeAdditionalReferences)
         {
-            yield return new[]
-            {
-                typeof(Guard).Assembly.Location,
-                typeof(JsonConvert).Assembly.Location
-            };
+            yield return new[] { typeof(Guard).Assembly.Location, typeof(JsonConvert).Assembly.Location };
         }
     }
 
