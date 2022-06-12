@@ -8,12 +8,20 @@
 
 ## Intro
 
-`dotnet-exec` is a command line tool for executing C# program without a project file, and you can have custom entry point other than `Main` method
+`dotnet-exec` is a command line tool for executing C# program without a project file, and you can have your custom entry point other than `Main` method
 
 ## Install
 
+Latest stable version:
+
 ```sh
 dotnet tool update -g dotnet-execute
+```
+
+Latest preview version:
+
+```sh
+dotnet tool update -g dotnet-execute --prerelease
 ```
 
 ## Examples
