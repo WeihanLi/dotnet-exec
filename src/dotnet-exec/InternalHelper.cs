@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Newtonsoft.Json;
+using System.CommandLine.Invocation;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -31,9 +32,12 @@ internal static class InternalHelper
         services.AddSingleton<AdhocWorkspaceCodeCompiler>();
         services.AddSingleton<AdvancedCodeCompiler>();
         services.AddSingleton<ICompilerFactory, CompilerFactory>();
-        services.AddSingleton<ICodeExecutor, CodeExecutor>();
+        services.AddSingleton<CodeExecutor>();
+        services.AddSingleton<AssemblyLoadContextExecutor>();
         services.AddSingleton<NatashaExecutor>();
+        services.AddSingleton<IExecutorFactory, ExecutorFactory>();
         services.AddSingleton<CommandHandler>();
+        services.AddSingleton<ICommandHandler>(sp => sp.GetRequiredService<CommandHandler>());
         services.AddHttpClient<IScriptContentFetcher, ScriptContentFetcher>();
 
         return services;

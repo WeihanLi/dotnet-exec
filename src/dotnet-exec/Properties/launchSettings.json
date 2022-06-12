@@ -2,7 +2,7 @@
   "profiles": {
     "dotnet-exec": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\projects\\sources\\SamplesInPractice\\net6sample\\RandomSharedSample\\Program.cs\"",
+      "commandLineArgs": "\"C:\\projects\\sources\\SamplesInPractice\\net6sample\\RandomSharedSample\\Program.cs\" --debug",
       "targetFramework": "net7.0"
     }
   }

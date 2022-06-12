@@ -4,7 +4,7 @@
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 
-var command = ExecOptions.GetCommand(InternalHelper.ApplicationName);
+var command = ExecOptions.GetCommand();
 command.SetHandler(invocationContext => invocationContext.GetHost()
     .Services.GetRequiredService<CommandHandler>()
     .InvokeAsync(invocationContext));

@@ -11,17 +11,14 @@ public class IntegrationTests
 {
     private readonly CommandHandler _handler;
     private readonly ICompilerFactory _compilerFactory;
-    private readonly ICodeExecutor _executor;
     private readonly ITestOutputHelper _outputHelper;
 
     public IntegrationTests(CommandHandler handler,
         ICompilerFactory compilerFactory,
-        ICodeExecutor executor,
         ITestOutputHelper outputHelper)
     {
         _handler = handler;
         _compilerFactory = compilerFactory;
-        _executor = executor;
         _outputHelper = outputHelper;
     }
 

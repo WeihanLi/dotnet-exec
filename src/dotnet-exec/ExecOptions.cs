@@ -23,11 +23,14 @@ public sealed partial class ExecOptions
     public bool IncludeWideReferences { get; set; } = true;
 
     public string[]? AdditionalReferences { get; set; }
+    public string[]? Usings { get; set; }
 
     public LanguageVersion LanguageVersion { get; set; }
     public OptimizationLevel Configuration { get; set; }
 
-    public string CompilerType { get; set; } = "Default";
+    public string CompilerType { get; set; } = "default";
+
+    public string ExecutorType { get; set; } = "default";
 
     [JsonIgnore] public CancellationToken CancellationToken { get; set; }
 }

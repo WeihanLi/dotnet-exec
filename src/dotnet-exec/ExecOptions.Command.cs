@@ -3,6 +3,7 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using System.Reflection;
 
 namespace Exec;
 
@@ -26,6 +27,8 @@ public partial class ExecOptions
 
     private static readonly Option<string> CompilerTypeOption =
         new("--compiler-type", () => "default", "The compiler to use");
+    private static readonly Option<string> ExecutorTypeOption =
+        new("--executor-type", () => "default", "The executor to use");
 
     private static readonly Option<LanguageVersion> LanguageVersionOption =
         new("--lang-version", () => LanguageVersion.Default, "Language version");
@@ -48,10 +51,13 @@ public partial class ExecOptions
 
     private static readonly Option<string[]> AdditionalReferencesOption =
         new(new[] { "-r", "--reference" }, "Additional references") { Arity = ArgumentArity.ZeroOrMore };
+    private static readonly Option<string[]> UsingsOption =
+        new(new[] { "-u", "--using" }, "Namespace usings") { Arity = ArgumentArity.ZeroOrMore };
 
     static ExecOptions()
     {
-        CompilerTypeOption.AddCompletions("advanced", "workspace", "default");
+        CompilerTypeOption.AddCompletions("default", "workspace", "advanced");
+        ExecutorTypeOption.AddCompletions("default", "loader", "natasha");
     }
 
     public void BindCommandLineArguments(ParseResult parseResult)
@@ -68,7 +74,9 @@ public partial class ExecOptions
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
         IncludeWideReferences = parseResult.HasOption(WideReferencesOption);
         CompilerType = parseResult.GetValueForOption(CompilerTypeOption) ?? "default";
+        ExecutorType = parseResult.GetValueForOption(ExecutorTypeOption) ?? "default";
         AdditionalReferences = parseResult.GetValueForOption(AdditionalReferencesOption);
+        Usings = parseResult.GetValueForOption(UsingsOption);
 
         if (parseResult.HasOption(AdvancedOption))
         {
@@ -80,19 +88,17 @@ public partial class ExecOptions
         }
     }
 
-    public static Command GetCommand(string commandName)
+    public static Command GetCommand()
     {
-        var command = new Command(commandName);
-        foreach (var item in GetArguments())
+        var command = new Command(InternalHelper.ApplicationName);
+        foreach (var argument in GetArguments())
         {
-            command.AddArgument(item);
+            command.AddArgument(argument);
         }
-
         foreach (var option in GetOptions())
         {
             command.AddOption(option);
         }
-
         return command;
     }
 
@@ -103,18 +109,10 @@ public partial class ExecOptions
 
     private static IEnumerable<Option> GetOptions()
     {
-        yield return DebugOption;
-        yield return TargetFrameworkOption;
-        yield return StartupTypeOption;
-        yield return EntryPointOption;
-        yield return LanguageVersionOption;
-        yield return PreviewOption;
-        yield return ConfigurationOption;
-        yield return ArgumentsOption;
-        yield return ProjectOption;
-        yield return AdvancedOption;
-        yield return WideReferencesOption;
-        yield return CompilerTypeOption;
-        yield return AdditionalReferencesOption;
+        return typeof(ExecOptions)
+            .GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+            .Where(f => f.FieldType.IsGenericType && f.FieldType.GetGenericTypeDefinition() == typeof(Option<>))
+            .Select(f => f.GetValue(null))
+            .Cast<Option>();
     }
 }
