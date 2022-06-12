@@ -36,6 +36,12 @@ Execute remote file:
 dotnet-exec https://github.com/WeihanLi/SamplesInPractice/blob/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs
 ```
 
+Execute remote file with preview features:
+
+``` sh
+dotnet-exec https://github.com/WeihanLi/SamplesInPractice/blob/master/CSharp11Sample/RawStringLiteral.cs --preview
+```
+
 Execute raw code:
 
 ``` sh
