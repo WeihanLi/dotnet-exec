@@ -9,6 +9,7 @@ command.SetHandler(invocationContext => invocationContext.GetHost()
     .Services.GetRequiredService<CommandHandler>()
     .InvokeAsync(invocationContext));
 await new CommandLineBuilder(command)
+    .UseDefaults()
     .UseHost(hostBuilder =>
     {
         hostBuilder.ConfigureServices((_, services) =>
