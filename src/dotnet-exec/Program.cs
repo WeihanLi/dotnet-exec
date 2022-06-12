@@ -3,11 +3,9 @@
 
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
+using System.CommandLine.Invocation;
 
 var command = ExecOptions.GetCommand();
-command.SetHandler(invocationContext => invocationContext.GetHost()
-    .Services.GetRequiredService<CommandHandler>()
-    .InvokeAsync(invocationContext));
 await new CommandLineBuilder(command)
     .UseDefaults()
     .UseHost(hostBuilder =>
@@ -16,6 +14,16 @@ await new CommandLineBuilder(command)
         {
             services.RegisterApplicationServices(args);
         });
+    })
+    .AddMiddleware(invocationContext =>
+    {
+        var serviceProvider = invocationContext.BindingContext.GetService<IHost>()?.Services
+                              ?? invocationContext.BindingContext;
+        var commandHandler = serviceProvider.GetService<ICommandHandler>();
+        if (command.Handler is null && commandHandler != null)
+        {
+            command.Handler = commandHandler;
+        }
     })
     .Build()
     .InvokeAsync(args);
