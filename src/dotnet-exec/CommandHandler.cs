@@ -12,15 +12,15 @@ public sealed class CommandHandler : ICommandHandler
     private readonly ILogger _logger;
     private readonly ICompilerFactory _compilerFactory;
     private readonly ICodeExecutor _executor;
-    private readonly HttpClient _httpClient;
+    private readonly IScriptContentFetcher _scriptContentFetcher;
 
     public CommandHandler(ILogger logger, ICompilerFactory compilerFactory, ICodeExecutor executor,
-        HttpClient httpClient)
+        IScriptContentFetcher scriptContentFetcher)
     {
         _logger = logger;
         _compilerFactory = compilerFactory;
         _executor = executor;
-        _httpClient = httpClient;
+        _scriptContentFetcher = scriptContentFetcher;
     }
 
     public async Task<int> InvokeAsync(InvocationContext context)
@@ -46,7 +46,7 @@ public sealed class CommandHandler : ICommandHandler
         }
 
         // fetch script
-        var fetchResult = await FetchScriptContent(options.Script, options.CancellationToken);
+        var fetchResult = await _scriptContentFetcher.FetchContent(options.Script, options.CancellationToken);
         if (!fetchResult.IsSuccess())
         {
             _logger.LogError(fetchResult.Msg);
@@ -82,50 +82,6 @@ public sealed class CommandHandler : ICommandHandler
             return -999;
         }
     }
-
-    private async Task<Result<string>> FetchScriptContent(string scriptFile, CancellationToken cancellationToken)
-    {
-        if (scriptFile.StartsWith("code:") || scriptFile.StartsWith("text:"))
-        {
-            return Result.Success<string>(scriptFile[5..]);
-        }
-
-        string sourceText;
-        try
-        {
-            if (Uri.TryCreate(scriptFile, UriKind.Absolute, out var uri) && !uri.IsFile)
-            {
-                var scriptUrl = uri.Host switch
-                {
-                    "github.com" => scriptFile
-                        .Replace($"://{uri.Host}/", $"://raw.githubusercontent.com/")
-                        .Replace("/blob/", "/")
-                        .Replace("/tree/", "/"),
-                    "gist.github.com" => scriptFile
-                                             .Replace($"://{uri.Host}/", $"://gist.githubusercontent.com/")
-                                         + "/raw",
-                    _ => scriptFile
-                };
-                sourceText = await _httpClient.GetStringAsync(scriptUrl, cancellationToken);
-            }
-            else
-            {
-                if (!File.Exists(scriptFile))
-                {
-                    _logger.LogError("The file {ScriptFile} does not exists", scriptFile);
-                    return Result.Fail<string>("File path not exits");
-                }
-
-                sourceText = await File.ReadAllTextAsync(scriptFile, cancellationToken);
-            }
-        }
-        catch (Exception e)
-        {
-            return Result.Fail<string>($"Fail to fetch script content, {e}", ResultStatus.ProcessFail);
-        }
-
-        return Result.Success<string>(sourceText);
-    }
-
+    
     public int Invoke(InvocationContext context) => InvokeAsync(context).GetAwaiter().GetResult();
 }

@@ -71,14 +71,15 @@ public class IntegrationTests
 
     [Theory]
     [InlineData("code:Console.Write(\"Hello .NET\");")]
-    [InlineData("text:Console.Write(\"Hello .NET\");")]
+    [InlineData("code:\"Hello .NET\".Dump();")]
+    [InlineData("code:\"Hello .NET\".Dump()")]
     public async Task CodeTextExecute(string code)
     {
         using var output = await ConsoleOutput.CaptureAsync();
         var result = await _handler.Execute(new ExecOptions() { Script = code });
         Assert.Equal(0, result);
         _outputHelper.WriteLine(output.StandardOutput);
-        Assert.Equal("Hello .NET", output.StandardOutput);
+        Assert.Contains("Hello .NET", output.StandardOutput);
     }
 
     [Theory(Skip = "AssemblyLoadContext")]

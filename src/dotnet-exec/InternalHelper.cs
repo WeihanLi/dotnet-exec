@@ -34,7 +34,7 @@ internal static class InternalHelper
         services.AddSingleton<ICodeExecutor, CodeExecutor>();
         services.AddSingleton<NatashaExecutor>();
         services.AddSingleton<CommandHandler>();
-        services.AddSingleton<HttpClient>();
+        services.AddHttpClient<IScriptContentFetcher, ScriptContentFetcher>();
 
         return services;
     }
