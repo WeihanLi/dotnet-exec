@@ -7,7 +7,7 @@ using WeihanLi.Common.Models;
 
 namespace Exec;
 
-public sealed class CommandHandler : ICommandHandler
+public sealed class CommandHandler
 {
     private readonly ILogger _logger;
     private readonly ICompilerFactory _compilerFactory;
@@ -82,6 +82,4 @@ public sealed class CommandHandler : ICommandHandler
             return -999;
         }
     }
-    
-    public int Invoke(InvocationContext context) => InvokeAsync(context).GetAwaiter().GetResult();
 }
