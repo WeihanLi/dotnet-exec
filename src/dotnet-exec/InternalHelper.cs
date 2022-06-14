@@ -238,8 +238,8 @@ internal static class InternalHelper
     public static IEnumerable<string> ResolveReferences(ExecOptions options, bool compilation = true)
     {
         // TODO: handle execOptions.AdditionalReferences
-        
-        return  (compilation? ResolveCompileFrameworkReferences(options.TargetFramework, options.IncludeWideReferences)
+
+        return (compilation ? ResolveCompileFrameworkReferences(options.TargetFramework, options.IncludeWideReferences)
                 : ResolveRuntimeFrameworkReferences(options.TargetFramework, options.IncludeWideReferences))
             .SelectMany(_ => _)
             .Distinct()

@@ -8,7 +8,7 @@ public interface IExecutorFactory
     ICodeExecutor GetExecutor(string executorType);
 }
 
-public sealed class ExecutorFactory: IExecutorFactory
+public sealed class ExecutorFactory : IExecutorFactory
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -16,7 +16,7 @@ public sealed class ExecutorFactory: IExecutorFactory
     {
         _serviceProvider = serviceProvider;
     }
-    
+
     public ICodeExecutor GetExecutor(string executorType)
     {
         return executorType.ToLower() switch

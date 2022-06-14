@@ -8,15 +8,15 @@ using WeihanLi.Common.Models;
 
 namespace Exec;
 
-public sealed class CommandHandler: ICommandHandler
+public sealed class CommandHandler : ICommandHandler
 {
     private readonly ILogger _logger;
     private readonly ICompilerFactory _compilerFactory;
     private readonly IExecutorFactory _executorFactory;
     private readonly IScriptContentFetcher _scriptContentFetcher;
 
-    public CommandHandler(ILogger logger, 
-        ICompilerFactory compilerFactory, 
+    public CommandHandler(ILogger logger,
+        ICompilerFactory compilerFactory,
         IExecutorFactory executorFactory,
         IScriptContentFetcher scriptContentFetcher)
     {

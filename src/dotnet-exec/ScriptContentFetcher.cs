@@ -10,7 +10,7 @@ public interface IScriptContentFetcher
     Task<Result<string>> FetchContent(string scriptFile, CancellationToken cancellationToken);
 }
 
-public sealed class ScriptContentFetcher: IScriptContentFetcher
+public sealed class ScriptContentFetcher : IScriptContentFetcher
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger _logger;
@@ -20,7 +20,7 @@ public sealed class ScriptContentFetcher: IScriptContentFetcher
         _httpClientFactory = httpClientFactory;
         _logger = logger;
     }
-    
+
     public async Task<Result<string>> FetchContent(string scriptFile, CancellationToken cancellationToken)
     {
         if (scriptFile.StartsWith("code:"))
