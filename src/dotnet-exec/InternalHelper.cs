@@ -48,13 +48,9 @@ internal static class InternalHelper
         var result = await GetCompilationResult(compilation, cancellationToken);
         if (result.EmitResult.Success)
         {
-            var references = compilation.References.OfType<PortableExecutableReference>()
-                .Where(x => x.FilePath.IsNotNullOrEmpty())
-                .Select(r => r.FilePath!)
-                .ToArray();
             Guard.NotNull(result.Assembly).Seek(0, SeekOrigin.Begin);
             return Result.Success(new CompileResult(result.Compilation, result.EmitResult,
-                result.Assembly, references));
+                result.Assembly));
         }
 
         var error = new StringBuilder();

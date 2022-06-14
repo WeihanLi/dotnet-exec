@@ -8,18 +8,15 @@ namespace Exec;
 
 public sealed class CompileResult
 {
-    public CompileResult(Compilation compilation, EmitResult emitResult, MemoryStream stream, string[] references)
+    public CompileResult(Compilation compilation, EmitResult emitResult, MemoryStream stream)
     {
         Compilation = compilation;
         EmitResult = emitResult;
         Stream = stream;
-        References = references;
     }
 
     public Compilation Compilation { get; }
     public EmitResult EmitResult { get; }
-
-    public string[] References { get; }
 
     public MemoryStream Stream { get; }
 }
