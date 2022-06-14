@@ -79,8 +79,9 @@ public class IntegrationTests
         Assert.Contains("Hello .NET", output.StandardOutput);
     }
 
-    [Theory(Skip = "AssemblyLoadContext")]
+    [Theory]
     [InlineData("Console.WriteLine(\"Hello .NET\");")]
+    [InlineData("Console.WriteLine(typeof(object).Assembly.Location);")]
     public async Task AssemblyLoadContextExecutorTest(string code)
     {
         var options = new ExecOptions();
@@ -90,17 +91,19 @@ public class IntegrationTests
             _outputHelper.WriteLine(result.Msg);
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
-
-        var executor = new AssemblyLoadContextExecutor(NullLogger.Instance);
+        using var output = await ConsoleOutput.CaptureAsync();
+        var executor = new DefaultCodeExecutor(NullLogger.Instance);
         var executeResult = await executor.Execute(Guard.NotNull(result.Data), options);
         if (executeResult.Msg.IsNotNullOrEmpty())
             _outputHelper.WriteLine(executeResult.Msg);
         Assert.True(executeResult.IsSuccess());
+        _outputHelper.WriteLine(output.StandardOutput);
     }
 
 
-    [Theory(Skip = "AssemblyLoadContext")]
+    [Theory]
     [InlineData("Console.WriteLine(\"Hello .NET\");")]
+    [InlineData("Console.WriteLine(typeof(object).Assembly.Location);")]
     public async Task NatashaExecutorTest(string code)
     {
         var options = new ExecOptions();

@@ -12,12 +12,12 @@ public interface IScriptContentFetcher
 
 public sealed class ScriptContentFetcher: IScriptContentFetcher
 {
-    private readonly HttpClient _httpClient;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger _logger;
 
-    public ScriptContentFetcher(HttpClient httpClient, ILogger logger)
+    public ScriptContentFetcher(IHttpClientFactory httpClientFactory, ILogger logger)
     {
-        _httpClient = httpClient;
+        _httpClientFactory = httpClientFactory;
         _logger = logger;
     }
     
@@ -39,6 +39,7 @@ public sealed class ScriptContentFetcher: IScriptContentFetcher
         {
             if (Uri.TryCreate(scriptFile, UriKind.Absolute, out var uri) && !uri.IsFile)
             {
+                var httpClient = _httpClientFactory.CreateClient(nameof(ScriptContentFetcher));
                 var scriptUrl = uri.Host switch
                 {
                     "github.com" => scriptFile
@@ -50,7 +51,7 @@ public sealed class ScriptContentFetcher: IScriptContentFetcher
                                          + "/raw",
                     _ => scriptFile
                 };
-                sourceText = await _httpClient.GetStringAsync(scriptUrl, cancellationToken);
+                sourceText = await httpClient.GetStringAsync(scriptUrl, cancellationToken);
             }
             else
             {

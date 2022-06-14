@@ -11,22 +11,16 @@ public interface ICodeExecutor
     Task<Result> Execute(CompileResult compileResult, ExecOptions options);
 }
 
-public class CodeExecutor : ICodeExecutor
+public abstract class CodeExecutor : ICodeExecutor
 {
-    private readonly ILogger _logger;
+    protected ILogger Logger { get; }
 
-    public CodeExecutor(ILogger logger)
+    protected CodeExecutor(ILogger logger)
     {
-        _logger = logger;
+        Logger = logger;
     }
 
-    protected virtual Task<Assembly> GetAssembly(CompileResult compileResult, ExecOptions options)
-    {
-        var assembly = Assembly.Load(compileResult.Stream.ToArray());
-        return Task.FromResult(assembly);
-    }
-
-    private async Task<Result> ExecuteAssembly(Assembly assembly, ExecOptions options)
+    protected async Task<Result> ExecuteAssembly(Assembly assembly, ExecOptions options)
     {
         var entryMethod = assembly.EntryPoint;
         if (entryMethod is null && options.EntryPoint.IsNotNullOrEmpty())
@@ -43,7 +37,7 @@ public class CodeExecutor : ICodeExecutor
         if (entryMethod is not null)
         {
             var parameters = entryMethod.GetParameters();
-            _logger.LogDebug("Entry is found, {entryName}, returnType: {returnType}",
+            Logger.LogDebug("Entry is found, {entryName}, returnType: {returnType}",
                 $"{entryMethod.DeclaringType!.FullName}.{entryMethod.Name}", entryMethod.ReturnType.FullName);
             try
             {
@@ -79,23 +73,25 @@ public class CodeExecutor : ICodeExecutor
 
     }
 
-    public virtual async Task<Result> Execute(CompileResult compileResult, ExecOptions options)
-    {
-        var assembly = await GetAssembly(compileResult, options);
-        return await ExecuteAssembly(assembly, options);
-    }
+    public abstract Task<Result> Execute(CompileResult compileResult, ExecOptions options);
 }
 
-public sealed class AssemblyLoadContextExecutor : CodeExecutor
+public sealed class DefaultCodeExecutor : CodeExecutor
 {
-    public AssemblyLoadContextExecutor(ILogger logger) : base(logger)
+    public DefaultCodeExecutor(ILogger logger) : base(logger)
     {
     }
 
-    protected override Task<Assembly> GetAssembly(CompileResult compileResult, ExecOptions options)
+    public override Task<Result> Execute(CompileResult compileResult, ExecOptions options)
     {
-        var context = new CustomLoadContext(compileResult.References);
+        var references = InternalHelper.ResolveReferences(options, false);
+        var context = new CustomLoadContext(references);
+        using var scope = context.EnterContextualReflection();
         var assembly = context.LoadFromStream(compileResult.Stream);
-        return Task.FromResult(assembly);
+        var referenceString = assembly.GetReferencedAssemblies()
+            .Select(assemblyName => context.LoadFromAssemblyName(assemblyName).Location)
+            .StringJoin(";");
+        Logger.LogDebug("Assembly references: {references}", referenceString);
+        return ExecuteAssembly(assembly, options);
     }
 }

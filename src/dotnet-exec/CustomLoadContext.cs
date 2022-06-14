@@ -29,7 +29,6 @@ public sealed class CustomLoadContext : AssemblyLoadContext
             )
         {
             return LoadFromAssemblyPath(assemblyPath);
-            // return Assembly.LoadFile(assemblyPath);
         }
         return null;
     }

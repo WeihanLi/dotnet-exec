@@ -32,13 +32,13 @@ internal static class InternalHelper
         services.AddSingleton<AdhocWorkspaceCodeCompiler>();
         services.AddSingleton<AdvancedCodeCompiler>();
         services.AddSingleton<ICompilerFactory, CompilerFactory>();
-        services.AddSingleton<CodeExecutor>();
-        services.AddSingleton<AssemblyLoadContextExecutor>();
+        services.AddSingleton<DefaultCodeExecutor>();
         services.AddSingleton<NatashaExecutor>();
         services.AddSingleton<IExecutorFactory, ExecutorFactory>();
         services.AddSingleton<CommandHandler>();
         services.AddSingleton<ICommandHandler>(sp => sp.GetRequiredService<CommandHandler>());
-        services.AddHttpClient<IScriptContentFetcher, ScriptContentFetcher>();
+        services.AddSingleton<IScriptContentFetcher, ScriptContentFetcher>();
+        services.AddHttpClient(nameof(ScriptContentFetcher));
 
         return services;
     }
@@ -219,37 +219,39 @@ internal static class InternalHelper
     {
         return frameworkName switch
         {
-            FrameworkName.Web => "Microsoft.AspNetCore.App.Ref",
-            FrameworkName.WindowsDesktop => "Microsoft.WindowsDesktop.App.Ref",
+            FrameworkNames.Web => "Microsoft.AspNetCore.App.Ref",
+            FrameworkNames.WindowsDesktop => "Microsoft.WindowsDesktop.App.Ref",
             _ => "Microsoft.NETCore.App.Ref"
         };
     }
 
     private static IEnumerable<string> GetDependencyFrameworks()
     {
-        yield return FrameworkName.Default;
-        yield return FrameworkName.Web;
+        yield return FrameworkNames.Default;
+        yield return FrameworkNames.Web;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            yield return FrameworkName.WindowsDesktop;
+            yield return FrameworkNames.WindowsDesktop;
         }
     }
 
-    public static IEnumerable<string> ResolveReferences(ExecOptions execOptions)
+    public static IEnumerable<string> ResolveReferences(ExecOptions options, bool compilation = true)
     {
         // TODO: handle execOptions.AdditionalReferences
-        return ResolveFrameworkReferences(execOptions.TargetFramework, execOptions.IncludeWideReferences)
+        
+        return  (compilation? ResolveCompileFrameworkReferences(options.TargetFramework, options.IncludeWideReferences)
+                : ResolveRuntimeFrameworkReferences(options.TargetFramework, options.IncludeWideReferences))
             .SelectMany(_ => _)
             .Distinct()
             ;
     }
 
-    private static IEnumerable<string[]> ResolveFrameworkReferences(string targetFramework,
+    private static IEnumerable<string[]> ResolveCompileFrameworkReferences(string targetFramework,
         bool includeAdditionalReferences = true)
     {
         foreach (var frameworkName in GetDependencyFrameworks())
         {
-            yield return ResolveFrameworkReferencesInternal(frameworkName, targetFramework);
+            yield return ResolveFrameworkReferencesViaPacksInternal(frameworkName, targetFramework);
         }
 
         if (includeAdditionalReferences)
@@ -258,7 +260,21 @@ internal static class InternalHelper
         }
     }
 
-    private static string[] ResolveFrameworkReferencesInternal(string frameworkName, string targetFramework)
+    private static IEnumerable<string[]> ResolveRuntimeFrameworkReferences(string targetFramework,
+        bool includeAdditionalReferences = true)
+    {
+        foreach (var frameworkName in GetDependencyFrameworks())
+        {
+            yield return ResolveFrameworkReferencesViaSharedInternal(frameworkName, targetFramework);
+        }
+
+        if (includeAdditionalReferences)
+        {
+            yield return new[] { typeof(Guard).Assembly.Location, typeof(JsonConvert).Assembly.Location };
+        }
+    }
+
+    private static string[] ResolveFrameworkReferencesViaPacksInternal(string frameworkName, string targetFramework)
     {
         var packsDir = Path.Combine(DotnetDirectory, "packs");
         var referencePackDirName = GetReferenceDirName(frameworkName);
@@ -272,6 +288,18 @@ internal static class InternalHelper
         return Directory.GetFiles(targetReferenceDir, "*.dll");
     }
 
+    private static string[] ResolveFrameworkReferencesViaSharedInternal(string frameworkName, string targetFramework)
+    {
+        var sharedDir = Path.Combine(DotnetDirectory, "shared");
+        var frameworkDir = Path.Combine(sharedDir, frameworkName);
+
+        var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();
+        var versionPrefix = targetFramework["net".Length..];
+        versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x).StartsWith(versionPrefix));
+        var targetVersionDir = versions.OrderByDescending(x => x).First();
+        return Directory.GetFiles(targetVersionDir, "*.dll");
+    }
+
     public static void EnableReferencesSupersedeLowerVersions(this CompilationOptions compilationOptions)
     {
         // https://github.com/dotnet/roslyn/blob/a51b65c86bb0f42a79c47798c10ad75d5c343f92/src/Compilers/Core/Portable/Compilation/CompilationOptions.cs#L183
@@ -282,7 +310,7 @@ internal static class InternalHelper
     }
 }
 
-internal static class FrameworkName
+internal static class FrameworkNames
 {
     public const string Default = "Microsoft.NETCore.App";
 

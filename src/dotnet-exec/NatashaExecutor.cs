@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using System.Reflection;
+using WeihanLi.Common.Models;
 
 namespace Exec;
 
@@ -12,23 +12,20 @@ public sealed class NatashaExecutor : CodeExecutor
         NatashaInitializer.Preheating();
     }
 
-    private readonly ILogger _logger;
-
     public NatashaExecutor(ILogger logger) : base(logger)
     {
-        _logger = logger;
     }
 
-    protected override Task<Assembly> GetAssembly(CompileResult compileResult, ExecOptions options)
+    public override Task<Result> Execute(CompileResult compileResult, ExecOptions options)
     {
-        var domain = NatashaManagement.CreateDomain(InternalHelper.ApplicationName);
-        domain.SetAssemblyLoadBehavior(LoadBehaviorEnum.UseHighVersion);
-        foreach (var reference in compileResult.References)
+        var references = InternalHelper.ResolveReferences(options, false);
+        using var domain = NatashaManagement.CreateDomain(InternalHelper.ApplicationName);
+        domain.SetAssemblyLoadBehavior(LoadBehaviorEnum.UseLowVersion);
+        foreach (var reference in references)
         {
             try
             {
                 domain.LoadAssemblyFromFile(reference);
-                _logger.LogDebug("Reference {reference} loaded", reference);
             }
             catch (Exception)
             {
@@ -36,6 +33,8 @@ public sealed class NatashaExecutor : CodeExecutor
             }
         }
         var assembly = domain.LoadAssemblyFromStream(compileResult.Stream, null);
-        return assembly.WrapTask();
+        var referencesString = domain.GetReferences().Select(x => x.FilePath).StringJoin(";");
+        Logger.LogDebug("References: {references}", referencesString);
+        return ExecuteAssembly(assembly, options);
     }
 }

@@ -4,6 +4,16 @@
       "commandName": "Project",
       "commandLineArgs": "\"C:\\projects\\sources\\SamplesInPractice\\net6sample\\RandomSharedSample\\Program.cs\" --debug",
       "targetFramework": "net7.0"
+    },
+    "framework-test": {
+      "commandName": "Project",
+      "targetFramework": "net7.0",
+      "commandLineArgs": "code:typeof(object).Assembly.Location.Dump() -f net6.0 --debug"
+    },
+    "natasha-executor-test": {
+      "commandName": "Project",
+      "targetFramework": "net7.0",
+      "commandLineArgs": "code:typeof(object).Assembly.Location.Dump() -f net6.0 --debug"
     }
   }
 }
