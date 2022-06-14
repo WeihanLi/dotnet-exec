@@ -24,7 +24,6 @@
       <PackageReference Include="Microsoft.Build.Locator" />
       <PackageReference Include="DotNetCore.Natasha.CSharp" />
       <PackageReference Include="System.CommandLine" />
-      <PackageReference Include="System.CommandLine.Hosting" />
       <PackageReference Include="WeihanLi.Common" />
   </ItemGroup>
   <ItemGroup>
