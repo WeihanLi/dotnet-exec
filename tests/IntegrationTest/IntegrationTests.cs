@@ -76,7 +76,6 @@ public class IntegrationTests
         var result = await _handler.Execute(new ExecOptions() { Script = code });
         Assert.Equal(0, result);
         _outputHelper.WriteLine(output.StandardOutput);
-        Assert.Contains("Hello .NET", output.StandardOutput);
     }
 
     [Theory]

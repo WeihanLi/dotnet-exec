@@ -86,11 +86,14 @@ public sealed class CommandHandler: ICommandHandler
                 return -3;
             }
 
+            // wait for console flush
+            await Console.Out.FlushAsync();
+
             return 0;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Execute code error");
+            _logger.LogError(ex, "Execute code exception");
             return -999;
         }
     }
