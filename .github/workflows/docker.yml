@@ -29,7 +29,8 @@ jobs:
         context: ./
         file: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.ref }}
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.ref_name }}
+        # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
