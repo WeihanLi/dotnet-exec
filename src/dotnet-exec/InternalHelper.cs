@@ -33,7 +33,6 @@ internal static class InternalHelper
         services.AddSingleton<AdvancedCodeCompiler>();
         services.AddSingleton<ICompilerFactory, CompilerFactory>();
         services.AddSingleton<DefaultCodeExecutor>();
-        services.AddSingleton<NatashaExecutor>();
         services.AddSingleton<IExecutorFactory, ExecutorFactory>();
         services.AddSingleton<CommandHandler>();
         services.AddSingleton<ICommandHandler>(sp => sp.GetRequiredService<CommandHandler>());

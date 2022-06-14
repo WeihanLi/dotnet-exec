@@ -98,24 +98,4 @@ public class IntegrationTests
         Assert.True(executeResult.IsSuccess());
         _outputHelper.WriteLine(output.StandardOutput);
     }
-
-
-    [Theory]
-    [InlineData("Console.WriteLine(typeof(object).Assembly.Location);")]
-    public async Task NatashaExecutorTest(string code)
-    {
-        var options = new ExecOptions();
-        var compiler = _compilerFactory.GetCompiler(options.CompilerType);
-        var result = await compiler.Compile(options, code);
-        if (result.Msg.IsNotNullOrEmpty())
-            _outputHelper.WriteLine(result.Msg);
-        Assert.True(result.IsSuccess());
-        Assert.NotNull(result.Data?.Stream);
-
-        var executor = new NatashaExecutor(NullLogger.Instance);
-        var executeResult = await executor.Execute(Guard.NotNull(result.Data), options);
-        if (executeResult.Msg.IsNotNullOrEmpty())
-            _outputHelper.WriteLine(executeResult.Msg);
-        Assert.True(executeResult.IsSuccess());
-    }
 }

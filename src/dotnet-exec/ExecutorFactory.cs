@@ -21,7 +21,6 @@ public sealed class ExecutorFactory : IExecutorFactory
     {
         return executorType.ToLower() switch
         {
-            "natasha" => _serviceProvider.GetRequiredService<NatashaExecutor>(),
             _ => _serviceProvider.GetRequiredService<DefaultCodeExecutor>()
         };
     }
