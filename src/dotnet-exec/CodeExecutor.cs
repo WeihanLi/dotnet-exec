@@ -22,6 +22,10 @@ public abstract class CodeExecutor : ICodeExecutor
 
     protected async Task<Result> ExecuteAssembly(Assembly assembly, ExecOptions options)
     {
+        var assembliesString = assembly.GetReferencedAssemblies()
+            .Select(x => x.FullName)
+            .StringJoin(";");
+        Logger.LogDebug("ReferencedAssemblies: {assemblies}", assembliesString);
         var entryMethod = assembly.EntryPoint;
         if (entryMethod is null && options.EntryPoint.IsNotNullOrEmpty())
         {
@@ -88,10 +92,6 @@ public sealed class DefaultCodeExecutor : CodeExecutor
         var context = new CustomLoadContext(references);
         using var scope = context.EnterContextualReflection();
         var assembly = context.LoadFromStream(compileResult.Stream);
-        var referenceString = assembly.GetReferencedAssemblies()
-            .Select(assemblyName => context.LoadFromAssemblyName(assemblyName).Location)
-            .StringJoin(";");
-        Logger.LogDebug("Assembly references: {references}", referenceString);
         return ExecuteAssembly(assembly, options);
     }
 }

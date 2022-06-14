@@ -20,7 +20,6 @@ public sealed class NatashaExecutor : CodeExecutor
     {
         var references = InternalHelper.ResolveReferences(options, false);
         using var domain = NatashaManagement.CreateDomain(InternalHelper.ApplicationName);
-        domain.SetAssemblyLoadBehavior(LoadBehaviorEnum.UseLowVersion);
         foreach (var reference in references)
         {
             try
@@ -33,8 +32,6 @@ public sealed class NatashaExecutor : CodeExecutor
             }
         }
         var assembly = domain.LoadAssemblyFromStream(compileResult.Stream, null);
-        var referencesString = domain.GetReferences().Select(x => x.FilePath).StringJoin(";");
-        Logger.LogDebug("References: {references}", referencesString);
         return ExecuteAssembly(assembly, options);
     }
 }
