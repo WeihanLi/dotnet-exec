@@ -101,7 +101,6 @@ public class IntegrationTests
 
 
     [Theory]
-    [InlineData("Console.WriteLine(\"Hello .NET\");")]
     [InlineData("Console.WriteLine(typeof(object).Assembly.Location);")]
     public async Task NatashaExecutorTest(string code)
     {
@@ -111,7 +110,7 @@ public class IntegrationTests
         if (result.Msg.IsNotNullOrEmpty())
             _outputHelper.WriteLine(result.Msg);
         Assert.True(result.IsSuccess());
-        Assert.NotNull(result.Data);
+        Assert.NotNull(result.Data?.Stream);
 
         var executor = new NatashaExecutor(NullLogger.Instance);
         var executeResult = await executor.Execute(Guard.NotNull(result.Data), options);
