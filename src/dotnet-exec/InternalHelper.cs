@@ -179,7 +179,7 @@ internal static class InternalHelper
 
         var dotnetExe = GetDotnetPath();
 
-        if (dotnetExe.IsNullOrEmpty() && !Interop.RunningOnWindows)
+        if (dotnetExe.IsNotNullOrEmpty() && !Interop.RunningOnWindows)
         {
             // e.g. on Linux the 'dotnet' command from PATH is a symlink so we need to
             // resolve it to get the actual path to the binary
