@@ -70,4 +70,55 @@ internal class SomeTest
         _outputHelper.WriteLine($"{executeResult.Msg}");
         Assert.True(executeResult.IsSuccess());
     }
+
+    [Theory]
+    [InlineData(@"
+namespace Test;
+class A
+{
+  public static void MainTest() => Console.WriteLine(123);
+}
+class B
+{
+  public static void MainTest() => throw null;
+}
+")]
+    public async Task StartupTypeTest_Success(string code)
+    {
+        var options = new ExecOptions() { StartupType = "Test.A" };
+        var result = await _compiler.Compile(options, code);
+        Assert.True(result.IsSuccess());
+        Assert.NotNull(result.Data);
+        Guard.NotNull(result.Data);
+        using var output = await ConsoleOutput.CaptureAsync();
+        var executor = new DefaultCodeExecutor(NullLogger.Instance);
+        var executeResult = await executor.Execute(result.Data, options);
+        Assert.True(executeResult.IsSuccess());
+    }
+    
+    [Theory]
+    [InlineData(@"
+namespace Test;
+class A
+{
+  public static void MainTest() => Console.WriteLine(123);
+}
+class B
+{
+  public static void MainTest() => throw null;
+}
+")]
+    public async Task StartupTypeTest_Exception(string code)
+    {
+        var options = new ExecOptions() { StartupType = "Test.B" };
+        var result = await _compiler.Compile(options, code);
+        Assert.True(result.IsSuccess());
+        Assert.NotNull(result.Data);
+        Guard.NotNull(result.Data);
+        using var output = await ConsoleOutput.CaptureAsync();
+        var executor = new DefaultCodeExecutor(NullLogger.Instance);
+        var executeResult = await executor.Execute(result.Data, options);
+        _outputHelper.WriteLine(executeResult.Msg);
+        Assert.False(executeResult.IsSuccess());
+    }
 }

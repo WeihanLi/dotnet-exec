@@ -39,7 +39,7 @@ public abstract class CodeExecutor : ICodeExecutor
                 staticMethods = staticMethods.Where(x => x.DeclaringType?.FullName == options.StartupType);
             }
             entryMethod = staticMethods.OrderBy(m => m.GetParameters().Length)
-                .FirstOrDefault(x => x.Name.Equals(options.EntryPoint));
+                .FirstOrDefault();
         }
 
         var executed = false;
