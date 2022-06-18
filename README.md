@@ -66,7 +66,7 @@ dotnet-exec 'code:WriteLine(1+1);' --using "static System.Console"
 
 ### LanguageVersion
 
-By default, it's using the latest language version, you can use the `Preview` version with `--lang-version=Preview`
+By default, it's using the latest language version, you can use the `Preview` version with `--preview`/`--lang-version=Preview`
 
 ### EntryPoint
 
