@@ -19,7 +19,7 @@ jobs:
     - name: dotnet info
       run: dotnet --info
     - name: build
-      run: bash build.sh --target=test
+      run: bash build.sh --target=build
   
   linux-build:
     runs-on: ubuntu-latest
