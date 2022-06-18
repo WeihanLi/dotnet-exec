@@ -72,10 +72,10 @@ public partial class ExecOptions
         Arguments = CommandLineStringSplitter.Instance
             .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
-        IncludeWideReferences = parseResult.HasOption(WideReferencesOption);
+        IncludeWideReferences = parseResult.GetValueForOption(WideReferencesOption);
         CompilerType = parseResult.GetValueForOption(CompilerTypeOption) ?? "default";
         ExecutorType = parseResult.GetValueForOption(ExecutorTypeOption) ?? "default";
-        AdditionalReferences = parseResult.GetValueForOption(AdditionalReferencesOption);
+        References = parseResult.GetValueForOption(AdditionalReferencesOption);
         Usings = parseResult.GetValueForOption(UsingsOption);
 
         if (parseResult.HasOption(AdvancedOption))

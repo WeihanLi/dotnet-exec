@@ -22,7 +22,7 @@ public sealed partial class ExecOptions
 
     public bool IncludeWideReferences { get; set; } = true;
 
-    public string[]? AdditionalReferences { get; set; }
+    public string[]? References { get; set; }
     public string[]? Usings { get; set; }
 
     public LanguageVersion LanguageVersion { get; set; }
