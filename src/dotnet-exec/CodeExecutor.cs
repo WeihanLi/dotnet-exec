@@ -32,8 +32,13 @@ public abstract class CodeExecutor : ICodeExecutor
             var types = assembly.GetTypes();
             var staticMethods = types.Select(x =>
                     x.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
-                .SelectMany(x => x);
-            entryMethod = staticMethods.OrderBy(x => x.Name).ThenBy(m => m.GetParameters().Length)
+                .SelectMany(x => x)
+                .Where(x => x.Name.Equals(options.EntryPoint));
+            if (options.StartupType.IsNotNullOrEmpty())
+            {
+                staticMethods = staticMethods.Where(x => x.DeclaringType?.FullName == options.StartupType);
+            }
+            entryMethod = staticMethods.OrderBy(m => m.GetParameters().Length)
                 .FirstOrDefault(x => x.Name.Equals(options.EntryPoint));
         }
 
