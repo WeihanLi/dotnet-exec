@@ -57,7 +57,7 @@ public partial class ExecOptions
     static ExecOptions()
     {
         CompilerTypeOption.AddCompletions("default", "workspace", "advanced");
-        ExecutorTypeOption.AddCompletions("default", "loader", "natasha");
+        ExecutorTypeOption.AddCompletions("default");
     }
 
     public void BindCommandLineArguments(ParseResult parseResult)
