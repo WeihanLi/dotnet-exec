@@ -95,7 +95,7 @@ class B
         var executeResult = await executor.Execute(result.Data, options);
         Assert.True(executeResult.IsSuccess());
     }
-    
+
     [Theory]
     [InlineData(@"
 namespace Test;
