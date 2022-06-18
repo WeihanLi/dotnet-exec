@@ -10,7 +10,7 @@
 
 `dotnet-exec` is a command line tool for executing C# program without a project file, and you can have your custom entry point other than `Main` method
 
-## Install
+## Install/Update
 
 Latest stable version:
 
@@ -44,16 +44,22 @@ Execute remote file:
 dotnet-exec https://github.com/WeihanLi/SamplesInPractice/blob/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs
 ```
 
-Execute remote file with preview features:
+Execute file with preview features:
 
 ``` sh
-dotnet-exec https://github.com/WeihanLi/SamplesInPractice/blob/master/CSharp11Sample/RawStringLiteral.cs --preview
+dotnet-exec RawStringLiteral.cs --preview
 ```
 
 Execute raw code:
 
 ``` sh
 dotnet-exec 'code:Console.WriteLine(1+1);'
+```
+
+Execute raw code with custom usings:
+
+``` sh
+dotnet-exec 'code:WriteLine(1+1);' --using "static System.Console"
 ```
 
 ## More
