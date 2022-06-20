@@ -8,7 +8,7 @@ var configuration = Argument("configuration", "Release");
 var stable = Argument("stable", "false");
 var apiKey = Argument("apiKey", "");
 
-var solutionPath = "./dotnet-httpie.sln";
+var solutionPath = "./dotnet-exec.sln";
 var srcProjects  = GetFiles("./src/**/*.csproj");
 var testProjects  = GetFiles("./tests/*/*.csproj");
 
