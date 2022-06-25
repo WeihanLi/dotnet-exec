@@ -16,9 +16,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
 {
     public async Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null)
     {
-        var projectName = $"{InternalHelper.ApplicationName}_{Guid.NewGuid():N}";
-        var assemblyName = $"{projectName}.dll";
-
+        var assemblyName = $"{InternalHelper.ApplicationName}_{Guid.NewGuid():N}.dll";
         var parseOptions = new CSharpParseOptions(execOptions.LanguageVersion);
         var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions);
         var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, cancellationToken: execOptions.CancellationToken);

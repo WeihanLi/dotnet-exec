@@ -16,6 +16,7 @@
 
   <ItemGroup>
       <Using Include="System.CommandLine" />
+      <Using Include="System.CommandLine.Invocation" />
       <Using Include="System.CommandLine.Parsing" />
       <Using Include="$(RootNamespace)" />
   </ItemGroup>

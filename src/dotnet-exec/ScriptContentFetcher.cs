@@ -23,9 +23,10 @@ public sealed class ScriptContentFetcher : IScriptContentFetcher
 
     public async Task<Result<string>> FetchContent(string scriptFile, CancellationToken cancellationToken)
     {
-        if (scriptFile.StartsWith("code:"))
+        const string codePrefix = "code:";
+        if (scriptFile.StartsWith(codePrefix))
         {
-            var code = scriptFile[5..];
+            var code = scriptFile[codePrefix.Length..];
             if (code.EndsWith(".Dump()"))
             {
                 // auto fix for `Dump()`

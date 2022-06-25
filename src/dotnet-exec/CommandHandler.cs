@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using System.CommandLine.Invocation;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using WeihanLi.Common.Models;

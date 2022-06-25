@@ -5,7 +5,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Newtonsoft.Json;
-using System.CommandLine.Invocation;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;

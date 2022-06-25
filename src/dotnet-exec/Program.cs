@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using System.CommandLine.Invocation;
-
 await using var serviceProvider = new ServiceCollection()
     .RegisterApplicationServices(args)
     .BuildServiceProvider();
