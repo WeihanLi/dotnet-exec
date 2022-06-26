@@ -100,4 +100,23 @@ public class IntegrationTests
         Assert.True(executeResult.IsSuccess());
         _outputHelper.WriteLine(output.StandardOutput);
     }
+
+    [Fact]
+    public async Task NuGetPackageTest()
+    {
+        var options = new ExecOptions()
+        {
+            References = new[]
+            {
+                "nuget:WeihanLi.Npoi,2.3.0"
+            },
+            Usings = new[]
+            {
+                "WeihanLi.Npoi"
+            },
+            Script = "code:CsvHelper.GetCsvText(new[]{1,2,3}).Dump()"
+        };
+        var result = await _handler.Execute(options);
+        Assert.Equal(0, result);
+    }
 }
