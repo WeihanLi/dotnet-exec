@@ -27,7 +27,7 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
     public async Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null)
     {
         var projectPath = GetProjectFile(execOptions.ProjectPath);
-        var dotnetPath = InternalHelper.GetDotnetPath();
+        var dotnetPath = Helper.GetDotnetPath();
         var result = await CommandExecutor.ExecuteAndCaptureAsync(dotnetPath, $"restore {projectPath}", Path.GetDirectoryName(projectPath));
         if (result.ExitCode != 0)
         {

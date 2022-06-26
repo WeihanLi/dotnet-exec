@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using Microsoft.Extensions.Logging.Abstractions;
 using WeihanLi.Common.Models;
 using Xunit.Abstractions;
 
@@ -11,14 +10,17 @@ public class IntegrationTests
 {
     private readonly CommandHandler _handler;
     private readonly ICompilerFactory _compilerFactory;
+    private readonly IExecutorFactory _executorFactory;
     private readonly ITestOutputHelper _outputHelper;
 
     public IntegrationTests(CommandHandler handler,
         ICompilerFactory compilerFactory,
+        IExecutorFactory executorFactory,
         ITestOutputHelper outputHelper)
     {
         _handler = handler;
         _compilerFactory = compilerFactory;
+        _executorFactory = executorFactory;
         _outputHelper = outputHelper;
     }
 
@@ -91,7 +93,7 @@ public class IntegrationTests
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
         using var output = await ConsoleOutput.CaptureAsync();
-        var executor = new DefaultCodeExecutor(NullLogger.Instance);
+        var executor = _executorFactory.GetExecutor(options.ExecutorType);
         var executeResult = await executor.Execute(Guard.NotNull(result.Data), options);
         if (executeResult.Msg.IsNotNullOrEmpty())
             _outputHelper.WriteLine(executeResult.Msg);

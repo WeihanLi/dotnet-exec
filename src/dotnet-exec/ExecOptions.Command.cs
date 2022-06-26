@@ -90,7 +90,7 @@ public partial class ExecOptions
 
     public static Command GetCommand()
     {
-        var command = new Command(InternalHelper.ApplicationName);
+        var command = new Command(Helper.ApplicationName);
         foreach (var argument in GetArguments())
         {
             command.AddArgument(argument);

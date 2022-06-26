@@ -11,7 +11,7 @@ public sealed class CustomLoadContext : AssemblyLoadContext
 {
     private readonly Dictionary<string, string> _assemblyPaths;
 
-    public CustomLoadContext(IEnumerable<string> assemblyPaths) : base(InternalHelper.ApplicationName)
+    public CustomLoadContext(IEnumerable<string> assemblyPaths) : base(Helper.ApplicationName)
     {
         _assemblyPaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var assemblyPath in assemblyPaths)

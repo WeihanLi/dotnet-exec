@@ -10,10 +10,10 @@
       "targetFramework": "net7.0",
       "commandLineArgs": "code:typeof(object).Assembly.Location.Dump() -f net6.0 --debug"
     },
-    "natasha-executor-test": {
+    "reference-test": {
       "commandName": "Project",
       "targetFramework": "net7.0",
-      "commandLineArgs": "code:typeof(object).Assembly.Location.Dump() -f net6.0 --debug"
+      "commandLineArgs": "code:typeof(CsvHelper).Assembly.Location.Dump() -r nuget:WeihanLi.Npoi,2.3.0 -u WeihanLi.Npoi --debug"
     }
   }
 }

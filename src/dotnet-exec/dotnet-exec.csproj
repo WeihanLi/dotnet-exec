@@ -24,11 +24,11 @@
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
       <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
       <PackageReference Include="Microsoft.Build.Locator" />
+      <PackageReference Include="NuGet.DependencyResolver.Core" />
       <PackageReference Include="System.CommandLine" />
       <PackageReference Include="WeihanLi.Common" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTest" />
-    <InternalsVisibleTo Include="IntegrationTest" />
   </ItemGroup>
 </Project>

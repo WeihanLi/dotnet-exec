@@ -21,7 +21,7 @@ public class CodeCompilerTest
     [InlineData(@"public class Program{ public static int Main(){} }")]
     public async Task CompileFailed(string code)
     {
-        var compiler = new SimpleCodeCompiler();
+        var compiler = new DefaultCodeCompiler(ReferenceResolver.InstanceForTest);
         var result = await compiler.Compile(new ExecOptions(), code);
         Assert.Equal(ResultStatus.ProcessFail, result.Status);
         _outputHelper.WriteLine(result.Msg);
@@ -39,7 +39,7 @@ Console.WriteLine(args.StringJoin(Environment.NewLine));
 ")]
     public async Task CompileWithCustomEntryPoint(string code)
     {
-        var compiler = new SimpleCodeCompiler();
+        var compiler = new DefaultCodeCompiler(ReferenceResolver.InstanceForTest);
         var result = await compiler.Compile(new ExecOptions(), code);
         _outputHelper.WriteLine($"{result.Msg}");
         Assert.Equal(ResultStatus.Success, result.Status);
@@ -68,7 +68,7 @@ Console.WriteLine("""
 """")]
     public async Task CompileWithPreviewLanguageFeature(string code)
     {
-        var compiler = new SimpleCodeCompiler();
+        var compiler = new DefaultCodeCompiler(ReferenceResolver.InstanceForTest);
         var result = await compiler.Compile(new ExecOptions()
         {
             LanguageVersion = LanguageVersion.Preview

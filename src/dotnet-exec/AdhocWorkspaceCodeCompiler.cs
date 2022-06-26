@@ -9,9 +9,15 @@ namespace Exec;
 
 public sealed class AdhocWorkspaceCodeCompiler : ICodeCompiler
 {
+    private readonly IReferenceResolver _referenceResolver;
+
+    public AdhocWorkspaceCodeCompiler(IReferenceResolver referenceResolver)
+    {
+        _referenceResolver = referenceResolver;
+    }
     public async Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null)
     {
-        var projectName = $"{InternalHelper.ApplicationName}_{Guid.NewGuid():N}";
+        var projectName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}";
         var assemblyName = $"{projectName}.dll";
         var projectInfo = ProjectInfo.Create(
             ProjectId.CreateNewId(),
@@ -20,7 +26,7 @@ public sealed class AdhocWorkspaceCodeCompiler : ICodeCompiler
             assemblyName,
             LanguageNames.CSharp);
 
-        var globalUsingCode = InternalHelper.GetGlobalUsingsCodeText(execOptions);
+        var globalUsingCode = Helper.GetGlobalUsingsCodeText(execOptions);
         var globalUsingDocument = DocumentInfo.Create(
             DocumentId.CreateNewId(projectInfo.Id, "__GlobalUsings"),
             "__GlobalUsings",
@@ -32,9 +38,7 @@ public sealed class AdhocWorkspaceCodeCompiler : ICodeCompiler
             ? scriptDocument.WithFilePath(execOptions.Script)
             : scriptDocument.WithTextLoader(new PlainTextLoader(code));
 
-        var assemblyLocations = InternalHelper.ResolveReferences(execOptions)
-            .ToArray();
-
+        var assemblyLocations = await _referenceResolver.ResolveReferences(execOptions, true);
         var references = assemblyLocations.Select(l => MetadataReference.CreateFromFile(l));
         projectInfo = projectInfo
                 .WithParseOptions(new CSharpParseOptions(execOptions.LanguageVersion))

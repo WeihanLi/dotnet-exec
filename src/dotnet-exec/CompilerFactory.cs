@@ -23,7 +23,7 @@ public sealed class CompilerFactory : ICompilerFactory
         {
             "advanced" => _serviceProvider.GetServiceOrCreateInstance<AdvancedCodeCompiler>(),
             "workspace" => _serviceProvider.GetServiceOrCreateInstance<AdhocWorkspaceCodeCompiler>(),
-            _ => _serviceProvider.GetServiceOrCreateInstance<SimpleCodeCompiler>()
+            _ => _serviceProvider.GetServiceOrCreateInstance<DefaultCodeCompiler>()
         };
     }
 }

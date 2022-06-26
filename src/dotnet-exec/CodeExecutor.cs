@@ -38,8 +38,7 @@ public abstract class CodeExecutor : ICodeExecutor
             {
                 staticMethods = staticMethods.Where(x => x.DeclaringType?.FullName == options.StartupType);
             }
-            entryMethod = staticMethods.OrderBy(m => m.GetParameters().Length)
-                .FirstOrDefault();
+            entryMethod = staticMethods.MinBy(m => m.GetParameters().Length);
         }
 
         var executed = false;
@@ -87,16 +86,19 @@ public abstract class CodeExecutor : ICodeExecutor
 
 public sealed class DefaultCodeExecutor : CodeExecutor
 {
-    public DefaultCodeExecutor(ILogger logger) : base(logger)
+    private readonly IReferenceResolver _referenceResolver;
+
+    public DefaultCodeExecutor(IReferenceResolver referenceResolver, ILogger logger) : base(logger)
     {
+        _referenceResolver = referenceResolver;
     }
 
-    public override Task<Result> Execute(CompileResult compileResult, ExecOptions options)
+    public override async Task<Result> Execute(CompileResult compileResult, ExecOptions options)
     {
-        var references = InternalHelper.ResolveReferences(options, false);
+        var references = await _referenceResolver.ResolveReferences(options, false);
         var context = new CustomLoadContext(references);
         using var scope = context.EnterContextualReflection();
         var assembly = context.LoadFromStream(compileResult.Stream);
-        return ExecuteAssembly(assembly, options);
+        return await ExecuteAssembly(assembly, options);
     }
 }

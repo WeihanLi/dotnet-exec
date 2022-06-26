@@ -4,7 +4,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using Newtonsoft.Json;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -12,7 +11,7 @@ using WeihanLi.Common.Models;
 
 namespace Exec;
 
-internal static class InternalHelper
+public static class Helper
 {
     private static readonly HashSet<string> SpecialConsoleDiagnosticIds = new() { "CS5001", "CS0028" };
 
@@ -27,12 +26,14 @@ internal static class InternalHelper
         });
         services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>()
             .CreateLogger(ApplicationName));
-        services.AddSingleton<SimpleCodeCompiler>();
+        services.AddSingleton<DefaultCodeCompiler>();
         services.AddSingleton<AdhocWorkspaceCodeCompiler>();
         services.AddSingleton<AdvancedCodeCompiler>();
         services.AddSingleton<ICompilerFactory, CompilerFactory>();
         services.AddSingleton<DefaultCodeExecutor>();
         services.AddSingleton<IExecutorFactory, ExecutorFactory>();
+        services.AddSingleton<INuGetHelper, NuGetHelper>();
+        services.AddSingleton<IReferenceResolver, ReferenceResolver>();
         services.AddSingleton<CommandHandler>();
         services.AddSingleton<ICommandHandler>(sp => sp.GetRequiredService<CommandHandler>());
         services.AddSingleton<IScriptContentFetcher, ScriptContentFetcher>();
@@ -53,10 +54,10 @@ internal static class InternalHelper
         }
 
         var error = new StringBuilder();
-        foreach (var diag in result.EmitResult.Diagnostics)
+        foreach (var diagnostic in result.EmitResult.Diagnostics)
         {
-            var message = CSharpDiagnosticFormatter.Instance.Format(diag);
-            error.AppendLine($"{diag.Id}-{diag.Severity}-{message}");
+            var message = CSharpDiagnosticFormatter.Instance.Format(diagnostic);
+            error.AppendLine($"{diagnostic.Id}-{diagnostic.Severity}-{message}");
         }
 
         return Result.Fail<CompileResult>(error.ToString(), ResultStatus.ProcessFail);
@@ -209,7 +210,7 @@ internal static class InternalHelper
         }
     }
 
-    private static string GetReferenceDirName(string frameworkName)
+    public static string GetReferencePackageName(string frameworkName)
     {
         return frameworkName switch
         {
@@ -219,7 +220,7 @@ internal static class InternalHelper
         };
     }
 
-    private static IEnumerable<string> GetDependencyFrameworks()
+    public static IEnumerable<string> GetDependencyFrameworks()
     {
         yield return FrameworkNames.Default;
         yield return FrameworkNames.Web;
@@ -229,64 +230,32 @@ internal static class InternalHelper
         }
     }
 
-    public static IEnumerable<string> ResolveReferences(ExecOptions options, bool compilation = true)
-    {
-        // TODO: handle execOptions.AdditionalReferences
-
-        return (compilation ? ResolveCompileFrameworkReferences(options.TargetFramework, options.IncludeWideReferences)
-                : ResolveRuntimeFrameworkReferences(options.TargetFramework, options.IncludeWideReferences))
-            .SelectMany(_ => _)
-            .Distinct()
-            ;
-    }
-
-    private static IEnumerable<string[]> ResolveCompileFrameworkReferences(string targetFramework,
-        bool includeAdditionalReferences = true)
-    {
-        foreach (var frameworkName in GetDependencyFrameworks())
-        {
-            yield return ResolveFrameworkReferencesViaPacksInternal(frameworkName, targetFramework);
-        }
-
-        if (includeAdditionalReferences)
-        {
-            yield return new[] { typeof(Guard).Assembly.Location, typeof(JsonConvert).Assembly.Location };
-        }
-    }
-
-    private static IEnumerable<string[]> ResolveRuntimeFrameworkReferences(string targetFramework,
-        bool includeAdditionalReferences = true)
-    {
-        foreach (var frameworkName in GetDependencyFrameworks())
-        {
-            yield return ResolveFrameworkReferencesViaSharedInternal(frameworkName, targetFramework);
-        }
-
-        if (includeAdditionalReferences)
-        {
-            yield return new[] { typeof(Guard).Assembly.Location, typeof(JsonConvert).Assembly.Location };
-        }
-    }
-
-    private static string[] ResolveFrameworkReferencesViaPacksInternal(string frameworkName, string targetFramework)
+    public static string[] ResolveFrameworkReferencesViaSdkPacks(string frameworkName, string targetFramework)
     {
         var packsDir = Path.Combine(DotnetDirectory, "packs");
-        var referencePackDirName = GetReferenceDirName(frameworkName);
-        var frameworkDir = Path.Combine(packsDir, referencePackDirName);
-
-        var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();
-        var versionPrefix = targetFramework["net".Length..];
-        versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x).StartsWith(versionPrefix));
-        var targetVersionDir = versions.OrderByDescending(x => x).First();
-        var targetReferenceDir = Path.Combine(targetVersionDir, "ref", targetFramework);
-        return Directory.GetFiles(targetReferenceDir, "*.dll");
+        var referencePackageName = GetReferencePackageName(frameworkName);
+        var frameworkDir = Path.Combine(packsDir, referencePackageName);
+        if (Directory.Exists(frameworkDir))
+        {
+            var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();
+            var versionPrefix = targetFramework["net".Length..];
+            versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x).StartsWith(versionPrefix));
+            var targetVersionDir = versions.OrderByDescending(x => x).First();
+            var targetReferenceDir = Path.Combine(targetVersionDir, "ref", targetFramework);
+            return Directory.GetFiles(targetReferenceDir, "*.dll");
+        }
+        return Array.Empty<string>();
     }
 
-    private static string[] ResolveFrameworkReferencesViaSharedInternal(string frameworkName, string targetFramework)
+    public static string[] ResolveFrameworkReferencesViaRuntimeShared(string frameworkName, string targetFramework)
     {
         var sharedDir = Path.Combine(DotnetDirectory, "shared");
         var frameworkDir = Path.Combine(sharedDir, frameworkName);
-
+        if (!Directory.Exists(frameworkDir))
+        {
+            frameworkDir = Path.GetDirectoryName(typeof(object).Assembly.Location);
+        }
+        Guard.NotNull(frameworkDir);
         var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();
         var versionPrefix = targetFramework["net".Length..];
         versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x).StartsWith(versionPrefix));
