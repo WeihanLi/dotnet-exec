@@ -289,7 +289,7 @@ public sealed class NuGetHelper : INuGetHelper
         return Array.Empty<string>();
     }
 
-    private static string GetPackageInstalledDir(string packageId, NuGetVersion packageVersion)
+    private string GetPackageInstalledDir(string packageId, NuGetVersion packageVersion)
     {
         var packageDir = Path.Combine(_globalPackagesFolder, packageId.ToLowerInvariant(),
             packageVersion.ToString());
