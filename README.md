@@ -65,7 +65,7 @@ dotnet-exec 'code:WriteLine(1+1);' --using "static System.Console"
 Execute raw code with docker
 
 ``` sh
-docker run --rm weihanli/dotnet-exec:0.4.0 dotnet-exec "code:(1+1).Dump()"
+docker run --rm weihanli/dotnet-exec:latest dotnet-exec "code:(1+1).Dump()"
 ```
 
 ## More
