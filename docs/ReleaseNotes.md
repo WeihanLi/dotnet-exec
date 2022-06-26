@@ -1,5 +1,10 @@
 # ReleaseNotes
 
+## 0.5.0
+
+- Implement references handling
+- Support execute without sdk
+
 ## 0.4.0
 
 - Refactor references handling
