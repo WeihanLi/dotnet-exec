@@ -62,6 +62,12 @@ Execute raw code with custom usings:
 dotnet-exec 'code:WriteLine(1+1);' --using "static System.Console"
 ```
 
+Execute raw code with custom reference:
+
+``` sh
+dotnet-exec 'code:CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget:WeihanLi.Npoi,2.3.0" --using "WeihanLi.Npoi"
+```
+
 Execute raw code with docker
 
 ``` sh
