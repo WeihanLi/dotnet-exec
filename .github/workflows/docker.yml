@@ -4,10 +4,14 @@ on:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#release
   release:
     types: [published]
-  # push:
-  #   branches:
-  #     - "main"
-
+  push:
+    branches:
+      - "main"
+    paths:
+      - 'Dockerfile'
+      - 'Directory.*'
+      - 'src/**'
+      - 'build/**'
 jobs:
   build:
     runs-on: ubuntu-latest
