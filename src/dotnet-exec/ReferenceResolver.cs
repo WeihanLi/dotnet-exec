@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using Microsoft.Extensions.Logging.Abstractions;
+using NuGet.Frameworks;
 using NuGet.Versioning;
 
 namespace Exec;
@@ -35,7 +36,13 @@ public sealed class ReferenceResolver : IReferenceResolver
                 if (references.IsNullOrEmpty())
                 {
                     var packageId = Helper.GetReferencePackageName(framework);
-                    return await _nugetHelper.ResolvePackageReferences(options.TargetFramework, packageId, null, true,
+                    var versions = await _nugetHelper.GetPackageVersions(packageId, true, options.CancellationToken);
+                    var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
+                    var version = versions
+                        .Where(x => x.Major == nugetFramework.Version.Major
+                            && x.Minor == nugetFramework.Version.Minor)
+                        .Max();
+                    return await _nugetHelper.ResolvePackageReferences(options.TargetFramework, packageId, version, true,
                         options.CancellationToken);
                 }
                 return references;

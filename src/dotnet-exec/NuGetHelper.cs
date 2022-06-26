@@ -20,7 +20,9 @@ namespace Exec;
 public interface INuGetHelper
 {
     Task<string[]> ResolvePackageReferences(string targetFramework, string packageId,
-        NuGetVersion? version, bool includePreview, CancellationToken cancellationToken);
+        NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePreview = false, CancellationToken cancellationToken = default);
 }
 
 public sealed class NuGetHelper : INuGetHelper
@@ -149,7 +151,7 @@ public sealed class NuGetHelper : INuGetHelper
             packageId,
             _cache,
             _nugetLogger, cancellationToken);
-        return versions;
+        return versions.Where(_ => includePreview || !_.IsPrerelease);
     }
 
     public async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string targetFramework, string packageName, NuGetVersion packageVersion, CancellationToken cancellationToken = default)
@@ -208,12 +210,12 @@ public sealed class NuGetHelper : INuGetHelper
     }
 
     public async Task<string[]> ResolvePackageReferences(string targetFramework, string packageId,
-        NuGetVersion? version, bool includePreview, CancellationToken cancellationToken)
+        NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default)
     {
         if (version is null)
         {
             var versions = await GetPackageVersions(packageId, includePreview, cancellationToken);
-            version = versions.FirstOrDefault();
+            version = versions.Max();
             if (version is null)
             {
                 throw new InvalidOperationException($"No package version found for package {packageId}");

@@ -214,9 +214,9 @@ public static class Helper
     {
         return frameworkName switch
         {
-            FrameworkNames.Web => "Microsoft.AspNetCore.App.Ref",
-            FrameworkNames.WindowsDesktop => "Microsoft.WindowsDesktop.App.Ref",
-            _ => "Microsoft.NETCore.App.Ref"
+            FrameworkNames.Web => FrameworkReferencePackages.Web,
+            FrameworkNames.WindowsDesktop => FrameworkReferencePackages.WindowsDesktop,
+            _ => FrameworkReferencePackages.Default
         };
     }
 
@@ -280,4 +280,11 @@ internal static class FrameworkNames
     public const string Web = "Microsoft.AspNetCore.App";
 
     public const string WindowsDesktop = "Microsoft.WindowsDesktop.App";
+}
+
+internal static class FrameworkReferencePackages
+{
+    public const string Default = "Microsoft.NETCore.App.Ref";
+    public const string Web = "Microsoft.AspNetCore.App.Ref";
+    public const string WindowsDesktop = "Microsoft.WindowsDesktop.App.Ref";
 }
