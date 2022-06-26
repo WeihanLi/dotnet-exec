@@ -6,6 +6,8 @@
 
 [![default](https://github.com/WeihanLi/dotnet-exec/actions/workflows/dotnetcore.yml/badge.svg)](https://github.com/WeihanLi/dotnet-exec/actions/workflows/dotnetcore.yml)
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/weihanli/dotnet-exec)](https://hub.docker.com/r/weihanli/dotnet-exec)
+
 ## Intro
 
 `dotnet-exec` is a command line tool for executing C# program without a project file, and you can have your custom entry point other than `Main` method
