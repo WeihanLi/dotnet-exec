@@ -15,4 +15,4 @@ RUN dotnet publish -f net7.0 -c Release --self-contained -p:AssemblyName=dotnet-
 FROM base AS final
 COPY --from=build-env /app/artifacts/dotnet-exec /root/.dotnet/tools/dotnet-exec
 ENV PATH="/root/.dotnet/tools:${PATH}"
-WORKDIR /app
+WORKDIR /usr/share/dotnet
