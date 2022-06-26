@@ -10,7 +10,7 @@ COPY ./Directory.Build.props ./
 COPY ./Directory.Build.targets ./
 COPY ./Directory.Packages.props ./
 WORKDIR /app/src/dotnet-exec/
-RUN dotnet publish -c Release --self-contained -p:AssemblyName=dotnet-exec -p:PublishSingleFile=true -p:PublishTrimmed=true -p:EnableCompressionInSingleFile=true -o /app/artifacts
+RUN dotnet publish -f net7.0 -c Release --self-contained -p:AssemblyName=dotnet-exec -p:PublishSingleFile=true -p:PublishTrimmed=true -p:EnableCompressionInSingleFile=true -o /app/artifacts
 
 FROM base AS final
 COPY --from=build-env /app/artifacts/dotnet-exec /root/.dotnet/tools/dotnet-exec
