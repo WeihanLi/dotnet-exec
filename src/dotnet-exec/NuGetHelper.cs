@@ -36,10 +36,11 @@ public sealed class NuGetHelper : INuGetHelper
     private readonly NugetLoggingAdapter _nugetLogger;
     private readonly ILogger _logger;
 
-    private static readonly string GlobalPackagesFolder;
+    private readonly string _globalPackagesFolder;
     public static string GetGlobalPackagesFolder()
     {
-        var result = CommandExecutor.ExecuteAndCapture("dotnet", "nuget locals global-packages -l");
+        var dotnetPath = Helper.GetDotnetPath();
+        var result = CommandExecutor.ExecuteAndCapture(dotnetPath, "nuget locals global-packages -l");
         var folder = string.Empty;
         if (result.StandardOut.StartsWith("global-packages:"))
         {
@@ -113,15 +114,13 @@ public sealed class NuGetHelper : INuGetHelper
         }
         return folder;
     }
-    static NuGetHelper()
-    {
-        GlobalPackagesFolder = GetGlobalPackagesFolder();
-    }
 
     public NuGetHelper(ILoggerFactory loggerFactory)
     {
         _nugetLogger = new NugetLoggingAdapter(loggerFactory);
         _logger = loggerFactory.CreateLogger(LoggerCategoryName);
+
+        _globalPackagesFolder = GetGlobalPackagesFolder();
     }
 
     public async Task DownloadPackage(string packageId, NuGetVersion version, CancellationToken cancellationToken = default)
@@ -138,7 +137,7 @@ public sealed class NuGetHelper : INuGetHelper
             await downloadRes.GetDownloadResourceResultAsync(
                 packagerIdentity,
                 pkgDownloadContext,
-                GlobalPackagesFolder,
+                _globalPackagesFolder,
                 _nugetLogger,
                 cancellationToken), _ => true, 5);
         _logger.LogDebug("Package({packageIdentity}) downloaded from {packageSource}", packagerIdentity, downloadResult!.PackageSource ?? "NuGet.org");
@@ -292,7 +291,7 @@ public sealed class NuGetHelper : INuGetHelper
 
     private static string GetPackageInstalledDir(string packageId, NuGetVersion packageVersion)
     {
-        var packageDir = Path.Combine(GlobalPackagesFolder, packageId.ToLowerInvariant(),
+        var packageDir = Path.Combine(_globalPackagesFolder, packageId.ToLowerInvariant(),
             packageVersion.ToString());
         return packageDir;
     }
