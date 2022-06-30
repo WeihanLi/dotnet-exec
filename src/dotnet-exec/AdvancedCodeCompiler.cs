@@ -26,20 +26,13 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
 
     public async Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null)
     {
-        var projectPath = GetProjectFile(execOptions.ProjectPath);
-        var dotnetPath = Helper.GetDotnetPath();
-        var result = await CommandExecutor.ExecuteAndCaptureAsync(dotnetPath, $"restore {projectPath}", Path.GetDirectoryName(projectPath));
-        if (result.ExitCode != 0)
-        {
-            return Result.Fail<CompileResult>($"{result.StandardError}{Environment.NewLine}{result.StandardOut}".Trim(), ResultStatus.ProcessFail);
-        }
-
         using var workspace = MSBuildWorkspace.Create();
         workspace.WorkspaceFailed += (_, args) =>
         {
             _logger.LogError($"Workspace failed, {args.Diagnostic.Kind}, {args.Diagnostic.Message}");
         };
 
+        var projectPath = GetProjectFile(execOptions.ProjectPath);
         var project = await workspace.OpenProjectAsync(projectPath, cancellationToken: execOptions.CancellationToken);
         var documentIds = project.Documents.Where(d =>
                 d.FilePath.IsNotNullOrEmpty()
@@ -54,11 +47,13 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
                                  ?? new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: execOptions.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
         compilationOptions.EnableReferencesSupersedeLowerVersions();
 
-        var compilation = await project.WithCompilationOptions(compilationOptions).GetCompilationAsync(execOptions.CancellationToken);
-        return await Guard.NotNull(compilation).GetCompilationAssemblyResult(execOptions.CancellationToken);
+        var compilation = await project.WithCompilationOptions(compilationOptions)
+            .GetCompilationAsync(execOptions.CancellationToken);
+        return await Guard.NotNull(compilation)
+            .GetCompilationAssemblyResult(execOptions.CancellationToken);
     }
 
-    private string GetProjectFile(string projectFile)
+    private static string GetProjectFile(string projectFile)
     {
         var project = string.Empty;
         var dir = Directory.GetCurrentDirectory();
