@@ -9,7 +9,7 @@ namespace Exec;
 
 public interface ICodeCompiler
 {
-    Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null);
+    Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null);
 }
 
 public sealed class DefaultCodeCompiler : ICodeCompiler

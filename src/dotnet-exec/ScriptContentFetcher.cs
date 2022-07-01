@@ -7,7 +7,7 @@ namespace Exec;
 
 public interface IScriptContentFetcher
 {
-    Task<Result<string>> FetchContent(string scriptFile, CancellationToken cancellationToken);
+    Task<Result<string>> FetchContent(ExecOptions options);
 }
 
 public sealed class ScriptContentFetcher : IScriptContentFetcher
@@ -21,8 +21,9 @@ public sealed class ScriptContentFetcher : IScriptContentFetcher
         _logger = logger;
     }
 
-    public async Task<Result<string>> FetchContent(string scriptFile, CancellationToken cancellationToken)
+    public async Task<Result<string>> FetchContent(ExecOptions options)
     {
+        var scriptFile = options.Script;
         const string codePrefix = "code:";
         if (scriptFile.StartsWith(codePrefix))
         {
@@ -32,6 +33,14 @@ public sealed class ScriptContentFetcher : IScriptContentFetcher
                 // auto fix for `Dump()`
                 code = $"{code};";
             }
+            return Result.Success<string>(code);
+        }
+
+        const string scriptPrefix = "script:";
+        if (scriptFile.StartsWith(scriptPrefix))
+        {
+            var code = scriptFile[scriptPrefix.Length..];
+            options.ExecutorType = options.CompilerType = "script";
             return Result.Success<string>(code);
         }
 
@@ -52,7 +61,7 @@ public sealed class ScriptContentFetcher : IScriptContentFetcher
                                          + "/raw",
                     _ => scriptFile
                 };
-                sourceText = await httpClient.GetStringAsync(scriptUrl, cancellationToken);
+                sourceText = await httpClient.GetStringAsync(scriptUrl, options.CancellationToken);
             }
             else
             {
@@ -62,7 +71,7 @@ public sealed class ScriptContentFetcher : IScriptContentFetcher
                     return Result.Fail<string>("File path not exits");
                 }
 
-                sourceText = await File.ReadAllTextAsync(scriptFile, cancellationToken);
+                sourceText = await File.ReadAllTextAsync(scriptFile, options.CancellationToken);
             }
         }
         catch (Exception e)

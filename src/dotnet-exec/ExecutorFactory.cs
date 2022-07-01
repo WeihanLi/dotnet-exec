@@ -21,6 +21,7 @@ public sealed class ExecutorFactory : IExecutorFactory
     {
         return executorType.ToLower() switch
         {
+            "script" => _serviceProvider.GetRequiredService<CSharpScriptCompilerExecutor>(),
             _ => _serviceProvider.GetRequiredService<DefaultCodeExecutor>()
         };
     }

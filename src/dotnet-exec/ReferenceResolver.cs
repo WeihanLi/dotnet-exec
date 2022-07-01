@@ -26,7 +26,7 @@ public sealed class ReferenceResolver : IReferenceResolver
 
     private async Task<string[]> ResolveFrameworkReferences(ExecOptions options, bool compilation)
     {
-        var frameworks = Helper.GetDependencyFrameworks();
+        var frameworks = Helper.GetDependencyFrameworks(options);
         var frameworkReferences = await frameworks.Select(async framework =>
         {
             if (compilation)
@@ -53,7 +53,8 @@ public sealed class ReferenceResolver : IReferenceResolver
         {
             return frameworkReferences.Append(new[]
             {
-                typeof(DependencyResolver).Assembly.Location, typeof(Newtonsoft.Json.JsonConvert).Assembly.Location
+                typeof(DependencyResolver).Assembly.Location,
+                typeof(Newtonsoft.Json.JsonConvert).Assembly.Location
             })
                 .SelectMany(x => x)
                 .ToArray();

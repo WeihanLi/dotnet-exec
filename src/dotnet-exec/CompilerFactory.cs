@@ -21,9 +21,10 @@ public sealed class CompilerFactory : ICompilerFactory
     {
         return compilerType.ToLower() switch
         {
-            "advanced" => _serviceProvider.GetServiceOrCreateInstance<AdvancedCodeCompiler>(),
-            "workspace" => _serviceProvider.GetServiceOrCreateInstance<AdhocWorkspaceCodeCompiler>(),
-            _ => _serviceProvider.GetServiceOrCreateInstance<DefaultCodeCompiler>()
+            "advanced" => _serviceProvider.GetRequiredService<AdvancedCodeCompiler>(),
+            "workspace" => _serviceProvider.GetRequiredService<AdhocWorkspaceCodeCompiler>(),
+            "script" => _serviceProvider.GetRequiredService<CSharpScriptCompilerExecutor>(),
+            _ => _serviceProvider.GetRequiredService<DefaultCodeCompiler>()
         };
     }
 }

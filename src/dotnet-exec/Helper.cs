@@ -29,6 +29,7 @@ public static class Helper
         services.AddSingleton<DefaultCodeCompiler>();
         services.AddSingleton<AdhocWorkspaceCodeCompiler>();
         services.AddSingleton<AdvancedCodeCompiler>();
+        services.AddSingleton<CSharpScriptCompilerExecutor>();
         services.AddSingleton<ICompilerFactory, CompilerFactory>();
         services.AddSingleton<DefaultCodeExecutor>();
         services.AddSingleton<IExecutorFactory, ExecutorFactory>();
@@ -129,12 +130,12 @@ public static class Helper
         }
     }
 
-    public static string GetGlobalUsingsCodeText(ExecOptions execOptions)
+    public static HashSet<string> GetGlobalUsings(ExecOptions options)
     {
-        var usings = new HashSet<string>(GetGlobalUsings(execOptions.IncludeWideReferences));
-        if (execOptions.Usings.HasValue())
+        var usings = new HashSet<string>(GetGlobalUsings(options.IncludeWideReferences));
+        if (options.Usings.HasValue())
         {
-            foreach (var @using in execOptions.Usings)
+            foreach (var @using in options.Usings)
             {
                 if (@using.StartsWith('-'))
                 {
@@ -146,9 +147,15 @@ public static class Helper
                 }
             }
         }
+        return usings;
+    }
+
+    public static string GetGlobalUsingsCodeText(ExecOptions options)
+    {
+        var usings = GetGlobalUsings(options);
 
         var usingText = usings.Select(x => $"global using {x};").StringJoin(Environment.NewLine);
-        if (execOptions.LanguageVersion != LanguageVersion.Preview)
+        if (options.LanguageVersion != LanguageVersion.Preview)
             return usingText;
         // Generate System.Runtime.Versioning.RequiresPreviewFeatures attribute on assembly level
         return $"{usingText}{Environment.NewLine}[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]";
@@ -220,7 +227,7 @@ public static class Helper
         };
     }
 
-    public static IEnumerable<string> GetDependencyFrameworks()
+    public static IEnumerable<string> GetDependencyFrameworks(ExecOptions options)
     {
         yield return FrameworkNames.Default;
         yield return FrameworkNames.Web;

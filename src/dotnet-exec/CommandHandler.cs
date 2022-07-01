@@ -56,7 +56,7 @@ public sealed class CommandHandler : ICommandHandler
         }
 
         // fetch script
-        var fetchResult = await _scriptContentFetcher.FetchContent(options.Script, options.CancellationToken);
+        var fetchResult = await _scriptContentFetcher.FetchContent(options);
         if (!fetchResult.IsSuccess())
         {
             _logger.LogError(fetchResult.Msg);
@@ -89,6 +89,11 @@ public sealed class CommandHandler : ICommandHandler
             await Console.Out.FlushAsync();
 
             return 0;
+        }
+        catch (OperationCanceledException) when (options.CancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning("Cancelled...");
+            return -998;
         }
         catch (Exception ex)
         {

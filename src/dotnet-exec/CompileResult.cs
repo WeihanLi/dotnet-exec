@@ -3,10 +3,11 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Emit;
+using WeihanLi.Common.Abstractions;
 
 namespace Exec;
 
-public sealed class CompileResult
+public sealed class CompileResult : IProperties
 {
     public CompileResult(Compilation compilation, EmitResult emitResult, MemoryStream stream)
     {
@@ -19,4 +20,7 @@ public sealed class CompileResult
     public EmitResult EmitResult { get; }
 
     public MemoryStream Stream { get; }
+    public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
+
+    internal static readonly CompileResult Empty = new(null!, null!, null!);
 }

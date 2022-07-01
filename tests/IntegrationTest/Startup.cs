@@ -12,9 +12,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.RegisterApplicationServices(new[] { "--debug" })
-            // .AddSingleton<ICodeExecutor>(sp => sp.GetRequiredService<NatashaCodeExecutor>())
-            .AddLogging(builder => builder.ClearProviders());
+        services.RegisterApplicationServices(new[] { "--debug" });
     }
 
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor outputHelperAccessor)
