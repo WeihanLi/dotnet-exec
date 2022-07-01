@@ -1,5 +1,9 @@
 # ReleaseNotes
 
+## 0.6.0
+
+- Support script execute
+
 ## 0.5.0
 
 - Implement references handling
