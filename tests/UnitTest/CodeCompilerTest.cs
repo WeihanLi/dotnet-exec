@@ -48,16 +48,16 @@ Console.WriteLine(args.StringJoin(Environment.NewLine));
     [Theory]
     [InlineData(""""
 public class SomeTest
-{
-  public static void MainTest() 
-  {
-      Console.WriteLine("""
-      {
-          "Name": "test"
+    {
+        public static void MainTest()
+        {
+            Console.WriteLine("""
+            {
+                "Name": "test"
       }
-      """);
-  }
-}
+            """);
+        }
+    }
 """")]
     [InlineData(""""
 Console.WriteLine("""
@@ -67,13 +67,13 @@ Console.WriteLine("""
 """);
 """")]
     public async Task CompileWithPreviewLanguageFeature(string code)
+{
+    var compiler = new DefaultCodeCompiler(ReferenceResolver.InstanceForTest);
+    var result = await compiler.Compile(new ExecOptions()
     {
-        var compiler = new DefaultCodeCompiler(ReferenceResolver.InstanceForTest);
-        var result = await compiler.Compile(new ExecOptions()
-        {
-            LanguageVersion = LanguageVersion.Preview
-        }, code);
-        _outputHelper.WriteLine($"{result.Msg}");
-        Assert.Equal(ResultStatus.Success, result.Status);
-    }
+        LanguageVersion = LanguageVersion.Preview
+    }, code);
+    _outputHelper.WriteLine($"{result.Msg}");
+    Assert.Equal(ResultStatus.Success, result.Status);
+}
 }
