@@ -70,6 +70,18 @@ Execute raw code with custom reference:
 dotnet-exec 'code:CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget:WeihanLi.Npoi,2.3.0" --using "WeihanLi.Npoi"
 ```
 
+Execute script:
+
+```sh
+dotnet-exec 'script:1+1'
+```
+
+Execute script with custom reference:
+
+```sh
+dotnet-exec 'script:Console.WriteLine(CsvHelper.GetCsvText(new[]{1,2,3}))' -r "nuget:WeihanLi.Npoi,2.3.0" -u WeihanLi.Npoi
+```
+
 Execute raw code with docker
 
 ``` sh
