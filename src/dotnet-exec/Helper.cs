@@ -91,7 +91,7 @@ public static class Helper
     }
 
     // https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview#implicit-using-directives
-    private static IEnumerable<string> GetGlobalUsings(bool includeAdditional)
+    private static IEnumerable<string> GetGlobalUsingsInternal(ExecOptions options)
     {
         // Default SDK
         yield return "System";
@@ -103,24 +103,28 @@ public static class Helper
         yield return "System.Threading";
         yield return "System.Threading.Tasks";
 
-        // Web
-        yield return "System.Net.Http.Json";
-        yield return "Microsoft.AspNetCore.Builder";
-        yield return "Microsoft.AspNetCore.Hosting";
-        yield return "Microsoft.AspNetCore.Http";
-        yield return "Microsoft.AspNetCore.Routing";
-        yield return "Microsoft.Extensions.Configuration";
-        yield return "Microsoft.Extensions.DependencyInjection";
-        yield return "Microsoft.Extensions.Hosting";
-        yield return "Microsoft.Extensions.Logging";
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (!options.IsScriptExecutor())
         {
-            // Include Windows Desktop SDK for Windows only
-            yield return "System.Windows.Forms";
+            // Web
+            yield return "System.Net.Http.Json";
+            yield return "Microsoft.AspNetCore.Builder";
+            yield return "Microsoft.AspNetCore.Hosting";
+            yield return "Microsoft.AspNetCore.Http";
+            yield return "Microsoft.AspNetCore.Routing";
+            yield return "Microsoft.Extensions.Configuration";
+            yield return "Microsoft.Extensions.DependencyInjection";
+            yield return "Microsoft.Extensions.Hosting";
+            yield return "Microsoft.Extensions.Logging";
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // Include Windows Desktop SDK for Windows only
+                yield return "System.Windows.Forms";
+            }
         }
 
-        if (includeAdditional)
+
+        if (options.IncludeWideReferences)
         {
             yield return "WeihanLi.Common";
             yield return "WeihanLi.Common.Logging";
@@ -132,7 +136,7 @@ public static class Helper
 
     public static HashSet<string> GetGlobalUsings(ExecOptions options)
     {
-        var usings = new HashSet<string>(GetGlobalUsings(options.IncludeWideReferences));
+        var usings = new HashSet<string>(GetGlobalUsingsInternal(options));
         if (options.Usings.HasValue())
         {
             foreach (var @using in options.Usings)
@@ -230,10 +234,13 @@ public static class Helper
     public static IEnumerable<string> GetDependencyFrameworks(ExecOptions options)
     {
         yield return FrameworkNames.Default;
-        yield return FrameworkNames.Web;
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (!options.IsScriptExecutor())
         {
-            yield return FrameworkNames.WindowsDesktop;
+            yield return FrameworkNames.Web;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                yield return FrameworkNames.WindowsDesktop;
+            }
         }
     }
 
@@ -277,6 +284,11 @@ public static class Helper
             .GetProperty("ReferencesSupersedeLowerVersions", BindingFlags.Instance | BindingFlags.NonPublic)!
             .SetMethod!
             .Invoke(compilationOptions, new object[] { true });
+    }
+
+    private static bool IsScriptExecutor(this ExecOptions options)
+    {
+        return "script".EqualsIgnoreCase(options.ExecutorType);
     }
 }
 
