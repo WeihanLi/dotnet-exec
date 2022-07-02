@@ -207,7 +207,7 @@ public static class Helper
 
     private static string _dotnetDirectory = string.Empty;
 
-    private static string DotnetDirectory
+    public static string DotnetDirectory
     {
         get
         {

@@ -58,6 +58,17 @@ public partial class ExecOptions
     {
         CompilerTypeOption.AddCompletions("default", "workspace", "advanced");
         ExecutorTypeOption.AddCompletions("default");
+
+        var supportedFrameworks = Directory.GetDirectories(Path.Combine(Helper.DotnetDirectory, "sdk"))
+            .Select(Path.GetDirectoryName)
+            .WhereNotNull()
+            .Where(x => x.Length > 0 && char.IsDigit(x[0]) && Version.TryParse(x, out _))
+            .Select(Version.Parse)
+            .Where(x => x.Major >= 6)
+            .Select(v => $"net{v.Major}.{v.Minor}")
+            .Distinct()
+            .ToArray();
+        TargetFrameworkOption.AddCompletions(supportedFrameworks);
     }
 
     public void BindCommandLineArguments(ParseResult parseResult)
