@@ -4,6 +4,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using NuGet.Versioning;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -225,16 +226,19 @@ public static class Helper
 
     private static void LoadSupportedFrameworks()
     {
+        var frameworkDir = Path.Combine(DotnetDirectory, "shared", FrameworkNames.Default);
         foreach (var framework in Directory
-                     .GetDirectories(Path.Combine(Helper.DotnetDirectory, "shared", FrameworkNames.Default))
-                     .Select(Path.GetDirectoryName)
+                     .GetDirectories(frameworkDir)
+                     .Select(Path.GetFileName)
                      .WhereNotNull()
-                     .Where(x => x.Length > 0 && char.IsDigit(x[0]) && Version.TryParse(x, out _))
-                     .Select(Version.Parse)
-                     .Where(x => x.Major >= 6)
-                     .Select(v => $"net{v.Major}.{v.Minor}"))
+                     .Where(x => x.Length > 0 && char.IsDigit(x[0]))
+                 )
         {
-            _supportedFrameworks.Add(framework);
+            if (NuGetVersion.TryParse(framework, out var frameworkVersion)
+                && frameworkVersion.Major >= 6)
+            {
+                _supportedFrameworks.Add($"net{frameworkVersion.Major}.{frameworkVersion.Minor}");
+            }
         }
     }
 

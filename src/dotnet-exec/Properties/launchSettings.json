@@ -19,6 +19,11 @@
       "commandName": "Project",
       "targetFramework": "net7.0",
       "commandLineArgs": "script:1+1 --debug"
+    },
+    "help-test": {
+      "commandName": "Project",
+      "targetFramework": "net7.0",
+      "commandLineArgs": "-h"
     }
   }
 }
