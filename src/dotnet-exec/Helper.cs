@@ -223,6 +223,34 @@ public static class Helper
         }
     }
 
+    private static void LoadSupportedFrameworks()
+    {
+        foreach (var framework in Directory
+                     .GetDirectories(Path.Combine(Helper.DotnetDirectory, "shared", FrameworkNames.Default))
+                     .Select(Path.GetDirectoryName)
+                     .WhereNotNull()
+                     .Where(x => x.Length > 0 && char.IsDigit(x[0]) && Version.TryParse(x, out _))
+                     .Select(Version.Parse)
+                     .Where(x => x.Major >= 6)
+                     .Select(v => $"net{v.Major}.{v.Minor}"))
+        {
+            _supportedFrameworks.Add(framework);
+        }
+    }
+
+    private static readonly HashSet<string> _supportedFrameworks = new();
+    public static HashSet<string> SupportedFrameworks
+    {
+        get
+        {
+            if (_supportedFrameworks.Count == 0)
+            {
+                LoadSupportedFrameworks();
+            }
+            return _supportedFrameworks;
+        }
+    }
+
     public static string GetReferencePackageName(string frameworkName)
     {
         return frameworkName switch
