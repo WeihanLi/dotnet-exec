@@ -17,6 +17,8 @@ public static class Helper
 
     public const string ApplicationName = "dotnet-exec";
 
+    public const string Script = "script";
+
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services, string[] args)
     {
         services.AddLogging(builder =>
@@ -286,10 +288,7 @@ public static class Helper
             .Invoke(compilationOptions, new object[] { true });
     }
 
-    private static bool IsScriptExecutor(this ExecOptions options)
-    {
-        return "script".EqualsIgnoreCase(options.ExecutorType);
-    }
+    private static bool IsScriptExecutor(this ExecOptions options) => Script.EqualsIgnoreCase(options.ExecutorType);
 }
 
 internal static class FrameworkNames

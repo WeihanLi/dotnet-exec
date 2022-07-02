@@ -40,7 +40,7 @@ public sealed class ScriptContentFetcher : IScriptContentFetcher
         if (scriptFile.StartsWith(scriptPrefix))
         {
             var code = scriptFile[scriptPrefix.Length..];
-            options.ExecutorType = options.CompilerType = "script";
+            options.ExecutorType = options.CompilerType = Helper.Script;
             return Result.Success<string>(code);
         }
 

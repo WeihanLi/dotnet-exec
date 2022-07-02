@@ -23,7 +23,7 @@ public sealed class CompilerFactory : ICompilerFactory
         {
             "advanced" => _serviceProvider.GetRequiredService<AdvancedCodeCompiler>(),
             "workspace" => _serviceProvider.GetRequiredService<AdhocWorkspaceCodeCompiler>(),
-            "script" => _serviceProvider.GetRequiredService<CSharpScriptCompilerExecutor>(),
+            Helper.Script => _serviceProvider.GetRequiredService<CSharpScriptCompilerExecutor>(),
             _ => _serviceProvider.GetRequiredService<DefaultCodeCompiler>()
         };
     }
