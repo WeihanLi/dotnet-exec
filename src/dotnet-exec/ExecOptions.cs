@@ -32,5 +32,7 @@ public sealed partial class ExecOptions
 
     public string ExecutorType { get; set; } = "default";
 
+    public bool DebugEnabled { get; set; }
+
     [JsonIgnore] public CancellationToken CancellationToken { get; set; }
 }

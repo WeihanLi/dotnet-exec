@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using WeihanLi.Common.Models;
@@ -35,14 +36,18 @@ public sealed class CommandHandler : ICommandHandler
         var options = new ExecOptions();
         options.BindCommandLineArguments(parseResult);
         options.CancellationToken = context.GetCancellationToken();
-
-        _logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, new JsonSerializerOptions()
+        if (options.DebugEnabled)
         {
-            Converters =
+            _logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, new JsonSerializerOptions()
             {
-                new JsonStringEnumConverter()
-            }
-        }));
+                Converters =
+                {
+                    new JsonStringEnumConverter()
+                },
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                WriteIndented = true,
+            }));
+        }
 
         return await Execute(options);
     }

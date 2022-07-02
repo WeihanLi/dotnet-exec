@@ -17,7 +17,7 @@ public partial class ExecOptions
 #endif
        ;
 
-    private static readonly Argument<string> FilePathArgument = new("script", "CSharp program to execute");
+    private static readonly Argument<string> ScriptArgument = new("script", "CSharp script to execute");
 
     private static readonly Option<string> TargetFrameworkOption = new(new[] { "-f", "--framework" },
         () => DefaultTargetFramework, "Target framework");
@@ -42,7 +42,7 @@ public partial class ExecOptions
     private static readonly Option<string> ArgumentsOption =
         new(new[] { "--args", "--arguments" }, "Input arguments");
 
-    private static readonly Option<bool> DebugOption = new("--debug", "Enable debug logs for debugging purpose");
+    private static readonly Option<bool> DebugOption = new("--debug", "Enable debug logs for debug");
     private static readonly Option<string> ProjectOption = new("--project", "Project file path");
     private static readonly Option<bool> AdvancedOption = new(new[] { "-a", "--advanced" }, "Advanced mode");
 
@@ -63,7 +63,7 @@ public partial class ExecOptions
 
     public void BindCommandLineArguments(ParseResult parseResult)
     {
-        Script = Guard.NotNull(parseResult.GetValueForArgument(FilePathArgument));
+        Script = Guard.NotNull(parseResult.GetValueForArgument(ScriptArgument));
         StartupType = parseResult.GetValueForOption(StartupTypeOption);
         EntryPoint = Guard.NotNull(parseResult.GetValueForOption(EntryPointOption));
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption)
@@ -78,6 +78,7 @@ public partial class ExecOptions
         ExecutorType = parseResult.GetValueForOption(ExecutorTypeOption) ?? "default";
         References = parseResult.GetValueForOption(AdditionalReferencesOption);
         Usings = parseResult.GetValueForOption(UsingsOption);
+        DebugEnabled = parseResult.GetValueForOption(DebugOption);
 
         if (parseResult.HasOption(AdvancedOption))
         {
@@ -105,7 +106,7 @@ public partial class ExecOptions
 
     private static IEnumerable<Argument> GetArguments()
     {
-        yield return FilePathArgument;
+        yield return ScriptArgument;
     }
 
     private static IEnumerable<Option> GetOptions()

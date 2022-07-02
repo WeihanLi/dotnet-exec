@@ -37,7 +37,7 @@ public sealed class NuGetHelper : INuGetHelper
     private readonly ILogger _logger;
 
     private readonly string _globalPackagesFolder;
-    public static string GetGlobalPackagesFolder()
+    private static string GetGlobalPackagesFolder()
     {
         var dotnetPath = Helper.GetDotnetPath();
         var result = CommandExecutor.ExecuteAndCapture(dotnetPath, "nuget locals global-packages -l");
@@ -217,7 +217,7 @@ public sealed class NuGetHelper : INuGetHelper
             version = versions.Max();
             if (version is null)
             {
-                throw new InvalidOperationException($"No package version found for package {packageId}");
+                throw new InvalidOperationException($"No package versions found for package {packageId}");
             }
         }
         var dependencies = await GetPackageDependencies(targetFramework, packageId, version, cancellationToken);
