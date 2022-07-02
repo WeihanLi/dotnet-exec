@@ -13,44 +13,36 @@ namespace Exec;
 public sealed class AdvancedCodeCompiler : ICodeCompiler
 {
     private readonly ILogger _logger;
-
-    static AdvancedCodeCompiler()
-    {
-        MSBuildLocator.RegisterDefaults();
-    }
-
     public AdvancedCodeCompiler(ILogger logger)
     {
         _logger = logger;
     }
 
-    public async Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null)
+    public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
+        RegisterMSBuild(options);
+        var projectPath = GetProjectFile(options.ProjectPath);
         using var workspace = MSBuildWorkspace.Create();
         workspace.WorkspaceFailed += (_, args) =>
         {
-            _logger.LogError($"Workspace failed, {args.Diagnostic.Kind}, {args.Diagnostic.Message}");
+            _logger.LogError($"Workspace load failed, {args.Diagnostic.Kind}, {args.Diagnostic.Message}");
         };
 
-        var projectPath = GetProjectFile(execOptions.ProjectPath);
-        var project = await workspace.OpenProjectAsync(projectPath, cancellationToken: execOptions.CancellationToken);
+        var project = await workspace.OpenProjectAsync(projectPath, cancellationToken: options.CancellationToken);
         var documentIds = project.Documents.Where(d =>
                 d.FilePath.IsNotNullOrEmpty()
-                && !d.FilePath.Equals(execOptions.Script)
+                && !d.FilePath.Equals(options.Script)
                 && d.FilePath.EndsWith($"{Path.DirectorySeparatorChar}Program.cs"))
             .Select(d => d.Id)
             .ToImmutableArray();
 
-        project = project.RemoveDocuments(documentIds);
-
         var compilationOptions = project.CompilationOptions?.WithOutputKind(OutputKind.ConsoleApplication)
-                                 ?? new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: execOptions.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
-        compilationOptions.EnableReferencesSupersedeLowerVersions();
-
-        var compilation = await project.WithCompilationOptions(compilationOptions)
-            .GetCompilationAsync(execOptions.CancellationToken);
+                                 ?? new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: options.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
+        var compilation = await project.RemoveDocuments(documentIds)
+            .WithCompilationOptions(compilationOptions)
+            .GetCompilationAsync(options.CancellationToken);
         return await Guard.NotNull(compilation)
-            .GetCompilationAssemblyResult(execOptions.CancellationToken);
+            .GetCompilationAssemblyResult(options.CancellationToken);
     }
 
     private static string GetProjectFile(string projectFile)
@@ -78,5 +70,23 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
         }
 
         return project;
+    }
+
+    // ReSharper disable InconsistentNaming
+    private static void RegisterMSBuild(ExecOptions options)
+    {
+        var netVersion = Version.Parse(options.TargetFramework["net".Length..]);
+
+        var msBuildInstances = MSBuildLocator.QueryVisualStudioInstances().ToArray();
+        var matchedInstance = msBuildInstances
+            .Where(x => x.Version.Major == netVersion.Major && x.Version.Minor == netVersion.Minor)
+            .MaxBy(x => x.Version);
+        if (matchedInstance != null)
+        {
+            MSBuildLocator.RegisterInstance(matchedInstance);
+            return;
+        }
+
+        MSBuildLocator.RegisterDefaults();
     }
 }
