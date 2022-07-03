@@ -7,11 +7,11 @@ using WeihanLi.Common.Models;
 
 namespace Exec;
 
-public sealed class AdhocWorkspaceCodeCompiler : ICodeCompiler
+public sealed class WorkspaceCodeCompiler : ICodeCompiler
 {
     private readonly IReferenceResolver _referenceResolver;
 
-    public AdhocWorkspaceCodeCompiler(IReferenceResolver referenceResolver)
+    public WorkspaceCodeCompiler(IReferenceResolver referenceResolver)
     {
         _referenceResolver = referenceResolver;
     }

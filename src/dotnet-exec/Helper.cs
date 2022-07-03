@@ -32,7 +32,7 @@ public static class Helper
         services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>()
             .CreateLogger(ApplicationName));
         services.AddSingleton<DefaultCodeCompiler>();
-        services.AddSingleton<AdhocWorkspaceCodeCompiler>();
+        services.AddSingleton<WorkspaceCodeCompiler>();
         services.AddSingleton<AdvancedCodeCompiler>();
         services.AddSingleton<CSharpScriptCompilerExecutor>();
         services.AddSingleton<ICompilerFactory, CompilerFactory>();
