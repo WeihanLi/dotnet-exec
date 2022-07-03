@@ -18,6 +18,8 @@ public static class Helper
 
     public const string ApplicationName = "dotnet-exec";
 
+    public const string Default = "default";
+
     public const string Script = "script";
 
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services, string[] args)

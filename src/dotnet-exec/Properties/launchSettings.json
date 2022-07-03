@@ -10,6 +10,11 @@
       "targetFramework": "net7.0",
       "commandLineArgs": "code:typeof(object).Assembly.Location.Dump() -f net6.0 --debug"
     },
+    "framework-invalid-test": {
+      "commandName": "Project",
+      "targetFramework": "net5.0",
+      "commandLineArgs": "script:typeof(object).Assembly.Location -f net5.0 --debug"
+    },
     "reference-test": {
       "commandName": "Project",
       "targetFramework": "net7.0",

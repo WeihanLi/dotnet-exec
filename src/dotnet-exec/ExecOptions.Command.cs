@@ -26,9 +26,9 @@ public partial class ExecOptions
     private static readonly Option<string> EntryPointOption = new("--entry", () => "MainTest", "Entry point");
 
     private static readonly Option<string> CompilerTypeOption =
-        new("--compiler-type", () => "default", "The compiler to use");
+        new("--compiler-type", () => Helper.Default, "The compiler to use");
     private static readonly Option<string> ExecutorTypeOption =
-        new("--executor-type", () => "default", "The executor to use");
+        new("--executor-type", () => Helper.Default, "The executor to use");
 
     private static readonly Option<LanguageVersion> LanguageVersionOption =
         new("--lang-version", () => LanguageVersion.Default, "Language version");
@@ -56,9 +56,9 @@ public partial class ExecOptions
 
     static ExecOptions()
     {
-        CompilerTypeOption.AddCompletions("default", "workspace", "advanced");
-        ExecutorTypeOption.AddCompletions("default");
-        TargetFrameworkOption.AddCompletions(_ => Helper.SupportedFrameworks);
+        CompilerTypeOption.FromAmong(Helper.Default, "workspace", "advanced");
+        ExecutorTypeOption.FromAmong(Helper.Default);
+        TargetFrameworkOption.FromAmong(Helper.SupportedFrameworks.ToArray());
     }
 
     public void BindCommandLineArguments(ParseResult parseResult)
@@ -74,8 +74,8 @@ public partial class ExecOptions
             .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
         IncludeWideReferences = parseResult.GetValueForOption(WideReferencesOption);
-        CompilerType = parseResult.GetValueForOption(CompilerTypeOption) ?? "default";
-        ExecutorType = parseResult.GetValueForOption(ExecutorTypeOption) ?? "default";
+        CompilerType = parseResult.GetValueForOption(CompilerTypeOption) ?? Helper.Default;
+        ExecutorType = parseResult.GetValueForOption(ExecutorTypeOption) ?? Helper.Default;
         References = parseResult.GetValueForOption(AdditionalReferencesOption);
         Usings = parseResult.GetValueForOption(UsingsOption);
         DebugEnabled = parseResult.GetValueForOption(DebugOption);
