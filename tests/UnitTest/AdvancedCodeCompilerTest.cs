@@ -18,7 +18,7 @@ public class AdvancedCodeCompilerTest
     }
 
     [Theory(
-        Skip = "localOnly"
+         Skip = "localOnly"
         )]
     [InlineData(@"C:\projects\sources\SamplesInPractice\CSharp10Sample", @"C:\projects\sources\SamplesInPractice\CSharp10Sample\CallerInfo.cs")]
     [InlineData(@"C:\projects\sources\SamplesInPractice\MathProblems\MathProblems.csproj", @"C:\projects\sources\SamplesInPractice\MathProblems\CombinationAndPermutation.cs")]

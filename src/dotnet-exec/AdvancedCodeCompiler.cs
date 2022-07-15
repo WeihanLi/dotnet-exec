@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.MSBuild;
 using System.Collections.Immutable;
+using System.Runtime.Loader;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -20,14 +21,24 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
 
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
-        RegisterMSBuild(options);
+        var msBuildInstance = RegisterMSBuild(options);
+        // https://github.com/microsoft/MSBuildLocator/issues/86#issuecomment-640275377
+        AssemblyLoadContext.Default.Resolving += (assemblyLoadContext, assemblyName) =>
+        {
+            var path = Path.Combine(msBuildInstance.MSBuildPath, assemblyName.Name + ".dll");
+            if (File.Exists(path))
+            {
+                return assemblyLoadContext.LoadFromAssemblyPath(path);
+            }
+
+            return null;
+        };
         var projectPath = GetProjectFile(options.ProjectPath);
         using var workspace = MSBuildWorkspace.Create();
         workspace.WorkspaceFailed += (_, args) =>
         {
             _logger.LogError($"Workspace load failed, {args.Diagnostic.Kind}, {args.Diagnostic.Message}");
         };
-
         var project = await workspace.OpenProjectAsync(projectPath, cancellationToken: options.CancellationToken);
         var documentIds = project.Documents.Where(d =>
                 d.FilePath.IsNotNullOrEmpty()
@@ -66,14 +77,20 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
 
         if (project.IsNullOrEmpty())
         {
-            project = Directory.GetFiles(dir!, "*.csproj").First();
+            var projectFilePath = Directory.GetFiles(dir!, "*.csproj").FirstOrDefault();
+            if (projectFilePath.IsNullOrEmpty())
+            {
+                throw new InvalidOperationException("Please specify the project file");
+            }
+
+            project = projectFilePath;
         }
 
         return project;
     }
 
     // ReSharper disable InconsistentNaming
-    private static void RegisterMSBuild(ExecOptions options)
+    private static VisualStudioInstance RegisterMSBuild(ExecOptions options)
     {
         var netVersion = Version.Parse(options.TargetFramework["net".Length..]);
 
@@ -84,9 +101,12 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
         if (matchedInstance != null)
         {
             MSBuildLocator.RegisterInstance(matchedInstance);
-            return;
+        }
+        else
+        {
+            matchedInstance = MSBuildLocator.RegisterDefaults();
         }
 
-        MSBuildLocator.RegisterDefaults();
+        return matchedInstance;
     }
 }
