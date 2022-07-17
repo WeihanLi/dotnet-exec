@@ -49,9 +49,9 @@ public partial class ExecOptions
     private static readonly Option<bool> WideReferencesOption =
         new(new[] { "-w" }, () => true, "Include Newtonsoft.Json/WeihanLi.Common references");
 
-    private static readonly Option<HashSet<string>> AdditionalReferencesOption =
+    private static readonly Option<string[]> AdditionalReferencesOption =
         new(new[] { "-r", "--reference" }, "Additional references") { Arity = ArgumentArity.ZeroOrMore };
-    private static readonly Option<HashSet<string>> UsingsOption =
+    private static readonly Option<string[]> UsingsOption =
         new(new[] { "-u", "--using" }, "Namespace usings") { Arity = ArgumentArity.ZeroOrMore };
 
     static ExecOptions()
@@ -76,8 +76,8 @@ public partial class ExecOptions
         IncludeWideReferences = parseResult.GetValueForOption(WideReferencesOption);
         CompilerType = parseResult.GetValueForOption(CompilerTypeOption) ?? Helper.Default;
         ExecutorType = parseResult.GetValueForOption(ExecutorTypeOption) ?? Helper.Default;
-        References = parseResult.GetValueForOption(AdditionalReferencesOption);
-        Usings = parseResult.GetValueForOption(UsingsOption);
+        References = new(parseResult.GetValueForOption(AdditionalReferencesOption) ?? Array.Empty<string>());
+        Usings = new(parseResult.GetValueForOption(UsingsOption) ?? Array.Empty<string>());
         DebugEnabled = parseResult.GetValueForOption(DebugOption);
 
         if (parseResult.HasOption(AdvancedOption))
