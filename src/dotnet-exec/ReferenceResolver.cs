@@ -62,7 +62,7 @@ public sealed class ReferenceResolver : IReferenceResolver
         return frameworkReferences.SelectMany(x => x).ToArray();
     }
 
-    private async Task<string[]> ResolveAdditionalReferences(string targetFramework, string[]? references,
+    private async Task<string[]> ResolveAdditionalReferences(string targetFramework, HashSet<string>? references,
         CancellationToken cancellationToken)
     {
         if (references.IsNullOrEmpty())
