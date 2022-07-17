@@ -1,5 +1,9 @@
 # ReleaseNotes
 
+## 0.7.0
+
+- Support script embedded reference and using
+
 ## 0.6.0
 
 - Support script execute
