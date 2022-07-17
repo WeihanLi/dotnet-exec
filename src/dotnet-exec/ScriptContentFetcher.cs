@@ -82,7 +82,7 @@ public sealed class ScriptContentFetcher : IScriptContentFetcher
         var scriptReferences = new HashSet<string>();
         var scriptUsings = new HashSet<string>();
 
-        foreach (var line in sourceText.Split('\n'))
+        foreach (var line in sourceText.Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
         {
             if (!line.StartsWith("//"))
             {
@@ -101,6 +101,8 @@ public sealed class ScriptContentFetcher : IScriptContentFetcher
                 {
                     scriptReferences.Add(reference);
                 }
+
+                continue;
             }
 
             // exact using from file
