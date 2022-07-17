@@ -34,6 +34,7 @@ public class IntegrationTests
     [InlineData("HostApplicationBuilderSample")]
     [InlineData("DumpAssemblyInfoSample")]
     [InlineData("WebApiSample")]
+    [InlineData("EmbeddedReferenceSample")]
     public async Task SamplesTest(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
@@ -118,11 +119,11 @@ public class IntegrationTests
     {
         var options = new ExecOptions()
         {
-            References = new[]
+            References = new()
             {
                 "nuget:WeihanLi.Npoi,2.3.0"
             },
-            Usings = new[]
+            Usings = new()
             {
                 "WeihanLi.Npoi"
             },

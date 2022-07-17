@@ -43,7 +43,7 @@ public class ReferenceResolverTest
         var references = await _referenceResolver.ResolveReferences(new ExecOptions()
         {
             IncludeWideReferences = includeWide,
-            References = reference.Split(';', StringSplitOptions.RemoveEmptyEntries)
+            References = new(reference.Split(';', StringSplitOptions.RemoveEmptyEntries))
         }, true);
         Assert.NotEmpty(references);
         Assert.Contains(references, x => x.Contains("WeihanLi.Common.dll"));
@@ -57,7 +57,7 @@ public class ReferenceResolverTest
         var references = await _referenceResolver.ResolveReferences(new ExecOptions()
         {
             IncludeWideReferences = includeWide,
-            References = reference.Split(';', StringSplitOptions.RemoveEmptyEntries)
+            References = new(reference.Split(';', StringSplitOptions.RemoveEmptyEntries))
         }, false);
         Assert.NotEmpty(references);
         Assert.Contains(references, x => x.Contains("WeihanLi.Common.dll"));

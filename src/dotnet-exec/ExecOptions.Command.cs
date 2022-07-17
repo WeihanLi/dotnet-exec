@@ -49,9 +49,9 @@ public partial class ExecOptions
     private static readonly Option<bool> WideReferencesOption =
         new(new[] { "-w" }, () => true, "Include Newtonsoft.Json/WeihanLi.Common references");
 
-    private static readonly Option<string[]> AdditionalReferencesOption =
+    private static readonly Option<HashSet<string>> AdditionalReferencesOption =
         new(new[] { "-r", "--reference" }, "Additional references") { Arity = ArgumentArity.ZeroOrMore };
-    private static readonly Option<string[]> UsingsOption =
+    private static readonly Option<HashSet<string>> UsingsOption =
         new(new[] { "-u", "--using" }, "Namespace usings") { Arity = ArgumentArity.ZeroOrMore };
 
     static ExecOptions()
