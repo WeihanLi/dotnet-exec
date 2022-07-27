@@ -32,4 +32,9 @@
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTest" />
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Copy SourceFiles="$(MSBuildSDKsPath)\..\NuGet.Frameworks.dll"
+          DestinationFolder="$(OutputPath)"
+          ContinueOnError="false" />
+  </Target>
 </Project>
