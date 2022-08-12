@@ -4,19 +4,19 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.2.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.2.0" />
-    <PackageVersion Include="Microsoft.Build.Locator" Version="1.4.1" />
-    <PackageVersion Include="NuGet.DependencyResolver.Core" Version="6.2.1" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.3.0-3.final" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.3.0-3.final" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.3.0-3.final" />
+    <PackageVersion Include="Microsoft.Build.Locator" Version="1.5.3" />
+    <PackageVersion Include="NuGet.DependencyResolver.Core" Version="6.3.0" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="WeihanLi.Common" Version="1.0.53" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
     <PackageVersion Include="FluentAssertions" Version="6.6.0" />
     <PackageVersion Include="Moq" Version="4.17.2" />
-    <PackageVersion Include="xunit" Version="2.4.1" />
+    <PackageVersion Include="xunit" Version="2.4.2" />
     <PackageVersion Include="Xunit.DependencyInjection" Version="8.5.0" />
     <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="8.0.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
