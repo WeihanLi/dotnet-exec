@@ -244,6 +244,7 @@ public static class Helper
         }
     }
 
+    // ReSharper disable once InconsistentNaming
     private static readonly HashSet<string> _supportedFrameworks = new();
     public static HashSet<string> SupportedFrameworks
     {
