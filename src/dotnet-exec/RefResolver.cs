@@ -12,9 +12,7 @@ namespace Exec;
 
 public interface IRefResolver
 {
-#if DEBUG
     bool DisableCache { get; set; }
-#endif
     
     Task<string[]> ResolveReferences(ExecOptions options, bool compilation);
 
@@ -23,13 +21,11 @@ public interface IRefResolver
 
 public sealed class RefResolver : IRefResolver
 {
-#if DEBUG
     // for unit test only
     internal static IRefResolver InstanceForTest { get; } =
         new RefResolver(new NuGetHelper(NullLoggerFactory.Instance));
     // for unit test only
     public bool DisableCache { get; set; }
-#endif
 
     private readonly INuGetHelper _nugetHelper;
     private readonly ConcurrentDictionary<string, object> _cache = new();
