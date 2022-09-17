@@ -6,7 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>exec;execute;script;run</PackageTags>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
