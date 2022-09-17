@@ -28,6 +28,7 @@ public sealed class NuGetReferenceResolver : IReferenceResolver
         {
             version = NuGetVersion.Parse(splits[1]);
         }
+
         var references = await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, false);
         return references;
     }
@@ -37,13 +38,16 @@ public sealed class NuGetReferenceResolver : IReferenceResolver
         ArgumentNullException.ThrowIfNull(reference);
         ArgumentNullException.ThrowIfNull(targetFramework);
         NuGetVersion? version = null;
-        var splits = reference.Split(new[] { ',', ':' }, StringSplitOptions.RemoveEmptyEntries);
+        var splits = reference.Split(new[] { ',', ':' },
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var packageId = splits[0];
         if (splits.Length == 2)
         {
             version = NuGetVersion.Parse(splits[1]);
         }
-        var references = await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, includePreview);
+
+        var references =
+            await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, includePreview);
         return references;
     }
 }

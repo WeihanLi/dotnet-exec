@@ -7,36 +7,29 @@ namespace ReferenceResolver;
 
 public sealed class FrameworkReferenceResolver : IReferenceResolver
 {
+    public static class FrameworkNames
+    {
+        public const string Default = "Microsoft.NETCore.App";
+        public const string Web = "Microsoft.AspNetCore.App";
+        public const string WindowsDesktop = "Microsoft.WindowsDesktop.App";
+    }
+
     public ReferenceType ReferenceType => ReferenceType.FrameworkReference;
 
     public Task<IEnumerable<string>> Resolve(string reference, string targetFramework)
     {
+        if (reference.IsNullOrEmpty())
+            reference = FrameworkNames.Default;
         var references = ResolveFrameworkReferencesViaSdkPacks(reference, targetFramework);
         return Task.FromResult<IEnumerable<string>>(references);
     }
 
     public Task<IEnumerable<string>> ResolveForRuntime(string reference, string targetFramework)
     {
+        if (reference.IsNullOrEmpty())
+            reference = FrameworkNames.Default;
         var references = ResolveFrameworkReferencesViaRuntimeShared(reference, targetFramework);
         return Task.FromResult<IEnumerable<string>>(references);
-    }
-
-    private static readonly Dictionary<string, string> FrameworkMapping = new();
-
-    static FrameworkReferenceResolver()
-    {
-        FrameworkMapping.Add(FrameworkNames.Default, FrameworkReferencePackages.Default);
-        FrameworkMapping.Add(FrameworkNames.Web, FrameworkReferencePackages.Web);
-
-        if (OperatingSystem.IsWindows())
-            FrameworkMapping.Add(FrameworkNames.WindowsDesktop, FrameworkReferencePackages.WindowsDesktop);
-    }
-
-    public static void UpdateFrameworkMapping(string frameworkName, string referencePackageName)
-    {
-        ArgumentNullException.ThrowIfNull(frameworkName);
-        ArgumentNullException.ThrowIfNull(referencePackageName);
-        FrameworkMapping[frameworkName] = referencePackageName;
     }
 
     internal static string GetDotnetPath()
@@ -98,7 +91,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
     private static string[] ResolveFrameworkReferencesViaSdkPacks(string frameworkName, string targetFramework)
     {
         var packsDir = Path.Combine(DotnetDirectory, "packs");
-        var referencePackageName = FrameworkMapping[frameworkName];
+        var referencePackageName = $"{frameworkName}.Ref";
         var frameworkDir = Path.Combine(packsDir, referencePackageName);
         if (Directory.Exists(frameworkDir))
         {
@@ -129,20 +122,4 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         var targetVersionDir = versions.OrderByDescending(x => x).First();
         return Directory.GetFiles(targetVersionDir, "*.dll");
     }
-}
-
-internal static class FrameworkNames
-{
-    public const string Default = "Microsoft.NETCore.App";
-
-    public const string Web = "Microsoft.AspNetCore.App";
-
-    public const string WindowsDesktop = "Microsoft.WindowsDesktop.App";
-}
-
-internal static class FrameworkReferencePackages
-{
-    public const string Default = "Microsoft.NETCore.App.Ref";
-    public const string Web = "Microsoft.AspNetCore.App.Ref";
-    public const string WindowsDesktop = "Microsoft.WindowsDesktop.App.Ref";
 }
