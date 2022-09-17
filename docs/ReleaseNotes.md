@@ -1,5 +1,10 @@
 # ReleaseNotes
 
+## 0.8.0
+
+- Add additional scripts option to include dependencies
+- Add `ReferenceResolver`
+
 ## 0.7.0
 
 - Support script embedded reference and using
