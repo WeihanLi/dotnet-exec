@@ -14,7 +14,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         var references = ResolveFrameworkReferencesViaSdkPacks(reference, targetFramework);
         return Task.FromResult<IEnumerable<string>>(references);
     }
-    
+
     public Task<IEnumerable<string>> ResolveForRuntime(string reference, string targetFramework)
     {
         var references = ResolveFrameworkReferencesViaRuntimeShared(reference, targetFramework);
@@ -27,7 +27,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
     {
         FrameworkMapping.Add(FrameworkNames.Default, FrameworkReferencePackages.Default);
         FrameworkMapping.Add(FrameworkNames.Web, FrameworkReferencePackages.Web);
-        
+
         if (OperatingSystem.IsWindows())
             FrameworkMapping.Add(FrameworkNames.WindowsDesktop, FrameworkReferencePackages.WindowsDesktop);
     }

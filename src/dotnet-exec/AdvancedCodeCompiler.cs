@@ -43,7 +43,7 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
         var documentIdsToRemove = project.Documents.Where(d =>
                 d.FilePath.IsNotNullOrEmpty()
                 && !d.FilePath.Equals(options.Script)
-                && !(options.AdditionalScripts.HasValue() && options.AdditionalScripts.Any(x=>x == d.FilePath))
+                && !(options.AdditionalScripts.HasValue() && options.AdditionalScripts.Any(x => x == d.FilePath))
                 && d.FilePath.EndsWith($"{Path.DirectorySeparatorChar}Program.cs"))
             .Select(d => d.Id)
             .ToImmutableArray();

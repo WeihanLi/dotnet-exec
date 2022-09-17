@@ -3,7 +3,6 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Text;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -43,7 +42,7 @@ public sealed class DefaultCodeCompiler : ICodeCompiler
             foreach (var additionalScript in options.AdditionalScripts)
             {
                 var scriptText = await File.ReadAllTextAsync(additionalScript, options.CancellationToken);
-                var syntaxTree = CSharpSyntaxTree.ParseText(scriptText, parseOptions, additionalScript,null, options.CancellationToken);
+                var syntaxTree = CSharpSyntaxTree.ParseText(scriptText, parseOptions, additionalScript, null, options.CancellationToken);
                 syntaxTreeList.Add(syntaxTree);
             }
         }

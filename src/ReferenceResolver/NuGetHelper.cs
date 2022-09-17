@@ -24,7 +24,7 @@ internal interface INuGetHelper
         NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default);
 }
 
-internal sealed class NuGetHelper: INuGetHelper
+internal sealed class NuGetHelper : INuGetHelper
 {
     private const string LoggerCategoryName = "NuGet";
 

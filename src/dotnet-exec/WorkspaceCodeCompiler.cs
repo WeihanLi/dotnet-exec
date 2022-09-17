@@ -44,9 +44,9 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
             foreach (var additionalScript in options.AdditionalScripts)
             {
                 var additionDoc = DocumentInfo.Create(DocumentId.CreateNewId(projectInfo.Id),
-                    Path.GetFileNameWithoutExtension(additionalScript), loader:new FileTextLoader(additionalScript, null), filePath: additionalScript);
+                    Path.GetFileNameWithoutExtension(additionalScript), loader: new FileTextLoader(additionalScript, null), filePath: additionalScript);
                 documents.Add(additionDoc);
-            }   
+            }
         }
 
         var references = await _referenceResolver.ResolveMetadataReferences(options, true);

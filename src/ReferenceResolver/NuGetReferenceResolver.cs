@@ -31,7 +31,7 @@ public sealed class NuGetReferenceResolver : IReferenceResolver
         var references = await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, false);
         return references;
     }
-    
+
     public async Task<IEnumerable<string>> Resolve(string reference, string targetFramework, bool includePreview)
     {
         ArgumentNullException.ThrowIfNull(reference);

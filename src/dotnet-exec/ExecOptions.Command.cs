@@ -54,7 +54,7 @@ public partial class ExecOptions
         new(new[] { "-r", "--reference" }, "Additional references") { Arity = ArgumentArity.ZeroOrMore };
     private static readonly Option<string[]> UsingsOption =
         new(new[] { "-u", "--using" }, "Namespace usings") { Arity = ArgumentArity.ZeroOrMore };
-    private static readonly Option<string[]> AdditionalScriptsOption = new(new[]{"--ad", "--addition"}, "Additional script path");
+    private static readonly Option<string[]> AdditionalScriptsOption = new(new[] { "--ad", "--addition" }, "Additional script path");
 
     static ExecOptions()
     {

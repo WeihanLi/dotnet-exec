@@ -13,7 +13,7 @@ namespace Exec;
 public interface IRefResolver
 {
     bool DisableCache { get; set; }
-    
+
     Task<string[]> ResolveReferences(ExecOptions options, bool compilation);
 
     Task<IEnumerable<MetadataReference>> ResolveMetadataReferences(ExecOptions options, bool compilation);
@@ -159,7 +159,7 @@ public sealed class RefResolver : IRefResolver
         {
             return await factory();
         }
-        
+
         if (_cache.TryGetValue(cacheKey, out var referencesCache))
         {
             return (T)referencesCache;
