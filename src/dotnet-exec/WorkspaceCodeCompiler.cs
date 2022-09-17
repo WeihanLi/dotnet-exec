@@ -9,13 +9,13 @@ namespace Exec;
 
 public sealed class WorkspaceCodeCompiler : ICodeCompiler
 {
-    private readonly IReferenceResolver _referenceResolver;
+    private readonly IRefResolver _referenceResolver;
 
-    public WorkspaceCodeCompiler(IReferenceResolver referenceResolver)
+    public WorkspaceCodeCompiler(IRefResolver referenceResolver)
     {
         _referenceResolver = referenceResolver;
     }
-    public async Task<Result<CompileResult>> Compile(ExecOptions execOptions, string? code = null)
+    public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
         var projectName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}";
         var assemblyName = $"{projectName}.dll";
@@ -26,34 +26,44 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
             assemblyName,
             LanguageNames.CSharp);
 
-        var globalUsingCode = Helper.GetGlobalUsingsCodeText(execOptions);
+        var globalUsingCode = Helper.GetGlobalUsingsCodeText(options);
         var globalUsingDocument = DocumentInfo.Create(
             DocumentId.CreateNewId(projectInfo.Id, "__GlobalUsings"),
             "__GlobalUsings",
-            loader: new PlainTextLoader(globalUsingCode));
+            loader: new PlainTextLoader(globalUsingCode),
+            isGenerated: true);
 
-        var scriptDocument = DocumentInfo.Create(DocumentId.CreateNewId(projectInfo.Id),
-            Path.GetFileNameWithoutExtension(execOptions.Script));
+        var scriptDocument = DocumentInfo.Create(DocumentId.CreateNewId(projectInfo.Id), "Script");
         scriptDocument = string.IsNullOrEmpty(code)
-            ? scriptDocument.WithFilePath(execOptions.Script)
+            ? scriptDocument.WithFilePath(options.Script)
             : scriptDocument.WithTextLoader(new PlainTextLoader(code));
 
-        var assemblyLocations = await _referenceResolver.ResolveReferences(execOptions, true);
-        var references = assemblyLocations.Select(l => MetadataReference.CreateFromFile(l));
+        var documents = new List<DocumentInfo>() { globalUsingDocument, scriptDocument, };
+        if (options.AdditionalScripts.HasValue())
+        {
+            foreach (var additionalScript in options.AdditionalScripts)
+            {
+                var additionDoc = DocumentInfo.Create(DocumentId.CreateNewId(projectInfo.Id),
+                    Path.GetFileNameWithoutExtension(additionalScript), loader:new FileTextLoader(additionalScript, null), filePath: additionalScript);
+                documents.Add(additionDoc);
+            }   
+        }
+
+        var references = await _referenceResolver.ResolveMetadataReferences(options, true);
         projectInfo = projectInfo
-                .WithParseOptions(new CSharpParseOptions(execOptions.LanguageVersion))
-                .WithDocuments(new[] { globalUsingDocument, scriptDocument })
+                .WithParseOptions(new CSharpParseOptions(options.LanguageVersion))
+                .WithDocuments(documents)
                 .WithMetadataReferences(references)
             ;
         using var workspace = new AdhocWorkspace();
         var project = workspace.AddProject(projectInfo);
         var compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication,
-            optimizationLevel: execOptions.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
+            optimizationLevel: options.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
         compilationOptions.EnableReferencesSupersedeLowerVersions();
 
         var compilation = await project
             .WithCompilationOptions(compilationOptions)
             .GetCompilationAsync();
-        return await Guard.NotNull(compilation).GetCompilationAssemblyResult(execOptions.CancellationToken);
+        return await Guard.NotNull(compilation).GetCompilationAssemblyResult(options.CancellationToken);
     }
 }

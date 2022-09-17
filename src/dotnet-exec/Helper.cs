@@ -39,7 +39,7 @@ public static class Helper
         services.AddSingleton<DefaultCodeExecutor>();
         services.AddSingleton<IExecutorFactory, ExecutorFactory>();
         services.AddSingleton<INuGetHelper, NuGetHelper>();
-        services.AddSingleton<IReferenceResolver, ReferenceResolver>();
+        services.AddSingleton<IRefResolver, RefResolver>();
         services.AddSingleton<CommandHandler>();
         services.AddSingleton<ICommandHandler>(sp => sp.GetRequiredService<CommandHandler>());
         services.AddSingleton<IScriptContentFetcher, ScriptContentFetcher>();

@@ -15,8 +15,9 @@ public class Startup
         services.RegisterApplicationServices(new[] { "--debug" });
     }
 
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor outputHelperAccessor)
+    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor outputHelperAccessor, IRefResolver refResolver)
     {
         loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(outputHelperAccessor, (_, _) => true));
+        refResolver.DisableCache = true;
     }
 }

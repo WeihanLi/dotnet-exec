@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace UnitTest;
 public class ReferenceResolverTest
 {
-    private readonly IReferenceResolver _referenceResolver =
-        new ReferenceResolver(new NuGetHelper(NullLoggerFactory.Instance));
+    private readonly IRefResolver _referenceResolver =
+        new RefResolver(new NuGetHelper(NullLoggerFactory.Instance));
 
     [Theory]
     [InlineData(true)]

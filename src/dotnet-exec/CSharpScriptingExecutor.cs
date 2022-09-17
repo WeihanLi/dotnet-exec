@@ -13,10 +13,10 @@ namespace Exec;
 
 public sealed class CSharpScriptCompilerExecutor : ICodeCompiler, ICodeExecutor
 {
-    private readonly IReferenceResolver _referenceResolver;
+    private readonly IRefResolver _referenceResolver;
     private readonly ILogger _logger;
 
-    public CSharpScriptCompilerExecutor(IReferenceResolver referenceResolver, ILogger logger)
+    public CSharpScriptCompilerExecutor(IRefResolver referenceResolver, ILogger logger)
     {
         _referenceResolver = referenceResolver;
         _logger = logger;

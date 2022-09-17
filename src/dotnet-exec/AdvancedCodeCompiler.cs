@@ -40,16 +40,17 @@ public sealed class AdvancedCodeCompiler : ICodeCompiler
             _logger.LogError($"Workspace load failed, {args.Diagnostic.Kind}, {args.Diagnostic.Message}");
         };
         var project = await workspace.OpenProjectAsync(projectPath, cancellationToken: options.CancellationToken);
-        var documentIds = project.Documents.Where(d =>
+        var documentIdsToRemove = project.Documents.Where(d =>
                 d.FilePath.IsNotNullOrEmpty()
                 && !d.FilePath.Equals(options.Script)
+                && !(options.AdditionalScripts.HasValue() && options.AdditionalScripts.Any(x=>x == d.FilePath))
                 && d.FilePath.EndsWith($"{Path.DirectorySeparatorChar}Program.cs"))
             .Select(d => d.Id)
             .ToImmutableArray();
 
         var compilationOptions = project.CompilationOptions?.WithOutputKind(OutputKind.ConsoleApplication)
                                  ?? new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: options.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
-        var compilation = await project.RemoveDocuments(documentIds)
+        var compilation = await project.RemoveDocuments(documentIdsToRemove)
             .WithCompilationOptions(compilationOptions)
             .GetCompilationAsync(options.CancellationToken);
         return await Guard.NotNull(compilation)

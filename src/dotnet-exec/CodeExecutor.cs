@@ -86,9 +86,9 @@ public abstract class CodeExecutor : ICodeExecutor
 
 public sealed class DefaultCodeExecutor : CodeExecutor
 {
-    private readonly IReferenceResolver _referenceResolver;
+    private readonly IRefResolver _referenceResolver;
 
-    public DefaultCodeExecutor(IReferenceResolver referenceResolver, ILogger logger) : base(logger)
+    public DefaultCodeExecutor(IRefResolver referenceResolver, ILogger logger) : base(logger)
     {
         _referenceResolver = referenceResolver;
     }

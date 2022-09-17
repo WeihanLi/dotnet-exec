@@ -25,6 +25,8 @@ public sealed partial class ExecOptions
     public HashSet<string>? References { get; set; }
     public HashSet<string>? Usings { get; set; }
 
+    public HashSet<string>? AdditionalScripts { get; set; }
+
     public LanguageVersion LanguageVersion { get; set; }
     public OptimizationLevel Configuration { get; set; }
 
@@ -33,6 +35,8 @@ public sealed partial class ExecOptions
     public string ExecutorType { get; set; } = "default";
 
     public bool DebugEnabled { get; set; }
+
+    public bool DisableCache { get; set; }
 
     [JsonIgnore] public CancellationToken CancellationToken { get; set; }
 }

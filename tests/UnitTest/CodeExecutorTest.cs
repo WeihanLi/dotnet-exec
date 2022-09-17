@@ -10,7 +10,7 @@ namespace UnitTest;
 public class CodeExecutorTest
 {
     private readonly ITestOutputHelper _outputHelper;
-    private readonly ICodeCompiler _compiler = new DefaultCodeCompiler(ReferenceResolver.InstanceForTest);
+    private readonly ICodeCompiler _compiler = new DefaultCodeCompiler(RefResolver.InstanceForTest);
 
     public CodeExecutorTest(ITestOutputHelper outputHelper)
     {
@@ -31,7 +31,7 @@ public class CodeExecutorTest
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);
-        var executor = new DefaultCodeExecutor(ReferenceResolver.InstanceForTest, NullLogger.Instance);
+        var executor = new DefaultCodeExecutor(RefResolver.InstanceForTest, NullLogger.Instance);
         var executeResult = await executor.Execute(result.Data, execOptions);
         _outputHelper.WriteLine($"{executeResult.Msg}");
         Assert.True(executeResult.IsSuccess());
@@ -65,7 +65,7 @@ internal class SomeTest
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);
-        var executor = new DefaultCodeExecutor(ReferenceResolver.InstanceForTest, NullLogger.Instance);
+        var executor = new DefaultCodeExecutor(RefResolver.InstanceForTest, NullLogger.Instance);
         var executeResult = await executor.Execute(result.Data, execOptions);
         _outputHelper.WriteLine($"{executeResult.Msg}");
         Assert.True(executeResult.IsSuccess());
@@ -91,7 +91,7 @@ class B
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);
         using var output = await ConsoleOutput.CaptureAsync();
-        var executor = new DefaultCodeExecutor(ReferenceResolver.InstanceForTest, NullLogger.Instance);
+        var executor = new DefaultCodeExecutor(RefResolver.InstanceForTest, NullLogger.Instance);
         var executeResult = await executor.Execute(result.Data, options);
         Assert.True(executeResult.IsSuccess());
     }
@@ -116,7 +116,7 @@ class B
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);
         using var output = await ConsoleOutput.CaptureAsync();
-        var executor = new DefaultCodeExecutor(ReferenceResolver.InstanceForTest, NullLogger.Instance);
+        var executor = new DefaultCodeExecutor(RefResolver.InstanceForTest, NullLogger.Instance);
         var executeResult = await executor.Execute(result.Data, options);
         _outputHelper.WriteLine(executeResult.Msg);
         Assert.False(executeResult.IsSuccess());

@@ -43,6 +43,7 @@ public partial class ExecOptions
         new(new[] { "--args", "--arguments" }, "Input arguments");
 
     private static readonly Option<bool> DebugOption = new("--debug", "Enable debug logs for debug");
+    private static readonly Option<bool> DisableCacheOption = new("--disable-cache", "Disable internal cache");
     private static readonly Option<string> ProjectOption = new("--project", "Project file path");
     private static readonly Option<bool> AdvancedOption = new(new[] { "-a", "--advanced" }, "Advanced mode");
 
@@ -53,6 +54,7 @@ public partial class ExecOptions
         new(new[] { "-r", "--reference" }, "Additional references") { Arity = ArgumentArity.ZeroOrMore };
     private static readonly Option<string[]> UsingsOption =
         new(new[] { "-u", "--using" }, "Namespace usings") { Arity = ArgumentArity.ZeroOrMore };
+    private static readonly Option<string[]> AdditionalScriptsOption = new(new[]{"--ad", "--addition"}, "Additional script path");
 
     static ExecOptions()
     {
@@ -78,7 +80,9 @@ public partial class ExecOptions
         ExecutorType = parseResult.GetValueForOption(ExecutorTypeOption) ?? Helper.Default;
         References = new(parseResult.GetValueForOption(AdditionalReferencesOption) ?? Array.Empty<string>());
         Usings = new(parseResult.GetValueForOption(UsingsOption) ?? Array.Empty<string>());
-        DebugEnabled = parseResult.GetValueForOption(DebugOption);
+        AdditionalScripts = new(parseResult.GetValueForOption(AdditionalScriptsOption) ?? Array.Empty<string>());
+        DebugEnabled = parseResult.HasOption(DebugOption);
+        DisableCache = parseResult.HasOption(DisableCacheOption);
 
         if (parseResult.HasOption(AdvancedOption))
         {
