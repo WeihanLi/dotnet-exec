@@ -18,13 +18,15 @@ using NuGetLogLevel = NuGet.Common.LogLevel;
 
 namespace ReferenceResolver;
 
-internal interface INuGetHelper
+public interface INuGetHelper
 {
     Task<string[]> ResolvePackageReferences(string targetFramework, string packageId,
         NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePreview = false, CancellationToken cancellationToken = default);
 }
 
-internal sealed class NuGetHelper : INuGetHelper
+public sealed class NuGetHelper : INuGetHelper
 {
     private const string LoggerCategoryName = "NuGet";
 
