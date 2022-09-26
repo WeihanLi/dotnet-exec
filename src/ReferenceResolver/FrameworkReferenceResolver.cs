@@ -20,15 +20,15 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
     {
         if (reference.IsNullOrEmpty())
             reference = FrameworkNames.Default;
-        var references = ResolveFrameworkReferencesViaSdkPacks(reference, targetFramework);
+        var references = ResolveFrameworkReferencesViaRuntimeShared(reference, targetFramework);
         return Task.FromResult<IEnumerable<string>>(references);
     }
 
-    public Task<IEnumerable<string>> ResolveForRuntime(string reference, string targetFramework)
+    public Task<IEnumerable<string>> ResolveForCompile(string reference, string targetFramework)
     {
         if (reference.IsNullOrEmpty())
             reference = FrameworkNames.Default;
-        var references = ResolveFrameworkReferencesViaRuntimeShared(reference, targetFramework);
+        var references = ResolveFrameworkReferencesViaSdkPacks(reference, targetFramework);
         return Task.FromResult<IEnumerable<string>>(references);
     }
 
