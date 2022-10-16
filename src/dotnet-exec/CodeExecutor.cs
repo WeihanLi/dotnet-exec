@@ -61,15 +61,13 @@ public abstract class CodeExecutor : ICodeExecutor
                     executed = true;
                 }
 
-                switch (returnValue)
+                var task = returnValue switch
                 {
-                    case Task task:
-                        await task.ConfigureAwait(false);
-                        break;
-                    case ValueTask valueTask:
-                        await valueTask.ConfigureAwait(false);
-                        break;
-                }
+                    Task t => new ValueTask(t),
+                    ValueTask vt => vt,
+                    _ => ValueTask.CompletedTask
+                };
+                await task.ConfigureAwait(false);
             }
             catch (Exception e)
             {
