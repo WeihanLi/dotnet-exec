@@ -33,9 +33,4 @@
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTest" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Copy SourceFiles="$([System.IO.Directory]::GetParent($(BundledRuntimeIdentifierGraphFile)))\NuGet.Frameworks.dll"
-          DestinationFolder="$(OutputPath)"
-          ContinueOnError="false" />
-  </Target>
 </Project>
