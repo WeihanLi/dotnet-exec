@@ -60,14 +60,7 @@ public abstract class CodeExecutor : ICodeExecutor
                     returnValue = entryMethod.Invoke(null, new object?[] { options.Arguments });
                     executed = true;
                 }
-
-                var task = returnValue switch
-                {
-                    Task t => new ValueTask(t),
-                    ValueTask vt => vt,
-                    _ => ValueTask.CompletedTask
-                };
-                await task.ConfigureAwait(false);
+                await TaskHelper.ToTask(returnValue).ConfigureAwait(false);
             }
             catch (Exception e)
             {
