@@ -3,6 +3,7 @@
 ## 0.8.0
 
 - Add additional scripts option to include dependencies
+- Support C# 11 features
 - Add `ReferenceResolver`
 
 ## 0.7.0
