@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using Microsoft.Extensions.Logging.Abstractions;
+using ReferenceResolver;
 
 namespace UnitTest;
 public class NuGetHelperTest

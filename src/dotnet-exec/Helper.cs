@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using NuGet.Versioning;
+using ReferenceResolver;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -44,6 +45,7 @@ public static class Helper
         services.AddSingleton<ICommandHandler>(sp => sp.GetRequiredService<CommandHandler>());
         services.AddSingleton<IScriptContentFetcher, ScriptContentFetcher>();
         services.AddHttpClient(nameof(ScriptContentFetcher));
+        services.AddReferenceResolvers();
 
         return services;
     }

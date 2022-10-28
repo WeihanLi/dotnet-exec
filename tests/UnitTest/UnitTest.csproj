@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\dotnet-exec\dotnet-exec.csproj" />
+    <ProjectReference Include="..\..\src\ReferenceResolver\ReferenceResolver.csproj" />
   </ItemGroup>
 
 </Project>

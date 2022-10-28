@@ -33,4 +33,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTest" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReferenceResolver\ReferenceResolver.csproj" />
+  </ItemGroup>
 </Project>

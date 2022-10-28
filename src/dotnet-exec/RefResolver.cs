@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuGet.Frameworks;
 using NuGet.Versioning;
+using ReferenceResolver;
 using System.Collections.Concurrent;
 using System.Reflection;
 
