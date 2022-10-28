@@ -24,6 +24,10 @@ public interface INuGetHelper
         NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default);
 
     Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePreview = false, CancellationToken cancellationToken = default);
+    Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageName, NuGetVersion packageVersion, string targetFramework, CancellationToken cancellationToken = default);
+    Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null, CancellationToken cancellationToken = default);
+    Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, CancellationToken cancellationToken = default);
+    Task<IEnumerable<string>> GetPackages(string packagePrefix, bool includePreRelease = true, CancellationToken cancellationToken = default);
 }
 
 public sealed class NuGetHelper : INuGetHelper
@@ -124,12 +128,19 @@ public sealed class NuGetHelper : INuGetHelper
         _globalPackagesFolder = GetGlobalPackagesFolder();
     }
 
-    private async Task DownloadPackage(string packageId, NuGetVersion version, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>> GetPackages(string packagePrefix, bool includePreRelease = true, CancellationToken cancellationToken = default)
     {
-        var packageDir = GetPackageInstalledDir(packageId, version);
+        var resource = await _repository.GetResourceAsync<AutoCompleteResource>(cancellationToken);
+        var result = await resource.IdStartsWith(packagePrefix, includePreRelease, _nugetLogger, cancellationToken);
+        return result;
+    }
+    
+    public async Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null, CancellationToken cancellationToken = default)
+    {
+        var packageDir = GetPackageInstalledDir(packageId, version, packagesDirectory);
         if (Directory.Exists(packageDir))
         {
-            return;
+            return packageDir;
         }
         var packagerIdentity = new PackageIdentity(packageId, version);
         var pkgDownloadContext = new PackageDownloadContext(_cache);
@@ -138,10 +149,11 @@ public sealed class NuGetHelper : INuGetHelper
             await downloadRes.GetDownloadResourceResultAsync(
                 packagerIdentity,
                 pkgDownloadContext,
-                _globalPackagesFolder,
+                packagesDirectory ?? _globalPackagesFolder,
                 _nugetLogger,
                 cancellationToken), _ => true, 5);
-        _logger.LogDebug("Package({packageIdentity}) downloaded from {packageSource}", packagerIdentity, downloadResult!.PackageSource ?? "NuGet.org");
+        _logger.LogInformation("Package({packageIdentity}) downloaded to {packageDirectory} from {packageSource}", packagerIdentity, packageDir, downloadResult!.PackageSource ?? "NuGet.org");
+        return Directory.Exists(packageDir) ? packageDir : null;
     }
 
     public async Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePreview = false, CancellationToken cancellationToken = default)
@@ -153,8 +165,19 @@ public sealed class NuGetHelper : INuGetHelper
             _nugetLogger, cancellationToken);
         return versions.Where(_ => includePreview || !_.IsPrerelease);
     }
+    
+    public async Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, CancellationToken cancellationToken = default)
+    {
+        var findPackageByIdResource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
+        return await findPackageByIdResource.CopyNupkgToStreamAsync(
+            packageId,
+            version,
+            stream,
+            _cache,
+            _nugetLogger, cancellationToken);
+    }
 
-    private async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string targetFramework, string packageName, NuGetVersion packageVersion, CancellationToken cancellationToken = default)
+    public async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageName, NuGetVersion packageVersion, string targetFramework, CancellationToken cancellationToken = default)
     {
         var dependencyGroupInfo = await GetPackageDependencyGroups(packageName, packageVersion, cancellationToken);
         if (dependencyGroupInfo.Count <= 0)
@@ -183,7 +206,7 @@ public sealed class NuGetHelper : INuGetHelper
                 }
 
                 var childrenDependencies =
-                    await GetPackageDependencies(targetFramework, package.Id, package.VersionRange.MinVersion, cancellationToken);
+                    await GetPackageDependencies(package.Id, package.VersionRange.MinVersion, targetFramework, cancellationToken);
                 if (childrenDependencies is { Count: > 0 })
                 {
                     foreach (var childrenDependency in childrenDependencies)
@@ -221,7 +244,7 @@ public sealed class NuGetHelper : INuGetHelper
                 throw new InvalidOperationException($"No package versions found for package {packageId}");
             }
         }
-        var dependencies = await GetPackageDependencies(targetFramework, packageId, version, cancellationToken);
+        var dependencies = await GetPackageDependencies(packageId, version, targetFramework, cancellationToken);
         var packageReferences = await ResolvePackageInternal(targetFramework, packageId, version, cancellationToken);
         if (dependencies.Count <= 0)
         {
@@ -257,7 +280,7 @@ public sealed class NuGetHelper : INuGetHelper
 
     private async Task<string[]> ResolvePackageInternal(string targetFramework, string packageId, NuGetVersion version, CancellationToken cancellationToken)
     {
-        await DownloadPackage(packageId, version, cancellationToken);
+        await DownloadPackage(packageId, version, null, cancellationToken);
         var packageDir = GetPackageInstalledDir(packageId, version);
         if (!Directory.Exists(packageDir))
         {
@@ -290,9 +313,9 @@ public sealed class NuGetHelper : INuGetHelper
         return Array.Empty<string>();
     }
 
-    private string GetPackageInstalledDir(string packageId, NuGetVersion packageVersion)
+    private string GetPackageInstalledDir(string packageId, NuGetVersion packageVersion, string? packagesDirectory = null)
     {
-        var packageDir = Path.Combine(_globalPackagesFolder, packageId.ToLowerInvariant(),
+        var packageDir = Path.Combine(packagesDirectory ?? _globalPackagesFolder, packageId.ToLowerInvariant(),
             packageVersion.ToString());
         return packageDir;
     }
