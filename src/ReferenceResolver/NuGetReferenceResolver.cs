@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using Microsoft.Extensions.Logging;
 using NuGet.Versioning;
 
 namespace ReferenceResolver;
@@ -10,9 +9,9 @@ public sealed class NuGetReferenceResolver : IReferenceResolver
 {
     private readonly INuGetHelper _nugetHelper;
 
-    public NuGetReferenceResolver(ILoggerFactory loggerFactory)
+    public NuGetReferenceResolver(INuGetHelper nugetHelper)
     {
-        _nugetHelper = new NuGetHelper(loggerFactory);
+        _nugetHelper = nugetHelper;
     }
 
     public ReferenceType ReferenceType => ReferenceType.NuGetPackage;

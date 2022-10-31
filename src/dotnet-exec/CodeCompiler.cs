@@ -15,10 +15,12 @@ public interface ICodeCompiler
 public sealed class DefaultCodeCompiler : ICodeCompiler
 {
     private readonly IRefResolver _referenceResolver;
+    private readonly IAdditionalScriptContentFetcher _scriptContentFetcher;
 
-    public DefaultCodeCompiler(IRefResolver referenceResolver)
+    public DefaultCodeCompiler(IRefResolver referenceResolver, IAdditionalScriptContentFetcher scriptContentFetcher)
     {
         _referenceResolver = referenceResolver;
+        _scriptContentFetcher = scriptContentFetcher;
     }
 
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
@@ -41,8 +43,10 @@ public sealed class DefaultCodeCompiler : ICodeCompiler
         {
             foreach (var additionalScript in options.AdditionalScripts)
             {
-                var scriptText = await File.ReadAllTextAsync(additionalScript, options.CancellationToken);
-                var syntaxTree = CSharpSyntaxTree.ParseText(scriptText, parseOptions, additionalScript, null, options.CancellationToken);
+                var scriptContent = await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken);
+                if (string.IsNullOrEmpty(scriptContent.Data))
+                    continue;
+                var syntaxTree = CSharpSyntaxTree.ParseText(scriptContent.Data, parseOptions, additionalScript, null, options.CancellationToken);
                 syntaxTreeList.Add(syntaxTree);
             }
         }

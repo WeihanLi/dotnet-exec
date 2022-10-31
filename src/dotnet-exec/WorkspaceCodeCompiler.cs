@@ -10,10 +10,12 @@ namespace Exec;
 public sealed class WorkspaceCodeCompiler : ICodeCompiler
 {
     private readonly IRefResolver _referenceResolver;
+    private readonly IAdditionalScriptContentFetcher _scriptContentFetcher;
 
-    public WorkspaceCodeCompiler(IRefResolver referenceResolver)
+    public WorkspaceCodeCompiler(IRefResolver referenceResolver, IAdditionalScriptContentFetcher scriptContentFetcher)
     {
         _referenceResolver = referenceResolver;
+        _scriptContentFetcher = scriptContentFetcher;
     }
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
@@ -43,8 +45,12 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
         {
             foreach (var additionalScript in options.AdditionalScripts)
             {
+                var scriptContent = await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken);
+                if (string.IsNullOrEmpty(scriptContent.Data))
+                    continue;
+                
                 var additionDoc = DocumentInfo.Create(DocumentId.CreateNewId(projectInfo.Id),
-                    Path.GetFileNameWithoutExtension(additionalScript), loader: new FileTextLoader(additionalScript, null), filePath: additionalScript);
+                    Path.GetFileNameWithoutExtension(additionalScript), loader: new PlainTextLoader(scriptContent.Data));
                 documents.Add(additionDoc);
             }
         }

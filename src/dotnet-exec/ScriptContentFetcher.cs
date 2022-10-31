@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using WeihanLi.Common.Http;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -10,15 +11,80 @@ public interface IScriptContentFetcher
     Task<Result<string>> FetchContent(ExecOptions options);
 }
 
-public sealed class ScriptContentFetcher : IScriptContentFetcher
+public interface IAdditionalScriptContentFetcher
 {
+    Task<Result<string>> FetchContent(string script, CancellationToken cancellationToken = default);
+}
+
+public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
+{
+    // for test only
+    internal static IAdditionalScriptContentFetcher InstanceForTest { get; } 
+        = new AdditionalScriptContentFetcher(new MockHttpClientFactory(), Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+    private sealed class MockHttpClientFactory: IHttpClientFactory
+    {
+        public HttpClient CreateClient(string name)
+        {
+            return new HttpClient(new NoProxyHttpClientHandler());
+        }
+    }
+
+
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger _logger;
 
-    public ScriptContentFetcher(IHttpClientFactory httpClientFactory, ILogger logger)
+    public AdditionalScriptContentFetcher(IHttpClientFactory httpClientFactory, ILogger logger)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
+    }
+    
+    public async Task<Result<string>> FetchContent(string script, CancellationToken cancellationToken = default)
+    {
+        string sourceText;
+        try
+        {
+            if (Uri.TryCreate(script, UriKind.Absolute, out var uri) && !uri.IsFile)
+            {
+                var httpClient = _httpClientFactory.CreateClient(nameof(ScriptContentFetcher));
+                var scriptUrl = uri.Host switch
+                {
+                    "github.com" => script
+                        .Replace($"://{uri.Host}/", $"://raw.githubusercontent.com/")
+                        .Replace("/blob/", "/")
+                        .Replace("/tree/", "/"),
+                    "gist.github.com" => script
+                                             .Replace($"://{uri.Host}/", $"://gist.githubusercontent.com/")
+                                         + "/raw",
+                    _ => script
+                };
+                sourceText = await httpClient.GetStringAsync(scriptUrl, cancellationToken);
+            }
+            else
+            {
+                if (!File.Exists(script))
+                {
+                    _logger.LogError("The file {ScriptFile} does not exists", script);
+                    return Result.Fail<string>("File path not exits");
+                }
+
+                sourceText = await File.ReadAllTextAsync(script, cancellationToken);
+            }
+        }
+        catch (Exception e)
+        {
+            return Result.Fail<string>($"Fail to fetch script content, {e}", ResultStatus.ProcessFail);
+        }
+
+        return Result.Success<string>(sourceText);
+    }
+}
+
+public sealed class ScriptContentFetcher : AdditionalScriptContentFetcher, IScriptContentFetcher
+{
+    public ScriptContentFetcher(IHttpClientFactory httpClientFactory, ILogger logger)
+         : base(httpClientFactory, logger)
+    {
     }
 
     public async Task<Result<string>> FetchContent(ExecOptions options)
@@ -44,41 +110,15 @@ public sealed class ScriptContentFetcher : IScriptContentFetcher
             return Result.Success<string>(code);
         }
 
-        string sourceText;
-        try
+        var sourceTextResult = await FetchContent(options.Script);
+        if (sourceTextResult.Status != ResultStatus.Success)
         {
-            if (Uri.TryCreate(scriptFile, UriKind.Absolute, out var uri) && !uri.IsFile)
-            {
-                var httpClient = _httpClientFactory.CreateClient(nameof(ScriptContentFetcher));
-                var scriptUrl = uri.Host switch
-                {
-                    "github.com" => scriptFile
-                        .Replace($"://{uri.Host}/", $"://raw.githubusercontent.com/")
-                        .Replace("/blob/", "/")
-                        .Replace("/tree/", "/"),
-                    "gist.github.com" => scriptFile
-                                             .Replace($"://{uri.Host}/", $"://gist.githubusercontent.com/")
-                                         + "/raw",
-                    _ => scriptFile
-                };
-                sourceText = await httpClient.GetStringAsync(scriptUrl, options.CancellationToken);
-            }
-            else
-            {
-                if (!File.Exists(scriptFile))
-                {
-                    _logger.LogError("The file {ScriptFile} does not exists", scriptFile);
-                    return Result.Fail<string>("File path not exits");
-                }
-
-                sourceText = await File.ReadAllTextAsync(scriptFile, options.CancellationToken);
-            }
-        }
-        catch (Exception e)
-        {
-            return Result.Fail<string>($"Fail to fetch script content, {e}", ResultStatus.ProcessFail);
+            return sourceTextResult;
         }
 
+        var sourceText = sourceTextResult.Data;
+        Guard.NotNull(sourceText);
+        
         var scriptReferences = new HashSet<string>();
         var scriptUsings = new HashSet<string>();
 

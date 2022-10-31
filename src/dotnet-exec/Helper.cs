@@ -38,13 +38,13 @@ public static class Helper
         services.AddSingleton<ICompilerFactory, CompilerFactory>();
         services.AddSingleton<DefaultCodeExecutor>();
         services.AddSingleton<IExecutorFactory, ExecutorFactory>();
-        services.AddSingleton<INuGetHelper, NuGetHelper>();
-        services.AddSingleton<IRefResolver, RefResolver>();
         services.AddSingleton<CommandHandler>();
         services.AddSingleton<ICommandHandler>(sp => sp.GetRequiredService<CommandHandler>());
         services.AddSingleton<IScriptContentFetcher, ScriptContentFetcher>();
+        services.AddSingleton<IAdditionalScriptContentFetcher, AdditionalScriptContentFetcher>();
         services.AddHttpClient(nameof(ScriptContentFetcher));
         services.AddReferenceResolvers();
+        services.AddSingleton<IRefResolver, RefResolver>();
 
         return services;
     }

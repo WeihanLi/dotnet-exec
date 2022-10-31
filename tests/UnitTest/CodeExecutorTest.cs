@@ -10,7 +10,8 @@ namespace UnitTest;
 public class CodeExecutorTest
 {
     private readonly ITestOutputHelper _outputHelper;
-    private readonly ICodeCompiler _compiler = new DefaultCodeCompiler(RefResolver.InstanceForTest);
+    private readonly ICodeCompiler _compiler = new DefaultCodeCompiler(
+        RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
 
     public CodeExecutorTest(ITestOutputHelper outputHelper)
     {
