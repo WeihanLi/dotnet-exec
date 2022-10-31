@@ -1,4 +1,5 @@
-﻿// Copyright (c) Weihan Li. All rights reserved.
+﻿using System.Threading;
+// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
 using Microsoft.CodeAnalysis;
@@ -9,9 +10,9 @@ public interface IReferenceResolverFactory
 {
     IReferenceResolver GetResolver(ReferenceType referenceType);
 
-    Task<IEnumerable<string>> ResolveReference(string reference, string targetFramework);
+    Task<IEnumerable<string>> ResolveReference(string reference, string targetFramework, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string reference, string targetFramework);
+    Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string reference, string targetFramework, CancellationToken cancellationToken = default);
 }
 
 public sealed class ReferenceResolverFactory : IReferenceResolverFactory
@@ -36,16 +37,16 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
         };
     }
 
-    public async Task<IEnumerable<string>> ResolveReference(string reference, string targetFramework)
+    public async Task<IEnumerable<string>> ResolveReference(string reference, string targetFramework, CancellationToken cancellationToken = default)
     {
         var (schema, referenceWithoutSchema, resolver) = GetReferenceAndSchema(reference);
-        return await resolver.Resolve(referenceWithoutSchema, targetFramework);
+        return await resolver.Resolve(referenceWithoutSchema, targetFramework, cancellationToken);
     }
 
-    public async Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string reference, string targetFramework)
+    public async Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string reference, string targetFramework, CancellationToken cancellationToken = default)
     {
         var (schema, referenceWithoutSchema, resolver) = GetReferenceAndSchema(reference);
-        return await resolver.ResolveMetadata(referenceWithoutSchema, targetFramework);
+        return await resolver.ResolveMetadata(referenceWithoutSchema, targetFramework, cancellationToken);
     }
 
     private (string schema, string reference, IReferenceResolver referenceResolver) GetReferenceAndSchema(string fullReference)
