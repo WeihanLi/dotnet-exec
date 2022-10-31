@@ -10,7 +10,7 @@
       <Description>ReferenceResolver</Description>
     </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
     <PackageReference Include="NuGet.DependencyResolver.Core" />
     <PackageReference Include="WeihanLi.Common" />
   </ItemGroup>
