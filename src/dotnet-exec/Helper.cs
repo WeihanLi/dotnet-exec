@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis.Emit;
 using NuGet.Versioning;
 using ReferenceResolver;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using WeihanLi.Common.Models;
 
@@ -122,12 +121,6 @@ public static class Helper
             yield return "Microsoft.Extensions.DependencyInjection";
             yield return "Microsoft.Extensions.Hosting";
             yield return "Microsoft.Extensions.Logging";
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                // Include Windows Desktop SDK for Windows only
-                yield return "System.Windows.Forms";
-            }
         }
 
 
@@ -172,65 +165,9 @@ public static class Helper
         return $"{usingText}{Environment.NewLine}[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]";
     }
 
-    public static string GetDotnetPath()
-    {
-        var commandNameWithExtension =
-            $"dotnet{(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : string.Empty)}";
-        var searchPaths = Guard.NotNull(Environment.GetEnvironmentVariable("PATH"))
-            .Split(new[] { Path.PathSeparator }, options: StringSplitOptions.RemoveEmptyEntries)
-            .Select(p => p.Trim('"'))
-            .ToArray();
-        var commandPath = searchPaths
-            .Where(p => !Path.GetInvalidPathChars().Any(p.Contains))
-            .Select(p => Path.Combine(p, commandNameWithExtension))
-            .First(File.Exists);
-        return commandPath;
-    }
-
-    private static string GetDotnetDirectory()
-    {
-        var environmentOverride = Environment.GetEnvironmentVariable("DOTNET_MSBUILD_SDK_RESOLVER_CLI_DIR");
-        if (!string.IsNullOrEmpty(environmentOverride))
-        {
-            return environmentOverride;
-        }
-
-        var dotnetExe = GetDotnetPath();
-
-        if (dotnetExe.IsNotNullOrEmpty() && !Interop.RunningOnWindows)
-        {
-            // e.g. on Linux the 'dotnet' command from PATH is a symlink so we need to
-            // resolve it to get the actual path to the binary
-            dotnetExe = Interop.Unix.RealPath(dotnetExe) ?? dotnetExe;
-        }
-
-        if (string.IsNullOrWhiteSpace(dotnetExe))
-        {
-            dotnetExe = Environment.ProcessPath;
-        }
-
-        return Guard.NotNull(Path.GetDirectoryName(dotnetExe));
-    }
-
-    private static string _dotnetDirectory = string.Empty;
-
-    public static string DotnetDirectory
-    {
-        get
-        {
-            if (!string.IsNullOrEmpty(_dotnetDirectory))
-            {
-                return _dotnetDirectory;
-            }
-
-            _dotnetDirectory = GetDotnetDirectory();
-            return _dotnetDirectory;
-        }
-    }
-
     private static void LoadSupportedFrameworks()
     {
-        var frameworkDir = Path.Combine(DotnetDirectory, "shared", FrameworkNames.Default);
+        var frameworkDir = Path.Combine(FrameworkReferenceResolver.DotnetDirectory, "shared", FrameworkReferenceResolver.FrameworkNames.Default);
         foreach (var framework in Directory
                      .GetDirectories(frameworkDir)
                      .Select(Path.GetFileName)
@@ -264,58 +201,21 @@ public static class Helper
     {
         return frameworkName switch
         {
-            FrameworkNames.Web => FrameworkReferencePackages.Web,
-            FrameworkNames.WindowsDesktop => FrameworkReferencePackages.WindowsDesktop,
+            FrameworkReferenceResolver.FrameworkNames.Web => FrameworkReferencePackages.Web,
+            FrameworkReferenceResolver.FrameworkNames.WindowsDesktop => FrameworkReferencePackages.WindowsDesktop,
             _ => FrameworkReferencePackages.Default
         };
     }
 
     public static IEnumerable<string> GetDependencyFrameworks(ExecOptions options)
     {
-        yield return FrameworkNames.Default;
+        yield return FrameworkReferenceResolver.FrameworkNames.Default;
         if (!options.IsScriptExecutor())
         {
-            yield return FrameworkNames.Web;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                yield return FrameworkNames.WindowsDesktop;
-            }
+            yield return FrameworkReferenceResolver.FrameworkNames.Web;
         }
     }
-
-    public static string[] ResolveFrameworkReferencesViaSdkPacks(string frameworkName, string targetFramework)
-    {
-        var packsDir = Path.Combine(DotnetDirectory, "packs");
-        var referencePackageName = GetReferencePackageName(frameworkName);
-        var frameworkDir = Path.Combine(packsDir, referencePackageName);
-        if (Directory.Exists(frameworkDir))
-        {
-            var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();
-            var versionPrefix = targetFramework["net".Length..];
-            versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x).StartsWith(versionPrefix));
-            var targetVersionDir = versions.OrderByDescending(x => x).First();
-            var targetReferenceDir = Path.Combine(targetVersionDir, "ref", targetFramework);
-            return Directory.GetFiles(targetReferenceDir, "*.dll");
-        }
-        return Array.Empty<string>();
-    }
-
-    public static string[] ResolveFrameworkReferencesViaRuntimeShared(string frameworkName, string targetFramework)
-    {
-        var sharedDir = Path.Combine(DotnetDirectory, "shared");
-        var frameworkDir = Path.Combine(sharedDir, frameworkName);
-        if (!Directory.Exists(frameworkDir))
-        {
-            frameworkDir = Path.GetDirectoryName(typeof(object).Assembly.Location);
-        }
-        Guard.NotNull(frameworkDir);
-        var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();
-        var versionPrefix = targetFramework["net".Length..];
-        versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x).StartsWith(versionPrefix));
-        var targetVersionDir = versions.OrderByDescending(x => x).First();
-        return Directory.GetFiles(targetVersionDir, "*.dll");
-    }
-
+    
     public static void EnableReferencesSupersedeLowerVersions(this CompilationOptions compilationOptions)
     {
         // https://github.com/dotnet/roslyn/blob/a51b65c86bb0f42a79c47798c10ad75d5c343f92/src/Compilers/Core/Portable/Compilation/CompilationOptions.cs#L183
@@ -326,15 +226,6 @@ public static class Helper
     }
 
     private static bool IsScriptExecutor(this ExecOptions options) => Script.EqualsIgnoreCase(options.ExecutorType);
-}
-
-internal static class FrameworkNames
-{
-    public const string Default = "Microsoft.NETCore.App";
-
-    public const string Web = "Microsoft.AspNetCore.App";
-
-    public const string WindowsDesktop = "Microsoft.WindowsDesktop.App";
 }
 
 internal static class FrameworkReferencePackages

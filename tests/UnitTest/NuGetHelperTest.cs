@@ -10,7 +10,7 @@ public class NuGetHelperTest
     private readonly INuGetHelper _nugetHelper = new NuGetHelper(NullLoggerFactory.Instance);
 
     [Theory]
-    [InlineData(FrameworkNames.Default)]
+    [InlineData(FrameworkReferenceResolver.FrameworkNames.Default)]
     public async Task GetPackageVersions(string packageId)
     {
         var versions = await _nugetHelper.GetPackageVersions(packageId, false);

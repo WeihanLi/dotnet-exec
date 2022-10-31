@@ -24,7 +24,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         return Task.FromResult<IEnumerable<string>>(references);
     }
 
-    public Task<IEnumerable<string>> ResolveForCompile(string reference, string targetFramework)
+    public Task<IEnumerable<string>> ResolveForCompile(string reference, string targetFramework, CancellationToken cancellationToken = default)
     {
         if (reference.IsNullOrEmpty())
             reference = FrameworkNames.Default;
@@ -32,7 +32,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         return Task.FromResult<IEnumerable<string>>(references);
     }
 
-    internal static string GetDotnetPath()
+    public static string GetDotnetPath()
     {
         var commandNameWithExtension =
             $"dotnet{(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : string.Empty)}";
@@ -74,7 +74,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
 
     private static string _dotnetDirectory = string.Empty;
 
-    private static string DotnetDirectory
+    public static string DotnetDirectory
     {
         get
         {
@@ -102,7 +102,6 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
             var targetReferenceDir = Path.Combine(targetVersionDir, "ref", targetFramework);
             return Directory.GetFiles(targetReferenceDir, "*.dll");
         }
-
         return Array.Empty<string>();
     }
 
