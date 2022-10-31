@@ -16,7 +16,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
 
     public ReferenceType ReferenceType => ReferenceType.FrameworkReference;
 
-    public Task<IEnumerable<string>> Resolve(string reference, string targetFramework)
+    public Task<IEnumerable<string>> Resolve(string reference, string targetFramework, CancellationToken cancellationToken = default)
     {
         if (reference.IsNullOrEmpty())
             reference = FrameworkNames.Default;

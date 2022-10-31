@@ -17,7 +17,7 @@ public sealed class NuGetReferenceResolver : IReferenceResolver
 
     public ReferenceType ReferenceType => ReferenceType.NuGetPackage;
 
-    public async Task<IEnumerable<string>> Resolve(string reference, string targetFramework)
+    public async Task<IEnumerable<string>> Resolve(string reference, string targetFramework, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(reference);
         ArgumentNullException.ThrowIfNull(targetFramework);
@@ -29,11 +29,11 @@ public sealed class NuGetReferenceResolver : IReferenceResolver
             version = NuGetVersion.Parse(splits[1]);
         }
 
-        var references = await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, false);
+        var references = await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, false, cancellationToken);
         return references;
     }
 
-    public async Task<IEnumerable<string>> Resolve(string reference, string targetFramework, bool includePreview)
+    public async Task<IEnumerable<string>> Resolve(string reference, string targetFramework, bool includePreview, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(reference);
         ArgumentNullException.ThrowIfNull(targetFramework);
@@ -47,7 +47,7 @@ public sealed class NuGetReferenceResolver : IReferenceResolver
         }
 
         var references =
-            await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, includePreview);
+            await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, includePreview, cancellationToken);
         return references;
     }
 }

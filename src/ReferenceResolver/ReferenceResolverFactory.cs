@@ -9,6 +9,8 @@ public interface IReferenceResolverFactory
 {
     IReferenceResolver GetResolver(ReferenceType referenceType);
 
+    Task<IEnumerable<string>> ResolveReference(string reference, string targetFramework);
+
     Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string reference, string targetFramework);
 }
 
@@ -34,22 +36,33 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
         };
     }
 
+    public async Task<IEnumerable<string>> ResolveReference(string reference, string targetFramework)
+    {
+        var (schema, referenceWithoutSchema, resolver) = GetReferenceAndSchema(reference);
+        return await resolver.Resolve(referenceWithoutSchema, targetFramework);
+    }
+
     public async Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string reference, string targetFramework)
     {
-        ArgumentNullException.ThrowIfNull(reference);
-        var splits = reference.Split(new[] { ':' }, 2, StringSplitOptions.TrimEntries);
+        var (schema, referenceWithoutSchema, resolver) = GetReferenceAndSchema(reference);
+        return await resolver.ResolveMetadata(referenceWithoutSchema, targetFramework);
+    }
+
+    private (string schema, string reference, IReferenceResolver referenceResolver) GetReferenceAndSchema(string fullReference)
+    {
+        ArgumentNullException.ThrowIfNull(fullReference);
+        var splits = fullReference.Split(new[] { ':' }, 2, StringSplitOptions.TrimEntries);
         var schema = "file";
         if (splits.Length == 2)
         {
             schema = splits[0];
         }
+        var referenceWithoutSchema = splits.Length > 1 ? splits[1] : splits[0];
 
         if (!ReferenceTypeCache.Value.TryGetValue(schema, out var referenceType))
-            throw new ArgumentException($"Unsupported reference type({reference})", nameof(reference));
+            throw new ArgumentException($"Unsupported reference type({fullReference})", nameof(fullReference));
 
-        var resolver = GetResolver(referenceType);
-        var referenceWithoutSchema = splits.Length > 1 ? splits[1] : splits[0];
-        return await resolver.ResolveMetadata(referenceWithoutSchema, targetFramework);
+        return (schema, referenceWithoutSchema, GetResolver(referenceType));
     }
 
     private static readonly Lazy<Dictionary<string, ReferenceType>> ReferenceTypeCache = new(() =>

@@ -10,9 +10,9 @@ namespace ReferenceResolver;
 public interface IReferenceResolver
 {
     ReferenceType ReferenceType { get; }
-    Task<IEnumerable<string>> Resolve(string reference, string targetFramework);
-    Task<IEnumerable<MetadataReference>> ResolveMetadata(string reference, string targetFramework)
-        => Resolve(reference, targetFramework)
+    Task<IEnumerable<string>> Resolve(string reference, string targetFramework, CancellationToken cancellationToken = default);
+    Task<IEnumerable<MetadataReference>> ResolveMetadata(string reference, string targetFramework, CancellationToken cancellationToken = default)
+        => Resolve(reference, targetFramework, cancellationToken)
             .ContinueWith(r => r.Result.Select(f =>
                 {
                     try

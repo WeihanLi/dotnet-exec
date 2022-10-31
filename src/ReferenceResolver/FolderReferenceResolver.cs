@@ -7,7 +7,7 @@ public sealed class FolderReferenceResolver : IReferenceResolver
 {
     public ReferenceType ReferenceType => ReferenceType.LocalFolder;
 
-    public Task<IEnumerable<string>> Resolve(string reference, string targetFramework)
+    public Task<IEnumerable<string>> Resolve(string reference, string targetFramework, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(reference);
         if (!Directory.Exists(reference))
