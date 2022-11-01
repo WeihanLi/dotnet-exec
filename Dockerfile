@@ -10,7 +10,7 @@ COPY ./Directory.Build.props ./
 COPY ./Directory.Build.targets ./
 COPY ./Directory.Packages.props ./
 WORKDIR /app/src/dotnet-exec/
-RUN dotnet publish -f net7.0 -c Release -p:AssemblyName=dotnet-exec -o /app/artifacts
+RUN dotnet publish -f net7.0 -c Release -o /app/artifacts
 
 FROM base AS final
 WORKDIR /app
