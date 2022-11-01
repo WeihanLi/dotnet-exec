@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Reflection;
+using System.Threading;
 // Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
@@ -68,6 +69,7 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
 
     private static readonly Lazy<Dictionary<string, ReferenceType>> ReferenceTypeCache = new(() =>
     {
-        return Enum.GetNames<ReferenceType>().ToDictionary(x => x, Enum.Parse<ReferenceType>);
+        return Enum.GetNames<ReferenceType>()
+          .ToDictionary(x => typeof(ReferenceType).GetField(x.ToString())!.GetCustomAttribute<ReferenceSchemaAttribute>()?.Schema ?? x.ToString(), Enum.Parse<ReferenceType>);
     });
 }
