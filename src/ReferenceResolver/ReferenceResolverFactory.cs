@@ -4,6 +4,8 @@ using System.Threading;
 // Licensed under the MIT license.
 
 using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace ReferenceResolver;
 
@@ -31,7 +33,7 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
         {
             ReferenceType.LocalFile => _serviceProvider.GetServiceOrCreateInstance<FileReferenceResolver>(),
             ReferenceType.LocalFolder => _serviceProvider.GetServiceOrCreateInstance<FolderReferenceResolver>(),
-            ReferenceType.NuGetPackage => _serviceProvider.GetServiceOrCreateInstance<NuGetReferenceResolver>(),
+            ReferenceType.NuGetPackage => _serviceProvider.GetService<NuGetReferenceResolver>() ?? new NuGetReferenceResolver(new NuGetHelper(NullLoggerFactory.Instance)),
             ReferenceType.FrameworkReference =>
                 _serviceProvider.GetServiceOrCreateInstance<FrameworkReferenceResolver>(),
             _ => throw new ArgumentOutOfRangeException(nameof(referenceType))
