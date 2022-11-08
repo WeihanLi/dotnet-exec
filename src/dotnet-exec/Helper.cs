@@ -33,7 +33,6 @@ public static class Helper
             .CreateLogger(ApplicationName));
         services.AddSingleton<DefaultCodeCompiler>();
         services.AddSingleton<WorkspaceCodeCompiler>();
-        services.AddSingleton<AdvancedCodeCompiler>();
         services.AddSingleton<CSharpScriptCompilerExecutor>();
         services.AddSingleton<ICompilerFactory, CompilerFactory>();
         services.AddSingleton<DefaultCodeExecutor>();

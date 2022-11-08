@@ -101,9 +101,3 @@ By default, it would use `MainTest` as the entry point, you can customize with `
 ### TargetFramework
 
 By default, it would use `net7.0` if you've installed .NET 7 SDK, otherwise use .NET 6 instead, you can customize with the `-f`/`--framework` option
-
-<!-- 
-### CompilerType
-
-By default, it would use the `DefaultCodeCompiler` to compile the code, you can customize with the `--compiler-type` option, 
-and you can use `-a`/`--advanced` for `--compiler-type=advanced` (Not working for now) -->

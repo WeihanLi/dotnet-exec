@@ -45,8 +45,6 @@ public partial class ExecOptions
     private static readonly Option<bool> DebugOption = new("--debug", "Enable debug logs for debug");
     private static readonly Option<bool> DisableCacheOption = new("--disable-cache", "Disable internal cache");
     private static readonly Option<string> ProjectOption = new("--project", "Project file path");
-    private static readonly Option<bool> AdvancedOption = new(new[] { "-a", "--advanced" }, "Advanced mode");
-
     private static readonly Option<bool> WideReferencesOption =
         new(new[] { "-w" }, () => true, "Include Newtonsoft.Json/WeihanLi.Common references");
 
@@ -58,7 +56,7 @@ public partial class ExecOptions
 
     static ExecOptions()
     {
-        CompilerTypeOption.FromAmong(Helper.Default, "workspace", "advanced");
+        CompilerTypeOption.FromAmong(Helper.Default, "workspace");
         ExecutorTypeOption.FromAmong(Helper.Default);
         TargetFrameworkOption.FromAmong(Helper.SupportedFrameworks.ToArray());
     }
@@ -83,11 +81,6 @@ public partial class ExecOptions
         AdditionalScripts = new(parseResult.GetValueForOption(AdditionalScriptsOption) ?? Array.Empty<string>());
         DebugEnabled = parseResult.HasOption(DebugOption);
         DisableCache = parseResult.HasOption(DisableCacheOption);
-
-        if (parseResult.HasOption(AdvancedOption))
-        {
-            CompilerType = "advanced";
-        }
         if (parseResult.HasOption(PreviewOption))
         {
             LanguageVersion = LanguageVersion.Preview;
