@@ -82,6 +82,16 @@ public class IntegrationTests
     }
 
     [Theory]
+    [InlineData("Guid.NewGuid()")]
+    public async Task ImplicitScriptTextExecute(string code)
+    {
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(new ExecOptions() { Script = code });
+        Assert.Equal(0, result);
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
+
+    [Theory]
     [InlineData("script:Console.Write(\"Hello .NET\")")]
     [InlineData("script:\"Hello .NET\"")]
     [InlineData("script:\"Hello .NET\".Dump()")]

@@ -62,13 +62,15 @@ public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
             }
             else
             {
-                if (!File.Exists(script))
+                if (File.Exists(script))
                 {
-                    _logger.LogError("The file {ScriptFile} does not exists", script);
-                    return Result.Fail<string>("File path not exits");
+                    sourceText = await File.ReadAllTextAsync(script, cancellationToken);
                 }
-
-                sourceText = await File.ReadAllTextAsync(script, cancellationToken);
+                else
+                {
+                    _logger.LogInformation("The file {ScriptFile} does not exists", script);
+                    sourceText = script;
+                }
             }
         }
         catch (Exception e)
@@ -115,7 +117,10 @@ public sealed class ScriptContentFetcher : AdditionalScriptContentFetcher, IScri
         {
             return sourceTextResult;
         }
-
+        if (options.Script == sourceTextResult.Data && !sourceTextResult.Data.EndsWith(';'))
+        {
+            options.ExecutorType = options.CompilerType = Helper.Script;
+        }
         var sourceText = sourceTextResult.Data;
         Guard.NotNull(sourceText);
         
