@@ -1,5 +1,12 @@
 # ReleaseNotes
 
+## 0.9.0
+
+- Release for .NET 7.0
+- Implicit code/script execution
+- Removed advanced compiler
+- Reference handling enhancements
+
 ## 0.8.0
 
 - Add additional scripts option to include dependencies
