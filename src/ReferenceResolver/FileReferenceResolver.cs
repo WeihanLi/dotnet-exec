@@ -12,3 +12,9 @@ public sealed class FileReferenceResolver : IReferenceResolver
         return Task.FromResult<IEnumerable<string>>(new[] { reference });
     }
 }
+
+public sealed record FileReference(string FilePath) : IReference
+{
+    public string Reference => FilePath;
+    public ReferenceType ReferenceType => ReferenceType.LocalFile;
+}

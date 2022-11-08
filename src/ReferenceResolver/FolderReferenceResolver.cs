@@ -19,3 +19,9 @@ public sealed class FolderReferenceResolver : IReferenceResolver
         return Task.FromResult<IEnumerable<string>>(dllPath);
     }
 }
+
+public sealed record FolderReference(string FolderPath) : IReference
+{
+    public string Reference => $"folder:{FolderPath}";
+    public ReferenceType ReferenceType => ReferenceType.LocalFolder;
+}

@@ -22,8 +22,8 @@ public sealed partial class ExecOptions
 
     public bool IncludeWideReferences { get; set; } = true;
 
-    public HashSet<string>? References { get; set; }
-    public HashSet<string>? Usings { get; set; }
+    public HashSet<string> References { get; set; } = new();
+    public HashSet<string> Usings { get; set; } = new();
 
     public HashSet<string>? AdditionalScripts { get; set; }
 

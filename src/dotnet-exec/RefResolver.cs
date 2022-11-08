@@ -85,18 +85,21 @@ public sealed class RefResolver : IRefResolver
             return Array.Empty<string>();
         }
 
-        var result = await references.Select(async reference =>
+        var result = references.Where(x=> !x.StartsWith("nuget:", StringComparison.OrdinalIgnoreCase)).Select(reference =>
         {
             if (reference.IsNullOrWhiteSpace())
                 return Array.Empty<string>();
 
-            if (reference.StartsWith("nuget:", StringComparison.OrdinalIgnoreCase))
+            return File.Exists(reference) ? new[] { reference } : Array.Empty<string>();
+        });
+        var nugetReferences = await references.Where(x => x.StartsWith("nuget:", StringComparison.OrdinalIgnoreCase))
+            .Select(reference =>
             {
                 // nuget
                 var splits = reference["nuget:".Length..].Split(',',
                     StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 if (splits.Length <= 0)
-                    return Array.Empty<string>();
+                    return null;
 
                 NuGetVersion? version = null;
                 var packageId = splits[0];
@@ -105,13 +108,26 @@ public sealed class RefResolver : IRefResolver
                     version = NuGetVersion.Parse(splits[1]);
                 }
 
+                return new NuGetReference(packageId, version);
+            })
+            .WhereNotNull()
+            .GroupBy(x => x.PackageId)
+            .Select(async g =>
+            {
+                var packageId = g.Key;
+                var version = g.Any(x => x.PackageVersion is null)
+                    ? null
+                    : g.Select(x => x.PackageVersion!)
+#if NET7_0_OR_GREATER
+                    .OrderDescending()
+#else
+                    .OrderByDescending(_ => _)
+#endif
+                    .First();
                 return await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, false,
                     cancellationToken);
-            }
-
-            return File.Exists(reference) ? new[] { reference } : Array.Empty<string>();
-        }).WhenAll();
-        return result.SelectMany(_ => _).ToArray();
+            }).WhenAll();
+        return result.Union(nugetReferences).SelectMany(_ => _).ToArray();
     }
 
     public async Task<string[]> ResolveReferences(ExecOptions options, bool compilation)

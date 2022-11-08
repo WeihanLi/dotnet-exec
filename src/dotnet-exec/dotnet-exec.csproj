@@ -24,7 +24,6 @@
   <ItemGroup>
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
-      <PackageReference Include="Microsoft.Build.Locator" />
       <PackageReference Include="NuGet.DependencyResolver.Core" />
       <PackageReference Include="System.CommandLine" />
       <PackageReference Include="WeihanLi.Common" />

@@ -4,6 +4,8 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Xml;
+using System.Xml.Linq;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -60,6 +62,34 @@ public sealed class CommandHandler : ICommandHandler
             return -1;
         }
 
+        // exact reference and usings from project file
+        if (options.ProjectPath.IsNotNullOrEmpty())
+        {
+            // https://learn.microsoft.com/en-us/dotnet/standard/linq/linq-xml-overview
+            var element = XElement.Load(options.ProjectPath);
+            var itemGroups = element.Descendants("ItemGroup").ToArray();
+            if (itemGroups.HasValue())
+            {
+                var usingElements = itemGroups.SelectMany(x => x.Descendants("Using"));
+                foreach (var usingElement in usingElements)
+                {
+                    
+                }
+
+                var packageReferenceElements = itemGroups.SelectMany(x => x.Descendants("PackageReference"));
+                foreach (var packageReferenceElement in packageReferenceElements)
+                {
+                    var packageIdAttribute = packageReferenceElement.Attribute("Include") ?? packageReferenceElement.Attribute("Update");
+                    if (packageIdAttribute is null) continue;
+                    var packageId = packageIdAttribute.Value;
+                    var packageVersion = packageReferenceElement.Attribute("Version")?.Value;
+                    var reference =
+                        $"nuget: {packageId}{(string.IsNullOrEmpty(packageVersion) ? "" : $", {packageVersion}")}";
+                    options.References.Add(reference);
+                }
+            }
+        }
+        
         // fetch script
         var fetchResult = await _scriptContentFetcher.FetchContent(options);
         if (!fetchResult.IsSuccess())
