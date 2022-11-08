@@ -1,11 +1,10 @@
-﻿using System.Reflection;
-using System.Threading;
-// Copyright (c) Weihan Li. All rights reserved.
+﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Reflection;
 
 namespace ReferenceResolver;
 
@@ -42,17 +41,17 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
 
     public async Task<IEnumerable<string>> ResolveReference(string reference, string targetFramework, CancellationToken cancellationToken = default)
     {
-        var (schema, referenceWithoutSchema, resolver) = GetReferenceAndSchema(reference);
+        var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(reference);
         return await resolver.Resolve(referenceWithoutSchema, targetFramework, cancellationToken);
     }
 
     public async Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string reference, string targetFramework, CancellationToken cancellationToken = default)
     {
-        var (schema, referenceWithoutSchema, resolver) = GetReferenceAndSchema(reference);
+        var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(reference);
         return await resolver.ResolveMetadata(referenceWithoutSchema, targetFramework, cancellationToken);
     }
 
-    private (string schema, string reference, IReferenceResolver referenceResolver) GetReferenceAndSchema(string fullReference)
+    private (string reference, IReferenceResolver referenceResolver) GetReferenceAndResolver(string fullReference)
     {
         ArgumentNullException.ThrowIfNull(fullReference);
         var splits = fullReference.Split(new[] { ':' }, 2, StringSplitOptions.TrimEntries);
@@ -66,7 +65,7 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
         if (!ReferenceTypeCache.Value.TryGetValue(schema, out var referenceType))
             throw new ArgumentException($"Unsupported reference type({fullReference})", nameof(fullReference));
 
-        return (schema, referenceWithoutSchema, GetResolver(referenceType));
+        return (referenceWithoutSchema, GetResolver(referenceType));
     }
 
     private static readonly Lazy<Dictionary<string, ReferenceType>> ReferenceTypeCache = new(() =>

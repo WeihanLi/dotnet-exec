@@ -32,6 +32,13 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         return Task.FromResult<IEnumerable<string>>(references);
     }
 
+    public static Task<IEnumerable<string>> ResolveDefaultReferences(string targetFramework, bool forCompile = false, CancellationToken cancellationToken = default)
+    {
+        if (forCompile) 
+            return Task.FromResult<IEnumerable<string>>(ResolveFrameworkReferencesViaSdkPacks(FrameworkNames.Default, targetFramework));
+        return Task.FromResult<IEnumerable<string>>(ResolveFrameworkReferencesViaRuntimeShared(FrameworkNames.Default, targetFramework));
+    }
+
     public static string GetDotnetPath()
     {
         var commandNameWithExtension =
