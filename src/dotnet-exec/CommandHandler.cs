@@ -73,7 +73,33 @@ public sealed class CommandHandler : ICommandHandler
                 var usingElements = itemGroups.SelectMany(x => x.Descendants("Using"));
                 foreach (var usingElement in usingElements)
                 {
-                    
+                    var usingText = usingElement.Attribute("Include")?.Value;
+                    if (usingText.IsNotNullOrEmpty())
+                    {
+                        if (usingElement.Attribute("Static")?.Value == "true")
+                        {
+                            usingText = $"static {usingText}";
+                        }
+
+                        var alias = usingElement.Attribute("Alias")?.Value;
+                        if (alias.IsNotNullOrEmpty())
+                        {
+                            usingText = $"{alias} = {usingText}";
+                        }
+                    }
+                    else
+                    {
+                        usingText = usingElement.Attribute("Remove")?.Value;
+                        if (usingText.IsNotNullOrEmpty())
+                        {
+                            usingText = $"- {usingText}";
+                        }
+                    }
+
+                    if (usingText.IsNotNullOrEmpty())
+                    {
+                        options.Usings.Add(usingText);
+                    }
                 }
 
                 var packageReferenceElements = itemGroups.SelectMany(x => x.Descendants("PackageReference"));

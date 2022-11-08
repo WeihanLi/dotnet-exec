@@ -142,4 +142,16 @@ public class IntegrationTests
         var result = await _handler.Execute(options);
         Assert.Equal(0, result);
     }
+
+    [Fact]
+    public async Task ProjectFileTest()
+    {
+        var options = new ExecOptions()
+        {
+            ProjectPath = @"https://raw.githubusercontent.com/WeihanLi/SamplesInPractice/master/net6sample/ImplicitUsingsSample/ImplicitUsingsSample.csproj",
+            Script = "Console.WriteLine(MyFile.Exists(\"appsettings.json\"));"
+        };
+        var result = await _handler.Execute(options);
+        Assert.Equal(0, result);
+    }
 }
