@@ -12,9 +12,9 @@ public interface IReferenceResolverFactory
 {
     IReferenceResolver GetResolver(ReferenceType referenceType);
 
-    Task<IEnumerable<string>> ResolveReference(string reference, string targetFramework, CancellationToken cancellationToken = default);
+    Task<IEnumerable<string>> ResolveReference(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string reference, string targetFramework, CancellationToken cancellationToken = default);
+    Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default);
 }
 
 public sealed class ReferenceResolverFactory : IReferenceResolverFactory
@@ -39,15 +39,15 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
         };
     }
 
-    public async Task<IEnumerable<string>> ResolveReference(string reference, string targetFramework, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>> ResolveReference(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
     {
-        var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(reference);
+        var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
         return await resolver.Resolve(referenceWithoutSchema, targetFramework, cancellationToken);
     }
 
-    public async Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string reference, string targetFramework, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
     {
-        var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(reference);
+        var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
         return await resolver.ResolveMetadata(referenceWithoutSchema, targetFramework, cancellationToken);
     }
 
@@ -72,5 +72,11 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
     {
         return Enum.GetNames<ReferenceType>()
           .ToDictionary(x => typeof(ReferenceType).GetField(x.ToString())!.GetCustomAttribute<ReferenceSchemaAttribute>()?.Schema ?? x.ToString(), Enum.Parse<ReferenceType>);
+    });
+
+    internal static readonly Lazy<Dictionary<ReferenceType, string>> ReferenceTypeSchemaCache = new(() =>
+    {
+        return Enum.GetNames<ReferenceType>()
+            .ToDictionary(Enum.Parse<ReferenceType>, x => typeof(ReferenceType).GetField(x.ToString())!.GetCustomAttribute<ReferenceSchemaAttribute>()?.Schema ?? x.ToString());
     });
 }

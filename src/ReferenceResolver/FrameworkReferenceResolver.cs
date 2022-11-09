@@ -132,6 +132,6 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
 
 public sealed record FrameworkReference(string FrameworkName, string TargetFramework) : IReference
 {
-    public string Reference => $"framework:{FrameworkName},{TargetFramework}";
+    public string Reference => FrameworkName;
     public ReferenceType ReferenceType => ReferenceType.FrameworkReference;
 }

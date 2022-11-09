@@ -6,6 +6,9 @@ namespace ReferenceResolver;
 public interface IReference
 {
     string Reference { get; }
+
+    string ReferenceWithSchema =>
+        $"{ReferenceResolverFactory.ReferenceTypeSchemaCache.Value[ReferenceType]}: {Reference}";
     
     ReferenceType ReferenceType { get; }
 }

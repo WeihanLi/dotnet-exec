@@ -7,9 +7,14 @@ namespace ReferenceResolver;
 
 public sealed record NuGetReference(string PackageId, NuGetVersion? PackageVersion) : IReference
 {
-    public string Reference { get; } = PackageVersion is null
-        ? $"nuget: {PackageId}"
-        : $"nuget: {PackageId}, {PackageVersion}";
+    public NuGetReference(string packageId, string packageVersion)
+        : this(packageId, string.IsNullOrEmpty(packageVersion) ? null : NuGetVersion.Parse(packageVersion))
+    {
+    }
+
+    public string Reference => PackageVersion is null
+        ? $"{PackageId}"
+        : $"{PackageId}, {PackageVersion}";
 
     public ReferenceType ReferenceType => ReferenceType.NuGetPackage;
 }
