@@ -14,9 +14,16 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         public const string WindowsDesktop = "Microsoft.WindowsDesktop.App";
     }
 
+    private static readonly Dictionary<string, string> FrameworkAliases = new(StringComparer.OrdinalIgnoreCase)
+    {
+        { nameof(FrameworkNames.Default), FrameworkNames.Default },
+        { nameof(FrameworkNames.Web), FrameworkNames.Web }
+    };
+
     public ReferenceType ReferenceType => ReferenceType.FrameworkReference;
 
-    public Task<IEnumerable<string>> Resolve(string reference, string targetFramework, CancellationToken cancellationToken = default)
+    public Task<IEnumerable<string>> Resolve(string reference, string targetFramework,
+        CancellationToken cancellationToken = default)
     {
         if (reference.IsNullOrEmpty())
             reference = FrameworkNames.Default;
@@ -24,7 +31,8 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         return Task.FromResult<IEnumerable<string>>(references);
     }
 
-    public Task<IEnumerable<string>> ResolveForCompile(string reference, string targetFramework, CancellationToken cancellationToken = default)
+    public Task<IEnumerable<string>> ResolveForCompile(string reference, string targetFramework,
+        CancellationToken cancellationToken = default)
     {
         if (reference.IsNullOrEmpty())
             reference = FrameworkNames.Default;
@@ -32,11 +40,14 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         return Task.FromResult<IEnumerable<string>>(references);
     }
 
-    public static Task<IEnumerable<string>> ResolveDefaultReferences(string targetFramework, bool forCompile = false, CancellationToken cancellationToken = default)
+    public static Task<IEnumerable<string>> ResolveDefaultReferences(string targetFramework, bool forCompile = false,
+        CancellationToken cancellationToken = default)
     {
-        if (forCompile) 
-            return Task.FromResult<IEnumerable<string>>(ResolveFrameworkReferencesViaSdkPacks(FrameworkNames.Default, targetFramework));
-        return Task.FromResult<IEnumerable<string>>(ResolveFrameworkReferencesViaRuntimeShared(FrameworkNames.Default, targetFramework));
+        if (forCompile)
+            return Task.FromResult<IEnumerable<string>>(
+                ResolveFrameworkReferencesViaSdkPacks(FrameworkNames.Default, targetFramework));
+        return Task.FromResult<IEnumerable<string>>(
+            ResolveFrameworkReferencesViaRuntimeShared(FrameworkNames.Default, targetFramework));
     }
 
     public static string GetDotnetPath()
@@ -97,6 +108,10 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
 
     private static string[] ResolveFrameworkReferencesViaSdkPacks(string frameworkName, string targetFramework)
     {
+        if (FrameworkAliases.TryGetValue(frameworkName, out var fName))
+        {
+            frameworkName = fName;
+        }
         var packsDir = Path.Combine(DotnetDirectory, "packs");
         var referencePackageName = $"{frameworkName}.Ref";
         var frameworkDir = Path.Combine(packsDir, referencePackageName);
@@ -109,11 +124,16 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
             var targetReferenceDir = Path.Combine(targetVersionDir, "ref", targetFramework);
             return Directory.GetFiles(targetReferenceDir, "*.dll");
         }
+
         return Array.Empty<string>();
     }
 
     private static string[] ResolveFrameworkReferencesViaRuntimeShared(string frameworkName, string targetFramework)
     {
+        if (FrameworkAliases.TryGetValue(frameworkName, out var fName))
+        {
+            frameworkName = fName;
+        }
         var sharedDir = Path.Combine(DotnetDirectory, "shared");
         var frameworkDir = Path.Combine(sharedDir, frameworkName);
         if (!Directory.Exists(frameworkDir))
@@ -130,7 +150,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
     }
 }
 
-public sealed record FrameworkReference(string FrameworkName, string TargetFramework) : IReference
+public sealed record FrameworkReference(string FrameworkName) : IReference
 {
     public string Reference => FrameworkName;
     public ReferenceType ReferenceType => ReferenceType.FrameworkReference;
