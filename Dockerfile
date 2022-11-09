@@ -17,4 +17,4 @@ WORKDIR /app
 COPY --from=build-env /app/artifacts/ ./
 ENV PATH="/app:${PATH}"
 # execute to download the framework ref assemblies
-RUN dotnet-exec 'code:"Hello .NET".Dump()'
+RUN dotnet-exec 'Guid.NewGuid()'
