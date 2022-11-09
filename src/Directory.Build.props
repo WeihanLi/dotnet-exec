@@ -3,4 +3,7 @@
   <PropertyGroup>
     <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true' or '$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" Visible="false" PackagePath=""/>
+  </ItemGroup>
 </Project>

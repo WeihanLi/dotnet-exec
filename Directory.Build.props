@@ -22,7 +22,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" Visible="false" PackagePath=""/>
-    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" Visible="false" PackagePath=""/>
   </ItemGroup>
   <ItemGroup>
     <Using Include="WeihanLi.Common"/>
