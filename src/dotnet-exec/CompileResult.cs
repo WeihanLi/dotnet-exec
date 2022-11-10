@@ -21,6 +21,4 @@ public sealed class CompileResult : IProperties
 
     public MemoryStream Stream { get; }
     public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
-
-    internal static readonly CompileResult Empty = new(null!, null!, null!);
 }

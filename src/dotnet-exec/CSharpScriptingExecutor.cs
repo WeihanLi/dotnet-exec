@@ -49,7 +49,7 @@ public sealed class CSharpScriptCompilerExecutor : ICodeCompiler, ICodeExecutor
                 .WithLanguageVersion(options.LanguageVersion)
             ;
         var script = CSharpScript.Create(code, scriptOptions);
-        var result = Result.Success(CompileResult.Empty);
+        var result = Result.Success(new CompileResult(null!, null!, null!));
         result.Data?.SetProperty<Script<object>>(nameof(Script), script);
         return result;
     }
