@@ -38,5 +38,7 @@ public sealed partial class ExecOptions
 
     public bool DisableCache { get; set; }
 
+    public bool UseRefAssembliesForCompile { get; set; }
+
     [JsonIgnore] public CancellationToken CancellationToken { get; set; }
 }

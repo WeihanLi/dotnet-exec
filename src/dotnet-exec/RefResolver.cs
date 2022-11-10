@@ -46,19 +46,22 @@ public sealed class RefResolver : IRefResolver
             {
                 var references =
                     await _frameworkReferenceResolver.ResolveForCompile(framework, options.TargetFramework, options.CancellationToken)
-                        .ContinueWith(r=> r.Result.ToArray());
+                        .ContinueWith(r => r.Result.ToArray());
                 if (references.HasValue()) return references;
-                
-                var packageId = Helper.GetReferencePackageName(framework);
-                var versions = await _nugetHelper.GetPackageVersions(packageId, true, options.CancellationToken);
-                var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
-                var version = versions
-                    .Where(x => x.Major == nugetFramework.Version.Major
-                                && x.Minor == nugetFramework.Version.Minor)
-                    .Max();
-                return await _nugetHelper.ResolvePackageReferences(options.TargetFramework, packageId, version,
-                    true,
-                    options.CancellationToken);
+
+                if (options.UseRefAssembliesForCompile)
+                {
+                    var packageId = Helper.GetReferencePackageName(framework);
+                    var versions = await _nugetHelper.GetPackageVersions(packageId, true, options.CancellationToken);
+                    var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
+                    var version = versions
+                        .Where(x => x.Major == nugetFramework.Version.Major
+                                    && x.Minor == nugetFramework.Version.Minor)
+                        .Max();
+                    return await _nugetHelper.ResolvePackageReferences(options.TargetFramework, packageId, version,
+                        true,
+                        options.CancellationToken);
+                }
             }
 
             return await _frameworkReferenceResolver.Resolve(framework, options.TargetFramework, options.CancellationToken);
