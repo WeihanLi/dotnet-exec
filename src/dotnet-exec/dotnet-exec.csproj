@@ -12,12 +12,10 @@
     <ToolCommandName>dotnet-exec</ToolCommandName>
     <PackageTags>exec;execute;script;run</PackageTags>
     <Description>`dotnet-exec` is a command line tool for excuting C# program with custom entry point</Description>
-    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
   </PropertyGroup>
 
   <ItemGroup>
       <Using Include="Microsoft.Extensions.DependencyInjection" />
-      <Using Include="Microsoft.Extensions.Http" />
       <Using Include="Microsoft.Extensions.Logging" />
       <Using Include="System.CommandLine" />
       <Using Include="System.CommandLine.Invocation" />
@@ -31,7 +29,6 @@
       <PackageReference Include="System.CommandLine" />
       <PackageReference Include="WeihanLi.Common" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-      <PackageReference Include="Microsoft.Extensions.Http" />
       <PackageReference Include="Microsoft.Extensions.Logging.Console" />
   </ItemGroup>
   <ItemGroup>

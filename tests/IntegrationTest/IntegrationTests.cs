@@ -143,12 +143,14 @@ public class IntegrationTests
         Assert.Equal(0, result);
     }
 
-    [Fact]
-    public async Task ProjectFileTest()
+    [Theory]
+    [InlineData("https://raw.githubusercontent.com/WeihanLi/SamplesInPractice/master/net6sample/ImplicitUsingsSample/ImplicitUsingsSample.csproj")]
+    [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/master/net6sample/ImplicitUsingsSample/ImplicitUsingsSample.csproj")]
+    public async Task ProjectFileTest(string projectPath)
     {
         var options = new ExecOptions()
         {
-            ProjectPath = @"https://raw.githubusercontent.com/WeihanLi/SamplesInPractice/master/net6sample/ImplicitUsingsSample/ImplicitUsingsSample.csproj",
+            ProjectPath = projectPath,
             Script = "Console.WriteLine(MyFile.Exists(\"appsettings.json\"));"
         };
         var result = await _handler.Execute(options);

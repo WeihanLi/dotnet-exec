@@ -42,7 +42,7 @@ public static class Helper
         services.AddSingleton<IUriTransformer, UriTransformer>();
         services.AddSingleton<IScriptContentFetcher, ScriptContentFetcher>();
         services.AddSingleton<IAdditionalScriptContentFetcher, AdditionalScriptContentFetcher>();
-        services.AddHttpClient(nameof(ScriptContentFetcher));
+        services.AddSingleton<HttpClient>();
         services.AddReferenceResolvers();
         services.AddSingleton<IRefResolver, RefResolver>();
 

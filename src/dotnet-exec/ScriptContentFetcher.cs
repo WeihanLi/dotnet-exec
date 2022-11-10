@@ -20,23 +20,15 @@ public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
 {
     // for test only
     internal static IAdditionalScriptContentFetcher InstanceForTest { get; } 
-        = new AdditionalScriptContentFetcher(new MockHttpClientFactory(), new UriTransformer(), Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
-    private sealed class MockHttpClientFactory: IHttpClientFactory
-    {
-        public HttpClient CreateClient(string name)
-        {
-            return new HttpClient(new NoProxyHttpClientHandler());
-        }
-    }
+        = new AdditionalScriptContentFetcher(new HttpClient(new NoProxyHttpClientHandler()), new UriTransformer(), Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
 
-
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly HttpClient _httpClient;
     private readonly IUriTransformer _uriTransformer;
     private readonly ILogger _logger;
 
-    public AdditionalScriptContentFetcher(IHttpClientFactory httpClientFactory, IUriTransformer uriTransformer, ILogger logger)
+    public AdditionalScriptContentFetcher(HttpClient httpClient, IUriTransformer uriTransformer, ILogger logger)
     {
-        _httpClientFactory = httpClientFactory;
+        _httpClient = httpClient;
         _uriTransformer = uriTransformer;
         _logger = logger;
     }
@@ -48,9 +40,8 @@ public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
         {
             if (Uri.TryCreate(script, UriKind.Absolute, out var uri) && !uri.IsFile)
             {
-                var httpClient = _httpClientFactory.CreateClient(nameof(ScriptContentFetcher));
                 var scriptUrl = _uriTransformer.Transform(script);
-                sourceText = await httpClient.GetStringAsync(scriptUrl, cancellationToken);
+                sourceText = await _httpClient.GetStringAsync(scriptUrl, cancellationToken);
             }
             else
             {
@@ -76,8 +67,8 @@ public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
 
 public sealed class ScriptContentFetcher : AdditionalScriptContentFetcher, IScriptContentFetcher
 {
-    public ScriptContentFetcher(IHttpClientFactory httpClientFactory, IUriTransformer uriTransformer, ILogger logger)
-         : base(httpClientFactory, uriTransformer, logger)
+    public ScriptContentFetcher(HttpClient httpClient, IUriTransformer uriTransformer, ILogger logger)
+         : base(httpClient, uriTransformer, logger)
     {
     }
 

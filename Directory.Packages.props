@@ -8,7 +8,6 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.4.0-4.final" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.4.0-4.final" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
     <PackageVersion Include="NuGet.DependencyResolver.Core" Version="6.3.1" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
