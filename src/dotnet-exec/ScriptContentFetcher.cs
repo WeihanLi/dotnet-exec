@@ -20,7 +20,7 @@ public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
 {
     // for test only
     internal static IAdditionalScriptContentFetcher InstanceForTest { get; } 
-        = new AdditionalScriptContentFetcher(new MockHttpClientFactory(), Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+        = new AdditionalScriptContentFetcher(new MockHttpClientFactory(), new UriTransformer(), Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
     private sealed class MockHttpClientFactory: IHttpClientFactory
     {
         public HttpClient CreateClient(string name)
@@ -31,11 +31,13 @@ public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
 
 
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IUriTransformer _uriTransformer;
     private readonly ILogger _logger;
 
-    public AdditionalScriptContentFetcher(IHttpClientFactory httpClientFactory, ILogger logger)
+    public AdditionalScriptContentFetcher(IHttpClientFactory httpClientFactory, IUriTransformer uriTransformer, ILogger logger)
     {
         _httpClientFactory = httpClientFactory;
+        _uriTransformer = uriTransformer;
         _logger = logger;
     }
     
@@ -47,17 +49,7 @@ public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
             if (Uri.TryCreate(script, UriKind.Absolute, out var uri) && !uri.IsFile)
             {
                 var httpClient = _httpClientFactory.CreateClient(nameof(ScriptContentFetcher));
-                var scriptUrl = uri.Host switch
-                {
-                    "github.com" => script
-                        .Replace($"://{uri.Host}/", $"://raw.githubusercontent.com/")
-                        .Replace("/blob/", "/")
-                        .Replace("/tree/", "/"),
-                    "gist.github.com" => script
-                                             .Replace($"://{uri.Host}/", $"://gist.githubusercontent.com/")
-                                         + "/raw",
-                    _ => script
-                };
+                var scriptUrl = _uriTransformer.Transform(script);
                 sourceText = await httpClient.GetStringAsync(scriptUrl, cancellationToken);
             }
             else
@@ -84,8 +76,8 @@ public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
 
 public sealed class ScriptContentFetcher : AdditionalScriptContentFetcher, IScriptContentFetcher
 {
-    public ScriptContentFetcher(IHttpClientFactory httpClientFactory, ILogger logger)
-         : base(httpClientFactory, logger)
+    public ScriptContentFetcher(IHttpClientFactory httpClientFactory, IUriTransformer uriTransformer, ILogger logger)
+         : base(httpClientFactory, uriTransformer, logger)
     {
     }
 

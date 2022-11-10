@@ -15,16 +15,19 @@ public sealed class CommandHandler : ICommandHandler
     private readonly ILogger _logger;
     private readonly ICompilerFactory _compilerFactory;
     private readonly IExecutorFactory _executorFactory;
+    private readonly IUriTransformer _uriTransformer;
     private readonly IScriptContentFetcher _scriptContentFetcher;
 
     public CommandHandler(ILogger logger,
         ICompilerFactory compilerFactory,
         IExecutorFactory executorFactory,
+        IUriTransformer uriTransformer,
         IScriptContentFetcher scriptContentFetcher)
     {
         _logger = logger;
         _compilerFactory = compilerFactory;
         _executorFactory = executorFactory;
+        _uriTransformer = uriTransformer;
         _scriptContentFetcher = scriptContentFetcher;
     }
 
@@ -66,7 +69,8 @@ public sealed class CommandHandler : ICommandHandler
         if (options.ProjectPath.IsNotNullOrEmpty())
         {
             // https://learn.microsoft.com/en-us/dotnet/standard/linq/linq-xml-overview
-            var element = XElement.Load(options.ProjectPath);
+            var projectPath = _uriTransformer.Transform(options.ProjectPath);
+            var element = XElement.Load(projectPath);
             var itemGroups = element.Descendants("ItemGroup").ToArray();
             if (itemGroups.HasValue())
             {

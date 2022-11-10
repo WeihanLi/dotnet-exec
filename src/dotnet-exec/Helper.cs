@@ -39,6 +39,7 @@ public static class Helper
         services.AddSingleton<IExecutorFactory, ExecutorFactory>();
         services.AddSingleton<CommandHandler>();
         services.AddSingleton<ICommandHandler>(sp => sp.GetRequiredService<CommandHandler>());
+        services.AddSingleton<IUriTransformer, UriTransformer>();
         services.AddSingleton<IScriptContentFetcher, ScriptContentFetcher>();
         services.AddSingleton<IAdditionalScriptContentFetcher, AdditionalScriptContentFetcher>();
         services.AddHttpClient(nameof(ScriptContentFetcher));
