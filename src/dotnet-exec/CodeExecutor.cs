@@ -22,10 +22,13 @@ public abstract class CodeExecutor : ICodeExecutor
 
     protected async Task<Result> ExecuteAssembly(Assembly assembly, ExecOptions options)
     {
-        var assembliesString = assembly.GetReferencedAssemblies()
-            .Select(x => x.FullName)
-            .StringJoin(";");
-        Logger.LogDebug("ReferencedAssemblies: {assemblies}", assembliesString);
+        if (options.DebugEnabled)
+        {
+            var assembliesString = assembly.GetReferencedAssemblies()
+              .Select(x => x.FullName)
+              .StringJoin(";");
+            Logger.LogDebug("ReferencedAssemblies: {assemblies}", assembliesString);
+        }   
         var entryMethod = assembly.EntryPoint;
         if (entryMethod is null && options.EntryPoint.IsNotNullOrEmpty())
         {
