@@ -23,8 +23,16 @@ public interface INuGetHelper
     Task<string[]> ResolvePackageReferences(string targetFramework, string packageId,
         NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default);
 
+    Task<string[]> ResolvePackageReferences(NuGetReference nugetReference, string targetFramework, bool includePreview,
+        CancellationToken cancellationToken = default)
+        => ResolvePackageReferences(targetFramework, nugetReference.PackageId, nugetReference.PackageVersion,
+            includePreview, cancellationToken);
+
     Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePreview = false, CancellationToken cancellationToken = default);
-    Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageName, NuGetVersion packageVersion, string targetFramework, CancellationToken cancellationToken = default);
+    Task<NuGetVersion?> GetLatestPackageVersion(string packageId, bool includePreview = false,
+        CancellationToken cancellationToken = default)
+        => GetPackageVersions(packageId, includePreview, cancellationToken).ContinueWith(r => r.Result.OrderByDescending(_ => _).FirstOrDefault(), TaskContinuationOptions.OnlyOnRanToCompletion);
+    Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageId, NuGetVersion packageVersion, string targetFramework, CancellationToken cancellationToken = default);
     Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null, CancellationToken cancellationToken = default);
     Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, CancellationToken cancellationToken = default);
     Task<IEnumerable<string>> GetPackages(string packagePrefix, bool includePreRelease = true, CancellationToken cancellationToken = default);
@@ -155,7 +163,7 @@ public sealed class NuGetHelper : INuGetHelper
         _logger.LogInformation("Package({packageIdentity}) downloaded to {packageDirectory} from {packageSource}", packagerIdentity, packageDir, downloadResult!.PackageSource ?? "NuGet.org");
         return Directory.Exists(packageDir) ? packageDir : null;
     }
-
+    
     public async Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePreview = false, CancellationToken cancellationToken = default)
     {
         var findPackageByIdResource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
@@ -238,7 +246,7 @@ public sealed class NuGetHelper : INuGetHelper
         if (version is null)
         {
             var versions = await GetPackageVersions(packageId, includePreview, cancellationToken);
-            version = versions.Max();
+            version = versions.OrderByDescending(_ => _).FirstOrDefault();
             if (version is null)
             {
                 throw new InvalidOperationException($"No package versions found for package {packageId}");
