@@ -8,6 +8,7 @@
       <PackageId>ReferenceResolver</PackageId>
       <PackageTags>reference;references;nuget;package;framework;dependency;dependencies</PackageTags>
       <Description>ReferenceResolver</Description>
+      <PackageProjectUrl>https://github.com/WeihanLi/dotnet-exec/tree/main/src/ReferenceResolver</PackageProjectUrl>
     </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />

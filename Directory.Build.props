@@ -9,8 +9,7 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/WeihanLi/dotnet-exec</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/WeihanLi/dotnet-exec</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/WeihanLi/dotnet-exec</RepositoryUrl>    
     <Product>dotnet-exec</Product>
     <Authors>WeihanLi</Authors>
     <PackageReleaseNotes>https://github.com/WeihanLi/dotnet-exec/tree/main/docs/ReleaseNotes.md</PackageReleaseNotes>
