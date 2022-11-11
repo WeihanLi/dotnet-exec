@@ -6,6 +6,7 @@ using System;
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 var stable = Argument("stable", "false");
+var noPush = Argument("no-push", "false");
 var apiKey = Argument("apiKey", "");
 
 var solutionPath = "./dotnet-exec.sln";
@@ -125,6 +126,10 @@ Task("pack")
 
 bool PublishArtifacts(ICakeContext context)
 {
+   if (noPush == "true")
+   {
+      return false;
+   }
    if (context.Environment.Platform.IsUnix())
    {
       return false;
