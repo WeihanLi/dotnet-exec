@@ -17,4 +17,10 @@ public sealed record NuGetReference(string PackageId, NuGetVersion? PackageVersi
         : $"{PackageId}, {PackageVersion}";
 
     public ReferenceType ReferenceType => ReferenceType.NuGetPackage;
+
+    public void Deconstruct(out string packageId, out string packageVersion)
+    {
+        packageId = PackageId;
+        packageVersion = PackageVersion?.ToString() ?? string.Empty;
+    }
 }
