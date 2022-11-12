@@ -150,6 +150,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
     }
 }
 
+[System.Diagnostics.DebuggerDisplay("{Reference}")]
 public sealed record FrameworkReference(string FrameworkName) : IReference
 {
     public string Reference => FrameworkName;

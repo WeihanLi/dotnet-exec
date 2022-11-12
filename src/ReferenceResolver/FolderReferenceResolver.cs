@@ -20,6 +20,7 @@ public sealed class FolderReferenceResolver : IReferenceResolver
     }
 }
 
+[System.Diagnostics.DebuggerDisplay("{Reference}")]
 public sealed record FolderReference(string FolderPath) : IReference
 {
     public string Reference => FolderPath;

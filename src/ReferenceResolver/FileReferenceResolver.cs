@@ -13,6 +13,7 @@ public sealed class FileReferenceResolver : IReferenceResolver
     }
 }
 
+[System.Diagnostics.DebuggerDisplay("{Reference}")]
 public sealed record FileReference(string FilePath) : IReference
 {
     public string Reference => FilePath;
