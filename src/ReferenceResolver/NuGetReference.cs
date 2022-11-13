@@ -5,7 +5,7 @@ using NuGet.Versioning;
 
 namespace ReferenceResolver;
 
-[System.Diagnostics.DebuggerDisplay("{Reference}")]
+[System.Diagnostics.DebuggerDisplay("nuget: {Reference}")]
 public sealed record NuGetReference(string PackageId, NuGetVersion? PackageVersion) : IReference
 {
     public NuGetReference(string packageId, string packageVersion)
