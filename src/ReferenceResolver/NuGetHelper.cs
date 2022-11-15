@@ -246,6 +246,7 @@ public sealed class NuGetHelper : INuGetHelper
         if (version is null)
         {
             var versions = await GetPackageVersions(packageId, includePreview, cancellationToken);
+            // ReSharper disable once SimplifyLinqExpressionUseMinByAndMaxBy
             version = versions.OrderByDescending(_ => _).FirstOrDefault();
             if (version is null)
             {

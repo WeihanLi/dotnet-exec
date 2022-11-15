@@ -44,11 +44,12 @@ public sealed class CSharpScriptCompilerExecutor : ICodeCompiler, ICodeExecutor
         var scriptOptions = ScriptOptions.Default
                 .WithReferences(references)
                 .WithOptimizationLevel(options.Configuration)
-                .WithImports(Helper.GetGlobalUsings(options))
                 .WithAllowUnsafe(true)
                 .WithLanguageVersion(options.LanguageVersion)
             ;
-        var script = CSharpScript.Create(code, scriptOptions);
+        var globalUsingText = Helper.GetGlobalUsingsCodeText(options);
+        var state = await CSharpScript.RunAsync(globalUsingText, scriptOptions);
+        var script = state.Script.ContinueWith(code, scriptOptions);
         var result = Result.Success(new CompileResult(null!, null!, null!));
         result.Data?.SetProperty<Script<object>>(nameof(Script), script);
         return result;

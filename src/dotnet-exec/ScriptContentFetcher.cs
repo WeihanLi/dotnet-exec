@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using WeihanLi.Common.Http;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -20,7 +19,7 @@ public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
 {
     // for test only
     internal static IAdditionalScriptContentFetcher InstanceForTest { get; } 
-        = new AdditionalScriptContentFetcher(new HttpClient(new NoProxyHttpClientHandler()), new UriTransformer(), Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+        = new AdditionalScriptContentFetcher(new HttpClient(), new UriTransformer(), Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
 
     private readonly HttpClient _httpClient;
     private readonly IUriTransformer _uriTransformer;
@@ -51,7 +50,8 @@ public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
                 }
                 else
                 {
-                    _logger.LogInformation("The file {ScriptFile} does not exists", script);
+                    _logger.LogDebug("The file {ScriptFile} does not exists, treat as {ScriptType}", 
+                        script, script.EndsWith(";") ? "code" : Helper.Script);
                     sourceText = script;
                 }
             }

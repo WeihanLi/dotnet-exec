@@ -103,6 +103,38 @@ public class IntegrationTests
         _outputHelper.WriteLine(output.StandardOutput);
     }
 
+    [Fact]
+    public async Task ScriptStaticUsingTest()
+    {
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(new ExecOptions()
+        {
+            Script = "WriteLine(Math.PI)",
+            Usings = new()
+            {
+                "static System.Console"
+            }
+        });
+        Assert.Equal(0, result);
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
+    
+    [Fact]
+    public async Task ScriptUsingAliasTest()
+    {
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(new ExecOptions()
+        {
+            Script = "MyConsole.WriteLine(Math.PI)",
+            Usings = new()
+            {
+                "MyConsole = System.Console"
+            }
+        });
+        Assert.Equal(0, result);
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
+
     [Theory]
     [InlineData("Console.WriteLine(\"Hello .NET\");")]
     [InlineData("Console.WriteLine(typeof(object).Assembly.Location);")]
