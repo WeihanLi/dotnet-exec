@@ -1,4 +1,9 @@
-# ReleaseNotes
+# Release Notes
+
+## 0.10.0
+
+- Support using static and using alias for script
+- Cleanup unnecessary references
 
 ## 0.9.0
 
