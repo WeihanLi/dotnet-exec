@@ -9,6 +9,6 @@ public interface IReference
 
     string ReferenceWithSchema =>
         $"{ReferenceResolverFactory.ReferenceTypeSchemaCache.Value[ReferenceType]}: {Reference}";
-    
+
     ReferenceType ReferenceType { get; }
 }

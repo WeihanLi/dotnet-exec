@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
-using System.Reflection;
-// Copyright (c) Weihan Li. All rights reserved.
+﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
 using Microsoft.CodeAnalysis;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace ReferenceResolver;
 

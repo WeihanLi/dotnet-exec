@@ -142,7 +142,7 @@ public sealed class NuGetHelper : INuGetHelper
         var result = await resource.IdStartsWith(packagePrefix, includePreRelease, _nugetLogger, cancellationToken);
         return result;
     }
-    
+
     public async Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null, CancellationToken cancellationToken = default)
     {
         var packageDir = GetPackageInstalledDir(packageId, version, packagesDirectory);
@@ -163,7 +163,7 @@ public sealed class NuGetHelper : INuGetHelper
         _logger.LogInformation("Package({packageIdentity}) downloaded to {packageDirectory} from {packageSource}", packagerIdentity, packageDir, downloadResult!.PackageSource ?? "NuGet.org");
         return Directory.Exists(packageDir) ? packageDir : null;
     }
-    
+
     public async Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePreview = false, CancellationToken cancellationToken = default)
     {
         var findPackageByIdResource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
@@ -173,7 +173,7 @@ public sealed class NuGetHelper : INuGetHelper
             _nugetLogger, cancellationToken);
         return versions.Where(_ => includePreview || !_.IsPrerelease);
     }
-    
+
     public async Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, CancellationToken cancellationToken = default)
     {
         var findPackageByIdResource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);

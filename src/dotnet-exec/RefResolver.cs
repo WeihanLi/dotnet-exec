@@ -88,7 +88,7 @@ public sealed class RefResolver : IRefResolver
             return Array.Empty<string>();
         }
 
-        var result = references.Where(x=> !x.StartsWith("nuget:", StringComparison.OrdinalIgnoreCase)).Select(reference =>
+        var result = references.Where(x => !x.StartsWith("nuget:", StringComparison.OrdinalIgnoreCase)).Select(reference =>
         {
             if (reference.IsNullOrWhiteSpace())
                 return Array.Empty<string>();

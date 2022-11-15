@@ -15,10 +15,10 @@ public interface IAdditionalScriptContentFetcher
     Task<Result<string>> FetchContent(string script, CancellationToken cancellationToken = default);
 }
 
-public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
+public class AdditionalScriptContentFetcher : IAdditionalScriptContentFetcher
 {
     // for test only
-    internal static IAdditionalScriptContentFetcher InstanceForTest { get; } 
+    internal static IAdditionalScriptContentFetcher InstanceForTest { get; }
         = new AdditionalScriptContentFetcher(new HttpClient(), new UriTransformer(), Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
 
     private readonly HttpClient _httpClient;
@@ -31,7 +31,7 @@ public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
         _uriTransformer = uriTransformer;
         _logger = logger;
     }
-    
+
     public async Task<Result<string>> FetchContent(string script, CancellationToken cancellationToken = default)
     {
         string sourceText;
@@ -50,7 +50,7 @@ public class AdditionalScriptContentFetcher: IAdditionalScriptContentFetcher
                 }
                 else
                 {
-                    _logger.LogDebug("The file {ScriptFile} does not exists, treat as {ScriptType}", 
+                    _logger.LogDebug("The file {ScriptFile} does not exists, treat as {ScriptType}",
                         script, script.EndsWith(";") ? "code" : Helper.Script);
                     sourceText = script;
                 }
@@ -106,7 +106,7 @@ public sealed class ScriptContentFetcher : AdditionalScriptContentFetcher, IScri
         }
         var sourceText = sourceTextResult.Data;
         Guard.NotNull(sourceText);
-        
+
         var scriptReferences = new HashSet<string>();
         var scriptUsings = new HashSet<string>();
 

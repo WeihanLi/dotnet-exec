@@ -215,7 +215,7 @@ public static class Helper
             yield return FrameworkReferenceResolver.FrameworkNames.Web;
         }
     }
-    
+
     public static void EnableReferencesSupersedeLowerVersions(this CompilationOptions compilationOptions)
     {
         // https://github.com/dotnet/roslyn/blob/a51b65c86bb0f42a79c47798c10ad75d5c343f92/src/Compilers/Core/Portable/Compilation/CompilationOptions.cs#L183

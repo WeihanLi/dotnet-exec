@@ -28,7 +28,7 @@ public abstract class CodeExecutor : ICodeExecutor
               .Select(x => x.FullName)
               .StringJoin(";");
             Logger.LogDebug("ReferencedAssemblies: {assemblies}", assembliesString);
-        }   
+        }
         var entryMethod = assembly.EntryPoint;
         if (entryMethod is null && options.EntryPoint.IsNotNullOrEmpty())
         {

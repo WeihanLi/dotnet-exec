@@ -119,7 +119,7 @@ public class IntegrationTests
         Assert.Equal(0, result);
         _outputHelper.WriteLine(output.StandardOutput);
     }
-    
+
     [Fact]
     public async Task ScriptUsingAliasTest()
     {

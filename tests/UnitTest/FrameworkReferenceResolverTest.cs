@@ -8,7 +8,7 @@ namespace UnitTest;
 public class FrameworkReferenceResolverTest
 {
     private readonly FrameworkReferenceResolver _frameworkReferenceResolver = new();
-    
+
     [Theory]
     [InlineData(FrameworkReferenceResolver.FrameworkNames.Default)]
     [InlineData(FrameworkReferenceResolver.FrameworkNames.Web)]

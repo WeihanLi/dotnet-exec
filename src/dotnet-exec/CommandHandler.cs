@@ -4,7 +4,14 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
+/* Unmerged change from project 'dotnet-exec(net7.0)'
+Before:
 using System.Xml;
+using System.Xml.Linq;
+After:
+using System.Xml.Linq;
+*/
 using System.Xml.Linq;
 using WeihanLi.Common.Models;
 
@@ -119,7 +126,7 @@ public sealed class CommandHandler : ICommandHandler
                 }
             }
         }
-        
+
         // fetch script
         var fetchResult = await _scriptContentFetcher.FetchContent(options);
         if (!fetchResult.IsSuccess())
