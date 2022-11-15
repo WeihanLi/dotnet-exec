@@ -124,7 +124,7 @@ public sealed class ScriptContentFetcher : AdditionalScriptContentFetcher, IScri
                 || line.StartsWith("// reference:")
                        )
             {
-                var reference = line.Split(':', 2)[1].Trim();
+                var reference = line.Split(':', 2)[1].Trim().TrimEnd(';');
                 if (reference.IsNotNullOrEmpty())
                 {
                     scriptReferences.Add(reference);
@@ -140,7 +140,7 @@ public sealed class ScriptContentFetcher : AdditionalScriptContentFetcher, IScri
                 || line.StartsWith("// using:")
                )
             {
-                var @using = line.Split(':', 2)[1].Trim();
+                var @using = line.Split(':', 2)[1].Trim().TrimEnd(';');
                 if (@using.IsNotNullOrEmpty())
                 {
                     scriptUsings.Add(@using);

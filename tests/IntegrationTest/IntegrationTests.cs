@@ -35,6 +35,7 @@ public class IntegrationTests
     [InlineData("DumpAssemblyInfoSample")]
     [InlineData("WebApiSample")]
     [InlineData("EmbeddedReferenceSample")]
+    [InlineData("UsingSample")]
     public async Task SamplesTest(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
