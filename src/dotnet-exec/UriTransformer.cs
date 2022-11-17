@@ -8,7 +8,7 @@ public interface IUriTransformer
     string Transform(string originalUri);
 }
 
-public class UriTransformer : IUriTransformer
+public sealed class UriTransformer : IUriTransformer
 {
     public string Transform(string originalUri)
     {

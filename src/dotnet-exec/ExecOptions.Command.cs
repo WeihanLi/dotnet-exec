@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Exec;
 
-public partial class ExecOptions
+public sealed partial class ExecOptions
 {
     internal const string DefaultTargetFramework =
 #if NET7_0
