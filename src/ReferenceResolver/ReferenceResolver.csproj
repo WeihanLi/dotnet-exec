@@ -12,7 +12,7 @@
     </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
-    <PackageReference Include="NuGet.DependencyResolver.Core" />
+    <PackageReference Include="NuGet.Protocol" />
     <PackageReference Include="WeihanLi.Common" />
   </ItemGroup>
 </Project>
