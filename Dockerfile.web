@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/runtime:7.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS base
 LABEL Maintainer="WeihanLi"
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build-env
