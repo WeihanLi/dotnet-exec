@@ -20,7 +20,7 @@ public class ReferenceResolverTest
             IncludeWideReferences = includeWide
         }, true);
         Assert.NotEmpty(references);
-        Assert.Contains(references, x => x.Contains("Microsoft.Extensions.DependencyInjection.dll"));
+        Assert.Contains(references, x => x.Contains("System.Text.Json.dll"));
     }
 
     [Theory]
@@ -33,7 +33,7 @@ public class ReferenceResolverTest
             IncludeWideReferences = includeWide
         }, false);
         Assert.NotEmpty(references);
-        Assert.Contains(references, x => x.Contains("Microsoft.Extensions.DependencyInjection.dll"));
+        Assert.Contains(references, x => x.Contains("System.Text.Json.dll"));
     }
 
     [Theory]
