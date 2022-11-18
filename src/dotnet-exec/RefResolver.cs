@@ -13,6 +13,7 @@ namespace Exec;
 
 public interface IRefResolver
 {
+    // for unit test only
     bool DisableCache { get; set; }
 
     Task<string[]> ResolveReferences(ExecOptions options, bool compilation);
@@ -40,7 +41,10 @@ public sealed class RefResolver : IRefResolver
     private async Task<string[]> ResolveFrameworkReferences(ExecOptions options, bool compilation)
     {
         var frameworks = Helper.GetDependencyFrameworks(options);
-        var frameworkReferences = await frameworks.Select(async framework =>
+        var referenceFrameworks = options.References
+            .Select(r => r.StartsWith("framework:", StringComparison.OrdinalIgnoreCase) ? r["framework:".Length..].Trim() : null)
+            .WhereNotNull();
+        var frameworkReferences = await frameworks.Union(referenceFrameworks).Select(async framework =>
         {
             if (compilation)
             {
@@ -74,10 +78,10 @@ public sealed class RefResolver : IRefResolver
                     typeof(Newtonsoft.Json.JsonConvert).Assembly.Location
                 })
                 .SelectMany(x => x)
+                .Distinct()
                 .ToArray();
         }
-
-        return frameworkReferences.SelectMany(x => x).ToArray();
+        return frameworkReferences.SelectMany(x => x).Distinct().ToArray();
     }
 
     private async Task<string[]> ResolveAdditionalReferences(string targetFramework, HashSet<string>? references,
@@ -88,14 +92,20 @@ public sealed class RefResolver : IRefResolver
             return Array.Empty<string>();
         }
 
-        var result = references.Where(x => !x.StartsWith("nuget:", StringComparison.OrdinalIgnoreCase)).Select(reference =>
-        {
-            if (reference.IsNullOrWhiteSpace())
-                return Array.Empty<string>();
+        // file references
+        var result = references
+            .Where(x => !x.StartsWith("nuget:", StringComparison.OrdinalIgnoreCase) 
+                        && !x.StartsWith("framework:", StringComparison.OrdinalIgnoreCase))
+            .Select(reference =>
+            {
+                if (reference.IsNullOrWhiteSpace())
+                    return Array.Empty<string>();
 
-            return File.Exists(reference) ? new[] { reference } : Array.Empty<string>();
-        });
-        var nugetReferences = await references.Where(x => x.StartsWith("nuget:", StringComparison.OrdinalIgnoreCase))
+                return File.Exists(reference) ? new[] { reference } : Array.Empty<string>();
+            });
+        // nuget references
+        var nugetReferences = await references
+            .Where(x => x.StartsWith("nuget:", StringComparison.OrdinalIgnoreCase))
             .Select(reference =>
             {
                 // nuget

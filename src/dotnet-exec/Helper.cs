@@ -109,7 +109,7 @@ public static class Helper
         yield return "System.Threading";
         yield return "System.Threading.Tasks";
 
-        if (!options.IsScriptExecutor())
+        if (options.IncludeWebReferences && !options.IsScriptExecutor())
         {
             // Web
             yield return "System.Net.Http.Json";
@@ -210,7 +210,7 @@ public static class Helper
     public static IEnumerable<string> GetDependencyFrameworks(ExecOptions options)
     {
         yield return FrameworkReferenceResolver.FrameworkNames.Default;
-        if (!options.IsScriptExecutor())
+        if (options.IncludeWebReferences && !options.IsScriptExecutor())
         {
             yield return FrameworkReferenceResolver.FrameworkNames.Web;
         }

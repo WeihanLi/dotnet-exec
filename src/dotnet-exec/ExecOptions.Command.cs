@@ -30,9 +30,6 @@ public sealed partial class ExecOptions
     private static readonly Option<string> ExecutorTypeOption =
         new("--executor-type", () => Helper.Default, "The executor to use");
 
-    private static readonly Option<LanguageVersion> LanguageVersionOption =
-        new("--lang-version", () => LanguageVersion.Default, "Language version");
-
     private static readonly Option<bool> PreviewOption =
         new("--preview", "Use preview language feature and enable preview features");
 
@@ -43,11 +40,12 @@ public sealed partial class ExecOptions
         new(new[] { "--args", "--arguments" }, "Input arguments");
 
     private static readonly Option<bool> DebugOption = new("--debug", "Enable debug logs for debug");
-    private static readonly Option<bool> DisableCacheOption = new("--disable-cache", "Disable internal cache");
     private static readonly Option<bool> UseRefAssembliesForCompileOption = new("--ref-compile", "Use Ref assemblies for compile, when not found from local download from nuget");
-    private static readonly Option<string> ProjectOption = new("--project", "Project file path");
+    private static readonly Option<string> ProjectOption = new("--project", "Project file to exact reference and usings path");
     private static readonly Option<bool> WideReferencesOption =
-        new(new[] { "-w" }, () => true, "Include Newtonsoft.Json/WeihanLi.Common references");
+        new(new[] { "--wide" }, () => true, "Include Newtonsoft.Json/WeihanLi.Common references");
+    private static readonly Option<bool> WebReferencesOption =
+        new(new[] { "-w", "--web" }, () => true, "Include Web SDK references");
 
     private static readonly Option<string[]> AdditionalReferencesOption =
         new(new[] { "-r", "--reference" }, "Additional references") { Arity = ArgumentArity.ZeroOrMore };
@@ -69,20 +67,19 @@ public sealed partial class ExecOptions
         EntryPoint = Guard.NotNull(parseResult.GetValueForOption(EntryPointOption));
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption)
             .GetValueOrDefault(DefaultTargetFramework);
-        LanguageVersion = parseResult.GetValueForOption(LanguageVersionOption);
         Configuration = parseResult.GetValueForOption(ConfigurationOption);
         Arguments = CommandLineStringSplitter.Instance
             .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
         IncludeWideReferences = parseResult.GetValueForOption(WideReferencesOption);
+        IncludeWebReferences = parseResult.GetValueForOption(WebReferencesOption);
         CompilerType = parseResult.GetValueForOption(CompilerTypeOption) ?? Helper.Default;
         ExecutorType = parseResult.GetValueForOption(ExecutorTypeOption) ?? Helper.Default;
         References = new(parseResult.GetValueForOption(AdditionalReferencesOption) ?? Array.Empty<string>());
         Usings = new(parseResult.GetValueForOption(UsingsOption) ?? Array.Empty<string>());
         AdditionalScripts = new(parseResult.GetValueForOption(AdditionalScriptsOption) ?? Array.Empty<string>());
         DebugEnabled = parseResult.HasOption(DebugOption);
-        DisableCache = parseResult.HasOption(DisableCacheOption);
-        UseRefAssembliesForCompile = parseResult.HasOption(UseRefAssembliesForCompileOption);
+        UseRefAssembliesForCompile = parseResult.GetValueForOption(UseRefAssembliesForCompileOption);
         if (parseResult.HasOption(PreviewOption))
         {
             LanguageVersion = LanguageVersion.Preview;
