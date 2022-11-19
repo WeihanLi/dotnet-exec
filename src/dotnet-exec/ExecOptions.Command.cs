@@ -43,7 +43,7 @@ public sealed partial class ExecOptions
     private static readonly Option<bool> UseRefAssembliesForCompileOption = new("--ref-compile", "Use Ref assemblies for compile, when not found from local download from nuget");
     private static readonly Option<string> ProjectOption = new("--project", "Project file to exact reference and usings path");
     private static readonly Option<bool> WideReferencesOption =
-        new(new[] { "--wide" }, () => true, "Include Newtonsoft.Json/WeihanLi.Common references");
+        new(new[] { "--wide" }, () => false, "Include Newtonsoft.Json/WeihanLi.Common references");
     private static readonly Option<bool> WebReferencesOption =
         new(new[] { "-w", "--web" }, () => true, "Include Web SDK references");
 
@@ -84,6 +84,8 @@ public sealed partial class ExecOptions
         {
             LanguageVersion = LanguageVersion.Preview;
         }
+        
+        //
     }
 
     public static Command GetCommand()
