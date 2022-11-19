@@ -177,6 +177,59 @@ public class IntegrationTests
         Assert.Equal(0, result);
     }
 
+    [Theory(
+        Skip = "localOnly"
+        )]
+    [InlineData(@"C:\projects\sources\WeihanLi.Npoi\src\WeihanLi.Npoi\bin\Release\net6.0\WeihanLi.Npoi.dll")]
+    [InlineData(@".\out\WeihanLi.Npoi.dll")]
+    public async Task LocalDllReferenceTest(string dllPath)
+    {
+        using var output = await ConsoleOutput.CaptureAsync();
+        var options = new ExecOptions()
+        {
+            References = new()
+            {
+                dllPath
+            },
+            Usings = new()
+            {
+                "WeihanLi.Npoi"
+            },
+            Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump()"
+        };
+        var result = await _handler.Execute(options);
+        Assert.Equal(0, result);
+        Assert.NotNull(output.StandardOutput);
+        Assert.NotEmpty(output.StandardOutput);
+    }
+    
+    
+    [Theory(
+        Skip = "localOnly"
+    )]
+    [InlineData(@"C:\projects\sources\WeihanLi.Npoi\src\WeihanLi.Npoi\bin\Release\net6.0")]
+    [InlineData(@".\out")]
+    public async Task LocalFolderReferenceTest(string folder)
+    {
+        using var output = await ConsoleOutput.CaptureAsync();
+        var options = new ExecOptions()
+        {
+            References = new()
+            {
+                $"folder:{folder}"
+            },
+            Usings = new()
+            {
+                "WeihanLi.Npoi"
+            },
+            Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump()"
+        };
+        var result = await _handler.Execute(options);
+        Assert.Equal(0, result);
+        Assert.NotNull(output.StandardOutput);
+        Assert.NotEmpty(output.StandardOutput);
+    }
+
     [Theory]
     [InlineData("https://raw.githubusercontent.com/WeihanLi/SamplesInPractice/master/net6sample/ImplicitUsingsSample/ImplicitUsingsSample.csproj")]
     [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/master/net6sample/ImplicitUsingsSample/ImplicitUsingsSample.csproj")]

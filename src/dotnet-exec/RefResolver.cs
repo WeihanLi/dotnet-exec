@@ -4,7 +4,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuGet.Frameworks;
-using NuGet.Versioning;
 using ReferenceResolver;
 using System.Collections.Concurrent;
 using System.Reflection;
@@ -25,17 +24,19 @@ public sealed class RefResolver : IRefResolver
 {
     // for unit test only
     internal static IRefResolver InstanceForTest { get; } =
-        new RefResolver(new NuGetHelper(NullLoggerFactory.Instance));
+        new RefResolver(new NuGetHelper(NullLoggerFactory.Instance), new ReferenceResolverFactory(null));
     // for unit test only
     public bool DisableCache { get; set; }
 
     private readonly INuGetHelper _nugetHelper;
+    private readonly IReferenceResolverFactory _referenceResolverFactory;
     private readonly FrameworkReferenceResolver _frameworkReferenceResolver = new();
     private readonly ConcurrentDictionary<string, object> _cache = new();
 
-    public RefResolver(INuGetHelper nugetHelper)
+    public RefResolver(INuGetHelper nugetHelper, IReferenceResolverFactory referenceResolverFactory)
     {
         _nugetHelper = nugetHelper;
+        _referenceResolverFactory = referenceResolverFactory;
     }
 
     private async Task<string[]> ResolveFrameworkReferences(ExecOptions options, bool compilation)
@@ -44,32 +45,34 @@ public sealed class RefResolver : IRefResolver
         var referenceFrameworks = options.References
             .Select(r => r.StartsWith("framework:", StringComparison.OrdinalIgnoreCase) ? r["framework:".Length..].Trim() : null)
             .WhereNotNull();
-        var frameworkReferences = await frameworks.Union(referenceFrameworks).Select(async framework =>
-        {
-            if (compilation)
+        var frameworkReferences = await frameworks.Union(referenceFrameworks)
+            .Select(async framework =>
             {
-                var references =
-                    await _frameworkReferenceResolver.ResolveForCompile(framework, options.TargetFramework, options.CancellationToken)
-                        .ContinueWith(r => r.Result.ToArray());
-                if (references.HasValue()) return references;
-
-                if (options.UseRefAssembliesForCompile)
+                if (compilation)
                 {
-                    var packageId = Helper.GetReferencePackageName(framework);
-                    var versions = await _nugetHelper.GetPackageVersions(packageId, true, options.CancellationToken);
-                    var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
-                    var version = versions
-                        .Where(x => x.Major == nugetFramework.Version.Major
-                                    && x.Minor == nugetFramework.Version.Minor)
-                        .Max();
-                    return await _nugetHelper.ResolvePackageReferences(options.TargetFramework, packageId, version,
-                        true,
-                        options.CancellationToken);
-                }
-            }
+                    var references =
+                        await _frameworkReferenceResolver.ResolveForCompile(framework, options.TargetFramework, options.CancellationToken)
+                            .ContinueWith(r => r.Result.ToArray());
+                    if (references.HasValue()) return references;
 
-            return await _frameworkReferenceResolver.Resolve(framework, options.TargetFramework, options.CancellationToken);
-        }).WhenAll();
+                    if (options.UseRefAssembliesForCompile)
+                    {
+                        var packageId = Helper.GetReferencePackageName(framework);
+                        var versions = await _nugetHelper.GetPackageVersions(packageId, true, options.CancellationToken);
+                        var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
+                        var version = versions
+                            .Where(x => x.Major == nugetFramework.Version.Major
+                                        && x.Minor == nugetFramework.Version.Minor)
+                            .Max();
+                        return await _nugetHelper.ResolvePackageReferences(options.TargetFramework, packageId, version,
+                            true,
+                            options.CancellationToken);
+                    }
+                }
+
+                return await _frameworkReferenceResolver.Resolve(framework, options.TargetFramework, options.CancellationToken);
+            })
+            .WhenAll();
         if (options.IncludeWideReferences)
         {
             return frameworkReferences.Append(new[]
@@ -91,56 +94,12 @@ public sealed class RefResolver : IRefResolver
         {
             return Array.Empty<string>();
         }
-
-        // file references
-        var result = references
-            .Where(x => !x.StartsWith("nuget:", StringComparison.OrdinalIgnoreCase) 
-                        && !x.StartsWith("framework:", StringComparison.OrdinalIgnoreCase))
-            .Select(reference =>
-            {
-                if (reference.IsNullOrWhiteSpace())
-                    return Array.Empty<string>();
-
-                return File.Exists(reference) ? new[] { reference } : Array.Empty<string>();
-            });
-        // nuget references
-        var nugetReferences = await references
-            .Where(x => x.StartsWith("nuget:", StringComparison.OrdinalIgnoreCase))
-            .Select(reference =>
-            {
-                // nuget
-                var splits = reference["nuget:".Length..].Split(',',
-                    StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                if (splits.Length <= 0)
-                    return null;
-
-                NuGetVersion? version = null;
-                var packageId = splits[0];
-                if (splits.Length == 2)
-                {
-                    version = NuGetVersion.Parse(splits[1]);
-                }
-
-                return new NuGetReference(packageId, version);
-            })
-            .WhereNotNull()
-            .GroupBy(x => x.PackageId)
-            .Select(async g =>
-            {
-                var packageId = g.Key;
-                var version = g.Any(x => x.PackageVersion is null)
-                    ? null
-                    : g.Select(x => x.PackageVersion!)
-#if NET7_0_OR_GREATER
-                    .OrderDescending()
-#else
-                    .OrderByDescending(_ => _)
-#endif
-                    .First();
-                return await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, false,
-                    cancellationToken);
-            }).WhenAll();
-        return result.Union(nugetReferences).SelectMany(_ => _).ToArray();
+        // non-framework references
+        var result = await references
+            .Where(x => !x.StartsWith("framework:", StringComparison.OrdinalIgnoreCase))
+            .Select(reference => _referenceResolverFactory.ResolveReference(reference, targetFramework, cancellationToken))
+            .WhenAll();
+        return result.SelectMany(_ => _).Distinct().ToArray();
     }
 
     public async Task<string[]> ResolveReferences(ExecOptions options, bool compilation)

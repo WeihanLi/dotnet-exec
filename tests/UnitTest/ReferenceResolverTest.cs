@@ -7,15 +7,12 @@ using ReferenceResolver;
 namespace UnitTest;
 public class ReferenceResolverTest
 {
-    private readonly IRefResolver _referenceResolver =
-        new RefResolver(new NuGetHelper(NullLoggerFactory.Instance));
-
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
     public async Task ResolveFrameworkReferencesOnly(bool includeWide)
     {
-        var references = await _referenceResolver.ResolveReferences(new ExecOptions()
+        var references = await RefResolver.InstanceForTest.ResolveReferences(new ExecOptions()
         {
             IncludeWideReferences = includeWide
         }, true);
@@ -28,7 +25,7 @@ public class ReferenceResolverTest
     [InlineData(false)]
     public async Task ResolveFrameworkRuntimeReferencesOnly(bool includeWide)
     {
-        var references = await _referenceResolver.ResolveReferences(new ExecOptions()
+        var references = await RefResolver.InstanceForTest.ResolveReferences(new ExecOptions()
         {
             IncludeWideReferences = includeWide
         }, false);
@@ -41,7 +38,7 @@ public class ReferenceResolverTest
     [InlineData("nuget:WeihanLi.Common", false)]
     public async Task ResolveFrameworkReferencesWithAdditional(string reference, bool includeWide)
     {
-        var references = await _referenceResolver.ResolveReferences(new ExecOptions()
+        var references = await RefResolver.InstanceForTest.ResolveReferences(new ExecOptions()
         {
             IncludeWideReferences = includeWide,
             References = new(reference.Split(';', StringSplitOptions.RemoveEmptyEntries))
@@ -55,7 +52,7 @@ public class ReferenceResolverTest
     [InlineData("nuget:WeihanLi.Common", false)]
     public async Task ResolveFrameworkRuntimeReferencesWithAdditional(string reference, bool includeWide)
     {
-        var references = await _referenceResolver.ResolveReferences(new ExecOptions()
+        var references = await RefResolver.InstanceForTest.ResolveReferences(new ExecOptions()
         {
             IncludeWideReferences = includeWide,
             References = new(reference.Split(';', StringSplitOptions.RemoveEmptyEntries))

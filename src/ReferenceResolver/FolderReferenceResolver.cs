@@ -15,7 +15,7 @@ public sealed class FolderReferenceResolver : IReferenceResolver
             throw new ArgumentException("Folder not exits");
         }
 
-        var dllPath = Directory.GetFiles(reference, "*.dll");
+        var dllPath = Directory.GetFiles(Path.GetFullPath(reference), "*.dll");
         return Task.FromResult<IEnumerable<string>>(dllPath);
     }
 }

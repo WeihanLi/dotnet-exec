@@ -56,7 +56,7 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
         ArgumentNullException.ThrowIfNull(fullReference);
         var splits = fullReference.Split(new[] { ':' }, 2, StringSplitOptions.TrimEntries);
         var schema = "file";
-        if (splits.Length == 2)
+        if (splits.Length == 2 && ReferenceTypeCache.Value.ContainsKey(splits[0]))
         {
             schema = splits[0];
         }
