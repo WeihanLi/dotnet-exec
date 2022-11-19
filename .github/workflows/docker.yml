@@ -27,7 +27,7 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
     - name: Build and push latest
-      id: docker_build
+      id: docker_build_latest
       uses: docker/build-push-action@v2
       with:
         context: ./
@@ -36,7 +36,7 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:latest
         # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
     - name: Build and push web
-      id: docker_build
+      id: docker_build_web
       uses: docker/build-push-action@v2
       with:
         context: ./
