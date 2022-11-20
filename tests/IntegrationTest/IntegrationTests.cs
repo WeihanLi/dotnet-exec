@@ -230,8 +230,8 @@ public class IntegrationTests
         Assert.NotEmpty(output.StandardOutput);
         _outputHelper.WriteLine(output.StandardOutput);
     }
-    
-    
+
+
     [Theory(
         Skip = "localOnly"
     )]

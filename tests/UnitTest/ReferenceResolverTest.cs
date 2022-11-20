@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using Microsoft.Extensions.Logging.Abstractions;
-using ReferenceResolver;
-
 namespace UnitTest;
 public class ReferenceResolverTest
 {

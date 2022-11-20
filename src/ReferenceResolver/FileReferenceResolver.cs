@@ -10,8 +10,8 @@ public sealed class FileReferenceResolver : IReferenceResolver
     public Task<IEnumerable<string>> Resolve(string reference, string targetFramework, CancellationToken cancellationToken = default)
     {
         var fileInfo = new FileInfo(reference);
-        return fileInfo.Exists 
-            ? Task.FromResult<IEnumerable<string>>(new[] { fileInfo.FullName }) 
+        return fileInfo.Exists
+            ? Task.FromResult<IEnumerable<string>>(new[] { fileInfo.FullName })
             : Task.FromResult(Enumerable.Empty<string>());
     }
 }

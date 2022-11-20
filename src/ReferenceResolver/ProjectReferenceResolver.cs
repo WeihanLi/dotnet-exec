@@ -24,7 +24,7 @@ public sealed class ProjectReferenceResolver : IReferenceResolver
 
         return Directory.GetFiles(outputDir, "*.dll");
     }
-    
+
     public static string GetProjectPath(string projectPath, bool ensureFullPath)
     {
         string path;
