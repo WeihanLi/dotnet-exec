@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.Emit;
 using NuGet.Versioning;
 using ReferenceResolver;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using WeihanLi.Common.Models;
 
@@ -206,6 +207,27 @@ public static class Helper
             FrameworkReferenceResolver.FrameworkNames.WindowsDesktop => FrameworkReferencePackages.WindowsDesktop,
             _ => FrameworkReferencePackages.Default
         };
+    }
+
+    public static string GetRuntimePackageName(string frameworkName)
+    {
+        var packageBaseName = frameworkName switch
+        {
+            FrameworkReferenceResolver.FrameworkNames.Web => FrameworkReferencePackages.Web,
+            FrameworkReferenceResolver.FrameworkNames.WindowsDesktop => FrameworkReferencePackages.WindowsDesktop,
+            _ => FrameworkReferencePackages.Default
+        };
+        var platform = OperatingSystem.IsWindows() ? "win"
+            : OperatingSystem.IsLinux() ? "linux"
+            : OperatingSystem.IsMacOS() ? "osx"
+            : null;
+        if (platform is null)
+        {
+            throw new ArgumentException("Unknown OS-platform");
+        }
+        var fullPackageName = $"{packageBaseName}.runtime.{platform}-{RuntimeInformation.ProcessArchitecture}"
+            .ToLowerInvariant();
+        return fullPackageName;
     }
 
     public static IEnumerable<string> GetDependencyFrameworks(ExecOptions options)

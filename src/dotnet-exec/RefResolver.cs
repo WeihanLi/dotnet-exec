@@ -70,7 +70,23 @@ public sealed class RefResolver : IRefResolver
                     }
                 }
 
-                return await _frameworkReferenceResolver.Resolve(framework, options.TargetFramework, options.CancellationToken);
+                var runtimeReferences = await _frameworkReferenceResolver.Resolve(framework, options.TargetFramework, options.CancellationToken)
+                    .ContinueWith(r=> r.Result.ToArray());
+                if (runtimeReferences.IsNullOrEmpty())
+                {
+                    // fallback to nugetFramework
+                    var packageId = Helper.GetReferencePackageName(framework);
+                    var versions = await _nugetHelper.GetPackageVersions(packageId, true, options.CancellationToken);
+                    var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
+                    var version = versions
+                        .Where(x => x.Major == nugetFramework.Version.Major
+                                    && x.Minor == nugetFramework.Version.Minor)
+                        .Max();
+                    return await _nugetHelper.ResolvePackageReferences(options.TargetFramework, packageId, version,
+                        true,
+                        options.CancellationToken);
+                }
+                return runtimeReferences;
             })
             .WhenAll();
         if (options.IncludeWideReferences)
