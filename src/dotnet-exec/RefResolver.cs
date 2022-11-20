@@ -71,7 +71,7 @@ public sealed class RefResolver : IRefResolver
                 }
 
                 var runtimeReferences = await _frameworkReferenceResolver.Resolve(framework, options.TargetFramework, options.CancellationToken)
-                    .ContinueWith(r=> r.Result.ToArray());
+                    .ContinueWith(r => r.Result.ToArray());
                 if (runtimeReferences.IsNullOrEmpty())
                 {
                     // fallback to nugetFramework
