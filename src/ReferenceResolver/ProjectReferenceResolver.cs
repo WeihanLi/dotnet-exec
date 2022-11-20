@@ -13,9 +13,7 @@ public sealed class ProjectReferenceResolver : IReferenceResolver
         var dotnetPath = FrameworkReferenceResolver.GetDotnetPath();
         var projectPath = GetProjectPath(reference, true);
         var outputDir = Path.Combine(Path.GetDirectoryName(projectPath)!, "bin/build/out");
-
-        // TODO: support cancellationToken https://github.com/WeihanLi/WeihanLi.Common/issues/148
-        var result = await CommandExecutor.ExecuteAndCaptureAsync(dotnetPath, $"build {reference} -o {outputDir}");
+        var result = await CommandExecutor.ExecuteAndCaptureAsync(dotnetPath, $"build {reference} -o {outputDir}", cancellationToken: cancellationToken);
         if (result.ExitCode != 0)
         {
             throw new InvalidOperationException(
