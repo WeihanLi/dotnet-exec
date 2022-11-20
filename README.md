@@ -146,7 +146,7 @@ docker run --rm weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.Runti
 
 ### LanguageVersion
 
-By default, it's using the latest language version, you can use the `Preview` version with `--preview`/`--lang-version=Preview`
+By default, it's using the latest language version, you can use the `Preview` version with `--preview`
 
 ### EntryPoint
 
