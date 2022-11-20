@@ -137,7 +137,7 @@ public static class Helper
         }
     }
 
-    public static HashSet<string> GetGlobalUsings(ExecOptions options)
+    private static HashSet<string> GetGlobalUsings(ExecOptions options)
     {
         var usings = new HashSet<string>(GetGlobalUsingsInternal(options));
         if (options.Usings.HasValue())
