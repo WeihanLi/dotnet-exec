@@ -10,6 +10,7 @@
 - FrameworkReference
 - NuGetPackageReference
 - FolderReference
+- ProjectReference
 
 ## ReferenceResolvers
 
@@ -17,3 +18,4 @@
 - FrameworkReferenceResolver
 - NuGetPackageReferenceResolver
 - FolderReferenceResolver
+- ProjectReferenceResolver
