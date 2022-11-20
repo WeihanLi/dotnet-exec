@@ -75,7 +75,7 @@ public sealed class RefResolver : IRefResolver
                 if (runtimeReferences.IsNullOrEmpty())
                 {
                     // fallback to nugetFramework
-                    var packageId = Helper.GetReferencePackageName(framework);
+                    var packageId = Helper.GetRuntimePackageName(framework);
                     var versions = await _nugetHelper.GetPackageVersions(packageId, true, options.CancellationToken);
                     var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
                     var version = versions

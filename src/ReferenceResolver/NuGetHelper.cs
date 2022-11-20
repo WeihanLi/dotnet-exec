@@ -309,6 +309,7 @@ public sealed class NuGetHelper : INuGetHelper
                 .Select(x => Path.Combine(packageDir, x))
                 .ToArray();
         }
+
         var refItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Ref, cancellationToken)).ToArray();
         var nearestRef = _frameworkReducer.GetNearest(nugetFramework, refItems.Select(x => x.TargetFramework));
         if (nearestRef != null)
@@ -318,6 +319,16 @@ public sealed class NuGetHelper : INuGetHelper
                  .Where(x => ".dll".EqualsIgnoreCase(Path.GetExtension(x)))
                  .Select(x => Path.Combine(packageDir, x))
                  .ToArray();
+        }
+
+        var runtimeItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Runtimes, cancellationToken)).FirstOrDefault();
+        if (runtimeItems != null)
+        {
+            return runtimeItems
+                .Items
+                .Where(x => ".dll".EqualsIgnoreCase(Path.GetExtension(x)))
+                .Select(x => Path.Combine(packageDir, x))
+                .ToArray();
         }
         return Array.Empty<string>();
     }

@@ -212,12 +212,6 @@ public static class Helper
 
     public static string GetRuntimePackageName(string frameworkName)
     {
-        var packageBaseName = frameworkName switch
-        {
-            FrameworkReferenceResolver.FrameworkNames.Web => FrameworkReferencePackages.Web,
-            FrameworkReferenceResolver.FrameworkNames.WindowsDesktop => FrameworkReferencePackages.WindowsDesktop,
-            _ => FrameworkReferencePackages.Default
-        };
         var platform = OperatingSystem.IsWindows() ? "win"
             : OperatingSystem.IsLinux() ? "linux"
             : OperatingSystem.IsMacOS() ? "osx"
@@ -226,8 +220,7 @@ public static class Helper
         {
             throw new ArgumentException("Unknown OS-platform");
         }
-        var fullPackageName = $"{packageBaseName}.runtime.{platform}-{RuntimeInformation.ProcessArchitecture}"
-            .ToLowerInvariant();
+        var fullPackageName = $"{frameworkName}.Runtime.{platform}-{RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant()}";
         return fullPackageName;
     }
 
