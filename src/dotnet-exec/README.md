@@ -139,7 +139,7 @@ docker run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
 ```
 
 ``` sh
-docker run --rm weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo.Dump()"
+docker run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
 ```
 
 ## More
