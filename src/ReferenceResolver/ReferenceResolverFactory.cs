@@ -35,6 +35,7 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
             ReferenceType.NuGetPackage => _serviceProvider.GetService<NuGetReferenceResolver>() ?? new NuGetReferenceResolver(new NuGetHelper(NullLoggerFactory.Instance)),
             ReferenceType.FrameworkReference =>
                 _serviceProvider.GetServiceOrCreateInstance<FrameworkReferenceResolver>(),
+            ReferenceType.ProjectReference => _serviceProvider.GetServiceOrCreateInstance<ProjectReferenceResolver>(),
             _ => throw new ArgumentOutOfRangeException(nameof(referenceType))
         };
     }

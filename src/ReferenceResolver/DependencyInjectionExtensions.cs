@@ -16,6 +16,7 @@ public static class DependencyInjectionExtensions
         serviceCollection.TryAddSingleton<IReferenceResolver, FolderReferenceResolver>();
         serviceCollection.TryAddSingleton<IReferenceResolver, FrameworkReferenceResolver>();
         serviceCollection.TryAddSingleton<IReferenceResolver, NuGetReferenceResolver>();
+        serviceCollection.TryAddSingleton<IReferenceResolver, ProjectReferenceResolver>();
         serviceCollection.TryAddSingleton<IReferenceResolverFactory, ReferenceResolverFactory>();
         return serviceCollection;
     }

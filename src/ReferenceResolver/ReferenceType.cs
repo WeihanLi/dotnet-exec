@@ -13,4 +13,6 @@ public enum ReferenceType
     NuGetPackage = 2,
     [ReferenceSchema("framework")]
     FrameworkReference = 3,
+    [ReferenceSchema("project")]
+    ProjectReference = 4,
 }

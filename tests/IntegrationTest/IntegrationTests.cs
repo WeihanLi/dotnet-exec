@@ -201,9 +201,9 @@ public class IntegrationTests
         Assert.Equal(0, result);
         Assert.NotNull(output.StandardOutput);
         Assert.NotEmpty(output.StandardOutput);
+        _outputHelper.WriteLine(output.StandardOutput);
     }
-    
-    
+
     [Theory(
         Skip = "localOnly"
     )]
@@ -228,6 +228,35 @@ public class IntegrationTests
         Assert.Equal(0, result);
         Assert.NotNull(output.StandardOutput);
         Assert.NotEmpty(output.StandardOutput);
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
+    
+    
+    [Theory(
+        Skip = "localOnly"
+    )]
+    [InlineData(@"C:\projects\sources\WeihanLi.Npoi\src\WeihanLi.Npoi")]
+    [InlineData(@"C:\projects\sources\WeihanLi.Npoi\src\WeihanLi.Npoi\WeihanLi.Npoi.csproj")]
+    public async Task LocalProjectReferenceTest(string path)
+    {
+        using var output = await ConsoleOutput.CaptureAsync();
+        var options = new ExecOptions()
+        {
+            References = new()
+            {
+                $"project:{path}"
+            },
+            Usings = new()
+            {
+                "WeihanLi.Npoi"
+            },
+            Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump()"
+        };
+        var result = await _handler.Execute(options);
+        Assert.Equal(0, result);
+        Assert.NotNull(output.StandardOutput);
+        Assert.NotEmpty(output.StandardOutput);
+        _outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
