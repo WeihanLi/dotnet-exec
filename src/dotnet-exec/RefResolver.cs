@@ -77,8 +77,11 @@ public sealed class RefResolver : IRefResolver
         {
             return frameworkReferences.Append(new[]
                 {
+                    typeof(Microsoft.Extensions.Configuration.ConfigurationBuilder).Assembly.Location,
+                    typeof(ServiceCollection).Assembly.Location,
+                    typeof(LoggerFactory).Assembly.Location,
+                    typeof(Newtonsoft.Json.JsonConvert).Assembly.Location,
                     typeof(DependencyResolver).Assembly.Location,
-                    typeof(Newtonsoft.Json.JsonConvert).Assembly.Location
                 })
                 .SelectMany(x => x)
                 .Distinct()

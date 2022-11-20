@@ -123,14 +123,15 @@ public static class Helper
             yield return "Microsoft.Extensions.Logging";
         }
 
-
         if (options.IncludeWideReferences)
         {
             yield return "WeihanLi.Common";
-            yield return "WeihanLi.Common.Logging";
             yield return "WeihanLi.Common.Helpers";
             yield return "WeihanLi.Extensions";
             yield return "WeihanLi.Extensions.Dump";
+            yield return "Microsoft.Extensions.Configuration";
+            yield return "Microsoft.Extensions.DependencyInjection";
+            yield return "Microsoft.Extensions.Logging";
         }
     }
 
