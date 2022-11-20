@@ -17,7 +17,8 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
     private static readonly Dictionary<string, string> FrameworkAliases = new(StringComparer.OrdinalIgnoreCase)
     {
         { nameof(FrameworkNames.Default), FrameworkNames.Default },
-        { nameof(FrameworkNames.Web), FrameworkNames.Web }
+        { nameof(FrameworkNames.Web), FrameworkNames.Web },
+        { nameof(FrameworkNames.WindowsDesktop), FrameworkNames.WindowsDesktop },
     };
 
     public ReferenceType ReferenceType => ReferenceType.FrameworkReference;
@@ -138,7 +139,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         var frameworkDir = Path.Combine(sharedDir, frameworkName);
         if (!Directory.Exists(frameworkDir))
         {
-            frameworkDir = Path.GetDirectoryName(typeof(object).Assembly.Location);
+            return Array.Empty<string>();
         }
 
         Guard.NotNull(frameworkDir);
