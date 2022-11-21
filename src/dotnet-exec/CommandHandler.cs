@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using System.Diagnostics;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -67,6 +68,7 @@ public sealed class CommandHandler : ICommandHandler
         // exact reference and usings from project file
         if (options.ProjectPath.IsNotNullOrEmpty())
         {
+            var startTime = Stopwatch.GetTimestamp();
             // https://learn.microsoft.com/en-us/dotnet/standard/linq/linq-xml-overview
             var projectPath = _uriTransformer.Transform(options.ProjectPath);
             var element = XElement.Load(projectPath);
@@ -117,6 +119,10 @@ public sealed class CommandHandler : ICommandHandler
                     options.References.Add(reference);
                 }
             }
+
+            var endTime = Stopwatch.GetTimestamp();
+            var duration = ProfilerHelper.GetElapsedTime(startTime, endTime);
+            _logger.LogDebug("Exact info from project file elapsed time: {duration}", duration);
         }
 
         // fetch script
@@ -130,7 +136,12 @@ public sealed class CommandHandler : ICommandHandler
         // compile assembly
         var sourceText = fetchResult.Data;
         var compiler = _compilerFactory.GetCompiler(options.CompilerType);
+        var compileStartTime = Stopwatch.GetTimestamp();
         var compileResult = await compiler.Compile(options, sourceText);
+        var compileEndTime = Stopwatch.GetTimestamp();
+        var compileElapsed = ProfilerHelper.GetElapsedTime(compileStartTime, compileEndTime);
+        _logger.LogDebug("Compile elapsed: {elapsed}", compileElapsed);
+
         if (!compileResult.IsSuccess())
         {
             _logger.LogError($"Compile error:{Environment.NewLine}{compileResult.Msg}");
@@ -142,12 +153,16 @@ public sealed class CommandHandler : ICommandHandler
         var executor = _executorFactory.GetExecutor(options.ExecutorType);
         try
         {
+            var executeStartTime = Stopwatch.GetTimestamp();
             var executeResult = await executor.Execute(compileResult.Data, options);
             if (!executeResult.IsSuccess())
             {
                 _logger.LogError($"Execute error:{Environment.NewLine}{executeResult.Msg}");
                 return -3;
             }
+            var executeEndTime = Stopwatch.GetTimestamp();
+            var elapsed = ProfilerHelper.GetElapsedTime(executeStartTime, executeEndTime);
+            _logger.LogDebug("Execute elapsed: {elapsed}", elapsed);
 
             // wait for console flush
             await Console.Out.FlushAsync();
