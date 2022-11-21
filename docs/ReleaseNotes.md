@@ -1,5 +1,12 @@
 # Release Notes
 
+## 0.11.0
+
+- ProjectReference support
+- Disable web framework references by default to improve perf
+- Include `Microsoft.Extensions.*`(`Configuration`/`DependencyInjection`/`Logging`) for wide reference
+- Fallback to NuGet package reference when runtime not found
+
 ## 0.10.0
 
 - Support using static and using alias for script
