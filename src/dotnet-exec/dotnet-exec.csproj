@@ -26,11 +26,10 @@
   <ItemGroup>
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Console" />
       <PackageReference Include="NuGet.Protocol" />
       <PackageReference Include="System.CommandLine" />
-      <PackageReference Include="WeihanLi.Common" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Console" />
+      <PackageReference Include="WeihanLi.Common" />      
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTest" />
