@@ -33,7 +33,7 @@ jobs:
         context: ./
         file: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}, ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:latest
         # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
     - name: Build and push web
       id: docker_build_web
