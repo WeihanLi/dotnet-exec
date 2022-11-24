@@ -132,6 +132,10 @@ public sealed class CommandHandler : ICommandHandler
             _logger.LogError(fetchResult.Msg);
             return -1;
         }
+        _logger.LogDebug("ExecutorType: {ExecutorType} References: {References}, Usings: {Usings}",
+            options.ExecutorType, 
+            options.References.StringJoin(";"),
+            options.Usings.StringJoin(";"));
 
         // compile assembly
         var sourceText = fetchResult.Data;
