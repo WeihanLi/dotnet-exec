@@ -5,5 +5,5 @@ await using var serviceProvider = new ServiceCollection()
     .RegisterApplicationServices(args)
     .BuildServiceProvider();
 var command = ExecOptions.GetCommand();
-command.Handler = serviceProvider.GetRequiredService<ICommandHandler>();
+command.Initialize(serviceProvider);
 await command.InvokeAsync(args);

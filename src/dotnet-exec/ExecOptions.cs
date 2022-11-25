@@ -36,6 +36,8 @@ public sealed partial class ExecOptions
 
     public string ExecutorType { get; set; } = "default";
 
+    public string? ConfigProfile { get; set; }
+
     public bool DebugEnabled { get; set; }
 
     public bool DisableCache { get; set; }

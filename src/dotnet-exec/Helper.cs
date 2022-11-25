@@ -9,6 +9,7 @@ using ReferenceResolver;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -46,10 +47,71 @@ public static class Helper
         services.AddSingleton<HttpClient>();
         services.AddReferenceResolvers();
         services.AddSingleton<IRefResolver, RefResolver>();
+        services.AddSingleton<IConfigProfileManager, ConfigProfileManager>();
 
         return services;
     }
 
+    public static void Initialize(this Command command, IServiceProvider serviceProvider)
+    {
+        command.Handler = serviceProvider.GetRequiredService<ICommandHandler>();
+        var profileManager = serviceProvider.GetRequiredService<IConfigProfileManager>();
+        foreach (var subcommand in command.Subcommands)
+        {
+            if (subcommand is ConfigProfileCommand configProfileCommand)
+            {
+                foreach (var configSubcommand in configProfileCommand.Subcommands)
+                {
+                    Func<InvocationContext, Task> commandHandler = configSubcommand.Name switch
+                    {
+                        "set" => async context =>
+                        {
+                            var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
+                            if (string.IsNullOrEmpty(profileName))
+                                return;
+                            
+                            var profile = new ConfigProfile()
+                            {
+                                Usings = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.UsingsOption) ?? Array.Empty<string>()),
+                                References = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.ReferencesOption) ?? Array.Empty<string>()),
+                                IncludeWebReferences = context.ParseResult.GetValueForOption(ExecOptions.WebReferencesOption),
+                                IncludeWideReferences = context.ParseResult.GetValueForOption(ExecOptions.WideReferencesOption),
+                                EntryPoint = context.ParseResult.GetValueForOption(ExecOptions.EntryPointOption),
+                                EnablePreviewFeatures = context.ParseResult.GetValueForOption(ExecOptions.PreviewOption)
+                            };
+                            await profileManager.ConfigureProfile(profileName, profile);
+                        },
+                        "rm" => async context =>
+                        {
+                            var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
+                            if (string.IsNullOrEmpty(profileName))
+                            {
+                                return;
+                            }
+                            await profileManager.DeleteProfile(profileName);
+                        },
+                        _ => async context =>
+                        {
+                            var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
+                            if (string.IsNullOrEmpty(profileName))
+                            {
+                                return;
+                            }
+
+                            var profile = await profileManager.GetProfile(profileName);
+                            if(profile is null)
+                                return;
+
+                            var output = JsonSerializer.Serialize(profile, new JsonSerializerOptions() { WriteIndented = true });
+                            context.Console.WriteLine(output);
+                        } 
+                    };
+                    configSubcommand.SetHandler(commandHandler);
+                }
+            }
+        }
+    }
+    
     public static async Task<Result<CompileResult>> GetCompilationAssemblyResult(this Compilation compilation,
         CancellationToken cancellationToken = default)
     {

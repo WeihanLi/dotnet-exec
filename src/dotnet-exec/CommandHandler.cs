@@ -17,18 +17,21 @@ public sealed class CommandHandler : ICommandHandler
     private readonly IExecutorFactory _executorFactory;
     private readonly IUriTransformer _uriTransformer;
     private readonly IScriptContentFetcher _scriptContentFetcher;
+    private readonly IConfigProfileManager _profileManager;
 
     public CommandHandler(ILogger logger,
         ICompilerFactory compilerFactory,
         IExecutorFactory executorFactory,
         IUriTransformer uriTransformer,
-        IScriptContentFetcher scriptContentFetcher)
+        IScriptContentFetcher scriptContentFetcher,
+        IConfigProfileManager profileManager)
     {
         _logger = logger;
         _compilerFactory = compilerFactory;
         _executorFactory = executorFactory;
         _uriTransformer = uriTransformer;
         _scriptContentFetcher = scriptContentFetcher;
+        _profileManager = profileManager;
     }
 
     public int Invoke(InvocationContext context) => InvokeAsync(context).GetAwaiter().GetResult();
@@ -39,7 +42,13 @@ public sealed class CommandHandler : ICommandHandler
 
         // 1. options binding
         var options = new ExecOptions();
-        options.BindCommandLineArguments(parseResult);
+        var profileName = parseResult.GetValueForOption(ExecOptions.ConfigProfileOption);
+        ConfigProfile? profile = null;
+        if (profileName.IsNotNullOrEmpty())
+        {
+            profile = await _profileManager.GetProfile(profileName);
+        }
+        options.BindCommandLineArguments(parseResult, profile);
         options.CancellationToken = context.GetCancellationToken();
         if (options.DebugEnabled)
         {
