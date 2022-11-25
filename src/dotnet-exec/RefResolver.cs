@@ -99,6 +99,8 @@ public sealed class RefResolver : IRefResolver
                     typeof(ServiceProvider).Assembly.Location,
                     typeof(ILoggerFactory).Assembly.Location,
                     typeof(LoggerFactory).Assembly.Location,
+                    typeof(Microsoft.Extensions.Options.Options).Assembly.Location,
+                    typeof(Microsoft.Extensions.Primitives.ChangeToken).Assembly.Location,
                     typeof(Newtonsoft.Json.JsonConvert).Assembly.Location,
                     typeof(DependencyResolver).Assembly.Location,
                 })
