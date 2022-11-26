@@ -146,7 +146,7 @@ public sealed class CommandHandler : ICommandHandler
         var referenceToRemoved = options.References.Where(r => r.StartsWith('-')).ToArray();
         foreach (var reference in referenceToRemoved)
         {
-            var referenceToRemove = reference[1..].Trim();
+            var referenceToRemove = reference[1..];
             options.References.Remove(referenceToRemove);
             options.References.Remove(reference);
         }
