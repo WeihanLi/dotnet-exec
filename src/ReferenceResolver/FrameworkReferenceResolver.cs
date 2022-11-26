@@ -53,7 +53,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
 
     public static string GetDotnetPath()
     {
-        var commandNameWithExtension =
+        var executableName =
             $"dotnet{(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : string.Empty)}";
         var searchPaths = Guard.NotNull(Environment.GetEnvironmentVariable("PATH"))
             .Split(new[] { Path.PathSeparator }, options: StringSplitOptions.RemoveEmptyEntries)
@@ -61,7 +61,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
             .ToArray();
         var commandPath = searchPaths
             .Where(p => !Path.GetInvalidPathChars().Any(p.Contains))
-            .Select(p => Path.Combine(p, commandNameWithExtension))
+            .Select(p => Path.Combine(p, executableName))
             .First(File.Exists);
         return commandPath;
     }
@@ -106,14 +106,14 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
             return _dotnetDirectory;
         }
     }
-    
+
     public static string GetReferencePackageName(string frameworkName)
     {
         FrameworkAliases.TryGetValue(frameworkName, out var framework);
         framework ??= frameworkName;
         return $"{framework}.Ref";
     }
-    
+
     public static string GetRuntimePackageName(string frameworkName)
     {
         FrameworkAliases.TryGetValue(frameworkName, out var framework);
