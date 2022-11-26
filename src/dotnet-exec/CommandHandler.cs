@@ -141,6 +141,16 @@ public sealed class CommandHandler : ICommandHandler
             _logger.LogError(fetchResult.Msg);
             return -1;
         }
+        
+        // Cleanup references
+        var referenceToRemoved = options.References.Where(r => r.StartsWith('-')).ToArray();
+        foreach (var reference in referenceToRemoved)
+        {
+            var referenceToRemove = reference[1..].Trim();
+            options.References.Remove(referenceToRemove);
+            options.References.Remove(reference);
+        }
+
         _logger.LogDebug("ExecutorType: {ExecutorType} References: {References}, Usings: {Usings}",
             options.ExecutorType,
             options.References.StringJoin(";"),

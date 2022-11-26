@@ -140,12 +140,10 @@ public sealed partial class ExecOptions
         {
             command.AddArgument(argument);
         }
-
         foreach (var option in GetOptions())
         {
             command.AddOption(option);
         }
-
         return command;
     }
 
