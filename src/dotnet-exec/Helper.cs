@@ -227,16 +227,13 @@ public static class Helper
         var usings = new HashSet<string>(GetGlobalUsingsInternal(options));
         if (options.Usings.HasValue())
         {
-            foreach (var @using in options.Usings)
+            foreach (var @using in options.Usings.Where(_ => !_.StartsWith('-')))
             {
-                if (@using.StartsWith('-'))
-                {
-                    usings.Remove(@using[1..]);
-                }
-                else
-                {
-                    usings.Add(@using);
-                }
+                usings.Add(@using);
+            }
+            foreach (var @using in options.Usings.Where(_ => _.StartsWith('-')))
+            {
+                usings.Remove(@using);
             }
         }
         return usings;
