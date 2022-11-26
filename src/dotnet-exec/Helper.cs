@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis.Emit;
 using NuGet.Versioning;
 using ReferenceResolver;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using WeihanLi.Common.Models;
@@ -282,34 +281,10 @@ public static class Helper
         }
     }
 
-    public static string GetReferencePackageName(string frameworkName)
-    {
-        return frameworkName switch
-        {
-            FrameworkReferenceResolver.FrameworkNames.Web => FrameworkReferencePackages.Web,
-            FrameworkReferenceResolver.FrameworkNames.WindowsDesktop => FrameworkReferencePackages.WindowsDesktop,
-            _ => FrameworkReferencePackages.Default
-        };
-    }
-
-    public static string GetRuntimePackageName(string frameworkName)
-    {
-        var platform = OperatingSystem.IsWindows() ? "win"
-            : OperatingSystem.IsLinux() ? "linux"
-            : OperatingSystem.IsMacOS() ? "osx"
-            : null;
-        if (platform is null)
-        {
-            throw new ArgumentException("Unknown OS-platform");
-        }
-        var fullPackageName = $"{frameworkName}.Runtime.{platform}-{RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant()}";
-        return fullPackageName;
-    }
-
     public static IEnumerable<string> GetDependencyFrameworks(ExecOptions options)
     {
         yield return FrameworkReferenceResolver.FrameworkNames.Default;
-        if (options.IncludeWebReferences && !options.IsScriptExecutor())
+        if (options.IncludeWebReferences)
         {
             yield return FrameworkReferenceResolver.FrameworkNames.Web;
         }
@@ -327,9 +302,3 @@ public static class Helper
     private static bool IsScriptExecutor(this ExecOptions options) => Script.EqualsIgnoreCase(options.ExecutorType);
 }
 
-internal static class FrameworkReferencePackages
-{
-    public const string Default = "Microsoft.NETCore.App.Ref";
-    public const string Web = "Microsoft.AspNetCore.App.Ref";
-    public const string WindowsDesktop = "Microsoft.WindowsDesktop.App.Ref";
-}

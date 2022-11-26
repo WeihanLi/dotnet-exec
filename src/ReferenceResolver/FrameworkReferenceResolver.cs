@@ -106,6 +106,31 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
             return _dotnetDirectory;
         }
     }
+    
+    public static string GetReferencePackageName(string frameworkName)
+    {
+        return frameworkName switch
+        {
+            FrameworkNames.Web => "Microsoft.AspNetCore.App.Ref",
+            FrameworkNames.WindowsDesktop => "Microsoft.WindowsDesktop.App.Ref",
+            FrameworkNames.Default => "Microsoft.NETCore.App.Ref",
+            _ => $"{frameworkName}.Ref"
+        };
+    }
+    
+    public static string GetRuntimePackageName(string frameworkName)
+    {
+        var platform = OperatingSystem.IsWindows() ? "win"
+            : OperatingSystem.IsLinux() ? "linux"
+            : OperatingSystem.IsMacOS() ? "osx"
+            : null;
+        if (platform is null)
+        {
+            throw new ArgumentException("Unknown OS-platform");
+        }
+        var fullPackageName = $"{frameworkName}.Runtime.{platform}-{RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant()}";
+        return fullPackageName;
+    }
 
     private static string[] ResolveFrameworkReferencesViaSdkPacks(string frameworkName, string targetFramework)
     {

@@ -57,7 +57,7 @@ public sealed class RefResolver : IRefResolver
 
                     if (options.UseRefAssembliesForCompile)
                     {
-                        var packageId = Helper.GetReferencePackageName(framework);
+                        var packageId = FrameworkReferenceResolver.GetReferencePackageName(framework);
                         var versions = await _nugetHelper.GetPackageVersions(packageId, true, options.CancellationToken);
                         var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
                         var version = versions
@@ -74,8 +74,8 @@ public sealed class RefResolver : IRefResolver
                     .ContinueWith(r => r.Result.ToArray());
                 if (runtimeReferences.IsNullOrEmpty())
                 {
-                    // fallback to nugetFramework
-                    var packageId = Helper.GetRuntimePackageName(framework);
+                    // fallback to nuget package
+                    var packageId = FrameworkReferenceResolver.GetRuntimePackageName(framework);
                     var versions = await _nugetHelper.GetPackageVersions(packageId, true, options.CancellationToken);
                     var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
                     var version = versions
@@ -111,7 +111,7 @@ public sealed class RefResolver : IRefResolver
         return frameworkReferences.SelectMany(x => x).Distinct().ToArray();
     }
 
-    private async Task<string[]> ResolveAdditionalReferences(string targetFramework, HashSet<string>? references,
+    private async Task<string[]> ResolveAdditionalReferences(string targetFramework, ICollection<string>? references,
         CancellationToken cancellationToken)
     {
         if (references.IsNullOrEmpty())

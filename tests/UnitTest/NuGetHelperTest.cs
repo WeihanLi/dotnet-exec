@@ -18,8 +18,9 @@ public class NuGetHelperTest
         Assert.DoesNotContain(versions, v => v.OriginalVersion.Contains("preview"));
     }
 
+    // framework reference test
     [Theory]
-    [InlineData(FrameworkReferencePackages.Default)]
+    [InlineData("Microsoft.NETCore.App.Ref")]
     public async Task GetPackageVersionsIncludePreview(string packageId)
     {
         var versions = (await _nugetHelper.GetPackageVersions(packageId, true)).ToArray();
