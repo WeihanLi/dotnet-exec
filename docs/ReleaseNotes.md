@@ -1,5 +1,12 @@
 # Release Notes
 
+## 0.12.0
+
+- ConfigProfile support
+- Add support for additional script for script
+- Update support for removing references and usings
+- Add support for gitee uri transform
+
 ## 0.11.0
 
 - ProjectReference support
