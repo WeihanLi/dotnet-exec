@@ -51,47 +51,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
             ResolveFrameworkReferencesViaRuntimeShared(FrameworkNames.Default, targetFramework));
     }
 
-    public static string GetDotnetPath()
-    {
-        var executableName =
-            $"dotnet{(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : string.Empty)}";
-        var searchPaths = Guard.NotNull(Environment.GetEnvironmentVariable("PATH"))
-            .Split(new[] { Path.PathSeparator }, options: StringSplitOptions.RemoveEmptyEntries)
-            .Select(p => p.Trim('"'))
-            .ToArray();
-        var commandPath = searchPaths
-            .Where(p => !Path.GetInvalidPathChars().Any(p.Contains))
-            .Select(p => Path.Combine(p, executableName))
-            .First(File.Exists);
-        return commandPath;
-    }
-
-    private static string GetDotnetDirectory()
-    {
-        var environmentOverride = Environment.GetEnvironmentVariable("DOTNET_MSBUILD_SDK_RESOLVER_CLI_DIR");
-        if (!string.IsNullOrEmpty(environmentOverride))
-        {
-            return environmentOverride;
-        }
-
-        var dotnetExe = GetDotnetPath();
-
-        if (dotnetExe.IsNotNullOrEmpty() && !Interop.RunningOnWindows)
-        {
-            // e.g. on Linux the 'dotnet' command from PATH is a symlink so we need to
-            // resolve it to get the actual path to the binary
-            dotnetExe = Interop.Unix.RealPath(dotnetExe) ?? dotnetExe;
-        }
-
-        if (string.IsNullOrWhiteSpace(dotnetExe))
-        {
-            dotnetExe = Environment.ProcessPath;
-        }
-
-        return Guard.NotNull(Path.GetDirectoryName(dotnetExe));
-    }
-
-    private static string _dotnetDirectory = string.Empty;
+    private static volatile string _dotnetDirectory = string.Empty;
 
     public static string DotnetDirectory
     {
@@ -101,8 +61,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
             {
                 return _dotnetDirectory;
             }
-
-            _dotnetDirectory = GetDotnetDirectory();
+            _dotnetDirectory = ApplicationHelper.GetDotnetDirectory();
             return _dotnetDirectory;
         }
     }
