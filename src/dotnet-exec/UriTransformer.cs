@@ -23,6 +23,9 @@ public sealed class UriTransformer : IUriTransformer
                 "gist.github.com" => originalUri
                                          .Replace($"://{uri.Host}/", $"://gist.githubusercontent.com/")
                                      + "/raw",
+                "gitee.com" => originalUri
+                    .Replace("/blob/", "/raw/")
+                    .Replace("/tree/", "/raw/"),
                 _ => originalUri
             };
             return scriptUrl;
