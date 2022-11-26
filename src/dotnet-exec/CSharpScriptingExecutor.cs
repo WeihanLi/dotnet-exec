@@ -33,7 +33,7 @@ public sealed class CSharpScriptCompilerExecutor : ICodeCompiler, ICodeExecutor
             ;
         var globalUsingText = Helper.GetGlobalUsingsCodeText(options);
         var state = await CSharpScript.RunAsync(globalUsingText, scriptOptions);
-        var script = state.Script.ContinueWith(code, scriptOptions);
+        var script = state.Script;
         if (options.AdditionalScripts.HasValue())
         {
             foreach (var additionalScript in options.AdditionalScripts)
@@ -45,9 +45,10 @@ public sealed class CSharpScriptCompilerExecutor : ICodeCompiler, ICodeExecutor
                 }
             }
         }
-        var result = Result.Success(new CompileResult(null!, null!, null!));
-        result.Data?.SetProperty<Script<object>>(nameof(Script), script);
-        return result;
+        script = script.ContinueWith(code, scriptOptions);
+        var compileResult = new CompileResult(null!, null!, null!);
+        compileResult.SetProperty<Script>(nameof(Script), script);
+        return Result.Success(compileResult);
     }
 
     public async Task<Result> Execute(CompileResult compileResult, ExecOptions options)
