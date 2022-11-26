@@ -16,7 +16,7 @@ public interface IConfigProfileManager
     Task<string[]> ListProfiles();
 }
 
-public sealed class ConfigProfileManager: IConfigProfileManager
+public sealed class ConfigProfileManager : IConfigProfileManager
 {
     private static readonly string ProfileFolder = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
@@ -45,7 +45,7 @@ public sealed class ConfigProfileManager: IConfigProfileManager
 
     public Task DeleteProfile(string profileName)
     {
-        var profilePath = Path.Combine(ProfileFolder, $"{profileName}.json"); 
+        var profilePath = Path.Combine(ProfileFolder, $"{profileName}.json");
         if (File.Exists(profilePath))
         {
             File.Delete(profilePath);
@@ -61,7 +61,7 @@ public sealed class ConfigProfileManager: IConfigProfileManager
         await using var fs = File.OpenRead(profilePath);
         return await JsonSerializer.DeserializeAsync<ConfigProfile>(fs);
     }
-    
+
     public Task<string[]> ListProfiles()
     {
         var profileNames = Directory.GetFiles(ProfileFolder, "*.json")

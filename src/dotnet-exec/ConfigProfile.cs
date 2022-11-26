@@ -12,7 +12,7 @@ public sealed class ConfigProfile
         get => _usings;
         set => _usings = value ?? new();
     }
-    
+
     private HashSet<string> _references = new();
 
     public HashSet<string> References

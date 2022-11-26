@@ -3,7 +3,7 @@
 
 namespace Exec;
 
-public sealed class ConfigProfileCommand: Command
+public sealed class ConfigProfileCommand : Command
 {
     public ConfigProfileCommand() : base("profile", "Configure user config profile")
     {
@@ -13,9 +13,9 @@ public sealed class ConfigProfileCommand: Command
         AddCommand(new ListCommand());
     }
 
-    public static readonly Argument<string> ProfileNameArgument = new("profile-name", "The config profile name to operate"); 
+    public static readonly Argument<string> ProfileNameArgument = new("profile-name", "The config profile name to operate");
 
-    private sealed class SetCommand: Command
+    private sealed class SetCommand : Command
     {
         public SetCommand() : base("set", "Configure config profile")
         {
@@ -28,27 +28,27 @@ public sealed class ConfigProfileCommand: Command
             AddOption(ExecOptions.PreviewOption);
         }
     }
-    
-    private sealed class GetCommand: Command
+
+    private sealed class GetCommand : Command
     {
         public GetCommand() : base("get", "Get config profile")
         {
             AddArgument(ProfileNameArgument);
         }
     }
-    
-    private sealed class RemoveCommand: Command
+
+    private sealed class RemoveCommand : Command
     {
         public RemoveCommand() : base("rm", "Remove config profile")
         {
             AddArgument(ProfileNameArgument);
         }
     }
-    
-    private sealed class ListCommand: Command
+
+    private sealed class ListCommand : Command
     {
         public ListCommand() : base("ls", "List the profiles configured")
         {
         }
     }
-} 
+}

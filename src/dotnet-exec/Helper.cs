@@ -77,7 +77,7 @@ public static class Helper
                             var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
                             if (string.IsNullOrEmpty(profileName))
                                 return;
-                            
+
                             var profile = new ConfigProfile()
                             {
                                 Usings = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.UsingsOption) ?? Array.Empty<string>()),
@@ -88,7 +88,8 @@ public static class Helper
                                 EnablePreviewFeatures = context.ParseResult.GetValueForOption(ExecOptions.PreviewOption)
                             };
                             await profileManager.ConfigureProfile(profileName, profile);
-                        },
+                        }
+                        ,
                         "rm" => async context =>
                         {
                             var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
@@ -97,7 +98,8 @@ public static class Helper
                                 return;
                             }
                             await profileManager.DeleteProfile(profileName);
-                        },
+                        }
+                        ,
                         "ls" => async context =>
                         {
                             var profiles = await profileManager.ListProfiles();
@@ -106,7 +108,8 @@ public static class Helper
                             {
                                 context.Console.WriteLine($"- {profile}");
                             }
-                        },
+                        }
+                        ,
                         _ => async context =>
                         {
                             var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
@@ -124,14 +127,14 @@ public static class Helper
 
                             var output = JsonSerializer.Serialize(profile, new JsonSerializerOptions() { WriteIndented = true });
                             context.Console.WriteLine(output);
-                        } 
+                        }
                     };
                     configSubcommand.SetHandler(commandHandler);
                 }
             }
         }
     }
-    
+
     public static async Task<Result<CompileResult>> GetCompilationAssemblyResult(this Compilation compilation,
         CancellationToken cancellationToken = default)
     {

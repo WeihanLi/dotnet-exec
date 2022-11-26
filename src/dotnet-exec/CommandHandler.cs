@@ -142,7 +142,7 @@ public sealed class CommandHandler : ICommandHandler
             return -1;
         }
         _logger.LogDebug("ExecutorType: {ExecutorType} References: {References}, Usings: {Usings}",
-            options.ExecutorType, 
+            options.ExecutorType,
             options.References.StringJoin(";"),
             options.Usings.StringJoin(";"));
 
