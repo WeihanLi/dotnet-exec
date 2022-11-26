@@ -12,6 +12,8 @@ public interface IConfigProfileManager
     Task DeleteProfile(string profileName);
 
     Task<ConfigProfile?> GetProfile(string profileName);
+
+    Task<string[]> ListProfiles();
 }
 
 public sealed class ConfigProfileManager: IConfigProfileManager
@@ -58,5 +60,14 @@ public sealed class ConfigProfileManager: IConfigProfileManager
 
         await using var fs = File.OpenRead(profilePath);
         return await JsonSerializer.DeserializeAsync<ConfigProfile>(fs);
+    }
+    
+    public Task<string[]> ListProfiles()
+    {
+        var profileNames = Directory.GetFiles(ProfileFolder, "*.json")
+            .Select(Path.GetFileNameWithoutExtension)
+            .WhereNotNull()
+            .ToArray();
+        return profileNames.WrapTask();
     }
 }

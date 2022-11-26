@@ -16,7 +16,15 @@ namespace Exec;
 
 public static class Helper
 {
-    private static readonly HashSet<string> SpecialConsoleDiagnosticIds = new() { "CS5001", "CS0028" };
+    private static readonly HashSet<string> SpecialConsoleDiagnosticIds = new()
+    {
+        // Program does not contain a static 'Main' method suitable for an entry point
+        // https://learn.microsoft.com/en-us/dotnet/csharp/misc/cs5001
+        "CS5001", 
+        // The method declaration for Main was invalid
+        // https://learn.microsoft.com/en-us/dotnet/csharp/misc/CS0028
+        "CS0028"
+    };
 
     public const string ApplicationName = "dotnet-exec";
 
@@ -90,6 +98,15 @@ public static class Helper
                             }
                             await profileManager.DeleteProfile(profileName);
                         },
+                        "ls" => async context =>
+                        {
+                            var profiles = await profileManager.ListProfiles();
+                            context.Console.WriteLine("Profiles:");
+                            foreach (var profile in profiles)
+                            {
+                                context.Console.WriteLine($"- {profile}");
+                            }
+                        },
                         _ => async context =>
                         {
                             var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
@@ -99,8 +116,11 @@ public static class Helper
                             }
 
                             var profile = await profileManager.GetProfile(profileName);
-                            if(profile is null)
+                            if (profile is null)
+                            {
+                                context.Console.WriteLine($"The profile [{profileName}] does not exists");
                                 return;
+                            }
 
                             var output = JsonSerializer.Serialize(profile, new JsonSerializerOptions() { WriteIndented = true });
                             context.Console.WriteLine(output);
