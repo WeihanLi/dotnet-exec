@@ -109,17 +109,15 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
     
     public static string GetReferencePackageName(string frameworkName)
     {
-        return frameworkName switch
-        {
-            FrameworkNames.Web => "Microsoft.AspNetCore.App.Ref",
-            FrameworkNames.WindowsDesktop => "Microsoft.WindowsDesktop.App.Ref",
-            FrameworkNames.Default => "Microsoft.NETCore.App.Ref",
-            _ => $"{frameworkName}.Ref"
-        };
+        FrameworkAliases.TryGetValue(frameworkName, out var framework);
+        framework ??= frameworkName;
+        return $"{framework}.Ref";
     }
     
     public static string GetRuntimePackageName(string frameworkName)
     {
+        FrameworkAliases.TryGetValue(frameworkName, out var framework);
+        framework ??= frameworkName;
         var platform = OperatingSystem.IsWindows() ? "win"
             : OperatingSystem.IsLinux() ? "linux"
             : OperatingSystem.IsMacOS() ? "osx"
@@ -128,7 +126,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         {
             throw new ArgumentException("Unknown OS-platform");
         }
-        var fullPackageName = $"{frameworkName}.Runtime.{platform}-{RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant()}";
+        var fullPackageName = $"{framework}.Runtime.{platform}-{RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant()}";
         return fullPackageName;
     }
 
