@@ -3,7 +3,7 @@
 ## 0.12.0
 
 - ConfigProfile support
-- Add support for additional script for script
+- Add additional script support for script
 - Update support for removing references and usings
 - Add support for gitee uri transform
 
