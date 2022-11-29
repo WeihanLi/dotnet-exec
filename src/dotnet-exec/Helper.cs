@@ -102,6 +102,11 @@ public static class Helper
                         "ls" => async context =>
                         {
                             var profiles = await profileManager.ListProfiles();
+                            if (profiles.IsNullOrEmpty())
+                            {
+                                context.Console.WriteLine("No profiles found");
+                                return;
+                            }
                             context.Console.WriteLine("Profiles:");
                             foreach (var profile in profiles)
                             {
