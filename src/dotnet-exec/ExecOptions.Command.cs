@@ -23,7 +23,7 @@ public sealed partial class ExecOptions
         () => DefaultTargetFramework, "Target framework");
 
     private static readonly Option<string> StartupTypeOption = new("--startup-type", "Startup type");
-    internal static readonly Option<string> EntryPointOption = new("--entry", () => "MainTest", "Entry point");
+    internal static readonly Option<string> EntryPointOption = new("--entry", "Custom entry point('MainTest' by default)");
 
     private static readonly Option<string> CompilerTypeOption =
         new("--compiler-type", () => Helper.Default, "The compiler to use");
@@ -77,7 +77,7 @@ public sealed partial class ExecOptions
     {
         Script = Guard.NotNull(parseResult.GetValueForArgument(ScriptArgument));
         StartupType = parseResult.GetValueForOption(StartupTypeOption);
-        EntryPoint = Guard.NotNull(parseResult.GetValueForOption(EntryPointOption));
+        EntryPoint = parseResult.GetValueForOption(EntryPointOption).GetValueOrDefault("MainTest");
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption)
             .GetValueOrDefault(DefaultTargetFramework);
         Configuration = parseResult.GetValueForOption(ConfigurationOption);
@@ -102,9 +102,9 @@ public sealed partial class ExecOptions
         //
         if (configProfile != null)
         {
-            if (!parseResult.HasOption(EntryPointOption))
+            if (!parseResult.HasOption(EntryPointOption) && !string.IsNullOrEmpty(configProfile.EntryPoint))
             {
-                EntryPoint = configProfile.EntryPoint ?? EntryPoint;
+                EntryPoint = configProfile.EntryPoint;
             }
             if (!parseResult.HasOption(PreviewOption))
             {

@@ -81,8 +81,8 @@ public static class Helper
                             {
                                 Usings = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.UsingsOption) ?? Array.Empty<string>()),
                                 References = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.ReferencesOption) ?? Array.Empty<string>()),
-                                IncludeWebReferences = context.ParseResult.GetValueForOption(ExecOptions.WebReferencesOption),
-                                IncludeWideReferences = context.ParseResult.GetValueForOption(ExecOptions.WideReferencesOption),
+                                IncludeWideReferences = !context.ParseResult.HasOption(ExecOptions.WebReferencesOption) || context.ParseResult.GetValueForOption(ExecOptions.WideReferencesOption),
+                                IncludeWebReferences = context.ParseResult.HasOption(ExecOptions.WebReferencesOption) && context.ParseResult.GetValueForOption(ExecOptions.WebReferencesOption),
                                 EntryPoint = context.ParseResult.GetValueForOption(ExecOptions.EntryPointOption),
                                 EnablePreviewFeatures = context.ParseResult.GetValueForOption(ExecOptions.PreviewOption)
                             };
