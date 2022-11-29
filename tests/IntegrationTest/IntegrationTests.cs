@@ -272,4 +272,23 @@ public class IntegrationTests
         var result = await _handler.Execute(options);
         Assert.Equal(0, result);
     }
+
+    [Theory]
+    [InlineData("6.0")]
+    [InlineData("7.0")]
+    public async Task TargetFrameworkTest(string version)
+    {
+        var targetFramework = $"net{version}";
+        var options = new ExecOptions()
+        {
+            TargetFramework = targetFramework,
+            IncludeWideReferences = false,
+            Script = "Console.Write(typeof(object).Assembly.GetName().Version.ToString(2));"
+        };
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(options);
+        Assert.Equal(0, result);
+        _outputHelper.WriteLine(output.StandardOutput);
+        // Assert.Equal(version, output.StandardOutput);
+    }
 }
