@@ -49,10 +49,10 @@ public sealed partial class ExecOptions
         new("--project", "Project file to exact reference and usings path");
 
     internal static readonly Option<bool> WideReferencesOption =
-        new(new[] { "--wide" }, () => true, "Include widely-used references(Newtonsoft.Json/WeihanLi.Common)");
+        new(new[] { "--wide" }, "Include widely-used references(Newtonsoft.Json/WeihanLi.Common)");
 
     internal static readonly Option<bool> WebReferencesOption =
-        new(new[] { "-w", "--web" }, () => false, "Include Web SDK references");
+        new(new[] { "-w", "--web" }, "Include Web SDK references");
 
     internal static readonly Option<string[]> ReferencesOption =
         new(new[] { "-r", "--reference" }, "Additional references") { Arity = ArgumentArity.ZeroOrMore };
@@ -84,8 +84,8 @@ public sealed partial class ExecOptions
         Arguments = CommandLineStringSplitter.Instance
             .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
-        IncludeWideReferences = parseResult.GetValueForOption(WideReferencesOption);
-        IncludeWebReferences = parseResult.GetValueForOption(WebReferencesOption);
+        IncludeWideReferences = !parseResult.HasOption(WebReferencesOption) || parseResult.GetValueForOption(WideReferencesOption);
+        IncludeWebReferences = parseResult.HasOption(WebReferencesOption) && parseResult.GetValueForOption(WebReferencesOption);
         CompilerType = parseResult.GetValueForOption(CompilerTypeOption) ?? Helper.Default;
         ExecutorType = parseResult.GetValueForOption(ExecutorTypeOption) ?? Helper.Default;
         References = new(parseResult.GetValueForOption(ReferencesOption) ?? Array.Empty<string>());

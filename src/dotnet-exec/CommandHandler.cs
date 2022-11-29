@@ -47,6 +47,10 @@ public sealed class CommandHandler : ICommandHandler
         if (profileName.IsNotNullOrEmpty())
         {
             profile = await _profileManager.GetProfile(profileName);
+            if (profile is null)
+            {
+                _logger.LogDebug("The config profile({profileName}) not found", profileName);
+            }
         }
         options.BindCommandLineArguments(parseResult, profile);
         options.CancellationToken = context.GetCancellationToken();
