@@ -194,7 +194,7 @@ public static class Helper
         yield return "System.Threading";
         yield return "System.Threading.Tasks";
 
-        if (options.IncludeWebReferences && !options.IsScriptExecutor())
+        if (options.IncludeWebReferences)
         {
             // Web
             yield return "System.Net.Http.Json";
@@ -298,7 +298,5 @@ public static class Helper
             .SetMethod!
             .Invoke(compilationOptions, new object[] { true });
     }
-
-    private static bool IsScriptExecutor(this ExecOptions options) => Script.EqualsIgnoreCase(options.ExecutorType);
 }
 
