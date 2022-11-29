@@ -47,7 +47,7 @@ public sealed class ConfigProfileCommand : Command
 
     private sealed class ListCommand : Command
     {
-        public ListCommand() : base("ls", "List the profiles configured")
+        public ListCommand() : base("ls", "List the config profiles configured")
         {
         }
     }
