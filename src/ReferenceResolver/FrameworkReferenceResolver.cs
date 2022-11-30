@@ -18,6 +18,8 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
     {
         { nameof(FrameworkNames.Default), FrameworkNames.Default },
         { nameof(FrameworkNames.Web), FrameworkNames.Web },
+        { "aspnet", FrameworkNames.Web },
+        { "aspnetcore", FrameworkNames.Web },
         { nameof(FrameworkNames.WindowsDesktop), FrameworkNames.WindowsDesktop },
     };
 
