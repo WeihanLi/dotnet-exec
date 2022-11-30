@@ -36,7 +36,7 @@ public class IntegrationTests
     [InlineData("WebApiSample")]
     [InlineData("EmbeddedReferenceSample")]
     [InlineData("UsingSample")]
-    public async Task SamplesTest(string sampleFileName)
+    public async Task SamplesTestWithDefaultCompiler(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
         var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", filePath);
@@ -47,7 +47,42 @@ public class IntegrationTests
             Script = fullPath,
             Arguments = new[] { "--hello", "world" },
             IncludeWebReferences = true,
-            IncludeWideReferences = true
+            IncludeWideReferences = true,
+            CompilerType = Helper.Default
+        };
+
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(execOptions);
+        Assert.Equal(0, result);
+
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
+
+    [Theory]
+    [InlineData("ConfigurationManagerSample")]
+    [InlineData("JsonNodeSample")]
+    [InlineData("LinqSample")]
+    [InlineData("MainMethodSample")]
+    [InlineData("RandomSharedSample")]
+    [InlineData("TopLevelSample")]
+    [InlineData("HostApplicationBuilderSample")]
+    [InlineData("DumpAssemblyInfoSample")]
+    [InlineData("WebApiSample")]
+    [InlineData("EmbeddedReferenceSample")]
+    [InlineData("UsingSample")]
+    public async Task SamplesTestWithWorkspaceCompiler(string sampleFileName)
+    {
+        var filePath = $"{sampleFileName}.cs";
+        var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", filePath);
+        Assert.True(File.Exists(fullPath));
+
+        var execOptions = new ExecOptions()
+        {
+            Script = fullPath,
+            Arguments = new[] { "--hello", "world" },
+            IncludeWebReferences = true,
+            IncludeWideReferences = true,
+            CompilerType = "workspace"
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
