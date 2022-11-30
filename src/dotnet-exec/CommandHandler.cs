@@ -131,7 +131,28 @@ public sealed class CommandHandler : ICommandHandler
                         $"nuget: {packageId}{(string.IsNullOrEmpty(packageVersion) ? "" : $", {packageVersion}")}";
                     options.References.Add(reference);
                 }
+
+                if (File.Exists(projectPath))
+                {
+                    var projectDirectory = Path.GetFullPath(Guard.NotNullOrEmpty(Path.GetDirectoryName(projectPath)));
+                    var projectReferenceElements = itemGroups.SelectMany(x => x.Descendants("ProjectReference"));
+                    foreach (var projectReferenceElement in projectReferenceElements)
+                    {
+                        var includeAttribute = projectReferenceElement.Attribute("Include");
+                        if (includeAttribute?.Value is null) continue;
+
+                        var referenceProjectPath = includeAttribute.Value;
+                        var referenceProjectFullPath = Path.GetFullPath(referenceProjectPath, projectDirectory);
+                        if (!File.Exists(referenceProjectPath)) 
+                            continue;
+
+                        var projectReference = $"project: {referenceProjectFullPath}";
+                        options.References.Add(projectReference);
+                    }
+                    
+                }
             }
+
 
             var endTime = Stopwatch.GetTimestamp();
             var duration = ProfilerHelper.GetElapsedTime(startTime, endTime);
