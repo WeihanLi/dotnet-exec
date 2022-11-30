@@ -143,13 +143,13 @@ public sealed class CommandHandler : ICommandHandler
 
                         var referenceProjectPath = includeAttribute.Value;
                         var referenceProjectFullPath = Path.GetFullPath(referenceProjectPath, projectDirectory);
-                        if (!File.Exists(referenceProjectPath)) 
+                        if (!File.Exists(referenceProjectPath))
                             continue;
 
                         var projectReference = $"project: {referenceProjectFullPath}";
                         options.References.Add(projectReference);
                     }
-                    
+
                 }
             }
 
