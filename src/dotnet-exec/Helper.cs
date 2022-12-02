@@ -187,58 +187,51 @@ public static class Helper
     }
 
     // https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview#implicit-using-directives
-    private static IEnumerable<string> GetGlobalUsingsInternal(ExecOptions options)
+    private static IEnumerable<string[]> GetGlobalUsingsInternal(ExecOptions options)
     {
         // Default SDK
-        yield return "System";
-        yield return "System.Collections.Generic";
-        yield return "System.IO";
-        yield return "System.Linq";
-        yield return "System.Net.Http";
-        yield return "System.Text";
-        yield return "System.Threading";
-        yield return "System.Threading.Tasks";
-
+        yield return FrameworkReferenceResolver.GetImplicitUsings(FrameworkReferenceResolver.FrameworkNames.Default);
         if (options.IncludeWebReferences)
         {
             // Web
-            yield return "System.Net.Http.Json";
-            yield return "Microsoft.AspNetCore.Builder";
-            yield return "Microsoft.AspNetCore.Hosting";
-            yield return "Microsoft.AspNetCore.Http";
-            yield return "Microsoft.AspNetCore.Routing";
-            yield return "Microsoft.Extensions.Configuration";
-            yield return "Microsoft.Extensions.DependencyInjection";
-            yield return "Microsoft.Extensions.Hosting";
-            yield return "Microsoft.Extensions.Logging";
+            yield return FrameworkReferenceResolver.GetImplicitUsings(FrameworkReferenceResolver.FrameworkNames.Web);
         }
 
         if (options.IncludeWideReferences)
         {
-            yield return "Microsoft.Extensions.Configuration";
-            yield return "Microsoft.Extensions.DependencyInjection";
-            yield return "Microsoft.Extensions.Logging";
+            yield return new[]
+            {
+                "Microsoft.Extensions.Configuration",
+                "Microsoft.Extensions.DependencyInjection",
+                "Microsoft.Extensions.Logging",
+                
+                "WeihanLi.Common",
+                "WeihanLi.Common.Helpers",
+                "WeihanLi.Extensions",
+                "WeihanLi.Extensions.Dump"
+            };
+        }
 
-            yield return "WeihanLi.Common";
-            yield return "WeihanLi.Common.Helpers";
-            yield return "WeihanLi.Extensions";
-            yield return "WeihanLi.Extensions.Dump";
+        const string frameworkPrefix = "framework:";
+        foreach (var reference in options.References.Where(x=> x.StartsWith(frameworkPrefix)))
+        {
+            var frameworkName = reference[frameworkPrefix.Length..].Trim();
+            yield return FrameworkReferenceResolver.GetImplicitUsings(frameworkName);
         }
     }
 
     private static IEnumerable<string> GetGlobalUsings(ExecOptions options)
     {
-        var usings = new HashSet<string>(GetGlobalUsingsInternal(options));
-        if (options.Usings.HasValue())
+        var usings = new HashSet<string>(GetGlobalUsingsInternal(options).SelectMany(_ => _));
+        if (!options.Usings.HasValue()) return usings;
+
+        foreach (var @using in options.Usings.Where(_ => !_.StartsWith('-')))
         {
-            foreach (var @using in options.Usings.Where(_ => !_.StartsWith('-')))
-            {
-                usings.Add(@using);
-            }
-            foreach (var @using in options.Usings.Where(_ => _.StartsWith('-')))
-            {
-                usings.Remove(@using);
-            }
+            usings.Add(@using);
+        }
+        foreach (var @using in options.Usings.Where(_ => _.StartsWith('-')))
+        {
+            usings.Remove(@using);
         }
         return usings;
     }

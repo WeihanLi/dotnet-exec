@@ -91,6 +91,34 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         return fullPackageName;
     }
 
+    public static string[] GetImplicitUsings(string frameworkName)
+    {
+        FrameworkAliases.TryGetValue(frameworkName, out var framework);
+        framework ??= frameworkName;
+        // https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview#implicit-using-directives
+        return framework switch
+        {
+            FrameworkNames.Default => new[]
+            {
+                "System", "System.Collections.Generic", "System.IO", "System.Linq", "System.Net.Http",
+                "System.Text", "System.Threading", "System.Threading.Tasks"
+            },
+            FrameworkNames.Web => new[]
+            {
+                "System.Net.Http.Json", "Microsoft.AspNetCore.Builder", "Microsoft.AspNetCore.Hosting",
+                "Microsoft.AspNetCore.Http", "Microsoft.AspNetCore.Routing", "Microsoft.Extensions.Configuration",
+                "Microsoft.Extensions.DependencyInjection", "Microsoft.Extensions.Hosting",
+                "Microsoft.Extensions.Logging"
+            },
+            FrameworkNames.WindowsDesktop => new[]
+            {
+                "System.Drawing",
+                "System.Windows.Forms"
+            },
+            _ => Array.Empty<string>()
+        };
+    }
+
     private static string[] ResolveFrameworkReferencesViaSdkPacks(string frameworkName, string targetFramework)
     {
         if (FrameworkAliases.TryGetValue(frameworkName, out var fName))
