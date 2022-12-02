@@ -3,9 +3,10 @@
 ## 0.12.0
 
 - ConfigProfile support
-- Add additional script support for script
 - Update support for removing references and usings
 - Add support for gitee uri transform
+- Support project reference when exacting from project file
+- Import implicit using for framework automatically
 
 ## 0.11.0
 
