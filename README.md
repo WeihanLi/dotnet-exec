@@ -28,6 +28,8 @@ dotnet tool update -g dotnet-execute --prerelease
 
 ## Examples
 
+### Get started
+
 Execute local file:
 
 ``` sh
@@ -37,19 +39,13 @@ dotnet-exec HttpPathJsonSample.cs
 Execute local file with custom entry point:
 
 ``` sh
-dotnet-exec HttpPathJsonSample.cs --entry MainTest
+dotnet-exec 'HttpPathJsonSample.cs' --entry MainTest
 ```
 
 Execute remote file:
 
 ``` sh
 dotnet-exec https://github.com/WeihanLi/SamplesInPractice/blob/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs
-```
-
-Execute file with preview features:
-
-``` sh
-dotnet-exec RawStringLiteral.cs --preview
 ```
 
 Execute raw code:
@@ -60,6 +56,58 @@ dotnet-exec 'code:Console.WriteLine(1+1);'
 dotnet-exec 'Console.WriteLine(1+1);'
 ```
 
+Execute raw script:
+
+```sh
+dotnet-exec 'script:1+1'
+```
+
+``` sh
+dotnet-exec 'Guid.NewGuid()'
+```
+
+### References
+
+Execute raw code with custom references:
+
+NuGet package reference:
+
+``` sh
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,2.3.0" -u "WeihanLi.Npoi"
+```
+
+Local dll reference:
+
+``` sh
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "./out/WeihanLi.Npoi.dll" -u "WeihanLi.Npoi"
+```
+
+Local dll in a folder references:
+
+``` sh
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "folder: ./out" -u "WeihanLi.Npoi"
+```
+
+Local project reference:
+
+``` sh
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "project: ./WeihanLi.Npoi.csproj" -u "WeihanLi.Npoi"
+```
+
+Framework reference:
+
+``` sh
+dotnet-exec 'WebApplication.Create().Run();' --reference 'framework:web'
+```
+
+Web framework reference in one option:
+
+``` sh
+dotnet-exec 'WebApplication.Create().Run();' --web
+```
+
+### Usings
+
 Execute raw code with custom usings:
 
 ``` sh
@@ -68,49 +116,13 @@ dotnet-exec 'code:WriteLine(1+1);' --using "static System.Console"
 dotnet-exec 'WriteLine(1+1);' --using "static System.Console"
 ```
 
-Execute raw code with custom references:
-
-NuGet package reference:
-
-``` sh
-dotnet-exec 'code:CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,2.3.0" -u "WeihanLi.Npoi"
-```
-
-Local dll reference:
-
-``` sh
-dotnet-exec 'code:CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "./out/WeihanLi.Npoi.dll" -u "WeihanLi.Npoi"
-```
-
-Local dll in a folder references:
-
-``` sh
-dotnet-exec 'code:CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "folder: ./out" -u "WeihanLi.Npoi"
-```
-
-Local project reference:
-
-``` sh
-dotnet-exec 'code:CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "project: ./WeihanLi.Npoi.csproj" -u "WeihanLi.Npoi"
-```
-
-Execute script:
-
-```sh
-dotnet-exec 'script:1+1'
-
-dotnet-exec '1+1'
-```
-
 Execute script with custom reference:
-
-```sh
-dotnet-exec 'script:Console.WriteLine(CsvHelper.GetCsvText(new[]{1,2,3}))' -r "nuget:WeihanLi.Npoi,2.4.2" -u WeihanLi.Npoi
-```
 
 ``` sh
 dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump()' -r "nuget:WeihanLi.Npoi,2.4.2" -u WeihanLi.Npoi
 ```
+
+### More
 
 Execute with additional dependencies
 
@@ -122,11 +134,55 @@ dotnet-exec 'typeof(LocalType).FullName.Dump();' --ad FileLocalType2.cs
 dotnet-exec 'typeof(LocalType).FullName.Dump();' --addition FileLocalType2.cs
 ```
 
-Execute with exacting references and usings from project file
+Execute with exacting references and usings from the project file
 
 ``` sh
 dotnet-exec 'typeof(LocalType).FullName.Dump();' --project ./Sample.csproj
 ```
+
+Execute file with preview features:
+
+``` sh
+dotnet-exec RawStringLiteral.cs --preview
+```
+
+### Config Profile
+
+You can customize the config you used often into a config profile to reuse it for convenience.
+
+List the profiles had configured:
+
+``` sh
+dotnet-exec profile ls
+```
+
+Configure a profile:
+
+``` sh
+dotnet-exec profile set web -r "nuget:WeihanLi.Web.Extensions" -u 'WeihanLi.Web.Extensions' --web --wide false
+```
+
+Get the profile details:
+
+``` sh
+dotnet-exec profile get web
+```
+
+Remove the profile not needed:
+
+``` sh
+dotnet-exec profile rm web
+```
+
+Executing with specific profile config:
+
+``` sh
+dotnet-exec 'WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run();' --profile web --using 'WeihanLi.Extensions'
+```
+
+![](C:\Users\Weiha\AppData\Roaming\Typora\typora-user-images\image-20221203002201989.png)
+
+### Docker support
 
 Execute with docker
 
@@ -142,16 +198,12 @@ docker run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
 docker run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
 ```
 
-## More
+for full image tag list, see https://hub.docker.com/r/weihanli/dotnet-exec/tags
 
-### LanguageVersion
+## Acknowledgements
 
-By default, it's using the latest language version, you can use the `Preview` version with `--preview`
-
-### EntryPoint
-
-By default, it would use `MainTest` as the entry point, you can customize with `--entry` option
-
-### TargetFramework
-
-By default, it would use `net7.0` if you've installed .NET 7 SDK, otherwise use .NET 6 instead, you can customize with the `-f`/`--framework` option
+- [Roslyn](https://github.com/dotnet/roslyn)
+- [NuGet.Clients](https://github.com/NuGet/NuGet.Client)
+- [System.CommandLine](https://github.com/dotnet/command-line-api)
+- [Thanks JetBrains for the open source Rider license](https://jb.gg/OpenSource?from=dotnet-exec)
+- Thanks for the contributors and users for this project
