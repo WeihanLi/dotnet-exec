@@ -71,7 +71,7 @@ Console.WriteLine("""
         var compiler = new DefaultCodeCompiler(RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
         var result = await compiler.Compile(new ExecOptions()
         {
-            LanguageVersion = LanguageVersion.Preview
+            EnablePreviewFeatures = true
         }, code);
         _outputHelper.WriteLine($"{result.Msg}");
         Assert.Equal(ResultStatus.Success, result.Status);

@@ -241,7 +241,7 @@ public static class Helper
         var usings = GetGlobalUsings(options);
 
         var usingText = usings.Select(x => $"global using {x};").StringJoin(Environment.NewLine);
-        if (options.LanguageVersion != LanguageVersion.Preview)
+        if (options.EnablePreviewFeatures == false)
             return usingText;
         // Generate System.Runtime.Versioning.RequiresPreviewFeatures attribute on assembly level
         return $"{usingText}{Environment.NewLine}[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]";

@@ -94,10 +94,7 @@ public sealed partial class ExecOptions
         DebugEnabled = parseResult.HasOption(DebugOption);
         UseRefAssembliesForCompile = parseResult.GetValueForOption(UseRefAssembliesForCompileOption);
         ConfigProfile = parseResult.GetValueForOption(ConfigProfileOption);
-        if (parseResult.HasOption(PreviewOption))
-        {
-            LanguageVersion = LanguageVersion.Preview;
-        }
+        EnablePreviewFeatures = parseResult.HasOption(PreviewOption);
 
         //
         if (configProfile != null)
@@ -108,9 +105,7 @@ public sealed partial class ExecOptions
             }
             if (!parseResult.HasOption(PreviewOption))
             {
-                LanguageVersion = configProfile.EnablePreviewFeatures
-                    ? LanguageVersion.Preview
-                    : LanguageVersion.Latest;
+                EnablePreviewFeatures = configProfile.EnablePreviewFeatures;
             }
             if (!parseResult.HasOption(WebReferencesOption))
             {
@@ -160,4 +155,7 @@ public sealed partial class ExecOptions
             .Select(f => f.GetValue(null))
             .Cast<Option>();
     }
+
+    public LanguageVersion GetLanguageVersion() =>
+        EnablePreviewFeatures ? LanguageVersion.Preview : LanguageVersion.Latest;
 }

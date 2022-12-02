@@ -57,7 +57,7 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
 
         var references = await _referenceResolver.ResolveMetadataReferences(options, true);
         projectInfo = projectInfo
-                .WithParseOptions(new CSharpParseOptions(options.LanguageVersion))
+                .WithParseOptions(new CSharpParseOptions(options.GetLanguageVersion()))
                 .WithDocuments(documents)
                 .WithMetadataReferences(references)
             ;

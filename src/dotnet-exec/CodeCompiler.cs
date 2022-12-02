@@ -26,7 +26,7 @@ public sealed class DefaultCodeCompiler : ICodeCompiler
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
         var assemblyName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}.dll";
-        var parseOptions = new CSharpParseOptions(options.LanguageVersion);
+        var parseOptions = new CSharpParseOptions(options.GetLanguageVersion());
         var globalUsingCode = Helper.GetGlobalUsingsCodeText(options);
         var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, cancellationToken: options.CancellationToken);
         if (string.IsNullOrEmpty(code))

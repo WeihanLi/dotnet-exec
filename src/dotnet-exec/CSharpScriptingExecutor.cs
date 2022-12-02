@@ -29,7 +29,7 @@ public sealed class CSharpScriptCompilerExecutor : ICodeCompiler, ICodeExecutor
                 .WithReferences(references)
                 .WithOptimizationLevel(options.Configuration)
                 .WithAllowUnsafe(true)
-                .WithLanguageVersion(options.LanguageVersion)
+                .WithLanguageVersion(options.GetLanguageVersion())
             ;
         var globalUsingText = Helper.GetGlobalUsingsCodeText(options);
         var state = await CSharpScript.RunAsync(globalUsingText, scriptOptions);
@@ -47,7 +47,7 @@ public sealed class CSharpScriptCompilerExecutor : ICodeCompiler, ICodeExecutor
         }
         script = script.ContinueWith(code, scriptOptions);
         var compileResult = new CompileResult(null!, null!, null!);
-        compileResult.SetProperty<Script>(nameof(Script), script);
+        compileResult.SetProperty(nameof(Script), script);
         return Result.Success(compileResult);
     }
 

@@ -29,7 +29,7 @@ public sealed partial class ExecOptions
 
     public HashSet<string>? AdditionalScripts { get; set; }
 
-    public LanguageVersion LanguageVersion { get; set; }
+    public bool EnablePreviewFeatures { get; set; }
     public OptimizationLevel Configuration { get; set; }
 
     public string CompilerType { get; set; } = "default";
