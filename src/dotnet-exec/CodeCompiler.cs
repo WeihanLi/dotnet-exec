@@ -44,7 +44,7 @@ public sealed class DefaultCodeCompiler : ICodeCompiler
             foreach (var additionalScript in options.AdditionalScripts)
             {
                 var scriptContent = await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken);
-                if (string.IsNullOrEmpty(scriptContent.Data))
+                if (string.IsNullOrWhiteSpace(scriptContent.Data))
                     continue;
                 var syntaxTree = CSharpSyntaxTree.ParseText(scriptContent.Data, parseOptions, additionalScript, null, options.CancellationToken);
                 syntaxTreeList.Add(syntaxTree);

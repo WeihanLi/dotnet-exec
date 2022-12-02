@@ -220,7 +220,7 @@ public static class Helper
         }
     }
 
-    private static IEnumerable<string> GetGlobalUsings(ExecOptions options)
+    private static ICollection<string> GetGlobalUsings(ExecOptions options)
     {
         var usings = new HashSet<string>(GetGlobalUsingsInternal(options).SelectMany(_ => _));
         if (!options.Usings.HasValue()) return usings;
@@ -239,12 +239,14 @@ public static class Helper
     public static string GetGlobalUsingsCodeText(ExecOptions options)
     {
         var usings = GetGlobalUsings(options);
+        if (usings.IsNullOrEmpty()) return string.Empty;
 
         var usingText = usings.Select(x => $"global using {x};").StringJoin(Environment.NewLine);
-        if (options.EnablePreviewFeatures == false)
-            return usingText;
-        // Generate System.Runtime.Versioning.RequiresPreviewFeatures attribute on assembly level
-        return $"{usingText}{Environment.NewLine}[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]";
+        return options.EnablePreviewFeatures ?
+            // Generate System.Runtime.Versioning.RequiresPreviewFeatures attribute on assembly level
+            $"{usingText}{Environment.NewLine}[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]" 
+            : usingText
+            ;
     }
 
     private static void LoadSupportedFrameworks()

@@ -152,8 +152,6 @@ public sealed class CommandHandler : ICommandHandler
 
                 }
             }
-
-
             var endTime = Stopwatch.GetTimestamp();
             var duration = ProfilerHelper.GetElapsedTime(startTime, endTime);
             _logger.LogDebug("Exact info from project file elapsed time: {duration}", duration);

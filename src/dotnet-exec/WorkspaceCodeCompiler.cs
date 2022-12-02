@@ -46,7 +46,7 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
             foreach (var additionalScript in options.AdditionalScripts)
             {
                 var scriptContent = await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken);
-                if (string.IsNullOrEmpty(scriptContent.Data))
+                if (string.IsNullOrWhiteSpace(scriptContent.Data))
                     continue;
 
                 var additionDoc = DocumentInfo.Create(DocumentId.CreateNewId(projectInfo.Id),
