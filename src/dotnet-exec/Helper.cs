@@ -79,12 +79,12 @@ public static class Helper
 
                             var profile = new ConfigProfile()
                             {
-                                Usings = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.UsingsOption) ?? Array.Empty<string>()),
-                                References = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.ReferencesOption) ?? Array.Empty<string>()),
-                                IncludeWideReferences = context.ParseResult.FindResultFor(ExecOptions.WebReferencesOption)?.IsImplicit != false || context.ParseResult.GetValueForOption(ExecOptions.WideReferencesOption),
-                                IncludeWebReferences = context.ParseResult.GetValueForOption(ExecOptions.WebReferencesOption),
+                                Usings = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.UsingsOption) ?? Enumerable.Empty<string>()),
+                                References = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.ReferencesOption) ?? Enumerable.Empty<string>()),
+                                IncludeWideReferences = context.ParseResult.GetValueForOption(ExecOptions.WideReferencesOption),
+                                IncludeWebReferences = context.ParseResult.HasOption(ExecOptions.WebReferencesOption),
                                 EntryPoint = context.ParseResult.GetValueForOption(ExecOptions.EntryPointOption),
-                                EnablePreviewFeatures = context.ParseResult.GetValueForOption(ExecOptions.PreviewOption)
+                                EnablePreviewFeatures = context.ParseResult.HasOption(ExecOptions.PreviewOption)
                             };
                             await profileManager.ConfigureProfile(profileName, profile);
                         }
@@ -204,7 +204,7 @@ public static class Helper
                 "Microsoft.Extensions.Configuration",
                 "Microsoft.Extensions.DependencyInjection",
                 "Microsoft.Extensions.Logging",
-                
+
                 "WeihanLi.Common",
                 "WeihanLi.Common.Helpers",
                 "WeihanLi.Extensions",
@@ -213,7 +213,7 @@ public static class Helper
         }
 
         const string frameworkPrefix = "framework:";
-        foreach (var reference in options.References.Where(x=> x.StartsWith(frameworkPrefix)))
+        foreach (var reference in options.References.Where(x => x.StartsWith(frameworkPrefix)))
         {
             var frameworkName = reference[frameworkPrefix.Length..].Trim();
             yield return FrameworkReferenceResolver.GetImplicitUsings(frameworkName);
@@ -244,7 +244,7 @@ public static class Helper
         var usingText = usings.Select(x => $"global using {x};").StringJoin(Environment.NewLine);
         return options.EnablePreviewFeatures ?
             // Generate System.Runtime.Versioning.RequiresPreviewFeatures attribute on assembly level
-            $"{usingText}{Environment.NewLine}[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]" 
+            $"{usingText}{Environment.NewLine}[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]"
             : usingText
             ;
     }
