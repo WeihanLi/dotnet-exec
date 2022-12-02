@@ -49,7 +49,7 @@ public sealed partial class ExecOptions
         new("--project", "Project file to exact reference and usings path");
 
     internal static readonly Option<bool> WideReferencesOption =
-        new(new[] { "--wide" }, () => true, "Include widely-used references(Newtonsoft.Json/WeihanLi.Common)");
+        new(new[] { "--wide" }, () => true, "Include widely-used references(Newtonsoft.Json,Microsoft.Extensions.Configuration/DependencyInjection/Logging,WeihanLi.Common)");
 
     internal static readonly Option<bool> WebReferencesOption =
         new(new[] { "-w", "--web" }, "Include Web SDK references");
