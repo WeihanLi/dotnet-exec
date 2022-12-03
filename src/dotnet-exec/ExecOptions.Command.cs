@@ -22,7 +22,7 @@ public sealed partial class ExecOptions
     private static readonly Option<string> TargetFrameworkOption = new(new[] { "-f", "--framework" },
         () => DefaultTargetFramework, "Target framework");
 
-    private static readonly Option<string> StartupTypeOption = new("--startup-type", "Startup type");
+    private static readonly Option<string> StartupTypeOption = new("--startup-type", "The startup type to use for finding the correct entry");
     internal static readonly Option<string> EntryPointOption = new("--entry", "Custom entry point('MainTest' by default)");
 
     private static readonly Option<string> CompilerTypeOption =
@@ -46,13 +46,13 @@ public sealed partial class ExecOptions
         "Use Ref assemblies for compile, when not found from local download from nuget");
 
     private static readonly Option<string> ProjectOption =
-        new("--project", "Project file to exact reference and usings path");
+        new("--project", "The project file path to exact references and usings");
 
     internal static readonly Option<bool> WideReferencesOption =
-        new(new[] { "--wide" }, () => true, "Include widely-used references(Microsoft.Extensions.Configuration/DependencyInjection/Logging,Newtonsoft.Json,WeihanLi.Common)");
+        new(new[] { "--wide" }, () => true, "Includes widely-used references(Microsoft.Extensions.Configuration/DependencyInjection/Logging,Newtonsoft.Json,WeihanLi.Common)");
 
     internal static readonly Option<bool> WebReferencesOption =
-        new(new[] { "-w", "--web" }, "Include Web SDK references");
+        new(new[] { "-w", "--web" }, "Includes Web SDK references");
 
     internal static readonly Option<string[]> ReferencesOption =
         new(new[] { "-r", "--reference" }, "Additional references") { Arity = ArgumentArity.ZeroOrMore };
