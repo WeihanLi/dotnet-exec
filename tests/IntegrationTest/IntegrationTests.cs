@@ -302,7 +302,7 @@ public class IntegrationTests
         var options = new ExecOptions()
         {
             ProjectPath = projectPath,
-            Script = "Console.WriteLine(MyFile.Exists(\"appsettings.json\"));"
+            Script = "System.Console.WriteLine(MyFile.Exists(\"appsettings.json\"));"
         };
         var result = await _handler.Execute(options);
         Assert.Equal(0, result);
