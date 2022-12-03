@@ -14,22 +14,24 @@
     <Description>`dotnet-exec` is a command line tool for excuting C# program with custom entry point</Description>
     <PackageProjectUrl>https://github.com/WeihanLi/dotnet-exec</PackageProjectUrl>
   </PropertyGroup>
-
   <ItemGroup>
-      <Using Include="Microsoft.Extensions.DependencyInjection" />
-      <Using Include="Microsoft.Extensions.Logging" />
-      <Using Include="System.CommandLine" />
-      <Using Include="System.CommandLine.Invocation" />
-      <Using Include="System.CommandLine.Parsing" />
-      <Using Include="$(RootNamespace)" />
+    <None Include="../../README.md" Pack="true" Visible="false" PackagePath=""/>
   </ItemGroup>
   <ItemGroup>
-      <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
-      <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Console" />
-      <PackageReference Include="NuGet.Protocol" />
-      <PackageReference Include="System.CommandLine" />
-      <PackageReference Include="WeihanLi.Common" />      
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.Extensions.Logging" />
+    <Using Include="System.CommandLine" />
+    <Using Include="System.CommandLine.Invocation" />
+    <Using Include="System.CommandLine.Parsing" />
+    <Using Include="$(RootNamespace)" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" />
+    <PackageReference Include="NuGet.Protocol" />
+    <PackageReference Include="System.CommandLine" />
+    <PackageReference Include="WeihanLi.Common" />      
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTest" />

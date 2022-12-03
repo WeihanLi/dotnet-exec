@@ -7,7 +7,4 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="README.md" Pack="true" Visible="false" PackagePath=""/>
-  </ItemGroup>
 </Project>
