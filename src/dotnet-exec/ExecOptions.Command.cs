@@ -49,7 +49,7 @@ public sealed partial class ExecOptions
         new("--project", "Project file to exact reference and usings path");
 
     internal static readonly Option<bool> WideReferencesOption =
-        new(new[] { "--wide" }, () => true, "Include widely-used references(Newtonsoft.Json,Microsoft.Extensions.Configuration/DependencyInjection/Logging,WeihanLi.Common)");
+        new(new[] { "--wide" }, () => true, "Include widely-used references(Microsoft.Extensions.Configuration/DependencyInjection/Logging,Newtonsoft.Json,WeihanLi.Common)");
 
     internal static readonly Option<bool> WebReferencesOption =
         new(new[] { "-w", "--web" }, "Include Web SDK references");
@@ -96,7 +96,6 @@ public sealed partial class ExecOptions
         ConfigProfile = parseResult.GetValueForOption(ConfigProfileOption);
         EnablePreviewFeatures = parseResult.HasOption(PreviewOption);
 
-        //
         if (configProfile != null)
         {
             if (!parseResult.HasOption(EntryPointOption) && !string.IsNullOrEmpty(configProfile.EntryPoint))
