@@ -7,6 +7,7 @@
 - Add support for gitee uri transform
 - Support project reference when exacting from project file
 - Import implicit using for framework automatically
+- Add additional script support for script
 
 ## 0.11.0
 
