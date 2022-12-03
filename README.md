@@ -180,7 +180,8 @@ Executing with specific profile config:
 dotnet-exec 'WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run();' --profile web --using 'WeihanLi.Extensions'
 ```
 
-![](C:\Users\Weiha\AppData\Roaming\Typora\typora-user-images\image-20221203002201989.png)
+![image](https://user-images.githubusercontent.com/7604648/205428791-48f0863b-ca9a-4a55-93cd-bb5514845c5d.png)
+
 
 ### Docker support
 
