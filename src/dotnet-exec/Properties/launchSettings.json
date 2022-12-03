@@ -39,6 +39,11 @@
       "commandName": "Project",
       "targetFramework": "net7.0",
       "commandLineArgs": "WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run(); --profile web --debug"
+    },
+    "reference-using-remove-test": {
+      "commandName": "Project",
+      "targetFramework": "net7.0",
+      "commandLineArgs": "WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run(); --profile web --reference -nuget:WeihanLi.Web.Extensions --using -WeihanLi.Web.Extensions --debug"
     }
   }
 }

@@ -223,7 +223,7 @@ public static class Helper
     private static ICollection<string> GetGlobalUsings(ExecOptions options)
     {
         var usings = new HashSet<string>(GetGlobalUsingsInternal(options).SelectMany(_ => _));
-        if (!options.Usings.HasValue()) return usings;
+        if (options.Usings.IsNullOrEmpty()) return usings;
 
         foreach (var @using in options.Usings.Where(_ => !_.StartsWith('-')))
         {
@@ -231,6 +231,8 @@ public static class Helper
         }
         foreach (var @using in options.Usings.Where(_ => _.StartsWith('-')))
         {
+            var usingToRemove = @using[1..].Trim();
+            usings.Remove(usingToRemove);
             usings.Remove(@using);
         }
         return usings;
