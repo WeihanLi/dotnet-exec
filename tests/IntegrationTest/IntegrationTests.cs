@@ -318,7 +318,7 @@ public class IntegrationTests
         {
             TargetFramework = targetFramework,
             IncludeWideReferences = false,
-            Script = "Console.Write(typeof(object).Assembly.GetName().Version.ToString(2));"
+            Script = "Console.Write(typeof(System.Text.Json.JsonSerializer).Assembly.GetName().Version.ToString(2));"
         };
         using var output = await ConsoleOutput.CaptureAsync();
         var result = await _handler.Execute(options);
