@@ -198,7 +198,7 @@ docker run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
 docker run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
 ```
 
-for full image tag list, see https://hub.docker.com/r/weihanli/dotnet-exec/tags
+for full image tag list, see <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
 
 ## Acknowledgements
 
@@ -206,4 +206,4 @@ for full image tag list, see https://hub.docker.com/r/weihanli/dotnet-exec/tags
 - [NuGet.Clients](https://github.com/NuGet/NuGet.Client)
 - [System.CommandLine](https://github.com/dotnet/command-line-api)
 - [Thanks JetBrains for the open source Rider license](https://jb.gg/OpenSource?from=dotnet-exec)
-- Thanks for the contributors and users for this project
+- Thanks the contributors and users for this project
