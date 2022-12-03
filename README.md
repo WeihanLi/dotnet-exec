@@ -51,8 +51,6 @@ dotnet-exec https://github.com/WeihanLi/SamplesInPractice/blob/master/net7Sample
 Execute raw code:
 
 ``` sh
-dotnet-exec 'code:Console.WriteLine(1+1);'
-
 dotnet-exec 'Console.WriteLine(1+1);'
 ```
 
@@ -111,8 +109,6 @@ dotnet-exec 'WebApplication.Create().Run();' --web
 Execute raw code with custom usings:
 
 ``` sh
-dotnet-exec 'code:WriteLine(1+1);' --using "static System.Console"
-
 dotnet-exec 'WriteLine(1+1);' --using "static System.Console"
 ```
 
@@ -181,6 +177,13 @@ dotnet-exec 'WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run();' --prof
 ```
 
 ![image](https://user-images.githubusercontent.com/7604648/205428791-48f0863b-ca9a-4a55-93cd-bb5514845c5d.png)
+
+
+Executing with specific profile config and remove preset specific using:
+
+``` sh
+dotnet-exec 'WebApplication.Create().Run();' --profile web --using '-WeihanLi.Extensions'
+```
 
 
 ### Docker support
