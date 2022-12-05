@@ -8,21 +8,21 @@
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/weihanli/dotnet-exec)](https://hub.docker.com/r/weihanli/dotnet-exec)
 
-[中文介绍](./README.zh-CN.md)
+[For English](./README.md)
 
 ## Intro
 
-`dotnet-exec` is a command line tool for executing C# program without a project file, and you can have your custom entry point other than `Main` method
+`dotnet-exec` 是一个可以执行 C# 程序而不需要项目文件的命令行工具，并且你可以指定自定义的入口方法不仅仅是 `Main` 方法
 
 ## Install/Update
 
-Latest stable version:
+最新的稳定版本:
 
 ```sh
 dotnet tool update -g dotnet-execute
 ```
 
-Latest preview version:
+最新的预览版本:
 
 ```sh
 dotnet tool update -g dotnet-execute --prerelease
@@ -32,31 +32,31 @@ dotnet tool update -g dotnet-execute --prerelease
 
 ### Get started
 
-Execute local file:
+执行本地文件:
 
 ``` sh
 dotnet-exec HttpPathJsonSample.cs
 ```
 
-Execute local file with custom entry point:
+执行本地文件并且自定义入口方法:
 
 ``` sh
 dotnet-exec 'HttpPathJsonSample.cs' --entry MainTest
 ```
 
-Execute remote file:
+执行远程文件:
 
 ``` sh
-dotnet-exec https://github.com/WeihanLi/SamplesInPractice/blob/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs
+dotnet-exec 'https://github.com/WeihanLi/SamplesInPractice/blob/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs'
 ```
 
-Execute raw code:
+执行原始代码:
 
 ``` sh
 dotnet-exec 'Console.WriteLine(1+1);'
 ```
 
-Execute raw script:
+执行原始脚本:
 
 ```sh
 dotnet-exec 'script:1+1'
@@ -68,39 +68,39 @@ dotnet-exec 'Guid.NewGuid()'
 
 ### References
 
-Execute raw code with custom references:
+执行原始代码并自定义程序集引用:
 
-NuGet package reference:
+NuGet 包引用:
 
 ``` sh
 dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,2.3.0" -u "WeihanLi.Npoi"
 ```
 
-Local dll reference:
+本地 dll 引用:
 
 ``` sh
 dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "./out/WeihanLi.Npoi.dll" -u "WeihanLi.Npoi"
 ```
 
-Local dll in a folder references:
+本地目录下的 dll 引用:
 
 ``` sh
 dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "folder: ./out" -u "WeihanLi.Npoi"
 ```
 
-Local project reference:
+本地项目引用:
 
 ``` sh
 dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "project: ./WeihanLi.Npoi.csproj" -u "WeihanLi.Npoi"
 ```
 
-Framework reference:
+框架引用:
 
 ``` sh
 dotnet-exec 'WebApplication.Create().Run();' --reference 'framework:web'
 ```
 
-Web framework reference in one option:
+使用 `--web` 一个选项来添加 web 框架引用:
 
 ``` sh
 dotnet-exec 'WebApplication.Create().Run();' --web
@@ -108,13 +108,13 @@ dotnet-exec 'WebApplication.Create().Run();' --web
 
 ### Usings
 
-Execute raw code with custom usings:
+执行原始代码并且自定义命名空间引用:
 
 ``` sh
 dotnet-exec 'WriteLine(1+1);' --using "static System.Console"
 ```
 
-Execute script with custom reference:
+执行原始脚本并且自定义命名空间引用:
 
 ``` sh
 dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump()' -r "nuget:WeihanLi.Npoi,2.4.2" -u WeihanLi.Npoi
@@ -122,7 +122,7 @@ dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump()' -r "nuget:WeihanLi.Npoi,
 
 ### More
 
-Execute with additional dependencies
+执行原始代码并且指定更多依赖：
 
 ``` sh
 dotnet-exec 'typeof(LocalType).FullName.Dump();' --ad FileLocalType2.cs
@@ -132,13 +132,13 @@ dotnet-exec 'typeof(LocalType).FullName.Dump();' --ad FileLocalType2.cs
 dotnet-exec 'typeof(LocalType).FullName.Dump();' --addition FileLocalType2.cs
 ```
 
-Execute with exacting references and usings from the project file
+执行原始代码并且指定从项目文件中提取 using 信息和 reference 信息：
 
 ``` sh
 dotnet-exec 'typeof(LocalType).FullName.Dump();' --project ./Sample.csproj
 ```
 
-Execute file with preview features:
+执行本地文件并指定启用预览特性:
 
 ``` sh
 dotnet-exec RawStringLiteral.cs --preview
@@ -146,33 +146,33 @@ dotnet-exec RawStringLiteral.cs --preview
 
 ### Config Profile
 
-You can customize the config you used often into a config profile to reuse it for convenience.
+你可以自定义常用的配置到一个 profile 配置里以方便重复使用。
 
-List the profiles had configured:
+列出所有可用的 profile 配置:
 
 ``` sh
 dotnet-exec profile ls
 ```
 
-Configure a profile:
+配置一个 profile:
 
 ``` sh
 dotnet-exec profile set web -r "nuget:WeihanLi.Web.Extensions" -u 'WeihanLi.Web.Extensions' --web --wide false
 ```
 
-Get the profile details:
+获取一个 profile 配置详情:
 
 ``` sh
 dotnet-exec profile get web
 ```
 
-Remove the profile not needed:
+移除不需要的 profile 配置:
 
 ``` sh
 dotnet-exec profile rm web
 ```
 
-Executing with specific profile config:
+执行代码时指定某一个 profile 配置:
 
 ``` sh
 dotnet-exec 'WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run();' --profile web --using 'WeihanLi.Extensions'
@@ -181,16 +181,16 @@ dotnet-exec 'WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run();' --prof
 ![image](https://user-images.githubusercontent.com/7604648/205428791-48f0863b-ca9a-4a55-93cd-bb5514845c5d.png)
 
 
-Executing with specific profile config and remove preset specific using:
+执行代码时指定某一个 profile 配置并且移除配置中的某一个 using:
 
 ``` sh
 dotnet-exec 'WebApplication.Create().Run();' --profile web --using '-WeihanLi.Extensions'
 ```
 
 
-### Docker support
+### Docker 支持
 
-Execute with docker
+使用 docker 执行
 
 ``` sh
 docker run --rm weihanli/dotnet-exec:latest dotnet-exec "1+1"
@@ -204,12 +204,12 @@ docker run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
 docker run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
 ```
 
-for full image tag list, see <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
+完整的 tag 列表请参考 <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
 
 ## Acknowledgements
 
 - [Roslyn](https://github.com/dotnet/roslyn)
 - [NuGet.Clients](https://github.com/NuGet/NuGet.Client)
 - [System.CommandLine](https://github.com/dotnet/command-line-api)
-- [Thanks JetBrains for the open source Rider license](https://jb.gg/OpenSource?from=dotnet-exec)
-- Thanks the contributors and users for this project
+- [感谢 JetBrains 提供的 Rider 开源 license](https://jb.gg/OpenSource?from=dotnet-exec)
+- 谢谢这个项目的贡献者和使用者
