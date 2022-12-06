@@ -16,6 +16,8 @@
 
 ## Install/Update
 
+### dotnet tool
+
 Latest stable version:
 
 ```sh
@@ -27,6 +29,24 @@ Latest preview version:
 ```sh
 dotnet tool update -g dotnet-execute --prerelease
 ```
+
+### Docker support
+
+Execute with docker
+
+``` sh
+docker run --rm weihanli/dotnet-exec:latest dotnet-exec "1+1"
+```
+
+``` sh
+docker run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
+```
+
+``` sh
+docker run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
+```
+
+for full image tag list, see <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
 
 ## Examples
 
@@ -186,25 +206,6 @@ Executing with specific profile config and remove preset specific using:
 ``` sh
 dotnet-exec 'WebApplication.Create().Run();' --profile web --using '-WeihanLi.Extensions'
 ```
-
-
-### Docker support
-
-Execute with docker
-
-``` sh
-docker run --rm weihanli/dotnet-exec:latest dotnet-exec "1+1"
-```
-
-``` sh
-docker run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
-```
-
-``` sh
-docker run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
-```
-
-for full image tag list, see <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
 
 ## Acknowledgements
 
