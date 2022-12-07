@@ -16,6 +16,8 @@
 
 ## Install/Update
 
+### dotnet tool
+
 最新的稳定版本:
 
 ```sh
@@ -27,6 +29,24 @@ dotnet tool update -g dotnet-execute
 ```sh
 dotnet tool update -g dotnet-execute --prerelease
 ```
+
+### Docker 支持
+
+使用 docker 执行
+
+``` sh
+docker run --rm weihanli/dotnet-exec:latest dotnet-exec "1+1"
+```
+
+``` sh
+docker run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
+```
+
+``` sh
+docker run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
+```
+
+完整的 tag 列表请参考 <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
 
 ## Examples
 
@@ -186,25 +206,6 @@ dotnet-exec 'WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run();' --prof
 ``` sh
 dotnet-exec 'WebApplication.Create().Run();' --profile web --using '-WeihanLi.Extensions'
 ```
-
-
-### Docker 支持
-
-使用 docker 执行
-
-``` sh
-docker run --rm weihanli/dotnet-exec:latest dotnet-exec "1+1"
-```
-
-``` sh
-docker run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
-```
-
-``` sh
-docker run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
-```
-
-完整的 tag 列表请参考 <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
 
 ## Acknowledgements
 
