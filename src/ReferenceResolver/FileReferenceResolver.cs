@@ -15,10 +15,3 @@ public sealed class FileReferenceResolver : IReferenceResolver
             : Task.FromResult(Enumerable.Empty<string>());
     }
 }
-
-[System.Diagnostics.DebuggerDisplay("{Reference}")]
-public sealed record FileReference(string FilePath) : IReference
-{
-    public string Reference => Path.GetFullPath(FilePath);
-    public ReferenceType ReferenceType => ReferenceType.LocalFile;
-}

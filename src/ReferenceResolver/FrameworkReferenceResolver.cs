@@ -162,10 +162,3 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         return Directory.GetFiles(targetVersionDir, "*.dll");
     }
 }
-
-[System.Diagnostics.DebuggerDisplay("framework: {Reference}")]
-public sealed record FrameworkReference(string FrameworkName) : IReference
-{
-    public string Reference => FrameworkName;
-    public ReferenceType ReferenceType => ReferenceType.FrameworkReference;
-}

@@ -8,15 +8,6 @@ using System.Reflection;
 
 namespace ReferenceResolver;
 
-public interface IReferenceResolverFactory
-{
-    IReferenceResolver GetResolver(ReferenceType referenceType);
-
-    Task<IEnumerable<string>> ResolveReference(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default);
-
-    Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default);
-}
-
 public sealed class ReferenceResolverFactory : IReferenceResolverFactory
 {
     private readonly IServiceProvider _serviceProvider;
