@@ -100,20 +100,31 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         {
             FrameworkNames.Default => new[]
             {
-                "System", "System.Collections.Generic", "System.IO", "System.Linq", "System.Net.Http",
-                "System.Text", "System.Threading", "System.Threading.Tasks"
+                "global::System", 
+                "global::System.Collections.Generic", 
+                "global::System.IO", 
+                "global::System.Linq", 
+                "global::System.Net.Http",
+                "global::System.Text", 
+                "global::System.Threading", 
+                "global::System.Threading.Tasks"
             },
             FrameworkNames.Web => new[]
             {
-                "System.Net.Http.Json", "Microsoft.AspNetCore.Builder", "Microsoft.AspNetCore.Hosting",
-                "Microsoft.AspNetCore.Http", "Microsoft.AspNetCore.Routing", "Microsoft.Extensions.Configuration",
-                "Microsoft.Extensions.DependencyInjection", "Microsoft.Extensions.Hosting",
-                "Microsoft.Extensions.Logging"
+                "global::System.Net.Http.Json", 
+                "global::Microsoft.AspNetCore.Builder", 
+                "global::Microsoft.AspNetCore.Hosting",
+                "global::Microsoft.AspNetCore.Http", 
+                "global::Microsoft.AspNetCore.Routing", 
+                "global::Microsoft.Extensions.Configuration",
+                "global::Microsoft.Extensions.DependencyInjection", 
+                "global::Microsoft.Extensions.Hosting",
+                "global::Microsoft.Extensions.Logging"
             },
             FrameworkNames.WindowsDesktop => new[]
             {
-                "System.Drawing",
-                "System.Windows.Forms"
+                "global::System.Drawing",
+                "global::System.Windows.Forms"
             },
             _ => Array.Empty<string>()
         };

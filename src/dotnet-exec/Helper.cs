@@ -201,14 +201,14 @@ public static class Helper
         {
             yield return new[]
             {
-                "Microsoft.Extensions.Configuration",
-                "Microsoft.Extensions.DependencyInjection",
-                "Microsoft.Extensions.Logging",
+                "global::Microsoft.Extensions.Configuration",
+                "global::Microsoft.Extensions.DependencyInjection",
+                "global::Microsoft.Extensions.Logging",
 
-                "WeihanLi.Common",
-                "WeihanLi.Common.Helpers",
-                "WeihanLi.Extensions",
-                "WeihanLi.Extensions.Dump"
+                "global::WeihanLi.Common",
+                "global::WeihanLi.Common.Helpers",
+                "global::WeihanLi.Extensions",
+                "global::WeihanLi.Extensions.Dump"
             };
         }
 
