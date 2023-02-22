@@ -13,7 +13,7 @@
     <Product>dotnet-exec</Product>
     <Authors>WeihanLi</Authors>
     <PackageReleaseNotes>https://github.com/WeihanLi/dotnet-exec/tree/main/docs/ReleaseNotes.md</PackageReleaseNotes>
-    <Copyright>Copyright 2022 (c) WeihanLi</Copyright>
+    <Copyright>Copyright 2022-2023 (c) WeihanLi</Copyright>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <NoWarn>ASP0000;</NoWarn>
     <!-- https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#treatwarningsaserrors -->
