@@ -136,13 +136,13 @@ bool PublishArtifacts(ICakeContext context)
    }
    if (string.IsNullOrEmpty(apiKey))
    {
-      apiKey = EnvironmentVariable("Nuget__ApiKey");
+      apiKey = EnvironmentVariable("NuGet__ApiKey");
    }
    if (!string.IsNullOrEmpty(apiKey))
    {
       var pushSetting =new DotNetNuGetPushSettings
       {
-         Source = EnvironmentVariable("Nuget__SourceUrl") ?? "https://api.nuget.org/v3/index.json",
+         Source = EnvironmentVariable("NuGet__SourceUrl") ?? "https://api.nuget.org/v3/index.json",
          ApiKey = apiKey,
          SkipDuplicate = true
       };
