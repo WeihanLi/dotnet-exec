@@ -25,7 +25,7 @@ public sealed partial class ExecOptions
         () => DefaultTargetFramework, "Target framework");
 
     private static readonly Option<string> StartupTypeOption = new("--startup-type", "The startup type to use for finding the correct entry");
-    internal static readonly Option<string> EntryPointOption = new(new[]{ "-e", "--entry" }, "Custom entry point('MainTest' by default)");
+    internal static readonly Option<string> EntryPointOption = new(new[] { "-e", "--entry" }, "Custom entry point('MainTest' by default)");
 
     private static readonly Option<string> CompilerTypeOption =
         new("--compiler-type", () => Helper.Default, "The compiler to use");

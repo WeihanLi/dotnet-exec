@@ -100,24 +100,24 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         {
             FrameworkNames.Default => new[]
             {
-                "global::System", 
-                "global::System.Collections.Generic", 
-                "global::System.IO", 
-                "global::System.Linq", 
+                "global::System",
+                "global::System.Collections.Generic",
+                "global::System.IO",
+                "global::System.Linq",
                 "global::System.Net.Http",
-                "global::System.Text", 
-                "global::System.Threading", 
+                "global::System.Text",
+                "global::System.Threading",
                 "global::System.Threading.Tasks"
             },
             FrameworkNames.Web => new[]
             {
-                "global::System.Net.Http.Json", 
-                "global::Microsoft.AspNetCore.Builder", 
+                "global::System.Net.Http.Json",
+                "global::Microsoft.AspNetCore.Builder",
                 "global::Microsoft.AspNetCore.Hosting",
-                "global::Microsoft.AspNetCore.Http", 
-                "global::Microsoft.AspNetCore.Routing", 
+                "global::Microsoft.AspNetCore.Http",
+                "global::Microsoft.AspNetCore.Routing",
                 "global::Microsoft.Extensions.Configuration",
-                "global::Microsoft.Extensions.DependencyInjection", 
+                "global::Microsoft.Extensions.DependencyInjection",
                 "global::Microsoft.Extensions.Hosting",
                 "global::Microsoft.Extensions.Logging"
             },
