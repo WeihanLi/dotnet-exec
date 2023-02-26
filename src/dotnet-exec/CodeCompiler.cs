@@ -28,7 +28,7 @@ public sealed class DefaultCodeCompiler : ICodeCompiler
         var assemblyName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}.dll";
         var parseOptions = new CSharpParseOptions(options.GetLanguageVersion());
         var globalUsingCode = Helper.GetGlobalUsingsCodeText(options);
-        var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, cancellationToken: options.CancellationToken);
+        var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, "__GlobalUsings.cs", cancellationToken: options.CancellationToken);
         if (string.IsNullOrEmpty(code))
         {
             code = await File.ReadAllTextAsync(options.Script, options.CancellationToken);

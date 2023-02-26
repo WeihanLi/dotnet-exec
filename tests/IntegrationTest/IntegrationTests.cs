@@ -36,6 +36,7 @@ public class IntegrationTests
     [InlineData("WebApiSample")]
     [InlineData("EmbeddedReferenceSample")]
     [InlineData("UsingSample")]
+    [InlineData("FileLocalTypeSample")]
     public async Task SamplesTestWithDefaultCompiler(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
@@ -70,6 +71,7 @@ public class IntegrationTests
     [InlineData("WebApiSample")]
     [InlineData("EmbeddedReferenceSample")]
     [InlineData("UsingSample")]
+    [InlineData("FileLocalTypeSample")]
     public async Task SamplesTestWithWorkspaceCompiler(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
