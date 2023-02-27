@@ -15,7 +15,7 @@ public sealed class PlainTextLoader : TextLoader
         _textAndVersion = TextAndVersion.Create(SourceText.From(text), VersionStamp.Default);
     }
 
-    public override Task<TextAndVersion> LoadTextAndVersionAsync(Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
+    public override Task<TextAndVersion> LoadTextAndVersionAsync(LoadTextOptions options, CancellationToken cancellationToken)
     {
         return Task.FromResult(_textAndVersion);
     }
