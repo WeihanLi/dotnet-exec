@@ -1,5 +1,12 @@
 # Release Notes
 
+## 0.13.0
+
+- Support for .NET 8
+- Fixes file local types with the default compiler
+- Add `-e` alias for `--entry`
+- Use `global` keyword for global usings
+
 ## 0.12.0
 
 - ConfigProfile support
