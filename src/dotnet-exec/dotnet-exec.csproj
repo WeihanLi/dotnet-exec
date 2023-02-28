@@ -38,7 +38,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ReferenceResolver\ReferenceResolver.csproj" />
   </ItemGroup>
-  <Target Name="Husky" BeforeTargets="Restore;CollectPackageReferences" Condition="'$(HUSKY)' != 0 AND '$(IsCrossTargetingBuild)' == 'true' AND '$(CI)' != 'true'">
+  <Target Name="Husky" BeforeTargets="Restore;CollectPackageReferences" Condition="'$(HUSKY)' != 0 AND '$(IsCrossTargetingBuild)' == 'true' AND '$(CI)' != 'true' AND '$(ContinuousIntegrationBuild)' != 'true' ">
     <Exec Command="dotnet tool restore" StandardOutputImportance="Low" StandardErrorImportance="High" />
     <Exec Command="dotnet husky install" StandardOutputImportance="Low" StandardErrorImportance="High" WorkingDirectory="..\.." />
   </Target>
