@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
@@ -15,7 +14,7 @@
     <PackageProjectUrl>https://github.com/WeihanLi/dotnet-exec</PackageProjectUrl>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="../../README.md" Pack="true" Visible="false" PackagePath=""/>
+    <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Microsoft.Extensions.DependencyInjection" />
@@ -31,7 +30,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" />
     <PackageReference Include="NuGet.Protocol" />
     <PackageReference Include="System.CommandLine" />
-    <PackageReference Include="WeihanLi.Common" />      
+    <PackageReference Include="WeihanLi.Common" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTest" />
@@ -39,4 +38,8 @@
   <ItemGroup>
     <ProjectReference Include="..\ReferenceResolver\ReferenceResolver.csproj" />
   </ItemGroup>
+  <Target Name="Husky" BeforeTargets="Restore;CollectPackageReferences" Condition="'$(HUSKY)' != 0 and '$(IsCrossTargetingBuild)' == 'true'">
+    <Exec Command="dotnet tool restore" StandardOutputImportance="Low" StandardErrorImportance="High" />
+    <Exec Command="dotnet husky install" StandardOutputImportance="Low" StandardErrorImportance="High" WorkingDirectory="..\.." />
+  </Target>
 </Project>
