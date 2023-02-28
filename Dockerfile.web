@@ -10,7 +10,8 @@ COPY ./Directory.Build.props ./
 COPY ./Directory.Build.targets ./
 COPY ./Directory.Packages.props ./
 WORKDIR /app/src/dotnet-exec/
-RUN dotnet publish -f net8.0 -c Release -o /app/artifacts
+ENV HUSKY=0
+RUN dotnet publish -f net8.0 -o /app/artifacts
 
 FROM base AS final
 WORKDIR /app
