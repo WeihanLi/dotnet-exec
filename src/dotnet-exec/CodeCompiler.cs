@@ -3,6 +3,8 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -28,35 +30,37 @@ public sealed class DefaultCodeCompiler : ICodeCompiler
         var assemblyName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}.dll";
         var parseOptions = new CSharpParseOptions(options.GetLanguageVersion());
         var globalUsingCode = Helper.GetGlobalUsingsCodeText(options);
-        var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, "__GlobalUsings.cs", cancellationToken: options.CancellationToken);
+        var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, "__GlobalUsings.cs",
+            cancellationToken: options.CancellationToken);
         if (string.IsNullOrEmpty(code))
         {
             code = await File.ReadAllTextAsync(options.Script, options.CancellationToken);
         }
-        var scriptSyntaxTree = CSharpSyntaxTree.ParseText(code, parseOptions, cancellationToken: options.CancellationToken);
-        var syntaxTreeList = new List<SyntaxTree>()
-        {
-            globalUsingSyntaxTree,
-            scriptSyntaxTree,
-        };
+
+        var scriptSyntaxTree =
+            CSharpSyntaxTree.ParseText(code, parseOptions, cancellationToken: options.CancellationToken);
+        var syntaxTreeList = new List<SyntaxTree>() { globalUsingSyntaxTree, scriptSyntaxTree, };
         if (options.AdditionalScripts.HasValue())
         {
             foreach (var additionalScript in options.AdditionalScripts)
             {
-                var scriptContent = await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken);
+                var scriptContent =
+                    await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken);
                 if (string.IsNullOrWhiteSpace(scriptContent.Data))
                     continue;
-                var syntaxTree = CSharpSyntaxTree.ParseText(scriptContent.Data, parseOptions, additionalScript, null, options.CancellationToken);
+                var syntaxTree = CSharpSyntaxTree.ParseText(scriptContent.Data, parseOptions, additionalScript, null,
+                    options.CancellationToken);
                 syntaxTreeList.Add(syntaxTree);
             }
         }
-        var references = await _referenceResolver.ResolveMetadataReferences(options, true);
+
+        var metadataReferences = await _referenceResolver.ResolveMetadataReferences(options, true);
         var compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication,
-            optimizationLevel: options.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
+            optimizationLevel: options.Configuration, nullableContextOptions: NullableContextOptions.Annotations,
+            allowUnsafe: true);
         compilationOptions.EnableReferencesSupersedeLowerVersions();
 
-        var compilation = CSharpCompilation.Create(assemblyName, syntaxTreeList, references, compilationOptions);
+        var compilation = CSharpCompilation.Create(assemblyName, syntaxTreeList, metadataReferences, compilationOptions);
         return await Guard.NotNull(compilation).GetCompilationAssemblyResult(options.CancellationToken);
     }
 }
-

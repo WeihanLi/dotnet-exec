@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using Microsoft.CodeAnalysis.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace ReferenceResolver;
@@ -34,6 +35,13 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         return Task.FromResult<IEnumerable<string>>(references);
     }
 
+    public Task<IEnumerable<string>> ResolveAnalyzers(string reference, string targetFramework,
+        CancellationToken cancellationToken = default)
+    {
+        return ResolveFrameworkAnalyzerReferencesViaSdkPacks(reference, targetFramework)
+            .WrapTask<IEnumerable<string>>();
+    }
+
     public Task<IEnumerable<string>> ResolveForCompile(string reference, string targetFramework,
         CancellationToken cancellationToken = default)
     {
@@ -52,7 +60,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         return Task.FromResult<IEnumerable<string>>(
             ResolveFrameworkReferencesViaRuntimeShared(FrameworkNames.Default, targetFramework));
     }
-
+    
     private static volatile string _dotnetDirectory = string.Empty;
 
     public static string DotnetDirectory
@@ -146,9 +154,40 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
             versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x).StartsWith(versionPrefix));
             var targetVersionDir = versions.OrderByDescending(x => x).First();
             var targetReferenceDir = Path.Combine(targetVersionDir, "ref", targetFramework);
-            return Directory.GetFiles(targetReferenceDir, "*.dll");
+            var refFiles = Directory.GetFiles(targetReferenceDir, "*.dll");
+            return refFiles;
         }
+        return Array.Empty<string>();
+    }
 
+    private static string[] ResolveFrameworkAnalyzerReferencesViaSdkPacks(string frameworkName, string targetFramework)
+    {
+        if (FrameworkAliases.TryGetValue(frameworkName, out var fName))
+        {
+            frameworkName = fName;
+        }
+        var packsDir = Path.Combine(DotnetDirectory, "packs");
+        var referencePackageName = $"{frameworkName}.Ref";
+        var frameworkDir = Path.Combine(packsDir, referencePackageName);
+        if (Directory.Exists(frameworkDir))
+        {
+            var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();
+            var versionPrefix = targetFramework["net".Length..];
+            versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x).StartsWith(versionPrefix));
+            var targetVersionDir = versions.OrderByDescending(x => x).First();
+            var targetAnalyzerDir = Path.Combine(targetVersionDir, "analyzers", "dotnet", "cs");
+           
+            var analyzerFiles = Directory.GetFiles(targetAnalyzerDir, "*.dll");
+            var targetAnalyzerDir2 = Path.Combine(targetVersionDir, "analyzers", "dotnet", "roslyn4.4", "cs");
+
+            if (Directory.Exists(targetAnalyzerDir2))
+            {
+                var analyzerFiles2 = Directory.GetFiles(targetAnalyzerDir2, "*.dll");
+                return analyzerFiles.Union(analyzerFiles2).ToArray();
+            }
+            return analyzerFiles;
+            
+        }
         return Array.Empty<string>();
     }
 

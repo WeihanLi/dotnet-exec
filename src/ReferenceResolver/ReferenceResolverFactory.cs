@@ -40,7 +40,7 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
     public async Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
     {
         var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
-        return await resolver.ResolveMetadata(referenceWithoutSchema, targetFramework, cancellationToken);
+        return await resolver.ResolveMetadataReferences(referenceWithoutSchema, targetFramework, cancellationToken);
     }
 
     private (string reference, IReferenceResolver referenceResolver) GetReferenceAndResolver(string fullReference)

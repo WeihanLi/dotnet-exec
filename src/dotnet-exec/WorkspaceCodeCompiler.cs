@@ -3,6 +3,7 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -55,11 +56,13 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
             }
         }
 
-        var references = await _referenceResolver.ResolveMetadataReferences(options, true);
+        var metadataReferences = await _referenceResolver.ResolveMetadataReferences(options, true);
+        var analyzerReferences = await _referenceResolver.ResolveAnalyzerReferences(options);
         projectInfo = projectInfo
                 .WithParseOptions(new CSharpParseOptions(options.GetLanguageVersion()))
                 .WithDocuments(documents)
-                .WithMetadataReferences(references)
+                .WithMetadataReferences(metadataReferences)
+                .WithAnalyzerReferences(analyzerReferences)
             ;
         using var workspace = new AdhocWorkspace();
         var project = workspace.AddProject(projectInfo);

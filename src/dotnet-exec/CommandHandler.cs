@@ -206,8 +206,7 @@ public sealed class CommandHandler : ICommandHandler
                 _logger.LogError($"Execute error:{Environment.NewLine}{executeResult.Msg}");
                 return -3;
             }
-            var executeEndTime = Stopwatch.GetTimestamp();
-            var elapsed = ProfilerHelper.GetElapsedTime(executeStartTime, executeEndTime);
+            var elapsed = ProfilerHelper.GetElapsedTime(executeStartTime);
             _logger.LogDebug("Execute elapsed: {elapsed}", elapsed);
 
             // wait for console flush
@@ -217,7 +216,7 @@ public sealed class CommandHandler : ICommandHandler
         }
         catch (OperationCanceledException) when (options.CancellationToken.IsCancellationRequested)
         {
-            _logger.LogWarning("Cancelled...");
+            _logger.LogWarning("Execution cancelled...");
             return -998;
         }
         catch (Exception ex)

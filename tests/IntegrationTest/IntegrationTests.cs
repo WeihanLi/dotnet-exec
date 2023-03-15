@@ -37,6 +37,7 @@ public class IntegrationTests
     [InlineData("EmbeddedReferenceSample")]
     [InlineData("UsingSample")]
     [InlineData("FileLocalTypeSample")]
+    // [InlineData("SourceGeneratorSample")] // not supported by now
     public async Task SamplesTestWithDefaultCompiler(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
@@ -72,6 +73,7 @@ public class IntegrationTests
     [InlineData("EmbeddedReferenceSample")]
     [InlineData("UsingSample")]
     [InlineData("FileLocalTypeSample")]
+    [InlineData("SourceGeneratorSample")]
     public async Task SamplesTestWithWorkspaceCompiler(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";

@@ -36,6 +36,9 @@ public interface INuGetHelper
     Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null, CancellationToken cancellationToken = default);
     Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, CancellationToken cancellationToken = default);
     Task<IEnumerable<string>> GetPackages(string packagePrefix, bool includePreRelease = true, CancellationToken cancellationToken = default);
+
+    Task<string[]> ResolvePackageAnalyzerReferences(string targetFramework, string packageId,
+        NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default);
 }
 
 public sealed class NuGetHelper : INuGetHelper
@@ -271,6 +274,38 @@ public sealed class NuGetHelper : INuGetHelper
         });
         return references.Distinct().ToArray();
     }
+    
+    public async Task<string[]> ResolvePackageAnalyzerReferences(string targetFramework, string packageId,
+        NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default)
+    {
+        if (version is null)
+        {
+            var versions = await GetPackageVersions(packageId, includePreview, cancellationToken);
+            // ReSharper disable once SimplifyLinqExpressionUseMinByAndMaxBy
+            version = versions.OrderByDescending(_ => _).FirstOrDefault();
+            if (version is null)
+            {
+                throw new InvalidOperationException($"No package versions found for package {packageId}");
+            }
+        }
+        var dependencies = await GetPackageDependencies(packageId, version, targetFramework, cancellationToken);
+        var packageReferences = await ResolvePackageAnalyzerInternal(targetFramework, packageId, version, cancellationToken);
+        if (dependencies.Count <= 0)
+        {
+            return packageReferences;
+        }
+
+        var references = new ConcurrentBag<string>(packageReferences);
+        await Parallel.ForEachAsync(dependencies, cancellationToken, async (dependency, ct) =>
+        {
+            var result = await ResolvePackageAnalyzerInternal(targetFramework, dependency.Key, dependency.Value, ct);
+            foreach (var item in result)
+            {
+                references.Add(item);
+            }
+        });
+        return references.Distinct().ToArray();
+    }
 
     private async Task<IReadOnlyList<PackageDependencyGroup>> GetPackageDependencyGroups(string packageName, NuGetVersion packageVersion, CancellationToken cancellationToken)
     {
@@ -333,6 +368,30 @@ public sealed class NuGetHelper : INuGetHelper
         return Array.Empty<string>();
     }
 
+    private async Task<string[]> ResolvePackageAnalyzerInternal(string targetFramework, string packageId, NuGetVersion version, CancellationToken cancellationToken)
+    {
+        await DownloadPackage(packageId, version, null, cancellationToken);
+        var packageDir = GetPackageInstalledDir(packageId, version);
+        if (!Directory.Exists(packageDir))
+        {
+            throw new InvalidOperationException("Package could not be downloaded");
+        }
+        //
+        var nugetFramework = NuGetFramework.Parse(targetFramework);
+        using var packageReader = new PackageFolderReader(packageDir);
+        var analyzerItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Analyzers, cancellationToken)).ToArray();
+        var nearestRef = _frameworkReducer.GetNearest(nugetFramework, analyzerItems.Select(x => x.TargetFramework));
+        if (nearestRef != null)
+        {
+            return analyzerItems.First(x => x.TargetFramework == nearestRef)
+                 .Items
+                 .Where(x => ".dll".EqualsIgnoreCase(Path.GetExtension(x)))
+                 .Select(x => Path.Combine(packageDir, x))
+                 .ToArray();
+        }
+        return Array.Empty<string>();
+    }
+    
     private string GetPackageInstalledDir(string packageId, NuGetVersion packageVersion, string? packagesDirectory = null)
     {
         var packageDir = Path.Combine(packagesDirectory ?? _globalPackagesFolder, packageId.ToLowerInvariant(),

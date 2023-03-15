@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuGet.Frameworks;
 using ReferenceResolver;
@@ -18,6 +19,9 @@ public interface IRefResolver
     Task<string[]> ResolveReferences(ExecOptions options, bool compilation);
 
     Task<IEnumerable<MetadataReference>> ResolveMetadataReferences(ExecOptions options, bool compilation);
+    
+    Task<IEnumerable<string>> ResolveAnalyzers(ExecOptions options);
+    Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(ExecOptions options);
 }
 
 public sealed class RefResolver : IRefResolver
@@ -163,6 +167,41 @@ public sealed class RefResolver : IRefResolver
                 }
             }).WhereNotNull();
         }
+    }
+
+    public async Task<IEnumerable<string>> ResolveAnalyzers(ExecOptions options)
+    {
+        var frameworks = Helper.GetDependencyFrameworks(options);
+        var referenceFrameworks = options.References
+            .Select(r => r.StartsWith("framework:", StringComparison.OrdinalIgnoreCase) ? r["framework:".Length..].Trim() : null)
+            .WhereNotNull();
+        var frameworkReferences = await frameworks.Union(referenceFrameworks)
+            .Select(async framework =>
+            {
+                var references =
+                    await _frameworkReferenceResolver.ResolveAnalyzers(framework, options.TargetFramework, options.CancellationToken)
+                        .ContinueWith(r => r.Result.ToArray());
+                if (references.HasValue()) return references;
+
+                var packageId = FrameworkReferenceResolver.GetReferencePackageName(framework);
+                var versions = await _nugetHelper.GetPackageVersions(packageId, true, options.CancellationToken);
+                var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
+                var version = versions
+                    .Where(x => x.Major == nugetFramework.Version.Major
+                                && x.Minor == nugetFramework.Version.Minor)
+                    .Max();
+                return await _nugetHelper.ResolvePackageAnalyzerReferences(options.TargetFramework, packageId, version,
+                    true,
+                    options.CancellationToken);
+            })
+            .WhenAll();
+        return frameworkReferences.Flatten();
+    }
+
+    public async Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(ExecOptions options)
+    {
+        var analyzers = await ResolveAnalyzers(options);
+        return analyzers.Select(x=> new AnalyzerFileReference(x, CustomLoadContext.Current.Value ?? AnalyzerAssemblyLoader.Instance));
     }
 
     private async Task<T> GetOrSetCache<T>(string cacheKey, Func<Task<T>> factory, bool disableCache)

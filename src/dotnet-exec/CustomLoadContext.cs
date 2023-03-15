@@ -1,14 +1,17 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using Microsoft.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Loader;
 
 namespace Exec;
 
 // https://docs.microsoft.com/en-us/dotnet/core/tutorials/creating-app-with-plugin-support
-public sealed class CustomLoadContext : AssemblyLoadContext
+public sealed class CustomLoadContext : AssemblyLoadContext, IAnalyzerAssemblyLoader
 {
+    public static readonly AsyncLocal<CustomLoadContext> Current = new();
+
     private readonly Dictionary<string, string> _assemblyPaths;
 
     public CustomLoadContext(IEnumerable<string> assemblyPaths) : base(Helper.ApplicationName)
@@ -20,6 +23,8 @@ public sealed class CustomLoadContext : AssemblyLoadContext
             // and ignore others
             _assemblyPaths.TryAdd(Path.GetFileNameWithoutExtension(assemblyPath), assemblyPath);
         }
+
+        Current.Value = this;
     }
 
     protected override Assembly? Load(AssemblyName assemblyName)
@@ -31,5 +36,15 @@ public sealed class CustomLoadContext : AssemblyLoadContext
             return LoadFromAssemblyPath(assemblyPath);
         }
         return null;
+    }
+
+    public Assembly LoadFromPath(string fullPath)
+    {
+        return LoadFromPath(fullPath);
+    }
+
+    public void AddDependencyLocation(string fullPath)
+    {
+        _assemblyPaths.TryAdd(Path.GetFileNameWithoutExtension(fullPath), fullPath);
     }
 }
