@@ -174,18 +174,12 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
             var versionPrefix = targetFramework["net".Length..];
             versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x).StartsWith(versionPrefix));
             var targetVersionDir = versions.OrderByDescending(x => x).First();
-            var targetAnalyzerDir = Path.Combine(targetVersionDir, "analyzers", "dotnet", "cs");
-
-            var analyzerFiles = Directory.GetFiles(targetAnalyzerDir, "*.dll");
-            var targetAnalyzerDir2 = Path.Combine(targetVersionDir, "analyzers", "dotnet", "roslyn4.4", "cs");
-
-            if (Directory.Exists(targetAnalyzerDir2))
+            var targetAnalyzerDir = Path.Combine(targetVersionDir, "analyzers");
+            if (Directory.Exists(targetAnalyzerDir))
             {
-                var analyzerFiles2 = Directory.GetFiles(targetAnalyzerDir2, "*.dll");
-                return analyzerFiles.Union(analyzerFiles2).ToArray();
+                var analyzerFiles = Directory.GetFiles(targetAnalyzerDir, "*.dll", SearchOption.AllDirectories);
+                return analyzerFiles;   
             }
-            return analyzerFiles;
-
         }
         return Array.Empty<string>();
     }
