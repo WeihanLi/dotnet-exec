@@ -22,9 +22,9 @@ public interface IReferenceResolver
                         _ = AssemblyName.GetAssemblyName(f);
                         return (MetadataReference)MetadataReference.CreateFromFile(f);
                     }
-                    catch (System.Exception)
+                    catch (Exception)
                     {
-                        Debug.WriteLine($"Failed to load {f}");
+                        Debug.WriteLine($"ResolveMetadataReferences error, fail to load {f}");
                         return null;
                     }
                 }).WhereNotNull(), TaskContinuationOptions.OnlyOnRanToCompletion);
@@ -32,7 +32,7 @@ public interface IReferenceResolver
     Task<IEnumerable<string>> ResolveAnalyzers(string reference, string targetFramework, CancellationToken cancellationToken = default)
         => Enumerable.Empty<string>().WrapTask();
     
-    Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(string reference, string targetFramework, CancellationToken cancellationToken = default)
+    Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(string reference, string targetFramework, IAnalyzerAssemblyLoader? analyzerAssemblyLoader = null, CancellationToken cancellationToken = default)
         => ResolveAnalyzers(reference, targetFramework, cancellationToken)
-            .ContinueWith(r=> r.Result.Select(_ => (AnalyzerReference)new AnalyzerFileReference(_, AnalyzerAssemblyLoader.Instance)), cancellationToken);
+            .ContinueWith(r=> r.Result.Select(_ => (AnalyzerReference)new AnalyzerFileReference(_, analyzerAssemblyLoader ?? AnalyzerAssemblyLoader.Instance)), cancellationToken);
 }
