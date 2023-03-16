@@ -289,13 +289,13 @@ public sealed class NuGetHelper : INuGetHelper
             }
         }
         var dependencies = await GetPackageDependencies(packageId, version, targetFramework, cancellationToken);
-        var packageReferences = await ResolvePackageAnalyzerInternal(targetFramework, packageId, version, cancellationToken);
+        var analyzerReferences = await ResolvePackageAnalyzerInternal(targetFramework, packageId, version, cancellationToken);
         if (dependencies.Count <= 0)
         {
-            return packageReferences;
+            return analyzerReferences;
         }
 
-        var references = new ConcurrentBag<string>(packageReferences);
+        var references = new ConcurrentBag<string>(analyzerReferences);
         await Parallel.ForEachAsync(dependencies, cancellationToken, async (dependency, ct) =>
         {
             var result = await ResolvePackageAnalyzerInternal(targetFramework, dependency.Key, dependency.Value, ct);
@@ -389,7 +389,10 @@ public sealed class NuGetHelper : INuGetHelper
                  .Select(x => Path.Combine(packageDir, x))
                  .ToArray();
         }
-        return Array.Empty<string>();
+
+        return analyzerItems.Length > 0 
+            ? analyzerItems[0].Items.Select(x => Path.Combine(packageDir, x)).ToArray() 
+            : Array.Empty<string>();
     }
     
     private string GetPackageInstalledDir(string packageId, NuGetVersion packageVersion, string? packagesDirectory = null)
