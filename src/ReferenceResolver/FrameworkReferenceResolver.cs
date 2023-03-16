@@ -178,7 +178,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
             if (Directory.Exists(targetAnalyzerDir))
             {
                 var analyzerFiles = Directory.GetFiles(targetAnalyzerDir, "*.dll", SearchOption.AllDirectories);
-                return analyzerFiles;   
+                return analyzerFiles;
             }
         }
         return Array.Empty<string>();
