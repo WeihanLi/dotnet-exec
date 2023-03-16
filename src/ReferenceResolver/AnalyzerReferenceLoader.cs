@@ -9,7 +9,7 @@ namespace ReferenceResolver;
 public sealed class AnalyzerAssemblyLoader : IAnalyzerAssemblyLoader
 {
     public static readonly IAnalyzerAssemblyLoader Instance = new AnalyzerAssemblyLoader();
-    
+
     private AnalyzerAssemblyLoader()
     {
     }

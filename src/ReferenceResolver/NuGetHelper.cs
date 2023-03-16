@@ -274,7 +274,7 @@ public sealed class NuGetHelper : INuGetHelper
         });
         return references.Distinct().ToArray();
     }
-    
+
     public async Task<string[]> ResolvePackageAnalyzerReferences(string targetFramework, string packageId,
         NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default)
     {
@@ -390,11 +390,11 @@ public sealed class NuGetHelper : INuGetHelper
                  .ToArray();
         }
 
-        return analyzerItems.Length > 0 
-            ? analyzerItems[0].Items.Select(x => Path.Combine(packageDir, x)).ToArray() 
+        return analyzerItems.Length > 0
+            ? analyzerItems[0].Items.Select(x => Path.Combine(packageDir, x)).ToArray()
             : Array.Empty<string>();
     }
-    
+
     private string GetPackageInstalledDir(string packageId, NuGetVersion packageVersion, string? packagesDirectory = null)
     {
         var packageDir = Path.Combine(packagesDirectory ?? _globalPackagesFolder, packageId.ToLowerInvariant(),

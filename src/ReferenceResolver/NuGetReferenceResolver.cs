@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using Microsoft.CodeAnalysis.Diagnostics;
 using NuGet.Versioning;
 
 namespace ReferenceResolver;
@@ -64,7 +63,7 @@ public sealed class NuGetReferenceResolver : IReferenceResolver
         {
             version = NuGetVersion.Parse(splits[1]);
         }
-        
+
         var references =
             await _nugetHelper.ResolvePackageAnalyzerReferences(targetFramework, packageId, version, false, cancellationToken);
         return references;

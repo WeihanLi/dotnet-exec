@@ -59,7 +59,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         return Task.FromResult<IEnumerable<string>>(
             ResolveFrameworkReferencesViaRuntimeShared(FrameworkNames.Default, targetFramework));
     }
-    
+
     private static volatile string _dotnetDirectory = string.Empty;
 
     public static string DotnetDirectory
@@ -175,7 +175,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
             versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x).StartsWith(versionPrefix));
             var targetVersionDir = versions.OrderByDescending(x => x).First();
             var targetAnalyzerDir = Path.Combine(targetVersionDir, "analyzers", "dotnet", "cs");
-           
+
             var analyzerFiles = Directory.GetFiles(targetAnalyzerDir, "*.dll");
             var targetAnalyzerDir2 = Path.Combine(targetVersionDir, "analyzers", "dotnet", "roslyn4.4", "cs");
 
@@ -185,7 +185,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
                 return analyzerFiles.Union(analyzerFiles2).ToArray();
             }
             return analyzerFiles;
-            
+
         }
         return Array.Empty<string>();
     }

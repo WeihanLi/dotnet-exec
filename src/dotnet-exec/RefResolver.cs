@@ -19,7 +19,7 @@ public interface IRefResolver
     Task<string[]> ResolveReferences(ExecOptions options, bool compilation);
 
     Task<IEnumerable<MetadataReference>> ResolveMetadataReferences(ExecOptions options, bool compilation);
-    
+
     Task<IEnumerable<string>> ResolveAnalyzers(ExecOptions options);
     Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(ExecOptions options);
 }
@@ -201,7 +201,7 @@ public sealed class RefResolver : IRefResolver
     public async Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(ExecOptions options)
     {
         var analyzers = await ResolveAnalyzers(options);
-        return analyzers.Select(x=> new AnalyzerFileReference(x, CustomLoadContext.Current.Value ?? AnalyzerAssemblyLoader.Instance));
+        return analyzers.Select(x => new AnalyzerFileReference(x, CustomLoadContext.Current.Value ?? AnalyzerAssemblyLoader.Instance));
     }
 
     private async Task<T> GetOrSetCache<T>(string cacheKey, Func<Task<T>> factory, bool disableCache)

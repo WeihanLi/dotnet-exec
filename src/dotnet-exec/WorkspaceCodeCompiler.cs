@@ -3,7 +3,6 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
 using WeihanLi.Common.Models;
 
 namespace Exec;
