@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Reflection;
@@ -31,16 +32,29 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
         };
     }
 
-    public async Task<IEnumerable<string>> ResolveReference(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>> ResolveReferences(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
     {
         var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
         return await resolver.Resolve(referenceWithoutSchema, targetFramework, cancellationToken);
     }
 
-    public async Task<IEnumerable<MetadataReference>> ResolveMetadataReference(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>> ResolveAnalyzers(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
+    {
+        var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
+        return await resolver.ResolveAnalyzers(referenceWithoutSchema, targetFramework, cancellationToken);
+    }
+
+    public async Task<IEnumerable<MetadataReference>> ResolveMetadataReferences(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
     {
         var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
         return await resolver.ResolveMetadataReferences(referenceWithoutSchema, targetFramework, cancellationToken);
+    }
+
+    public async Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(string referenceWithSchema, string targetFramework,
+        IAnalyzerAssemblyLoader? analyzerAssemblyLoader = null, CancellationToken cancellationToken = default)
+    {
+        var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
+        return await resolver.ResolveAnalyzerReferences(referenceWithoutSchema, targetFramework, analyzerAssemblyLoader, cancellationToken);
     }
 
     private (string reference, IReferenceResolver referenceResolver) GetReferenceAndResolver(string fullReference)

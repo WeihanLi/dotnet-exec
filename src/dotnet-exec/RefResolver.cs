@@ -18,7 +18,7 @@ public interface IRefResolver
 
     Task<string[]> ResolveReferences(ExecOptions options, bool compilation);
 
-    Task<IEnumerable<MetadataReference>> ResolveMetadataReferences(ExecOptions options, bool compilation);
+    Task<MetadataReference[]> ResolveMetadataReferences(ExecOptions options, bool compilation);
 
     Task<IEnumerable<string>> ResolveAnalyzers(ExecOptions options);
     Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(ExecOptions options);
@@ -43,6 +43,59 @@ public sealed class RefResolver : IRefResolver
         _referenceResolverFactory = referenceResolverFactory;
     }
 
+    public async Task<string[]> ResolveReferences(ExecOptions options, bool compilation)
+    {
+        var cacheKey = $"{nameof(ResolveReferences)}_{compilation}";
+        return await GetOrSetCache(cacheKey, ResolveReferencesInternal, options.DisableCache);
+
+        async Task<string[]> ResolveReferencesInternal()
+        {
+            var frameworkReferencesTask = ResolveFrameworkReferences(options, compilation);
+            var additionalReferencesTask =
+                ResolveAdditionalReferences(options.TargetFramework, options.References, options.CancellationToken);
+            var references = await Task.WhenAll(frameworkReferencesTask, additionalReferencesTask);
+            return references.Flatten().ToArray();
+        }
+    }
+
+    public async Task<MetadataReference[]> ResolveMetadataReferences(ExecOptions options, bool compilation)
+    {
+        var cacheKey = $"{nameof(ResolveMetadataReferences)}_{compilation}";
+        return await GetOrSetCache(cacheKey, ResolveMetadataReferencesInternal, options.DisableCache);
+
+        async Task<MetadataReference[]> ResolveMetadataReferencesInternal()
+        {
+            var references = await ResolveReferences(options, compilation);
+            return references.Select(l =>
+            {
+                try
+                {
+                    // load managed assembly only
+                    _ = AssemblyName.GetAssemblyName(l);
+                    return (MetadataReference)MetadataReference.CreateFromFile(l, MetadataReferenceProperties.Assembly);
+                }
+                catch
+                {
+                    return null;
+                }
+            }).WhereNotNull().ToArray();
+        }
+    }
+
+    public async Task<IEnumerable<string>> ResolveAnalyzers(ExecOptions options)
+    {
+        var frameworkAnalyzersTask = ResolveFrameworkAnalyzers(options);
+        var additionalAnalyzersTask = ResolveAdditionalAnalyzer(options.TargetFramework, options.References, options.CancellationToken);
+        var references = await Task.WhenAll(frameworkAnalyzersTask, additionalAnalyzersTask);
+        return references.Flatten();
+    }
+
+    public async Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(ExecOptions options)
+    {
+        var analyzers = await ResolveAnalyzers(options);
+        return analyzers.Select(x => new AnalyzerFileReference(x, CustomLoadContext.Current.Value ?? AnalyzerAssemblyLoader.Instance));
+    }
+    
     private async Task<string[]> ResolveFrameworkReferences(ExecOptions options, bool compilation)
     {
         var frameworks = Helper.GetDependencyFrameworks(options);
@@ -112,7 +165,7 @@ public sealed class RefResolver : IRefResolver
                 .Distinct()
                 .ToArray();
         }
-        return frameworkReferences.SelectMany(x => x).Distinct().ToArray();
+        return frameworkReferences.Flatten().Distinct().ToArray();
     }
 
     private async Task<string[]> ResolveAdditionalReferences(string targetFramework, ICollection<string>? references,
@@ -125,51 +178,12 @@ public sealed class RefResolver : IRefResolver
         // non-framework references
         var result = await references
             .Where(x => !x.StartsWith("framework:", StringComparison.OrdinalIgnoreCase))
-            .Select(reference => _referenceResolverFactory.ResolveReference(reference, targetFramework, cancellationToken))
+            .Select(reference => _referenceResolverFactory.ResolveAnalyzers(reference, targetFramework, cancellationToken))
             .WhenAll();
-        return result.SelectMany(_ => _).Distinct().ToArray();
+        return result.Flatten().Distinct().ToArray();
     }
 
-    public async Task<string[]> ResolveReferences(ExecOptions options, bool compilation)
-    {
-        var cacheKey = $"{nameof(ResolveReferences)}_{compilation}";
-        return await GetOrSetCache(cacheKey, ResolveReferencesInternal, options.DisableCache);
-
-        async Task<string[]> ResolveReferencesInternal()
-        {
-            var frameworkReferencesTask = ResolveFrameworkReferences(options, compilation);
-            var additionalReferencesTask =
-                ResolveAdditionalReferences(options.TargetFramework, options.References, options.CancellationToken);
-            var references = await Task.WhenAll(frameworkReferencesTask, additionalReferencesTask);
-            return references.SelectMany(_ => _).ToArray();
-        }
-    }
-
-    public async Task<IEnumerable<MetadataReference>> ResolveMetadataReferences(ExecOptions options, bool compilation)
-    {
-        var cacheKey = $"{nameof(ResolveMetadataReferences)}_{compilation}";
-        return await GetOrSetCache(cacheKey, ResolveMetadataReferencesInternal, options.DisableCache);
-
-        async Task<IEnumerable<MetadataReference>> ResolveMetadataReferencesInternal()
-        {
-            var references = await ResolveReferences(options, compilation);
-            return references.Select(l =>
-            {
-                try
-                {
-                    // load managed assembly only
-                    _ = AssemblyName.GetAssemblyName(l);
-                    return (MetadataReference)MetadataReference.CreateFromFile(l, MetadataReferenceProperties.Assembly);
-                }
-                catch
-                {
-                    return null;
-                }
-            }).WhereNotNull();
-        }
-    }
-
-    public async Task<IEnumerable<string>> ResolveAnalyzers(ExecOptions options)
+    private async Task<IEnumerable<string>> ResolveFrameworkAnalyzers(ExecOptions options)
     {
         var frameworks = Helper.GetDependencyFrameworks(options);
         var referenceFrameworks = options.References
@@ -198,12 +212,20 @@ public sealed class RefResolver : IRefResolver
         return frameworkReferences.Flatten();
     }
 
-    public async Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(ExecOptions options)
+    private async Task<IEnumerable<string>> ResolveAdditionalAnalyzer(string targetFramework, ICollection<string>? references,
+        CancellationToken cancellationToken)
     {
-        var analyzers = await ResolveAnalyzers(options);
-        return analyzers.Select(x => new AnalyzerFileReference(x, CustomLoadContext.Current.Value ?? AnalyzerAssemblyLoader.Instance));
+        if (references.IsNullOrEmpty())
+        {
+            return Enumerable.Empty<string>();
+        }
+        // non-framework references
+        var result = await references
+            .Where(x => !x.StartsWith("framework:", StringComparison.OrdinalIgnoreCase))
+            .Select(reference => _referenceResolverFactory.ResolveReferences(reference, targetFramework, cancellationToken))
+            .WhenAll();
+        return result.Flatten().Distinct();
     }
-
     private async Task<T> GetOrSetCache<T>(string cacheKey, Func<Task<T>> factory, bool disableCache)
     {
         if (disableCache || DisableCache)
