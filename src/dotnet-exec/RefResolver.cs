@@ -95,7 +95,7 @@ public sealed class RefResolver : IRefResolver
         var analyzers = await ResolveAnalyzers(options);
         return analyzers.Select(x => new AnalyzerFileReference(x, CustomLoadContext.Current.Value ?? AnalyzerAssemblyLoader.Instance));
     }
-    
+
     private async Task<string[]> ResolveFrameworkReferences(ExecOptions options, bool compilation)
     {
         var frameworks = Helper.GetDependencyFrameworks(options);
