@@ -6,6 +6,7 @@
 - Fixes file local types with the default compiler
 - Add `-e` alias for `--entry`
 - Use `global` keyword for global usings
+- Update support for source generator
 
 ## 0.12.0
 
