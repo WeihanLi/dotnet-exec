@@ -178,7 +178,7 @@ public sealed class RefResolver : IRefResolver
         // non-framework references
         var result = await references
             .Where(x => !x.StartsWith("framework:", StringComparison.OrdinalIgnoreCase))
-            .Select(reference => _referenceResolverFactory.ResolveAnalyzers(reference, targetFramework, cancellationToken))
+            .Select(reference => _referenceResolverFactory.ResolveReferences(reference, targetFramework, cancellationToken))
             .WhenAll();
         return result.Flatten().Distinct().ToArray();
     }
@@ -222,7 +222,7 @@ public sealed class RefResolver : IRefResolver
         // non-framework references
         var result = await references
             .Where(x => !x.StartsWith("framework:", StringComparison.OrdinalIgnoreCase))
-            .Select(reference => _referenceResolverFactory.ResolveReferences(reference, targetFramework, cancellationToken))
+            .Select(reference => _referenceResolverFactory.ResolveAnalyzers(reference, targetFramework, cancellationToken))
             .WhenAll();
         return result.Flatten().Distinct();
     }

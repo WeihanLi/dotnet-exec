@@ -204,13 +204,13 @@ public class IntegrationTests
         {
             References = new()
             {
-                "nuget:WeihanLi.Npoi,2.3.0"
+                "nuget:WeihanLi.Npoi,2.4.2"
             },
             Usings = new()
             {
                 "WeihanLi.Npoi"
             },
-            Script = "code:CsvHelper.GetCsvText(new[]{1,2,3}).Dump()"
+            Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump();"
         };
         var result = await _handler.Execute(options);
         Assert.Equal(0, result);
