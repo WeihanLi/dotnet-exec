@@ -21,6 +21,7 @@ public sealed class ConfigProfileManager : IConfigProfileManager
     private static readonly string ProfileFolder = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         ".dotnet",
+        "tools",
         Helper.ApplicationName,
         "profiles"
     );
