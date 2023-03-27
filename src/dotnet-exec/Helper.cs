@@ -151,10 +151,10 @@ public static class Helper
         }
 
         var error = new StringBuilder();
-        foreach (var diagnostic in result.EmitResult.Diagnostics)
+        foreach (var diagnostic in result.EmitResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error))
         {
             var message = CSharpDiagnosticFormatter.Instance.Format(diagnostic);
-            error.AppendLine($"{diagnostic.Id}-{diagnostic.Severity}-{message}");
+            error.AppendLine(message);
         }
 
         return Result.Fail<CompileResult>(error.ToString(), ResultStatus.ProcessFail);
