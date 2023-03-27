@@ -312,20 +312,21 @@ public class IntegrationTests
         Assert.Equal(0, result);
     }
 
-    // [Theory]
-    // [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/65120e7b053b572f4966879a0c04395d2fe0a8b7/BalabalaSample/BalabalaSample.csproj")]
-    // [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/BalabalaSample.csproj")]
-    // public async Task ProjectFileWithPropertyTest(string projectPath)
-    // {
-    //     var options = new ExecOptions()
-    //     {
-    //         ProjectPath = projectPath,
-    //         IncludeWideReferences = false,
-    //         Script = "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/CorrelationIdSample.cs"
-    //     };
-    //     var result = await _handler.Execute(options);
-    //     Assert.Equal(0, result);
-    // }
+    [Theory]
+    [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/65120e7b053b572f4966879a0c04395d2fe0a8b7/BalabalaSample/BalabalaSample.csproj")]
+    [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/BalabalaSample.csproj")]
+    public async Task ProjectFileWithPropertyTest(string projectPath)
+    {
+        var options = new ExecOptions()
+        {
+            ProjectPath = projectPath,
+            IncludeWideReferences = false,
+            Script = "typeof(WeihanLi.Common.Logging.Serilog.SerilogHelper).Assembly.Location",
+            // Script = "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/CorrelationIdSample.cs"
+        };
+        var result = await _handler.Execute(options);
+        Assert.Equal(0, result);
+    }
 
     [Theory]
     [InlineData("6.0")]
