@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-using ReferenceResolver;
 using System.Diagnostics;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -116,7 +115,7 @@ public sealed class CommandHandler : ICommandHandler
                                     propertyMatch = false;
                                 }
                             }
-                            
+
                             if (!propertyMatch) continue;
                         }
                         if (usingElement.Attribute("Static")?.Value == "true")
@@ -223,7 +222,8 @@ public sealed class CommandHandler : ICommandHandler
             options.References.Remove(reference);
         }
 
-        _logger.LogDebug("ExecutorType: {ExecutorType} References: {References}, Usings: {Usings}",
+        _logger.LogDebug("CompilerType: {CompilerType} \nExecutorType: {ExecutorType} \nReferences: {References} \nUsings: {Usings}",
+            options.CompilerType,
             options.ExecutorType,
             options.References.StringJoin(";"),
             options.Usings.StringJoin(";"));
