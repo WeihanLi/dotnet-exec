@@ -1,13 +1,29 @@
 {
-   "tasks": [
-      {
-         "name": "welcome-message-example",
-         "command": "bash",
-         "args": [ "-c", "echo Husky.Net is awesome!" ],
-         "windows": {
-            "command": "cmd",
-            "args": ["/c", "echo Husky.Net is awesome!" ]
-         }
-      }
-   ]
+  "tasks": 
+  [
+    {
+      "name": "build",
+      "group": "pre-commit",
+      "command": "dotnet",
+      "args": [ "build" ]
+    },
+    {
+      "name": "format-verify",
+      "group": "pre-commit",
+      "command": "dotnet",
+      "args": [ "format", "--verify-no-changes", "--include" , "${staged}" ]
+    },
+    {
+      "name": "commit-message-linter",
+      "group": "commit-msg",
+      "command": "dotnet",
+      "args": ["husky", "exec", ".husky/csx/commit-lint.csx", "--args", "${args}"]
+    },
+    {
+      "name": "test",
+      "group": "pre-push",
+      "command": "dotnet",
+      "args": [ "test" ]
+    }
+  ]
 }
