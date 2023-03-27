@@ -1,10 +1,12 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using ReferenceResolver;
 using System.Diagnostics;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using WeihanLi.Common.Models;
 
@@ -88,12 +90,35 @@ public sealed class CommandHandler : ICommandHandler
             var itemGroups = element.Descendants("ItemGroup").ToArray();
             if (itemGroups.HasValue())
             {
+                var propertyRegex = new Regex(@"\$\((?<propertyName>\w+)\)", RegexOptions.Compiled);
                 var usingElements = itemGroups.SelectMany(x => x.Descendants("Using"));
                 foreach (var usingElement in usingElements)
                 {
                     var usingText = usingElement.Attribute("Include")?.Value;
                     if (usingText.IsNotNullOrEmpty())
                     {
+                        if (usingText.Contains("$("))
+                        {
+                            var propertyMatch = false;
+                            var match = propertyRegex.Match(usingText);
+                            if (match.Success)
+                            {
+                                var propertyValue = element.Descendants("PropertyGroup")
+                                    .Descendants(match.Groups["propertyName"].Value)
+                                    .FirstOrDefault()?.Value;
+                                if (propertyValue != null)
+                                {
+                                    usingText = usingText.Replace(match.Value, propertyValue);
+                                    propertyMatch = !usingText.Contains("$(");
+                                }
+                                else
+                                {
+                                    propertyMatch = false;
+                                }
+                            }
+                            
+                            if (!propertyMatch) continue;
+                        }
                         if (usingElement.Attribute("Static")?.Value == "true")
                         {
                             usingText = $"static {usingText}";
@@ -126,7 +151,31 @@ public sealed class CommandHandler : ICommandHandler
                     var packageIdAttribute = packageReferenceElement.Attribute("Include") ?? packageReferenceElement.Attribute("Update");
                     if (packageIdAttribute is null) continue;
                     var packageId = packageIdAttribute.Value;
-                    var packageVersion = packageReferenceElement.Attribute("Version")?.Value;
+                    var packageVersion = packageReferenceElement.Attribute("Version")?.Value ?? string.Empty;
+                    if (packageVersion.Contains("$("))
+                    {
+                        var newPackageVersion = string.Empty;
+                        var match = propertyRegex.Match(packageVersion);
+                        if (match.Success)
+                        {
+                            var propertyValue = element.Descendants("PropertyGroup")
+                                .Descendants(match.Groups["propertyName"].Value)
+                                .FirstOrDefault()?.Value;
+                            if (propertyValue != null)
+                            {
+                                var packageVersionUpdated = packageVersion.Replace(match.Value, propertyValue);
+                                if (!packageVersionUpdated.Contains("$("))
+                                {
+                                    newPackageVersion = packageVersionUpdated;
+                                }
+                            }
+                        }
+                        if (newPackageVersion.IsNullOrWhiteSpace())
+                        {
+                            packageVersion = newPackageVersion;
+                        }
+                    }
+
                     var reference =
                         $"nuget: {packageId}{(string.IsNullOrEmpty(packageVersion) ? "" : $", {packageVersion}")}";
                     options.References.Add(reference);
