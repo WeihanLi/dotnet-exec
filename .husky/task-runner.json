@@ -5,14 +5,7 @@
       "name": "build",
       "group": "pre-commit",
       "command": "dotnet",
-      "args": [ "build" ],
-      "include": [
-        "**/*.cs",
-        "*.props",
-        "*.targets",
-        "*.csproj",
-        "*.sln"
-      ]
+      "args": [ "build" ]
     },
     {
       "name": "format-verify",
@@ -20,11 +13,7 @@
       "command": "dotnet",
       "args": [ "format", "--verify-no-changes", "--include" , "${staged}", "--no-restore" ],
       "include": [
-        "**/*.cs",
-        "*.props",
-        "*.targets",    
-        "*.csproj",       
-        "*.sln"
+        "**/*.cs"
       ]
     },
     {
@@ -38,12 +27,11 @@
       "group": "pre-push",
       "command": "dotnet",
       "args": [ "test" ],
-      "include": [
-        "**/*.cs",
-        "*.props",
-        "*.targets",
-        "*.csproj",
-        "*.sln"
+      "exclude": [
+        "**/*.md",
+        "Dockerfile",
+        "Dockerfile.*",
+        "docs/**/*"
       ]
     }
   ]
