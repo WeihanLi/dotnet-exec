@@ -28,10 +28,10 @@ public sealed partial class ExecOptions
     internal static readonly Option<string> EntryPointOption = new(new[] { "-e", "--entry" }, "Custom entry point('MainTest' by default)");
 
     private static readonly Option<string> CompilerTypeOption =
-        new(new[]{ "--compiler-type", "--compiler" }, () => Helper.Default, "The compiler to use");
+        new(new[] { "--compiler-type", "--compiler" }, () => Helper.Default, "The compiler to use");
 
     private static readonly Option<string> ExecutorTypeOption =
-        new(new[]{ "--executor-type", "--executor" }, () => Helper.Default, "The executor to use");
+        new(new[] { "--executor-type", "--executor" }, () => Helper.Default, "The executor to use");
 
     internal static readonly Option<bool> PreviewOption =
         new("--preview", "Use preview language feature and enable preview features");

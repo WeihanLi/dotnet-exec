@@ -321,7 +321,7 @@ public class IntegrationTests
         {
             ProjectPath = projectPath,
             IncludeWideReferences = false,
-            Script = "typeof(WeihanLi.Common.Logging.Serilog.SerilogHelper).Assembly.Location",
+            Script = "namespace BalabalaSample; typeof(WeihanLi.Common.Logging.Serilog.SerilogHelper).Assembly.Location",
             // Script = "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/CorrelationIdSample.cs"
         };
         var result = await _handler.Execute(options);
