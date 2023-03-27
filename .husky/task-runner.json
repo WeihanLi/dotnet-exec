@@ -5,13 +5,27 @@
       "name": "build",
       "group": "pre-commit",
       "command": "dotnet",
-      "args": [ "build" ]
+      "args": [ "build" ],
+      "include": [
+        "**/*.cs",
+        "*.props",
+        "*.targets",
+        "*.csproj",
+        "*.sln"
+      ]
     },
     {
       "name": "format-verify",
       "group": "pre-commit",
       "command": "dotnet",
-      "args": [ "format", "--verify-no-changes", "--include" , "${staged}" ]
+      "args": [ "format", "--verify-no-changes", "--include" , "${staged}", "--no-restore" ],
+      "include": [
+        "**/*.cs",
+        "*.props",
+        "*.targets",    
+        "*.csproj",       
+        "*.sln"
+      ]
     },
     {
       "name": "commit-message-linter",
@@ -23,7 +37,14 @@
       "name": "test",
       "group": "pre-push",
       "command": "dotnet",
-      "args": [ "test" ]
+      "args": [ "test" ],
+      "include": [
+        "**/*.cs",
+        "*.props",
+        "*.targets",
+        "*.csproj",
+        "*.sln"
+      ]
     }
   ]
 }
