@@ -30,7 +30,7 @@ Latest preview version:
 dotnet tool update -g dotnet-execute --prerelease
 ```
 
-### Docker support
+### Container support
 
 Execute with docker
 
@@ -44,6 +44,20 @@ docker run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
 
 ``` sh
 docker run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
+```
+
+Execute with podman
+
+``` sh
+podman run --rm weihanli/dotnet-exec:latest dotnet-exec "1+1"
+```
+
+``` sh
+podman run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
+```
+
+``` sh
+podman run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
 ```
 
 for full image tag list, see <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
