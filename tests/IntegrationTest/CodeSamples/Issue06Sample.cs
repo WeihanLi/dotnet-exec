@@ -17,6 +17,6 @@ public class Issue06Sample
         await using var provider = serviceCollection.BuildServiceProvider();
         provider.GetRequiredService<ILoggerFactory>()
             .CreateLogger("test")
-            .LogInformation("Hello 1234");;
+            .LogInformation("Hello 1234");
     }
 }
