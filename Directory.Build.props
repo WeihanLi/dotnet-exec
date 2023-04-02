@@ -22,7 +22,9 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" Visible="false" PackagePath=""/>
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup>    
+    <Using Include="Exec"/>
+    <Using Include="Exec.Abstractions"/>
     <Using Include="WeihanLi.Common"/>
     <Using Include="WeihanLi.Common.Helpers"/>
     <Using Include="WeihanLi.Extensions"/>

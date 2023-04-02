@@ -5,16 +5,6 @@ using WeihanLi.Common.Models;
 
 namespace Exec;
 
-public interface IScriptContentFetcher
-{
-    Task<Result<string>> FetchContent(ExecOptions options);
-}
-
-public interface IAdditionalScriptContentFetcher
-{
-    Task<Result<string>> FetchContent(string script, CancellationToken cancellationToken = default);
-}
-
 public class AdditionalScriptContentFetcher : IAdditionalScriptContentFetcher
 {
     // for test only

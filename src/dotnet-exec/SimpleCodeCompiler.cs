@@ -7,17 +7,12 @@ using WeihanLi.Common.Models;
 
 namespace Exec;
 
-public interface ICodeCompiler
-{
-    Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null);
-}
-
-public sealed class DefaultCodeCompiler : ICodeCompiler
+public sealed class SimpleCodeCompiler : ICodeCompiler
 {
     private readonly IRefResolver _referenceResolver;
     private readonly IAdditionalScriptContentFetcher _scriptContentFetcher;
 
-    public DefaultCodeCompiler(IRefResolver referenceResolver, IAdditionalScriptContentFetcher scriptContentFetcher)
+    public SimpleCodeCompiler(IRefResolver referenceResolver, IAdditionalScriptContentFetcher scriptContentFetcher)
     {
         _referenceResolver = referenceResolver;
         _scriptContentFetcher = scriptContentFetcher;

@@ -6,11 +6,11 @@ using Xunit.Abstractions;
 
 namespace UnitTest;
 
-public class CodeCompilerTest
+public sealed class SimpleCodeCompilerTest
 {
     private readonly ITestOutputHelper _outputHelper;
 
-    public CodeCompilerTest(ITestOutputHelper outputHelper)
+    public SimpleCodeCompilerTest(ITestOutputHelper outputHelper)
     {
         _outputHelper = outputHelper;
     }
@@ -20,7 +20,7 @@ public class CodeCompilerTest
     [InlineData(@"public class Program{ public static int Main(){} }")]
     public async Task CompileFailed(string code)
     {
-        var compiler = new DefaultCodeCompiler(RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
+        var compiler = new SimpleCodeCompiler(RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
         var result = await compiler.Compile(new ExecOptions(), code);
         Assert.Equal(ResultStatus.ProcessFail, result.Status);
         _outputHelper.WriteLine(result.Msg);
@@ -38,7 +38,7 @@ Console.WriteLine(args.StringJoin(Environment.NewLine));
 ")]
     public async Task CompileWithCustomEntryPoint(string code)
     {
-        var compiler = new DefaultCodeCompiler(RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
+        var compiler = new SimpleCodeCompiler(RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
         var result = await compiler.Compile(new ExecOptions(), code);
         _outputHelper.WriteLine($"{result.Msg}");
         Assert.Equal(ResultStatus.Success, result.Status);
@@ -67,7 +67,7 @@ Console.WriteLine("""
 """")]
     public async Task CompileWithPreviewLanguageFeature(string code)
     {
-        var compiler = new DefaultCodeCompiler(RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
+        var compiler = new SimpleCodeCompiler(RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
         var result = await compiler.Compile(new ExecOptions()
         {
             EnablePreviewFeatures = true

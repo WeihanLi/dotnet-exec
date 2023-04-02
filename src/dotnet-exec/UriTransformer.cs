@@ -3,11 +3,6 @@
 
 namespace Exec;
 
-public interface IUriTransformer
-{
-    string Transform(string originalUri);
-}
-
 public sealed class UriTransformer : IUriTransformer
 {
     public string Transform(string originalUri)

@@ -3,11 +3,6 @@
 
 namespace Exec;
 
-public interface ICompilerFactory
-{
-    ICodeCompiler GetCompiler(string compilerType);
-}
-
 public sealed class CompilerFactory : ICompilerFactory
 {
     private readonly IServiceProvider _serviceProvider;
@@ -21,9 +16,9 @@ public sealed class CompilerFactory : ICompilerFactory
     {
         return compilerType.ToLower() switch
         {
-            "workspace" => _serviceProvider.GetRequiredService<WorkspaceCodeCompiler>(),
+            "simple" => _serviceProvider.GetRequiredService<SimpleCodeCompiler>(),
             Helper.Script => _serviceProvider.GetRequiredService<CSharpScriptCompilerExecutor>(),
-            _ => _serviceProvider.GetRequiredService<DefaultCodeCompiler>()
+            _ => _serviceProvider.GetRequiredService<WorkspaceCodeCompiler>()
         };
     }
 }

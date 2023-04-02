@@ -17,4 +17,8 @@
     <PackageReference Include="NuGet.Protocol" />
     <PackageReference Include="WeihanLi.Common" />
   </ItemGroup>
+  <ItemGroup>
+    <Using Remove="Exec"/>
+    <Using Remove="Exec.Abstractions"/>
+  </ItemGroup>
 </Project>

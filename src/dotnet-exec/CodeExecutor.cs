@@ -6,11 +6,6 @@ using WeihanLi.Common.Models;
 
 namespace Exec;
 
-public interface ICodeExecutor
-{
-    Task<Result> Execute(CompileResult compileResult, ExecOptions options);
-}
-
 public abstract class CodeExecutor : ICodeExecutor
 {
     protected ILogger Logger { get; }

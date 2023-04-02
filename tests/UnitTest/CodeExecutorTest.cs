@@ -7,10 +7,10 @@ using Xunit.Abstractions;
 
 namespace UnitTest;
 
-public class CodeExecutorTest
+public sealed class CodeExecutorTest
 {
     private readonly ITestOutputHelper _outputHelper;
-    private readonly ICodeCompiler _compiler = new DefaultCodeCompiler(
+    private readonly ICodeCompiler _compiler = new SimpleCodeCompiler(
         RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
 
     public CodeExecutorTest(ITestOutputHelper outputHelper)

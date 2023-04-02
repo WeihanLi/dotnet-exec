@@ -3,11 +3,6 @@
 
 namespace Exec;
 
-public interface IExecutorFactory
-{
-    ICodeExecutor GetExecutor(string executorType);
-}
-
 public sealed class ExecutorFactory : IExecutorFactory
 {
     private readonly IServiceProvider _serviceProvider;

@@ -5,17 +5,6 @@ using System.Text.Json;
 
 namespace Exec;
 
-public interface IConfigProfileManager
-{
-    Task ConfigureProfile(string profileName, ConfigProfile profile);
-
-    Task DeleteProfile(string profileName);
-
-    Task<ConfigProfile?> GetProfile(string profileName);
-
-    Task<string[]> ListProfiles();
-}
-
 public sealed class ConfigProfileManager : IConfigProfileManager
 {
     private static readonly string ProfileFolder = Path.Combine(

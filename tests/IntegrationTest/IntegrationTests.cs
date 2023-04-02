@@ -38,7 +38,7 @@ public class IntegrationTests
     [InlineData("UsingSample")]
     [InlineData("FileLocalTypeSample")]
     // [InlineData("SourceGeneratorSample")] // not supported by now
-    public async Task SamplesTestWithDefaultCompiler(string sampleFileName)
+    public async Task SamplesTestWithSimpleCompiler(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
         var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", filePath);

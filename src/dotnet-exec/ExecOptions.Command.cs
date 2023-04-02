@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using Exec.Commands;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Reflection;
@@ -28,7 +29,7 @@ public sealed partial class ExecOptions
     internal static readonly Option<string> EntryPointOption = new(new[] { "-e", "--entry" }, "Custom entry point('MainTest' by default)");
 
     private static readonly Option<string> CompilerTypeOption =
-        new(new[] { "--compiler-type", "--compiler" }, () => Helper.Default, "The compiler to use");
+        new(new[] { "--compiler-type", "--compiler" }, () => "workspace", "The compiler to use");
 
     private static readonly Option<string> ExecutorTypeOption =
         new(new[] { "--executor-type", "--executor" }, () => Helper.Default, "The executor to use");
@@ -70,7 +71,7 @@ public sealed partial class ExecOptions
 
     static ExecOptions()
     {
-        CompilerTypeOption.FromAmong(Helper.Default, "workspace");
+        CompilerTypeOption.FromAmong("workspace", "simple");
         ExecutorTypeOption.FromAmong(Helper.Default);
         TargetFrameworkOption.FromAmong(Helper.SupportedFrameworks.ToArray());
     }

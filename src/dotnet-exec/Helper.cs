@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using Exec.Commands;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -40,7 +41,7 @@ public static class Helper
         });
         services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>()
             .CreateLogger(ApplicationName));
-        services.AddSingleton<DefaultCodeCompiler>();
+        services.AddSingleton<SimpleCodeCompiler>();
         services.AddSingleton<WorkspaceCodeCompiler>();
         services.AddSingleton<CSharpScriptCompilerExecutor>();
         services.AddSingleton<ICompilerFactory, CompilerFactory>();

@@ -18,7 +18,7 @@
     "reference-test": {
       "commandName": "Project",
       "targetFramework": "net7.0",
-      "commandLineArgs": "code:typeof(CsvHelper).Assembly.Location.Dump() -r nuget:WeihanLi.Npoi,2.3.0 -u WeihanLi.Npoi --debug"
+      "commandLineArgs": "code:typeof(CsvHelper).Assembly.Location.Dump() -r nuget:WeihanLi.Npoi,2.4.2 -u WeihanLi.Npoi --debug"
     },
     "script-test": {
       "commandName": "Project",
