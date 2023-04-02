@@ -107,7 +107,7 @@ dotnet-exec 'Guid.NewGuid()'
 NuGet 包引用:
 
 ``` sh
-dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,2.3.0" -u "WeihanLi.Npoi"
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,2.4.2" -u "WeihanLi.Npoi"
 ```
 
 本地 dll 引用:

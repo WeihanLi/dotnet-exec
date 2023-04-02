@@ -107,7 +107,7 @@ Execute raw code with custom references:
 NuGet package reference:
 
 ``` sh
-dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,2.3.0" -u "WeihanLi.Npoi"
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,2.4.2" -u "WeihanLi.Npoi"
 ```
 
 Local dll reference:
