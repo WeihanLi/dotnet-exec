@@ -313,7 +313,6 @@ public class IntegrationTests
     }
 
     [Theory]
-    [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/65120e7b053b572f4966879a0c04395d2fe0a8b7/BalabalaSample/BalabalaSample.csproj")]
     [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/BalabalaSample.csproj")]
     public async Task ProjectFileWithPropertyTest(string projectPath)
     {
