@@ -30,9 +30,9 @@ dotnet tool update -g dotnet-execute
 dotnet tool update -g dotnet-execute --prerelease
 ```
 
-### Docker 支持
+### 容器支持
 
-使用 docker 执行
+使用 docker
 
 ``` sh
 docker run --rm weihanli/dotnet-exec:latest dotnet-exec "1+1"
@@ -44,6 +44,20 @@ docker run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
 
 ``` sh
 docker run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
+```
+
+使用 podman
+
+``` sh
+podman run --rm weihanli/dotnet-exec:latest dotnet-exec "1+1"
+```
+
+``` sh
+podman run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
+```
+
+``` sh
+podman run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
 ```
 
 完整的 tag 列表请参考 <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
