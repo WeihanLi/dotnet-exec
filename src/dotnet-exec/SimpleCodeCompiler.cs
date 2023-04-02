@@ -31,7 +31,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
         }
 
         var scriptSyntaxTree =
-            CSharpSyntaxTree.ParseText(code, parseOptions, cancellationToken: options.CancellationToken);
+            CSharpSyntaxTree.ParseText(code, parseOptions, "__Script.cs", cancellationToken: options.CancellationToken);
         var syntaxTreeList = new List<SyntaxTree>() { globalUsingSyntaxTree, scriptSyntaxTree, };
         if (options.AdditionalScripts.HasValue())
         {

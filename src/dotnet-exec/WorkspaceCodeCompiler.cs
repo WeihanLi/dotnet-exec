@@ -35,7 +35,7 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
             loader: new PlainTextLoader(globalUsingCode),
             isGenerated: true);
 
-        var scriptDocument = DocumentInfo.Create(DocumentId.CreateNewId(projectInfo.Id), "Script");
+        var scriptDocument = DocumentInfo.Create(DocumentId.CreateNewId(projectInfo.Id, "__Script"), "__Script.cs");
         scriptDocument = string.IsNullOrEmpty(code)
             ? scriptDocument.WithFilePath(options.Script)
             : scriptDocument.WithTextLoader(new PlainTextLoader(code));
