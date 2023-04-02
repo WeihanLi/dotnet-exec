@@ -164,27 +164,21 @@ public static class Helper
     private static async Task<(Compilation Compilation, EmitResult EmitResult, MemoryStream? Assembly)>
         GetCompilationResult(Compilation compilation, CancellationToken cancellationToken = default)
     {
-        await Task.CompletedTask;
-
-        var ms = new MemoryStream();
-        var emitResult = compilation.Emit(ms, cancellationToken: cancellationToken);
+        var consoleStream = new MemoryStream();
+        var emitResult = compilation.Emit(consoleStream, cancellationToken: cancellationToken);
         if (emitResult.Success)
         {
-            return (compilation, emitResult, ms);
+            return (compilation, emitResult, consoleStream);
         }
+        await consoleStream.DisposeAsync().ConfigureAwait(false);
+        if (!emitResult.Diagnostics.Any(d => SpecialConsoleDiagnosticIds.Contains(d.Id)))
+            return (compilation, emitResult, null);
 
-        if (emitResult.Diagnostics.Any(d => SpecialConsoleDiagnosticIds.Contains(d.Id)))
-        {
-            ms.Seek(0, SeekOrigin.Begin);
-            ms.SetLength(0);
-
-            var options = compilation.Options.WithOutputKind(OutputKind.DynamicallyLinkedLibrary);
-            emitResult = compilation.WithOptions(options)
-                .Emit(ms, cancellationToken: cancellationToken);
-            return (compilation, emitResult, emitResult.Success ? ms : null);
-        }
-
-        return (compilation, emitResult, null);
+        var dllStream = new MemoryStream();
+        var options = compilation.Options.WithOutputKind(OutputKind.DynamicallyLinkedLibrary);
+        emitResult = compilation.WithOptions(options)
+            .Emit(dllStream, cancellationToken: cancellationToken);
+        return (compilation, emitResult, emitResult.Success ? dllStream : null);
     }
 
     // https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview#implicit-using-directives
@@ -221,7 +215,7 @@ public static class Helper
         }
     }
 
-    private static ICollection<string> GetGlobalUsings(ExecOptions options)
+    private static HashSet<string> GetGlobalUsings(ExecOptions options)
     {
         var usings = new HashSet<string>(GetGlobalUsingsInternal(options).SelectMany(_ => _));
         if (options.Usings.IsNullOrEmpty()) return usings;
