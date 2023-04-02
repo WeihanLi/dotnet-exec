@@ -316,11 +316,16 @@ public class IntegrationTests
     [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/BalabalaSample.csproj")]
     public async Task ProjectFileWithPropertyTest(string projectPath)
     {
+        var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", "Issue06Sample.cs");
+        Assert.True(File.Exists(fullPath));
+
         var options = new ExecOptions()
         {
             ProjectPath = projectPath,
             IncludeWideReferences = false,
-            Script = "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/CorrelationIdSample.cs"
+            // Script = "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/CorrelationIdSample.cs"
+            Script = fullPath,
+            CompilerType = "simple"
         };
         var result = await _handler.Execute(options);
         // TODO: should be 0, but not working now... need to figure out why not working
