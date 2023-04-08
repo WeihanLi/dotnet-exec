@@ -8,10 +8,10 @@
       "args": [ "build" ]
     },
     {
-      "name": "format-verify",
+      "name": "dotnet-format",
       "group": "pre-commit",
       "command": "dotnet",
-      "args": [ "format", "--verify-no-changes", "--include" , "${staged}", "--no-restore" ],
+      "args": [ "format", "--include" , "${staged}", "--no-restore" ],
       "include": [
         "**/*.cs"
       ]
