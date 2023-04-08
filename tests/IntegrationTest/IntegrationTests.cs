@@ -314,14 +314,21 @@ public class IntegrationTests
 
     [Theory]
     [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/BalabalaSample.csproj")]
+    [InlineData("Issue06Sample.csproj")]
     public async Task ProjectFileWithPropertyTest(string projectPath)
     {
         var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", "Issue06Sample.cs");
         Assert.True(File.Exists(fullPath));
 
+        var fullProjectPath =
+            projectPath.StartsWith("https://")
+            ? projectPath
+            : Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", projectPath)
+            ;
+
         var options = new ExecOptions()
         {
-            ProjectPath = projectPath,
+            ProjectPath = fullProjectPath,
             IncludeWideReferences = false,
             // Script = "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/CorrelationIdSample.cs"
             Script = fullPath,
