@@ -8,23 +8,27 @@ using System.Runtime.Loader;
 namespace Exec;
 
 // https://docs.microsoft.com/en-us/dotnet/core/tutorials/creating-app-with-plugin-support
-public sealed class CustomLoadContext : AssemblyLoadContext, IAnalyzerAssemblyLoader
+public sealed class CustomLoadContext : AssemblyLoadContext, IAnalyzerAssemblyLoader, IDisposable
 {
-    public static readonly AsyncLocal<CustomLoadContext> Current = new();
+    public static readonly AsyncLocal<CustomLoadContext?> Current = new();
 
     private readonly Dictionary<string, string> _assemblyPaths;
 
     public CustomLoadContext(IEnumerable<string> assemblyPaths) : base(Helper.ApplicationName)
     {
         _assemblyPaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var assemblyPath in assemblyPaths)
-        {
-            // Add the first entry with the same simple assembly name if there are multiples
-            // and ignore others
-            _assemblyPaths.TryAdd(Path.GetFileNameWithoutExtension(assemblyPath), assemblyPath);
-        }
-
+        AddAssemblyPath(assemblyPaths.ToArray());
         Current.Value = this;
+    }
+
+    public void AddAssemblyPath(params string[] paths)
+    {
+        if (paths.IsNullOrEmpty()) return;
+        foreach (var path in paths)
+        {
+            if (string.IsNullOrEmpty(path)) continue;
+            _assemblyPaths.TryAdd(Path.GetFileNameWithoutExtension(path), path);
+        }
     }
 
     protected override Assembly? Load(AssemblyName assemblyName)
@@ -40,11 +44,17 @@ public sealed class CustomLoadContext : AssemblyLoadContext, IAnalyzerAssemblyLo
 
     public Assembly LoadFromPath(string fullPath)
     {
-        return LoadFromPath(fullPath);
+        return LoadFromAssemblyPath(fullPath);
     }
 
     public void AddDependencyLocation(string fullPath)
     {
         _assemblyPaths.TryAdd(Path.GetFileNameWithoutExtension(fullPath), fullPath);
+    }
+
+    public void Dispose()
+    {
+        _assemblyPaths.Clear();
+        Current.Value = null;
     }
 }

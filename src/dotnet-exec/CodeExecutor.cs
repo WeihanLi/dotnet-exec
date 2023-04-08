@@ -85,9 +85,10 @@ public sealed class DefaultCodeExecutor : CodeExecutor
     public override async Task<Result> Execute(CompileResult compileResult, ExecOptions options)
     {
         var references = await _referenceResolver.ResolveReferences(options, false);
-        var context = new CustomLoadContext(references);
+        using var context = new CustomLoadContext(references);
         using var scope = context.EnterContextualReflection();
         var assembly = context.LoadFromStream(compileResult.Stream);
-        return await ExecuteAssembly(assembly, options);
+        var result = await ExecuteAssembly(assembly, options);
+        return result;
     }
 }
