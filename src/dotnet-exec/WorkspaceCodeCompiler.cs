@@ -17,6 +17,7 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
         _referenceResolver = referenceResolver;
         _scriptContentFetcher = scriptContentFetcher;
     }
+
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
         var projectName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}";
@@ -33,6 +34,7 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
             DocumentId.CreateNewId(projectInfo.Id, "__GlobalUsings"),
             "__GlobalUsings",
             loader: new PlainTextLoader(globalUsingCode),
+            filePath: "__GlobalUsings.cs",
             isGenerated: true);
 
         var scriptDocument = DocumentInfo.Create(DocumentId.CreateNewId(projectInfo.Id, "__Script"), "__Script.cs");
@@ -40,7 +42,7 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
             ? scriptDocument.WithFilePath(options.Script)
             : scriptDocument.WithTextLoader(new PlainTextLoader(code));
 
-        var documents = new List<DocumentInfo>() { globalUsingDocument, scriptDocument, };
+        var documents = new List<DocumentInfo>() { globalUsingDocument, scriptDocument };
         if (options.AdditionalScripts.HasValue())
         {
             foreach (var additionalScript in options.AdditionalScripts)
@@ -50,7 +52,7 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
                     continue;
 
                 var additionDoc = DocumentInfo.Create(DocumentId.CreateNewId(projectInfo.Id),
-                    Path.GetFileNameWithoutExtension(additionalScript), loader: new PlainTextLoader(scriptContent.Data));
+                    Path.GetFileName(additionalScript), loader: new PlainTextLoader(scriptContent.Data), filePath: additionalScript);
                 documents.Add(additionDoc);
             }
         }

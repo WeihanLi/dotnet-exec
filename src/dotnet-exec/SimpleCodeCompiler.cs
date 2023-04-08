@@ -41,8 +41,8 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
                     await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken);
                 if (string.IsNullOrWhiteSpace(scriptContent.Data))
                     continue;
-                var syntaxTree = CSharpSyntaxTree.ParseText(scriptContent.Data, parseOptions, additionalScript, null,
-                    options.CancellationToken);
+                var syntaxTree = CSharpSyntaxTree.ParseText(scriptContent.Data, parseOptions, additionalScript,
+                    cancellationToken: options.CancellationToken);
                 syntaxTreeList.Add(syntaxTree);
             }
         }
