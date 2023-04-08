@@ -1,2 +1,6 @@
 <Project>
+  <PropertyGroup>
+    <Version Condition="'$(VersionSuffix)'==''">$(VersionPrefix)</Version>
+    <Version Condition="'$(VersionSuffix)'!=''">$(VersionPrefix)-$(VersionSuffix)</Version>
+  </PropertyGroup>
 </Project>
