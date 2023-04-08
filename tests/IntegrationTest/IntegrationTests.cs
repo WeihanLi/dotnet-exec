@@ -313,7 +313,8 @@ public class IntegrationTests
     }
 
     [Theory]
-    [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/BalabalaSample.csproj")]
+    // [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/BalabalaSample.csproj")]
+    [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/22dc739b74ea6e58ae06986d518544c9ef4d8d8e/BalabalaSample/BalabalaSample.csproj")]
     [InlineData("Issue06Sample.csproj")]
     public async Task ProjectFileWithPropertyTest(string projectPath)
     {
@@ -335,8 +336,7 @@ public class IntegrationTests
             CompilerType = "simple"
         };
         var result = await _handler.Execute(options);
-        // TODO: should be 0, but not working now... need to figure out why not working
-        // Assert.Equal(0, result);
+        Assert.Equal(0, result);
     }
 
     [Theory]
