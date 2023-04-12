@@ -2,11 +2,12 @@
   <PropertyGroup>
     <!-- Enable central package management -->
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <RoslynVersion>4.6.0-1.final</RoslynVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.5.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.5.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(RoslynVersion)" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
     <PackageVersion Include="NuGet.Protocol" Version="6.5.0" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
