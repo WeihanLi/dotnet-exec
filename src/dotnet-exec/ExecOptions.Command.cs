@@ -67,6 +67,9 @@ public sealed partial class ExecOptions
     private static readonly Option<string[]> AdditionalScriptsOption =
         new(new[] { "--ad", "--addition" }, "Additional script path");
 
+    private static readonly Option<bool> EnableSourceGeneratorOption =
+        new(new[] { "--generator" }, "Enable the source generator support");
+
     internal static readonly Option<string> ConfigProfileOption =
         new(new[] { "--profile" }, "The config profile to use");
 
@@ -99,6 +102,7 @@ public sealed partial class ExecOptions
         UseRefAssembliesForCompile = parseResult.GetValueForOption(UseRefAssembliesForCompileOption);
         ConfigProfile = parseResult.GetValueForOption(ConfigProfileOption);
         EnablePreviewFeatures = parseResult.HasOption(PreviewOption);
+        EnableSourceGeneratorSupport = parseResult.HasOption(EnableSourceGeneratorOption);
 
         if (configProfile != null)
         {

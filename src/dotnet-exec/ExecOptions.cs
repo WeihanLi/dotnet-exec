@@ -43,5 +43,7 @@ public sealed partial class ExecOptions
 
     public bool UseRefAssembliesForCompile { get; set; }
 
+    public bool EnableSourceGeneratorSupport { get; set; }
+
     [JsonIgnore] public CancellationToken CancellationToken { get; set; }
 }

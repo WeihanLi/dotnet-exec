@@ -58,13 +58,26 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
         }
 
         var metadataReferences = await _referenceResolver.ResolveMetadataReferences(options, true);
-        var analyzerReferences = await _referenceResolver.ResolveAnalyzerReferences(options);
         projectInfo = projectInfo
                 .WithParseOptions(new CSharpParseOptions(options.GetLanguageVersion()))
                 .WithDocuments(documents)
-                .WithMetadataReferences(metadataReferences)
-                .WithAnalyzerReferences(analyzerReferences)
-            ;
+                .WithMetadataReferences(metadataReferences);
+        if (options.EnableSourceGeneratorSupport)
+        {
+            var analyzerReferences = await _referenceResolver.ResolveAnalyzerReferences(options);
+            var generatorReferences = analyzerReferences.Select(x => new
+            {
+                Reference = x,
+                Generators = x.GetGenerators(LanguageNames.CSharp)
+            })
+                .Where(x => x.Generators.HasValue())
+                .Select(x => x.Reference)
+                .ToArray();
+            if (generatorReferences.HasValue())
+            {
+                projectInfo = projectInfo.WithAnalyzerReferences(generatorReferences);
+            }
+        }
         using var workspace = new AdhocWorkspace();
         var project = workspace.AddProject(projectInfo);
         var compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication,

@@ -50,7 +50,8 @@ public class IntegrationTests
             Arguments = new[] { "--hello", "world" },
             IncludeWebReferences = true,
             IncludeWideReferences = true,
-            CompilerType = Helper.Default
+            CompilerType = Helper.Default,
+            EnableSourceGeneratorSupport = sampleFileName.Contains("SourceGenerator")
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
@@ -86,7 +87,8 @@ public class IntegrationTests
             Arguments = new[] { "--hello", "world" },
             IncludeWebReferences = true,
             IncludeWideReferences = true,
-            CompilerType = "workspace"
+            CompilerType = "workspace",
+            EnableSourceGeneratorSupport = sampleFileName.Contains("SourceGenerator")
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
