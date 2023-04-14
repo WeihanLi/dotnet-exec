@@ -54,6 +54,25 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
         compilationOptions.EnableReferencesSupersedeLowerVersions();
 
         var compilation = CSharpCompilation.Create(assemblyName, syntaxTreeList, metadataReferences, compilationOptions);
-        return await Guard.NotNull(compilation).GetCompilationAssemblyResult(options.CancellationToken);
+        Guard.NotNull(compilation);
+
+        var analyzerReferences = await _referenceResolver.ResolveAnalyzerReferences(options);
+        var generatorReferences = analyzerReferences
+            .Select(_ => new
+            {
+                Reference = _,
+                Generators = _.GetGenerators(LanguageNames.CSharp)
+            })
+            .Where(_ => _.Generators.HasValue())
+            .ToArray();
+
+        if (generatorReferences.IsNullOrEmpty())
+        {
+            return await compilation.GetCompilationAssemblyResult(options.CancellationToken);
+        }
+        var generators = generatorReferences.SelectMany(_ => _.Generators).ToArray();
+        var generatorDriver = CSharpGeneratorDriver.Create(generators);
+        generatorDriver.RunGeneratorsAndUpdateCompilation(compilation, out var updatedCompilation, out _, options.CancellationToken);
+        return await updatedCompilation.GetCompilationAssemblyResult(options.CancellationToken);
     }
 }

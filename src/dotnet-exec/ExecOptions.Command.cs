@@ -71,7 +71,7 @@ public sealed partial class ExecOptions
 
     static ExecOptions()
     {
-        CompilerTypeOption.FromAmong("workspace", "simple");
+        CompilerTypeOption.FromAmong(Helper.Default, "workspace");
         ExecutorTypeOption.FromAmong(Helper.Default);
         TargetFrameworkOption.FromAmong(Helper.SupportedFrameworks.ToArray());
     }
