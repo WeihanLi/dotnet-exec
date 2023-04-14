@@ -4,7 +4,7 @@
 using System.Reflection;
 using WeihanLi.Common.Models;
 
-namespace Exec;
+namespace Exec.Implements;
 
 public abstract class CodeExecutor : ICodeExecutor
 {

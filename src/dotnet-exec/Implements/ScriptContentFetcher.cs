@@ -3,7 +3,7 @@
 
 using WeihanLi.Common.Models;
 
-namespace Exec;
+namespace Exec.Implements;
 
 public class AdditionalScriptContentFetcher : IAdditionalScriptContentFetcher
 {

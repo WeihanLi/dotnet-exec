@@ -9,20 +9,7 @@ using ReferenceResolver;
 using System.Collections.Concurrent;
 using System.Reflection;
 
-namespace Exec;
-
-public interface IRefResolver
-{
-    // for unit test only
-    bool DisableCache { get; set; }
-
-    Task<string[]> ResolveReferences(ExecOptions options, bool compilation);
-
-    Task<MetadataReference[]> ResolveMetadataReferences(ExecOptions options, bool compilation);
-
-    Task<IEnumerable<string>> ResolveAnalyzers(ExecOptions options);
-    Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(ExecOptions options);
-}
+namespace Exec.Implements;
 
 public sealed class RefResolver : IRefResolver
 {

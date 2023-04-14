@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using Exec.Contracts;
+
 namespace IntegrationTest;
 
 public class ConfigProfileManagerTests

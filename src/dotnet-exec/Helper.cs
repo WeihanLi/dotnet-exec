@@ -2,6 +2,8 @@
 // Licensed under the MIT license.
 
 using Exec.Commands;
+using Exec.Contracts;
+using Exec.Implements;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;

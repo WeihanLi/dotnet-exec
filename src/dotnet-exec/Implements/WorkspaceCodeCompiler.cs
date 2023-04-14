@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using WeihanLi.Common.Models;
 
-namespace Exec;
+namespace Exec.Implements;
 
 public sealed class WorkspaceCodeCompiler : ICodeCompiler
 {

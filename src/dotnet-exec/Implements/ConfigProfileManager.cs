@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using Exec.Contracts;
 using System.Text.Json;
 
-namespace Exec;
+namespace Exec.Implements;
 
 public sealed class ConfigProfileManager : IConfigProfileManager
 {

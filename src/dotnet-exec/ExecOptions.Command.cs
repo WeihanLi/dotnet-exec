@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using Exec.Commands;
+using Exec.Contracts;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Reflection;

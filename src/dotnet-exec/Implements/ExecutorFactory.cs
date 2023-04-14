@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
-namespace Exec;
+namespace Exec.Implements;
 
 public sealed class ExecutorFactory : IExecutorFactory
 {

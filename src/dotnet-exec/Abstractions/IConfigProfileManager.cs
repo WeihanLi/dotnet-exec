@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Weihan Li. All rights reserved.
 // Licensed under the MIT license.
 
+using Exec.Contracts;
+
 namespace Exec.Abstractions;
 
 public interface IConfigProfileManager
