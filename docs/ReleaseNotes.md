@@ -5,6 +5,7 @@
 - Add source generator support for default compiler
 - Add `--compiler` alias for `--compiler-type` and `--executor` for `--executor-type`
 - Add `--generator` option to enable generator support, disabled by default
+- Add variable replacement for project file resolve
 
 ## 0.13.0
 
