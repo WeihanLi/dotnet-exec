@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.14.0(To be released)
+
+- Add source generator support for default compiler
+- Add `--compiler` alias for `--compiler-type` and `--executor` for `--executor-type`
+- Add `--generator` option to enable generator support, disabled by default
+
 ## 0.13.0
 
 - Support for .NET 8
