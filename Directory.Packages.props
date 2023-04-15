@@ -2,7 +2,7 @@
   <PropertyGroup>
     <!-- Enable central package management -->
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <RoslynVersion>4.6.0-1.final</RoslynVersion>
+    <RoslynVersion>4.5.0</RoslynVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(RoslynVersion)" />
