@@ -6,7 +6,7 @@
     <IsPackable>true</IsPackable>
     <PackageId>ReferenceResolver</PackageId>
     <PackageTags>reference;references;nuget;package;framework;dependency;dependencies</PackageTags>
-    <Description>ReferenceResolver</Description>
+    <Description>Aims to simplify the references for the Roslyn compilation during runtime</Description>
     <PackageProjectUrl>https://github.com/WeihanLi/dotnet-exec/tree/main/src/ReferenceResolver</PackageProjectUrl>
   </PropertyGroup>
   <ItemGroup>
