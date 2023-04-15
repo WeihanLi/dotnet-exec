@@ -214,7 +214,6 @@ dotnet-exec 'WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run();' --prof
 
 ![image](https://user-images.githubusercontent.com/7604648/205428791-48f0863b-ca9a-4a55-93cd-bb5514845c5d.png)
 
-
 执行代码时指定某一个 profile 配置并且移除配置中的某一个 using:
 
 ``` sh
@@ -227,4 +226,4 @@ dotnet-exec 'WebApplication.Create().Run();' --profile web --using '-WeihanLi.Ex
 - [NuGet.Clients](https://github.com/NuGet/NuGet.Client)
 - [System.CommandLine](https://github.com/dotnet/command-line-api)
 - [感谢 JetBrains 提供的 Rider 开源 license](https://jb.gg/OpenSource?from=dotnet-exec)
-- 谢谢这个项目的贡献者和使用者
+- 感谢这个项目的贡献者和使用者
