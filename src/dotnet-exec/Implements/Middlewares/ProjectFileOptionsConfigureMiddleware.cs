@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace Exec.Implements;
+namespace Exec.Implements.Middlewares;
 
 public sealed class ProjectFileOptionsConfigureMiddleware : IOptionsConfigureMiddleware
 {
