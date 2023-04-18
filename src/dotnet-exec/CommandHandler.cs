@@ -17,18 +17,21 @@ public sealed class CommandHandler : ICommandHandler
     private readonly IExecutorFactory _executorFactory;
     private readonly IScriptContentFetcher _scriptContentFetcher;
     private readonly IConfigProfileManager _profileManager;
+    private readonly IOptionsConfigurePipeline _optionsConfigurePipeline;
 
     public CommandHandler(ILogger logger,
         ICompilerFactory compilerFactory,
         IExecutorFactory executorFactory,
         IScriptContentFetcher scriptContentFetcher,
-        IConfigProfileManager profileManager)
+        IConfigProfileManager profileManager,
+        IOptionsConfigurePipeline optionsConfigurePipeline)
     {
         _logger = logger;
         _compilerFactory = compilerFactory;
         _executorFactory = executorFactory;
         _scriptContentFetcher = scriptContentFetcher;
         _profileManager = profileManager;
+        _optionsConfigurePipeline = optionsConfigurePipeline;
     }
 
     public int Invoke(InvocationContext context) => InvokeAsync(context).GetAwaiter().GetResult();
@@ -71,10 +74,9 @@ public sealed class CommandHandler : ICommandHandler
     {
         if (options.Script.IsNullOrWhiteSpace())
         {
-            _logger.LogError("The file {ScriptFile} can not be empty", options.Script);
+            _logger.LogError("The script {ScriptFile} can not be empty", options.Script);
             return -1;
         }
-
         // fetch script
         var fetchResult = await _scriptContentFetcher.FetchContent(options);
         if (!fetchResult.IsSuccess())
@@ -83,14 +85,8 @@ public sealed class CommandHandler : ICommandHandler
             return -1;
         }
 
-        // Cleanup references
-        var referenceToRemoved = options.References.Where(r => r.StartsWith('-')).ToArray();
-        foreach (var reference in referenceToRemoved)
-        {
-            var referenceToRemove = reference[1..];
-            options.References.Remove(referenceToRemove);
-            options.References.Remove(reference);
-        }
+        // execute options configure pipeline
+        await _optionsConfigurePipeline.Execute(options);
 
         _logger.LogDebug("CompilerType: {CompilerType} \nExecutorType: {ExecutorType} \nReferences: {References} \nUsings: {Usings}",
             options.CompilerType,

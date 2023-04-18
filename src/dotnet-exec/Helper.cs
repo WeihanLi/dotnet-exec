@@ -60,9 +60,10 @@ public static class Helper
         services.AddSingleton<IConfigProfileManager, ConfigProfileManager>();
 
         services.RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
-            // register options configure pipeline
-            .AddSingleton<IOptionsConfigurePipeline, OptionsConfigurePipeline>()
+            .RegisterOptionsConfigureMiddleware<CleanupOptionsConfigureMiddleware>()
             ;
+        // register options configure pipeline
+        services.AddSingleton<IOptionsConfigurePipeline, OptionsConfigurePipeline>();
         return services;
     }
 
