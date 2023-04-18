@@ -7,5 +7,5 @@ namespace Exec.Abstractions;
 
 public interface ICodeExecutor
 {
-    Task<Result> Execute(CompileResult compileResult, ExecOptions options);
+    Task<Result<int>> Execute(CompileResult compileResult, ExecOptions options);
 }

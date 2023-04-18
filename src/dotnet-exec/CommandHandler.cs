@@ -262,7 +262,7 @@ public sealed class CommandHandler : ICommandHandler
             // wait for console flush
             await Console.Out.FlushAsync();
 
-            return 0;
+            return executeResult.Data;
         }
         catch (OperationCanceledException) when (options.CancellationToken.IsCancellationRequested)
         {

@@ -51,7 +51,7 @@ public sealed class CSharpScriptCompilerExecutor : ICodeCompiler, ICodeExecutor
         return Result.Success(compileResult);
     }
 
-    public async Task<Result> Execute(CompileResult compileResult, ExecOptions options)
+    public async Task<Result<int>> Execute(CompileResult compileResult, ExecOptions options)
     {
         var script = compileResult.GetProperty<Script>(nameof(Script));
         Guard.NotNull(script);
@@ -64,8 +64,9 @@ public sealed class CSharpScriptCompilerExecutor : ICodeCompiler, ICodeExecutor
         {
             _logger.LogError(state.Exception, "Execute script exception");
         }
-        return new Result()
+        return new Result<int>()
         {
+            Data = state.Exception is null ? 0 : (int)ResultStatus.ProcessFail,
             Status = state.Exception is null ? ResultStatus.Success : ResultStatus.ProcessFail,
             Msg = state.Exception?.ToString()
         };

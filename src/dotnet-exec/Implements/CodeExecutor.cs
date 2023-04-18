@@ -15,7 +15,7 @@ public abstract class CodeExecutor : ICodeExecutor
         Logger = logger;
     }
 
-    protected async Task<Result> ExecuteAssembly(Assembly assembly, ExecOptions options)
+    protected async Task<Result<int>> ExecuteAssembly(Assembly assembly, ExecOptions options)
     {
         if (options.DebugEnabled)
         {
@@ -39,6 +39,7 @@ public abstract class CodeExecutor : ICodeExecutor
             entryMethod = staticMethods.MinBy(m => m.GetParameters().Length);
         }
 
+        var returnExitCode = 0;
         var executed = false;
         if (entryMethod is not null)
         {
@@ -59,18 +60,24 @@ public abstract class CodeExecutor : ICodeExecutor
                     executed = true;
                 }
                 await TaskHelper.ToTask(returnValue).ConfigureAwait(false);
+                returnExitCode = returnValue switch
+                {
+                    ValueTask<int> valueTaskValue => valueTaskValue.Result,
+                    Task<int> taskValue => taskValue.Result,
+                    int value => value,
+                    _ => 0
+                };
             }
             catch (Exception e)
             {
-                return Result.Fail(e.ToString(), ResultStatus.ProcessFail);
+                return Result.Fail(e.ToString(), ResultStatus.ProcessFail, (int)ResultStatus.ProcessFail);
             }
         }
 
-        return executed ? Result.Success() : Result.Fail("No valid EntryPoint found");
-
+        return executed ? Result.Success(returnExitCode) : Result.Fail("No valid EntryPoint found", ResultStatus.RequestError, (int)ResultStatus.RequestError);
     }
 
-    public abstract Task<Result> Execute(CompileResult compileResult, ExecOptions options);
+    public abstract Task<Result<int>> Execute(CompileResult compileResult, ExecOptions options);
 }
 
 public sealed class DefaultCodeExecutor : CodeExecutor
@@ -82,7 +89,7 @@ public sealed class DefaultCodeExecutor : CodeExecutor
         _referenceResolver = referenceResolver;
     }
 
-    public override async Task<Result> Execute(CompileResult compileResult, ExecOptions options)
+    public override async Task<Result<int>> Execute(CompileResult compileResult, ExecOptions options)
     {
         var references = await _referenceResolver.ResolveReferences(options, false);
         using var context = new CustomLoadContext(references);

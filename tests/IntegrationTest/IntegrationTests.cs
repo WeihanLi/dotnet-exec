@@ -360,4 +360,30 @@ public class IntegrationTests
         _outputHelper.WriteLine(output.StandardOutput);
         // Assert.Equal(version, output.StandardOutput);
     }
+
+    [Theory]
+    [MemberData(nameof(EntryMethodWithExitCodeTestData))]
+    public async Task EntryMethodWithExitCode(int expectedExitCode, string code)
+    {
+        var options = new ExecOptions()
+        {
+            Script = code
+        };
+        var result = await _handler.Execute(options);
+        Assert.Equal(expectedExitCode, result);
+    }
+
+    public static IEnumerable<object[]> EntryMethodWithExitCodeTestData()
+    {
+        yield return new object[] { 0, @"Console.WriteLine(""Amazing dotnet"");" };
+
+        yield return new object[] { 0, "return 0;" };
+        yield return new object[] { 1, "return 1;" };
+
+        yield return new object[] { 0, "return await Task.FromResult(0);" };
+        yield return new object[] { 1, "return await Task.FromResult(1);" };
+
+        yield return new object[] { 0, "return await ValueTask.FromResult(0);" };
+        yield return new object[] { 1, "return await ValueTask.FromResult(1);" };
+    }
 }
