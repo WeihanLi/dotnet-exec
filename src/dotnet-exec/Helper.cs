@@ -7,8 +7,10 @@ using Exec.Implements;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NuGet.Versioning;
 using ReferenceResolver;
+using System.Collections.Immutable;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -18,7 +20,7 @@ namespace Exec;
 
 public static class Helper
 {
-    private static readonly HashSet<string> SpecialConsoleDiagnosticIds = new()
+    private static readonly ImmutableHashSet<string> SpecialConsoleDiagnosticIds = new[]
     {
         // Program does not contain a static 'Main' method suitable for an entry point
         // https://learn.microsoft.com/en-us/dotnet/csharp/misc/cs5001
@@ -26,12 +28,10 @@ public static class Helper
         // The method declaration for Main was invalid
         // https://learn.microsoft.com/en-us/dotnet/csharp/misc/CS0028
         "CS0028"
-    };
+    }.ToImmutableHashSet();
 
     public const string ApplicationName = "dotnet-exec";
-
     public const string Default = "default";
-
     public const string Script = "script";
 
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services, string[] args)
@@ -59,6 +59,17 @@ public static class Helper
         services.AddSingleton<IRefResolver, RefResolver>();
         services.AddSingleton<IConfigProfileManager, ConfigProfileManager>();
 
+        services.RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
+            // register options configure pipeline
+            .AddSingleton<IOptionsConfigurePipeline, OptionsConfigurePipeline>()
+            ;
+        return services;
+    }
+
+    private static IServiceCollection RegisterOptionsConfigureMiddleware<TMiddleware>
+        (this IServiceCollection services) where TMiddleware : class, IOptionsConfigureMiddleware
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsConfigureMiddleware, TMiddleware>());
         return services;
     }
 

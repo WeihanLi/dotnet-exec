@@ -6,8 +6,6 @@ using System.Diagnostics;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -17,21 +15,18 @@ public sealed class CommandHandler : ICommandHandler
     private readonly ILogger _logger;
     private readonly ICompilerFactory _compilerFactory;
     private readonly IExecutorFactory _executorFactory;
-    private readonly IUriTransformer _uriTransformer;
     private readonly IScriptContentFetcher _scriptContentFetcher;
     private readonly IConfigProfileManager _profileManager;
 
     public CommandHandler(ILogger logger,
         ICompilerFactory compilerFactory,
         IExecutorFactory executorFactory,
-        IUriTransformer uriTransformer,
         IScriptContentFetcher scriptContentFetcher,
         IConfigProfileManager profileManager)
     {
         _logger = logger;
         _compilerFactory = compilerFactory;
         _executorFactory = executorFactory;
-        _uriTransformer = uriTransformer;
         _scriptContentFetcher = scriptContentFetcher;
         _profileManager = profileManager;
     }
@@ -51,7 +46,7 @@ public sealed class CommandHandler : ICommandHandler
             profile = await _profileManager.GetProfile(profileName);
             if (profile is null)
             {
-                _logger.LogDebug("The config profile({profileName}) not found", profileName);
+                _logger.LogDebug("The config profile({profileName}) not found, ignore profile", profileName);
             }
         }
         options.BindCommandLineArguments(parseResult, profile);
@@ -78,132 +73,6 @@ public sealed class CommandHandler : ICommandHandler
         {
             _logger.LogError("The file {ScriptFile} can not be empty", options.Script);
             return -1;
-        }
-
-        // exact reference and usings from project file
-        if (options.ProjectPath.IsNotNullOrEmpty())
-        {
-            var startTime = Stopwatch.GetTimestamp();
-            // https://learn.microsoft.com/en-us/dotnet/standard/linq/linq-xml-overview
-            var projectPath = _uriTransformer.Transform(options.ProjectPath);
-            var element = XElement.Load(projectPath);
-            var itemGroups = element.Descendants("ItemGroup").ToArray();
-            if (itemGroups.HasValue())
-            {
-                var propertyRegex = new Regex(@"\$\((?<propertyName>\w+)\)", RegexOptions.Compiled);
-                var usingElements = itemGroups.SelectMany(x => x.Descendants("Using"));
-                foreach (var usingElement in usingElements)
-                {
-                    var usingText = usingElement.Attribute("Include")?.Value;
-                    if (usingText.IsNotNullOrEmpty())
-                    {
-                        if (usingText.Contains("$("))
-                        {
-                            var propertyMatch = false;
-                            var match = propertyRegex.Match(usingText);
-                            if (match.Success)
-                            {
-                                var propertyValue = element.Descendants("PropertyGroup")
-                                    .Descendants(match.Groups["propertyName"].Value)
-                                    .FirstOrDefault()?.Value;
-                                if (propertyValue != null)
-                                {
-                                    usingText = usingText.Replace(match.Value, propertyValue);
-                                    propertyMatch = !usingText.Contains("$(");
-                                }
-                                else
-                                {
-                                    propertyMatch = false;
-                                }
-                            }
-
-                            if (!propertyMatch) continue;
-                        }
-                        if (usingElement.Attribute("Static")?.Value == "true")
-                        {
-                            usingText = $"static {usingText}";
-                        }
-
-                        var alias = usingElement.Attribute("Alias")?.Value;
-                        if (alias.IsNotNullOrEmpty())
-                        {
-                            usingText = $"{alias} = {usingText}";
-                        }
-                    }
-                    else
-                    {
-                        usingText = usingElement.Attribute("Remove")?.Value;
-                        if (usingText.IsNotNullOrEmpty())
-                        {
-                            usingText = $"- {usingText}";
-                        }
-                    }
-
-                    if (usingText.IsNotNullOrEmpty())
-                    {
-                        options.Usings.Add(usingText);
-                    }
-                }
-
-                var packageReferenceElements = itemGroups.SelectMany(x => x.Descendants("PackageReference"));
-                foreach (var packageReferenceElement in packageReferenceElements)
-                {
-                    var packageIdAttribute = packageReferenceElement.Attribute("Include") ?? packageReferenceElement.Attribute("Update");
-                    if (packageIdAttribute is null) continue;
-                    var packageId = packageIdAttribute.Value;
-                    var packageVersion = packageReferenceElement.Attribute("Version")?.Value ?? string.Empty;
-                    if (packageVersion.Contains("$("))
-                    {
-                        var newPackageVersion = string.Empty;
-                        var match = propertyRegex.Match(packageVersion);
-                        if (match.Success)
-                        {
-                            var propertyValue = element.Descendants("PropertyGroup")
-                                .Descendants(match.Groups["propertyName"].Value)
-                                .FirstOrDefault()?.Value;
-                            if (propertyValue != null)
-                            {
-                                var packageVersionUpdated = packageVersion.Replace(match.Value, propertyValue);
-                                if (!packageVersionUpdated.Contains("$("))
-                                {
-                                    newPackageVersion = packageVersionUpdated;
-                                }
-                            }
-                        }
-                        if (newPackageVersion.IsNullOrWhiteSpace())
-                        {
-                            packageVersion = newPackageVersion;
-                        }
-                    }
-
-                    var reference =
-                        $"nuget: {packageId}{(string.IsNullOrEmpty(packageVersion) ? "" : $", {packageVersion}")}";
-                    options.References.Add(reference);
-                }
-
-                if (File.Exists(projectPath))
-                {
-                    var projectDirectory = Path.GetFullPath(Guard.NotNullOrEmpty(Path.GetDirectoryName(projectPath)));
-                    var projectReferenceElements = itemGroups.SelectMany(x => x.Descendants("ProjectReference"));
-                    foreach (var projectReferenceElement in projectReferenceElements)
-                    {
-                        var includeAttribute = projectReferenceElement.Attribute("Include");
-                        if (includeAttribute?.Value is null) continue;
-
-                        var referenceProjectPath = includeAttribute.Value;
-                        var referenceProjectFullPath = Path.GetFullPath(referenceProjectPath, projectDirectory);
-                        if (!File.Exists(referenceProjectPath))
-                            continue;
-
-                        var projectReference = $"project: {referenceProjectFullPath}";
-                        options.References.Add(projectReference);
-                    }
-
-                }
-            }
-            var endTime = Stopwatch.GetTimestamp();
-            var duration = ProfilerHelper.GetElapsedTime(startTime, endTime);
-            _logger.LogDebug("Exact info from project file elapsed time: {duration}", duration);
         }
 
         // fetch script
