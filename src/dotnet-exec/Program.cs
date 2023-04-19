@@ -6,4 +6,4 @@ await using var serviceProvider = new ServiceCollection()
     .BuildServiceProvider();
 var command = ExecOptions.GetCommand();
 command.Initialize(serviceProvider);
-await command.InvokeAsync(args);
+return await command.InvokeAsync(args);
