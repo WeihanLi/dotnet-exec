@@ -1,6 +1,6 @@
 # Release Notes
 
-## 0.14.0(To be released)
+## 0.14.0
 
 - Add source generator support for default compiler
 - Add `--compiler` alias for `--compiler-type` and `--executor` for `--executor-type`
