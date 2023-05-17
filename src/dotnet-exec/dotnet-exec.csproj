@@ -3,9 +3,6 @@
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <RootNamespace>Exec</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <IsPackable>true</IsPackable>
     <PackAsTool>true</PackAsTool>
     <PackageId>dotnet-execute</PackageId>
     <ToolCommandName>dotnet-exec</ToolCommandName>
@@ -17,12 +14,13 @@
     <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
+    <Using Include="Exec"/>
+    <Using Include="Exec.Abstractions"/>
     <Using Include="Microsoft.Extensions.DependencyInjection" />
     <Using Include="Microsoft.Extensions.Logging" />
     <Using Include="System.CommandLine" />
     <Using Include="System.CommandLine.Invocation" />
     <Using Include="System.CommandLine.Parsing" />
-    <Using Include="$(RootNamespace)" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />

@@ -1,6 +1,12 @@
 <Project>
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
   <ItemGroup>
+    <Using Include="Exec"/>
+    <Using Include="Exec.Abstractions"/>
     <Using Include="Xunit"/>
   </ItemGroup>
 </Project>
