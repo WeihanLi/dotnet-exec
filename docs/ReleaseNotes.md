@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.15.0 (To be released)
+
+- Upgrade the Roslyn packages to support c# 12 preview features
+
 ## 0.14.0
 
 - Add source generator support for default compiler
