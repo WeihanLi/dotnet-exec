@@ -13,11 +13,11 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.RegisterApplicationServices(new[] { "--debug" });
+        services.AddLogging(lb => lb.AddXunitOutput(_ => { }));
     }
 
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor outputHelperAccessor, IRefResolver refResolver)
     {
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(outputHelperAccessor, (_, _) => true));
         refResolver.DisableCache = true;
     }
 }
