@@ -14,13 +14,13 @@
     <PackageVersion Include="WeihanLi.Common" Version="1.0.59" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
     <PackageVersion Include="FluentAssertions" Version="6.6.0" />
     <PackageVersion Include="Moq" Version="4.17.2" />
-    <PackageVersion Include="xunit" Version="2.4.2" />
+    <PackageVersion Include="xunit" Version="2.5.0" />
     <PackageVersion Include="Xunit.DependencyInjection" Version="8.7.1" />
     <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="8.1.0" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
