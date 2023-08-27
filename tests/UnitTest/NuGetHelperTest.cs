@@ -15,7 +15,7 @@ public class NuGetHelperTest
     {
         var versions = await _nugetHelper.GetPackageVersions(packageId, false);
         Assert.NotNull(versions);
-        Assert.DoesNotContain(versions, v => v.OriginalVersion.Contains("preview"));
+        Assert.DoesNotContain(versions, v => v.OriginalVersion?.Contains("preview") == true);
     }
 
     // framework reference test
@@ -25,7 +25,7 @@ public class NuGetHelperTest
     {
         var versions = (await _nugetHelper.GetPackageVersions(packageId, true)).ToArray();
         Assert.NotNull(versions);
-        Assert.Contains(versions, v => v.OriginalVersion.Contains("preview"));
+        Assert.Contains(versions, v => v.OriginalVersion?.Contains("preview") == true);
         var maxVersion = versions.Max();
         Assert.NotNull(maxVersion);
     }

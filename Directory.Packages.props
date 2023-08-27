@@ -2,23 +2,23 @@
   <PropertyGroup>
     <!-- Enable central package management -->
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <RoslynVersion>4.7.0-2.final</RoslynVersion>
+    <RoslynVersion>4.7.0</RoslynVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
-    <PackageVersion Include="NuGet.Protocol" Version="6.6.1" />
+    <PackageVersion Include="NuGet.Protocol" Version="6.7.0" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="WeihanLi.Common" Version="1.0.59" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.7.1" />
     <PackageVersion Include="FluentAssertions" Version="6.6.0" />
     <PackageVersion Include="Moq" Version="4.17.2" />
     <PackageVersion Include="xunit" Version="2.5.0" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="8.7.1" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="8.8.2" />
     <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="8.1.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />

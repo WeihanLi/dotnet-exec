@@ -204,20 +204,21 @@ public sealed class NuGetHelper : INuGetHelper
             var list = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
             foreach (var package in bestDependency.Packages)
             {
+                var packageMinVersion = GetMinVersion(package);
                 if (list.ContainsKey(package.Id))
                 {
-                    if (list[package.Id] < package.VersionRange.MinVersion)
+                    if (list[package.Id] < packageMinVersion)
                     {
-                        list[package.Id] = package.VersionRange.MinVersion;
+                        list[package.Id] = packageMinVersion;
                     }
                 }
                 else
                 {
-                    list.Add(package.Id, package.VersionRange.MinVersion);
+                    list.Add(package.Id, packageMinVersion);
                 }
 
                 var childrenDependencies =
-                    await GetPackageDependencies(package.Id, package.VersionRange.MinVersion, targetFramework, cancellationToken);
+                    await GetPackageDependencies(package.Id, packageMinVersion, targetFramework, cancellationToken);
                 if (childrenDependencies is { Count: > 0 })
                 {
                     foreach (var childrenDependency in childrenDependencies)
@@ -402,13 +403,17 @@ public sealed class NuGetHelper : INuGetHelper
         return packageDir;
     }
 
-    private sealed class NugetLoggingAdapter : LoggerBase
+    private NuGetVersion GetMinVersion(PackageDependency packageDependency)
     {
-        private readonly ILogger _logger;
-        public NugetLoggingAdapter(ILoggerFactory loggerFactory)
-        {
-            _logger = loggerFactory.CreateLogger("NuGetClient");
-        }
+        // need to be optimized since the dependency may do not has a specified min version
+        // and the version may be a floating one or exclude 
+        return (packageDependency.VersionRange.MinVersion ?? packageDependency.VersionRange.MaxVersion)!;
+    }
+
+    private sealed class NugetLoggingAdapter(ILoggerFactory loggerFactory) : LoggerBase
+    {
+        private readonly ILogger _logger = loggerFactory.CreateLogger("NuGetClient");
+
         public override void Log(ILogMessage message)
         {
             var logLevel = message.Level switch
@@ -430,5 +435,3 @@ public sealed class NuGetHelper : INuGetHelper
         }
     }
 }
-
-
