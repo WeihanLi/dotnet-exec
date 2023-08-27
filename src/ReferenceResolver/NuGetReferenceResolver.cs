@@ -16,19 +16,22 @@ public sealed class NuGetReferenceResolver : IReferenceResolver
 
     public ReferenceType ReferenceType => ReferenceType.NuGetPackage;
 
+    private static readonly char[] Separator = new[] { ',', ':' };
+
     public async Task<IEnumerable<string>> Resolve(string reference, string targetFramework, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(reference);
         ArgumentNullException.ThrowIfNull(targetFramework);
         NuGetVersion? version = null;
-        var splits = reference.Split(new[] { ',', ':' }, StringSplitOptions.RemoveEmptyEntries);
+        var splits = reference.Split(Separator, StringSplitOptions.RemoveEmptyEntries);
         var packageId = splits[0];
         if (splits.Length == 2)
         {
             version = NuGetVersion.Parse(splits[1]);
         }
 
-        var references = await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, false, cancellationToken);
+        var references = await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, false, cancellationToken)
+            .ConfigureAwait(false);
         return references;
     }
 
@@ -37,7 +40,7 @@ public sealed class NuGetReferenceResolver : IReferenceResolver
         ArgumentNullException.ThrowIfNull(reference);
         ArgumentNullException.ThrowIfNull(targetFramework);
         NuGetVersion? version = null;
-        var splits = reference.Split(new[] { ',', ':' },
+        var splits = reference.Split(Separator,
             StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var packageId = splits[0];
         if (splits.Length == 2)
@@ -46,7 +49,8 @@ public sealed class NuGetReferenceResolver : IReferenceResolver
         }
 
         var references =
-            await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, includePreview, cancellationToken);
+            await _nugetHelper.ResolvePackageReferences(targetFramework, packageId, version, includePreview, cancellationToken)
+                .ConfigureAwait(false);
         return references;
     }
 
@@ -56,7 +60,7 @@ public sealed class NuGetReferenceResolver : IReferenceResolver
         ArgumentNullException.ThrowIfNull(reference);
         ArgumentNullException.ThrowIfNull(targetFramework);
         NuGetVersion? version = null;
-        var splits = reference.Split(new[] { ',', ':' },
+        var splits = reference.Split(Separator,
             StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var packageId = splits[0];
         if (splits.Length == 2)
@@ -65,7 +69,8 @@ public sealed class NuGetReferenceResolver : IReferenceResolver
         }
 
         var references =
-            await _nugetHelper.ResolvePackageAnalyzerReferences(targetFramework, packageId, version, false, cancellationToken);
+            await _nugetHelper.ResolvePackageAnalyzerReferences(targetFramework, packageId, version, false, cancellationToken)
+                .ConfigureAwait(false);
         return references;
     }
 }

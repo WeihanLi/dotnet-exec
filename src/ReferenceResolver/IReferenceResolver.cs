@@ -34,5 +34,5 @@ public interface IReferenceResolver
 
     Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(string reference, string targetFramework, IAnalyzerAssemblyLoader? analyzerAssemblyLoader = null, CancellationToken cancellationToken = default)
         => ResolveAnalyzers(reference, targetFramework, cancellationToken)
-            .ContinueWith(r => r.Result.Select(_ => (AnalyzerReference)new AnalyzerFileReference(_, analyzerAssemblyLoader ?? AnalyzerAssemblyLoader.Instance)), cancellationToken);
+            .ContinueWith(r => r.Result.Select(a => (AnalyzerReference)new AnalyzerFileReference(a, analyzerAssemblyLoader ?? AnalyzerAssemblyLoader.Instance)), cancellationToken);
 }

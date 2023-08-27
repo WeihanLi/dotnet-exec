@@ -4,7 +4,6 @@
     <IsPackable>true</IsPackable>
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReleaseNotes>https://github.com/WeihanLi/dotnet-exec/tree/main/docs/ReleaseNotes.md</PackageReleaseNotes>

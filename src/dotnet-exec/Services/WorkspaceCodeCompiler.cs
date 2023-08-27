@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using WeihanLi.Common.Models;
 
-namespace Exec.Implements;
+namespace Exec.Services;
 
 public sealed class WorkspaceCodeCompiler : ICodeCompiler
 {
@@ -20,6 +20,7 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
 
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
+        ArgumentNullException.ThrowIfNull(options);
         var projectName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}";
         var assemblyName = $"{projectName}.dll";
         var projectInfo = ProjectInfo.Create(
@@ -47,7 +48,7 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
         {
             foreach (var additionalScript in options.AdditionalScripts)
             {
-                var scriptContent = await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken);
+                var scriptContent = await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(scriptContent.Data))
                     continue;
 
@@ -57,14 +58,16 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
             }
         }
 
-        var metadataReferences = await _referenceResolver.ResolveMetadataReferences(options, true);
+        var metadataReferences = await _referenceResolver.ResolveMetadataReferences(options, true)
+            .ConfigureAwait(false);
         projectInfo = projectInfo
                 .WithParseOptions(new CSharpParseOptions(options.GetLanguageVersion()))
                 .WithDocuments(documents)
                 .WithMetadataReferences(metadataReferences);
         if (options.EnableSourceGeneratorSupport)
         {
-            var analyzerReferences = await _referenceResolver.ResolveAnalyzerReferences(options);
+            var analyzerReferences = await _referenceResolver.ResolveAnalyzerReferences(options)
+                .ConfigureAwait(false);
             var generatorReferences = analyzerReferences.Select(x => new
             {
                 Reference = x,
@@ -86,7 +89,7 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
 
         var compilation = await project
             .WithCompilationOptions(compilationOptions)
-            .GetCompilationAsync();
-        return await Guard.NotNull(compilation).GetCompilationAssemblyResult(options.CancellationToken);
+            .GetCompilationAsync().ConfigureAwait(false);
+        return await Guard.NotNull(compilation).GetCompilationAssemblyResult(options.CancellationToken).ConfigureAwait(false);
     }
 }

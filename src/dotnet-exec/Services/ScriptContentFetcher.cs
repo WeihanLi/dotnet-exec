@@ -3,7 +3,7 @@
 
 using WeihanLi.Common.Models;
 
-namespace Exec.Implements;
+namespace Exec.Services;
 
 public class AdditionalScriptContentFetcher : IAdditionalScriptContentFetcher
 {
@@ -43,7 +43,7 @@ public class AdditionalScriptContentFetcher : IAdditionalScriptContentFetcher
                     if (GetType() == typeof(ScriptContentFetcher))
                     {
                         _logger.LogDebug("The file {ScriptFile} does not exists, treat as {ScriptType}",
-                            script, script.EndsWith(";") ? "code" : Helper.Script);
+                            script, script.EndsWith(";", StringComparison.Ordinal) ? "code" : Helper.Script);
                     }
                     sourceText = script;
                 }
@@ -69,10 +69,10 @@ public sealed class ScriptContentFetcher : AdditionalScriptContentFetcher, IScri
     {
         var scriptFile = options.Script;
         const string codePrefix = "code:";
-        if (scriptFile.StartsWith(codePrefix))
+        if (scriptFile.StartsWith(codePrefix, StringComparison.Ordinal))
         {
             var code = scriptFile[codePrefix.Length..];
-            if (code.EndsWith(".Dump()"))
+            if (code.EndsWith(".Dump()", StringComparison.Ordinal))
             {
                 // auto fix for `Dump()`
                 code = $"{code};";
@@ -81,7 +81,7 @@ public sealed class ScriptContentFetcher : AdditionalScriptContentFetcher, IScri
         }
 
         const string scriptPrefix = "script:";
-        if (scriptFile.StartsWith(scriptPrefix))
+        if (scriptFile.StartsWith(scriptPrefix, StringComparison.Ordinal))
         {
             var code = scriptFile[scriptPrefix.Length..];
             options.ExecutorType = options.CompilerType = Helper.Script;
@@ -105,16 +105,16 @@ public sealed class ScriptContentFetcher : AdditionalScriptContentFetcher, IScri
 
         foreach (var line in sourceText.Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
         {
-            if (!line.StartsWith("//"))
+            if (!line.StartsWith("//", StringComparison.Ordinal))
             {
                 break;
             }
 
             // exact reference from file
-            if (line.StartsWith("//r:")
-                || line.StartsWith("// r:")
-                || line.StartsWith("//reference:")
-                || line.StartsWith("// reference:")
+            if (line.StartsWith("//r:", StringComparison.Ordinal)
+                || line.StartsWith("// r:", StringComparison.Ordinal)
+                || line.StartsWith("//reference:", StringComparison.Ordinal)
+                || line.StartsWith("// reference:", StringComparison.Ordinal)
                        )
             {
                 var reference = line.Split(':', 2)[1].Trim().TrimEnd(';');
@@ -127,10 +127,10 @@ public sealed class ScriptContentFetcher : AdditionalScriptContentFetcher, IScri
             }
 
             // exact using from file
-            if (line.StartsWith("//u:")
-                || line.StartsWith("// u:")
-                || line.StartsWith("//using:")
-                || line.StartsWith("// using:")
+            if (line.StartsWith("//u:", StringComparison.Ordinal)
+                || line.StartsWith("// u:", StringComparison.Ordinal)
+                || line.StartsWith("//using:", StringComparison.Ordinal)
+                || line.StartsWith("// using:", StringComparison.Ordinal)
                )
             {
                 var @using = line.Split(':', 2)[1].Trim().TrimEnd(';');

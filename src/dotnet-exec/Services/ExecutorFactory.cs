@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2022-2023 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
-namespace Exec.Implements;
+using System.Globalization;
+
+namespace Exec.Services;
 
 public sealed class ExecutorFactory : IExecutorFactory
 {
@@ -14,7 +16,7 @@ public sealed class ExecutorFactory : IExecutorFactory
 
     public ICodeExecutor GetExecutor(string executorType)
     {
-        return executorType.ToLower() switch
+        return executorType.ToLower(CultureInfo.InvariantCulture) switch
         {
             Helper.Script => _serviceProvider.GetRequiredService<CSharpScriptCompilerExecutor>(),
             _ => _serviceProvider.GetRequiredService<DefaultCodeExecutor>()

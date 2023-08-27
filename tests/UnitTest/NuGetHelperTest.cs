@@ -7,13 +7,13 @@ using ReferenceResolver;
 namespace UnitTest;
 public class NuGetHelperTest
 {
-    private readonly INuGetHelper _nugetHelper = new NuGetHelper(NullLoggerFactory.Instance);
+    private static readonly NuGetHelper NugetHelper = new NuGetHelper(NullLoggerFactory.Instance);
 
     [Theory]
     [InlineData("Microsoft.NETCore.App.Ref")]
     public async Task GetPackageVersions(string packageId)
     {
-        var versions = await _nugetHelper.GetPackageVersions(packageId, false);
+        var versions = await NugetHelper.GetPackageVersions(packageId);
         Assert.NotNull(versions);
         Assert.DoesNotContain(versions, v => v.OriginalVersion?.Contains("preview") == true);
     }
@@ -23,7 +23,7 @@ public class NuGetHelperTest
     [InlineData("Microsoft.NETCore.App.Ref")]
     public async Task GetPackageVersionsIncludePreview(string packageId)
     {
-        var versions = (await _nugetHelper.GetPackageVersions(packageId, true)).ToArray();
+        var versions = (await NugetHelper.GetPackageVersions(packageId, true)).ToArray();
         Assert.NotNull(versions);
         Assert.Contains(versions, v => v.OriginalVersion?.Contains("preview") == true);
         var maxVersion = versions.Max();
@@ -34,7 +34,7 @@ public class NuGetHelperTest
     [InlineData("WeihanLi.Npoi")]
     public async Task ResolvePackageReference(string packageId)
     {
-        var references = await _nugetHelper.ResolvePackageReferences(
+        var references = await NugetHelper.ResolvePackageReferences(
             ExecOptions.DefaultTargetFramework, packageId, null, true
             );
         Assert.NotEmpty(references);

@@ -10,6 +10,7 @@ public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddReferenceResolvers(this IServiceCollection serviceCollection)
     {
+        ArgumentNullException.ThrowIfNull(serviceCollection);
         serviceCollection.AddLogging();
         serviceCollection.TryAddSingleton<INuGetHelper, NuGetHelper>();
         serviceCollection.TryAddSingleton<IReferenceResolver, FileReferenceResolver>();

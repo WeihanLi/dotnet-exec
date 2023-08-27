@@ -4,7 +4,7 @@
 using Exec.Contracts;
 using System.Text.Json;
 
-namespace Exec.Implements;
+namespace Exec.Services;
 
 public sealed class ConfigProfileManager : IConfigProfileManager
 {

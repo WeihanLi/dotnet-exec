@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using WeihanLi.Common.Models;
 
-namespace Exec.Implements;
+namespace Exec.Services;
 
 public sealed class SimpleCodeCompiler : ICodeCompiler
 {
@@ -20,6 +20,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
 
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
+        ArgumentNullException.ThrowIfNull(options);
         var assemblyName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}.dll";
         var parseOptions = new CSharpParseOptions(options.GetLanguageVersion());
         var globalUsingCode = Helper.GetGlobalUsingsCodeText(options);
@@ -27,7 +28,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
             cancellationToken: options.CancellationToken);
         if (string.IsNullOrEmpty(code))
         {
-            code = await File.ReadAllTextAsync(options.Script, options.CancellationToken);
+            code = await File.ReadAllTextAsync(options.Script, options.CancellationToken).ConfigureAwait(false);
         }
 
         var scriptSyntaxTree =
@@ -38,7 +39,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
             foreach (var additionalScript in options.AdditionalScripts)
             {
                 var scriptContent =
-                    await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken);
+                    await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(scriptContent.Data))
                     continue;
                 var syntaxTree = CSharpSyntaxTree.ParseText(scriptContent.Data, parseOptions, additionalScript,
@@ -47,7 +48,8 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
             }
         }
 
-        var metadataReferences = await _referenceResolver.ResolveMetadataReferences(options, true);
+        var metadataReferences = await _referenceResolver.ResolveMetadataReferences(options, true)
+            .ConfigureAwait(false);
         var compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication,
             optimizationLevel: options.Configuration, nullableContextOptions: NullableContextOptions.Annotations,
             allowUnsafe: true);
@@ -59,7 +61,8 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
         ISourceGenerator[]? generators = null;
         if (options.EnableSourceGeneratorSupport)
         {
-            var analyzerReferences = await _referenceResolver.ResolveAnalyzerReferences(options);
+            var analyzerReferences = await _referenceResolver.ResolveAnalyzerReferences(options)
+                .ConfigureAwait(false);
             generators = analyzerReferences
                 .Select(_ => new
                 {
@@ -71,10 +74,10 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
         }
         if (generators.IsNullOrEmpty())
         {
-            return await compilation.GetCompilationAssemblyResult(options.CancellationToken);
+            return await compilation.GetCompilationAssemblyResult(options.CancellationToken).ConfigureAwait(false);
         }
         var generatorDriver = CSharpGeneratorDriver.Create(generators);
         generatorDriver.RunGeneratorsAndUpdateCompilation(compilation, out var updatedCompilation, out _, options.CancellationToken);
-        return await updatedCompilation.GetCompilationAssemblyResult(options.CancellationToken);
+        return await updatedCompilation.GetCompilationAssemblyResult(options.CancellationToken).ConfigureAwait(false);
     }
 }

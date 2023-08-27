@@ -9,7 +9,7 @@ using ReferenceResolver;
 using System.Collections.Concurrent;
 using System.Reflection;
 
-namespace Exec.Implements;
+namespace Exec.Services;
 
 public sealed class RefResolver : IRefResolver
 {
@@ -95,7 +95,7 @@ public sealed class RefResolver : IRefResolver
                 if (compilation)
                 {
                     var references =
-                        await _frameworkReferenceResolver.ResolveForCompile(framework, options.TargetFramework, options.CancellationToken)
+                        await FrameworkReferenceResolver.ResolveForCompile(framework, options.TargetFramework, options.CancellationToken)
                             .ContinueWith(r => r.Result.ToArray());
                     if (references.HasValue()) return references;
 

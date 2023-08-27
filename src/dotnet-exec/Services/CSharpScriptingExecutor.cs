@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.Scripting;
 using WeihanLi.Common.Extensions;
 using WeihanLi.Common.Models;
 
-namespace Exec.Implements;
+namespace Exec.Services;
 
 public sealed class CSharpScriptCompilerExecutor : ICodeCompiler, ICodeExecutor
 {

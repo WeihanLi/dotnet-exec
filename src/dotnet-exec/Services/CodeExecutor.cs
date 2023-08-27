@@ -4,7 +4,7 @@
 using System.Reflection;
 using WeihanLi.Common.Models;
 
-namespace Exec.Implements;
+namespace Exec.Services;
 
 public abstract class CodeExecutor : ICodeExecutor
 {
@@ -31,7 +31,7 @@ public abstract class CodeExecutor : ICodeExecutor
             var staticMethods = types.Select(x =>
                     x.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
                 .SelectMany(x => x)
-                .Where(x => x.Name.Equals(options.EntryPoint));
+                .Where(x => x.Name.Equals(options.EntryPoint, StringComparison.Ordinal));
             if (options.StartupType.IsNotNullOrEmpty())
             {
                 staticMethods = staticMethods.Where(x => x.DeclaringType?.FullName == options.StartupType);

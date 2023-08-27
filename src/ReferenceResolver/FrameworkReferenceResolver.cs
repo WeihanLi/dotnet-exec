@@ -41,7 +41,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
             .WrapTask<IEnumerable<string>>();
     }
 
-    public Task<IEnumerable<string>> ResolveForCompile(string reference, string targetFramework,
+    public static Task<IEnumerable<string>> ResolveForCompile(string reference, string targetFramework,
         CancellationToken cancellationToken = default)
     {
         if (reference.IsNullOrEmpty())
@@ -150,7 +150,8 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         {
             var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();
             var versionPrefix = targetFramework["net".Length..];
-            versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x).StartsWith(versionPrefix));
+            versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x)
+                .StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase));
             var targetVersionDir = versions.OrderByDescending(x => x).First();
             var targetReferenceDir = Path.Combine(targetVersionDir, "ref", targetFramework);
             var refFiles = Directory.GetFiles(targetReferenceDir, "*.dll");
@@ -172,7 +173,8 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         {
             var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();
             var versionPrefix = targetFramework["net".Length..];
-            versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x).StartsWith(versionPrefix));
+            versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x)
+                .StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase));
             var targetVersionDir = versions.OrderByDescending(x => x).First();
             var targetAnalyzerDir = Path.Combine(targetVersionDir, "analyzers");
             if (Directory.Exists(targetAnalyzerDir))
@@ -200,7 +202,8 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         Guard.NotNull(frameworkDir);
         var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();
         var versionPrefix = targetFramework["net".Length..];
-        versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x).StartsWith(versionPrefix));
+        versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x)
+            .StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase));
         var targetVersionDir = versions.OrderByDescending(x => x).First();
         return Directory.GetFiles(targetVersionDir, "*.dll");
     }

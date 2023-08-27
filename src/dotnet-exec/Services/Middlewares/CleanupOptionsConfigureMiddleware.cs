@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2022-2023 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
-namespace Exec.Implements.Middlewares;
+namespace Exec.Services.Middlewares;
 
-public sealed class CleanupOptionsConfigureMiddleware : IOptionsConfigureMiddleware
+internal sealed class CleanupOptionsConfigureMiddleware : IOptionsConfigureMiddleware
 {
     public async Task InvokeAsync(ExecOptions options, Func<ExecOptions, Task> next)
     {

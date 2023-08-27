@@ -3,8 +3,8 @@
 
 using Exec.Commands;
 using Exec.Contracts;
-using Exec.Implements;
-using Exec.Implements.Middlewares;
+using Exec.Services;
+using Exec.Services.Middlewares;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -77,6 +77,7 @@ public static class Helper
 
     public static void Initialize(this Command command, IServiceProvider serviceProvider)
     {
+        ArgumentNullException.ThrowIfNull(command);
         command.Handler = serviceProvider.GetRequiredService<ICommandHandler>();
         var profileManager = serviceProvider.GetRequiredService<IConfigProfileManager>();
         foreach (var subcommand in command.Subcommands)
@@ -102,7 +103,7 @@ public static class Helper
                                 EntryPoint = context.ParseResult.GetValueForOption(ExecOptions.EntryPointOption),
                                 EnablePreviewFeatures = context.ParseResult.HasOption(ExecOptions.PreviewOption)
                             };
-                            await profileManager.ConfigureProfile(profileName, profile);
+                            await profileManager.ConfigureProfile(profileName, profile).ConfigureAwait(false);
                         }
                         ,
                         "rm" => async context =>
@@ -112,12 +113,12 @@ public static class Helper
                             {
                                 return;
                             }
-                            await profileManager.DeleteProfile(profileName);
+                            await profileManager.DeleteProfile(profileName).ConfigureAwait(false);
                         }
                         ,
                         "ls" => async context =>
                         {
-                            var profiles = await profileManager.ListProfiles();
+                            var profiles = await profileManager.ListProfiles().ConfigureAwait(false);
                             if (profiles.IsNullOrEmpty())
                             {
                                 context.Console.WriteLine("No profiles found");
@@ -138,7 +139,7 @@ public static class Helper
                                 return;
                             }
 
-                            var profile = await profileManager.GetProfile(profileName);
+                            var profile = await profileManager.GetProfile(profileName).ConfigureAwait(false);
                             if (profile is null)
                             {
                                 context.Console.WriteLine($"The profile [{profileName}] does not exists");
@@ -155,10 +156,10 @@ public static class Helper
         }
     }
 
-    public static async Task<Result<CompileResult>> GetCompilationAssemblyResult(this Compilation compilation,
+    internal static async Task<Result<CompileResult>> GetCompilationAssemblyResult(this Compilation compilation,
         CancellationToken cancellationToken = default)
     {
-        var result = await GetCompilationResult(compilation, cancellationToken);
+        var result = await GetCompilationResult(compilation, cancellationToken).ConfigureAwait(false);
         if (result.EmitResult.Success)
         {
             Guard.NotNull(result.Assembly).Seek(0, SeekOrigin.Begin);
@@ -169,7 +170,9 @@ public static class Helper
         var error = new StringBuilder();
         foreach (var diagnostic in result.EmitResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error))
         {
+#pragma warning disable CA1305
             var message = CSharpDiagnosticFormatter.Instance.Format(diagnostic);
+#pragma warning restore CA1305
             error.AppendLine(message);
         }
 
@@ -223,7 +226,7 @@ public static class Helper
         }
 
         const string frameworkPrefix = "framework:";
-        foreach (var reference in options.References.Where(x => x.StartsWith(frameworkPrefix)))
+        foreach (var reference in options.References.Where(x => x.StartsWith(frameworkPrefix, StringComparison.Ordinal)))
         {
             var frameworkName = reference[frameworkPrefix.Length..].Trim();
             yield return FrameworkReferenceResolver.GetImplicitUsings(frameworkName);
@@ -235,11 +238,11 @@ public static class Helper
         var usings = new HashSet<string>(GetGlobalUsingsInternal(options).Flatten());
         if (options.Usings.IsNullOrEmpty()) return usings;
 
-        foreach (var @using in options.Usings.Where(_ => !_.StartsWith('-')))
+        foreach (var @using in options.Usings.Where(u => !u.StartsWith('-')))
         {
             usings.Add(@using);
         }
-        foreach (var @using in options.Usings.Where(_ => _.StartsWith('-')))
+        foreach (var @using in options.Usings.Where(u => u.StartsWith('-')))
         {
             var usingToRemove = @using[1..].Trim();
             usings.Remove(usingToRemove);
@@ -250,6 +253,7 @@ public static class Helper
 
     public static string GetGlobalUsingsCodeText(ExecOptions options)
     {
+        ArgumentNullException.ThrowIfNull(options);
         var usings = GetGlobalUsings(options);
         if (usings.IsNullOrEmpty()) return string.Empty;
 
@@ -295,6 +299,7 @@ public static class Helper
 
     public static IEnumerable<string> GetDependencyFrameworks(ExecOptions options)
     {
+        ArgumentNullException.ThrowIfNull(options);
         yield return FrameworkReferenceResolver.FrameworkNames.Default;
         if (options.IncludeWebReferences)
         {

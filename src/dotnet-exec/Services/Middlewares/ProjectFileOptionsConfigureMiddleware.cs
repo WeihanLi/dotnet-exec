@@ -5,9 +5,9 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace Exec.Implements.Middlewares;
+namespace Exec.Services.Middlewares;
 
-public sealed class ProjectFileOptionsConfigureMiddleware : IOptionsConfigureMiddleware
+internal sealed class ProjectFileOptionsConfigureMiddleware : IOptionsConfigureMiddleware
 {
     private readonly IUriTransformer _uriTransformer;
     private readonly ILogger _logger;

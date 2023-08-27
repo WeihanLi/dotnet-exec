@@ -11,6 +11,8 @@ namespace ReferenceResolver;
 
 public sealed class ReferenceResolverFactory : IReferenceResolverFactory
 {
+    private static readonly char[] ReferenceSchemaSeparator = new[] { ':' };
+
     private readonly IServiceProvider _serviceProvider;
 
     public ReferenceResolverFactory(IServiceProvider? serviceProvider)
@@ -35,32 +37,36 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
     public async Task<IEnumerable<string>> ResolveReferences(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
     {
         var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
-        return await resolver.Resolve(referenceWithoutSchema, targetFramework, cancellationToken);
+        return await resolver.Resolve(referenceWithoutSchema, targetFramework, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<string>> ResolveAnalyzers(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
     {
         var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
-        return await resolver.ResolveAnalyzers(referenceWithoutSchema, targetFramework, cancellationToken);
+        return await resolver.ResolveAnalyzers(referenceWithoutSchema, targetFramework, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<MetadataReference>> ResolveMetadataReferences(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
     {
         var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
-        return await resolver.ResolveMetadataReferences(referenceWithoutSchema, targetFramework, cancellationToken);
+        return await resolver.ResolveMetadataReferences(referenceWithoutSchema, targetFramework, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(string referenceWithSchema, string targetFramework,
         IAnalyzerAssemblyLoader? analyzerAssemblyLoader = null, CancellationToken cancellationToken = default)
     {
         var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
-        return await resolver.ResolveAnalyzerReferences(referenceWithoutSchema, targetFramework, analyzerAssemblyLoader, cancellationToken);
+        return await resolver.ResolveAnalyzerReferences(referenceWithoutSchema, targetFramework, analyzerAssemblyLoader, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     private (string reference, IReferenceResolver referenceResolver) GetReferenceAndResolver(string fullReference)
     {
         ArgumentNullException.ThrowIfNull(fullReference);
-        var splits = fullReference.Split(new[] { ':' }, 2, StringSplitOptions.TrimEntries);
+        var splits = fullReference.Split(ReferenceSchemaSeparator, 2, StringSplitOptions.TrimEntries);
         var schema = "file";
         if (splits.Length == 2 && ReferenceTypeCache.Value.ContainsKey(splits[0]))
         {

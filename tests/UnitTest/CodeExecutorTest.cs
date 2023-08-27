@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2022-2023 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
-using Exec.Implements;
+using Exec.Services;
 using Microsoft.Extensions.Logging.Abstractions;
 using WeihanLi.Common.Models;
 using Xunit.Abstractions;
@@ -11,7 +11,7 @@ namespace UnitTest;
 public sealed class CodeExecutorTest
 {
     private readonly ITestOutputHelper _outputHelper;
-    private readonly ICodeCompiler _compiler = new SimpleCodeCompiler(
+    private readonly SimpleCodeCompiler _compiler = new(
         RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
 
     public CodeExecutorTest(ITestOutputHelper outputHelper)
@@ -85,7 +85,7 @@ class B
   public static void MainTest() => throw null;
 }
 ")]
-    public async Task StartupTypeTest_Success(string code)
+    public async Task StartupTypeTestSuccess(string code)
     {
         var options = new ExecOptions() { StartupType = "Test.A" };
         var result = await _compiler.Compile(options, code);
@@ -110,7 +110,7 @@ class B
   public static void MainTest() => throw null;
 }
 ")]
-    public async Task StartupTypeTest_Exception(string code)
+    public async Task StartupTypeTestException(string code)
     {
         var options = new ExecOptions() { StartupType = "Test.B" };
         var result = await _compiler.Compile(options, code);

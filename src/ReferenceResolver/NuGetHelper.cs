@@ -31,7 +31,7 @@ public interface INuGetHelper
     Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePreview = false, CancellationToken cancellationToken = default);
     Task<NuGetVersion?> GetLatestPackageVersion(string packageId, bool includePreview = false,
         CancellationToken cancellationToken = default)
-        => GetPackageVersions(packageId, includePreview, cancellationToken).ContinueWith(r => r.Result.OrderByDescending(_ => _).FirstOrDefault(), TaskContinuationOptions.OnlyOnRanToCompletion);
+        => GetPackageVersions(packageId, includePreview, cancellationToken).ContinueWith(r => r.Result.OrderByDescending(v => v).FirstOrDefault(), TaskContinuationOptions.OnlyOnRanToCompletion);
     Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageId, NuGetVersion packageVersion, string targetFramework, CancellationToken cancellationToken = default);
     Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null, CancellationToken cancellationToken = default);
     Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, CancellationToken cancellationToken = default);
@@ -41,7 +41,7 @@ public interface INuGetHelper
         NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default);
 }
 
-public sealed class NuGetHelper : INuGetHelper
+public sealed class NuGetHelper : INuGetHelper, IDisposable
 {
     private const string LoggerCategoryName = "NuGet";
 
@@ -58,7 +58,7 @@ public sealed class NuGetHelper : INuGetHelper
         var dotnetPath = ApplicationHelper.GetDotnetPath();
         var result = CommandExecutor.ExecuteAndCapture(dotnetPath, "nuget locals global-packages -l");
         var folder = string.Empty;
-        if (result.StandardOut.StartsWith("global-packages:"))
+        if (result.StandardOut.StartsWith("global-packages:", StringComparison.CurrentCulture))
         {
             folder = result.StandardOut["global-packages:".Length..].Trim();
         }
@@ -141,8 +141,9 @@ public sealed class NuGetHelper : INuGetHelper
 
     public async Task<IEnumerable<string>> GetPackages(string packagePrefix, bool includePreRelease = true, CancellationToken cancellationToken = default)
     {
-        var resource = await _repository.GetResourceAsync<AutoCompleteResource>(cancellationToken);
-        var result = await resource.IdStartsWith(packagePrefix, includePreRelease, _nugetLogger, cancellationToken);
+        var resource = await _repository.GetResourceAsync<AutoCompleteResource>(cancellationToken).ConfigureAwait(false);
+        var result = await resource.IdStartsWith(packagePrefix, includePreRelease, _nugetLogger, cancellationToken)
+            .ConfigureAwait(false);
         return result;
     }
 
@@ -155,42 +156,48 @@ public sealed class NuGetHelper : INuGetHelper
         }
         var packagerIdentity = new PackageIdentity(packageId, version);
         var pkgDownloadContext = new PackageDownloadContext(_cache);
-        var downloadRes = await _repository.GetResourceAsync<DownloadResource>(cancellationToken);
+        var downloadRes = await _repository.GetResourceAsync<DownloadResource>(cancellationToken).ConfigureAwait(false);
         using var downloadResult = await RetryHelper.TryInvokeAsync(async () =>
             await downloadRes.GetDownloadResourceResultAsync(
                 packagerIdentity,
                 pkgDownloadContext,
                 packagesDirectory ?? _globalPackagesFolder,
                 _nugetLogger,
-                cancellationToken), _ => true, 5);
+                cancellationToken).ConfigureAwait(false), _ => true, 5).ConfigureAwait(false);
         _logger.LogInformation("Package({packageIdentity}) downloaded to {packageDirectory} from {packageSource}", packagerIdentity, packageDir, downloadResult!.PackageSource ?? "NuGet.org");
         return Directory.Exists(packageDir) ? packageDir : null;
     }
 
     public async Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePreview = false, CancellationToken cancellationToken = default)
     {
-        var findPackageByIdResource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
+        var findPackageByIdResource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
+            .ConfigureAwait(false);
         var versions = await findPackageByIdResource.GetAllVersionsAsync(
             packageId,
             _cache,
-            _nugetLogger, cancellationToken);
-        return versions.Where(_ => includePreview || !_.IsPrerelease);
+            _nugetLogger, cancellationToken).ConfigureAwait(false);
+        return versions.Where(v => includePreview || !v.IsPrerelease);
     }
 
     public async Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, CancellationToken cancellationToken = default)
     {
-        var findPackageByIdResource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
+        var findPackageByIdResource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
+            .ConfigureAwait(false);
         return await findPackageByIdResource.CopyNupkgToStreamAsync(
             packageId,
             version,
             stream,
             _cache,
-            _nugetLogger, cancellationToken);
+            _nugetLogger, cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageName, NuGetVersion packageVersion, string targetFramework, CancellationToken cancellationToken = default)
+    public async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageId, NuGetVersion packageVersion, string targetFramework, CancellationToken cancellationToken = default)
     {
-        var dependencyGroupInfo = await GetPackageDependencyGroups(packageName, packageVersion, cancellationToken);
+        ArgumentNullException.ThrowIfNull(packageId);
+        ArgumentNullException.ThrowIfNull(packageVersion);
+        ArgumentNullException.ThrowIfNull(targetFramework);
+        var dependencyGroupInfo = await GetPackageDependencyGroups(packageId, packageVersion, cancellationToken)
+            .ConfigureAwait(false);
         if (dependencyGroupInfo.Count <= 0)
         {
             return new Dictionary<string, NuGetVersion>();
@@ -205,9 +212,9 @@ public sealed class NuGetHelper : INuGetHelper
             foreach (var package in bestDependency.Packages)
             {
                 var packageMinVersion = GetMinVersion(package);
-                if (list.ContainsKey(package.Id))
+                if (list.TryGetValue(package.Id, out var versionValue))
                 {
-                    if (list[package.Id] < packageMinVersion)
+                    if (versionValue < packageMinVersion)
                     {
                         list[package.Id] = packageMinVersion;
                     }
@@ -218,14 +225,15 @@ public sealed class NuGetHelper : INuGetHelper
                 }
 
                 var childrenDependencies =
-                    await GetPackageDependencies(package.Id, packageMinVersion, targetFramework, cancellationToken);
+                    await GetPackageDependencies(package.Id, packageMinVersion, targetFramework, cancellationToken)
+                        .ConfigureAwait(false);
                 if (childrenDependencies is { Count: > 0 })
                 {
                     foreach (var childrenDependency in childrenDependencies)
                     {
-                        if (list.ContainsKey(childrenDependency.Key))
+                        if (list.TryGetValue(childrenDependency.Key, out var value))
                         {
-                            if (list[childrenDependency.Key] < childrenDependency.Value)
+                            if (value < childrenDependency.Value)
                             {
                                 list[childrenDependency.Key] = childrenDependency.Value;
                             }
@@ -241,7 +249,7 @@ public sealed class NuGetHelper : INuGetHelper
             return list;
         }
 
-        throw new InvalidOperationException($"no supported target framework for package({packageName}:{packageVersion})");
+        throw new InvalidOperationException($"no supported target framework for package({packageId}:{packageVersion})");
     }
 
     public async Task<string[]> ResolvePackageReferences(string targetFramework, string packageId,
@@ -249,16 +257,19 @@ public sealed class NuGetHelper : INuGetHelper
     {
         if (version is null)
         {
-            var versions = await GetPackageVersions(packageId, includePreview, cancellationToken);
+            var versions = await GetPackageVersions(packageId, includePreview, cancellationToken)
+                .ConfigureAwait(false);
             // ReSharper disable once SimplifyLinqExpressionUseMinByAndMaxBy
-            version = versions.OrderByDescending(_ => _).FirstOrDefault();
+            version = versions.OrderByDescending(v => v).FirstOrDefault();
             if (version is null)
             {
                 throw new InvalidOperationException($"No package versions found for package {packageId}");
             }
         }
-        var dependencies = await GetPackageDependencies(packageId, version, targetFramework, cancellationToken);
-        var packageReferences = await ResolvePackageInternal(targetFramework, packageId, version, cancellationToken);
+        var dependencies = await GetPackageDependencies(packageId, version, targetFramework, cancellationToken)
+            .ConfigureAwait(false);
+        var packageReferences = await ResolvePackageInternal(targetFramework, packageId, version, cancellationToken)
+            .ConfigureAwait(false);
         if (dependencies.Count <= 0)
         {
             return packageReferences;
@@ -267,12 +278,13 @@ public sealed class NuGetHelper : INuGetHelper
         var references = new ConcurrentBag<string>(packageReferences);
         await Parallel.ForEachAsync(dependencies, cancellationToken, async (dependency, ct) =>
         {
-            var result = await ResolvePackageInternal(targetFramework, dependency.Key, dependency.Value, ct);
+            var result = await ResolvePackageInternal(targetFramework, dependency.Key, dependency.Value, ct)
+                .ConfigureAwait(false);
             foreach (var item in result)
             {
                 references.Add(item);
             }
-        });
+        }).ConfigureAwait(false);
         return references.Distinct().ToArray();
     }
 
@@ -281,16 +293,19 @@ public sealed class NuGetHelper : INuGetHelper
     {
         if (version is null)
         {
-            var versions = await GetPackageVersions(packageId, includePreview, cancellationToken);
+            var versions = await GetPackageVersions(packageId, includePreview, cancellationToken)
+                .ConfigureAwait(false);
             // ReSharper disable once SimplifyLinqExpressionUseMinByAndMaxBy
-            version = versions.OrderByDescending(_ => _).FirstOrDefault();
+            version = versions.OrderByDescending(v => v).FirstOrDefault();
             if (version is null)
             {
                 throw new InvalidOperationException($"No package versions found for package {packageId}");
             }
         }
-        var dependencies = await GetPackageDependencies(packageId, version, targetFramework, cancellationToken);
-        var analyzerReferences = await ResolvePackageAnalyzerInternal(targetFramework, packageId, version, cancellationToken);
+        var dependencies = await GetPackageDependencies(packageId, version, targetFramework, cancellationToken)
+            .ConfigureAwait(false);
+        var analyzerReferences = await ResolvePackageAnalyzerInternal(targetFramework, packageId, version, cancellationToken)
+            .ConfigureAwait(false);
         if (dependencies.Count <= 0)
         {
             return analyzerReferences;
@@ -299,12 +314,13 @@ public sealed class NuGetHelper : INuGetHelper
         var references = new ConcurrentBag<string>(analyzerReferences);
         await Parallel.ForEachAsync(dependencies, cancellationToken, async (dependency, ct) =>
         {
-            var result = await ResolvePackageAnalyzerInternal(targetFramework, dependency.Key, dependency.Value, ct);
+            var result = await ResolvePackageAnalyzerInternal(targetFramework, dependency.Key, dependency.Value, ct)
+                .ConfigureAwait(false);
             foreach (var item in result)
             {
                 references.Add(item);
             }
-        });
+        }).ConfigureAwait(false);
         return references.Distinct().ToArray();
     }
 
@@ -314,18 +330,21 @@ public sealed class NuGetHelper : INuGetHelper
         if (Directory.Exists(packageDir))
         {
             using var packageReader = new PackageFolderReader(packageDir);
-            var dependencies = (await packageReader.GetPackageDependenciesAsync(cancellationToken)).ToArray();
+            var dependencies = (await packageReader.GetPackageDependenciesAsync(cancellationToken)
+                    .ConfigureAwait(false)).ToArray();
             return dependencies;
         }
 
-        var findPkgByIdRes = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
-        var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageName, new NuGetVersion(packageVersion), _cache, _nugetLogger, cancellationToken);
+        var findPkgByIdRes = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
+            .ConfigureAwait(false);
+        var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageName,
+            new NuGetVersion(packageVersion), _cache, _nugetLogger, cancellationToken).ConfigureAwait(false);
         return dependencyInfo.DependencyGroups;
     }
 
     private async Task<string[]> ResolvePackageInternal(string targetFramework, string packageId, NuGetVersion version, CancellationToken cancellationToken)
     {
-        await DownloadPackage(packageId, version, null, cancellationToken);
+        await DownloadPackage(packageId, version, null, cancellationToken).ConfigureAwait(false);
         var packageDir = GetPackageInstalledDir(packageId, version);
         if (!Directory.Exists(packageDir))
         {
@@ -335,7 +354,7 @@ public sealed class NuGetHelper : INuGetHelper
         var nugetFramework = NuGetFramework.Parse(targetFramework);
         using var packageReader = new PackageFolderReader(packageDir);
 
-        var libItems = (await packageReader.GetLibItemsAsync(cancellationToken)).ToArray();
+        var libItems = (await packageReader.GetLibItemsAsync(cancellationToken).ConfigureAwait(false)).ToArray();
         var nearestLib = _frameworkReducer.GetNearest(nugetFramework, libItems.Select(x => x.TargetFramework));
         if (nearestLib != null)
         {
@@ -346,7 +365,7 @@ public sealed class NuGetHelper : INuGetHelper
                 .ToArray();
         }
 
-        var refItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Ref, cancellationToken)).ToArray();
+        var refItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Ref, cancellationToken).ConfigureAwait(false)).ToArray();
         var nearestRef = _frameworkReducer.GetNearest(nugetFramework, refItems.Select(x => x.TargetFramework));
         if (nearestRef != null)
         {
@@ -357,7 +376,7 @@ public sealed class NuGetHelper : INuGetHelper
                  .ToArray();
         }
 
-        var runtimeItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Runtimes, cancellationToken)).FirstOrDefault();
+        var runtimeItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Runtimes, cancellationToken).ConfigureAwait(false)).FirstOrDefault();
         if (runtimeItems != null)
         {
             return runtimeItems
@@ -371,7 +390,7 @@ public sealed class NuGetHelper : INuGetHelper
 
     private async Task<string[]> ResolvePackageAnalyzerInternal(string targetFramework, string packageId, NuGetVersion version, CancellationToken cancellationToken)
     {
-        await DownloadPackage(packageId, version, null, cancellationToken);
+        await DownloadPackage(packageId, version, null, cancellationToken).ConfigureAwait(false);
         var packageDir = GetPackageInstalledDir(packageId, version);
         if (!Directory.Exists(packageDir))
         {
@@ -380,7 +399,8 @@ public sealed class NuGetHelper : INuGetHelper
         //
         var nugetFramework = NuGetFramework.Parse(targetFramework);
         using var packageReader = new PackageFolderReader(packageDir);
-        var analyzerItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Analyzers, cancellationToken)).ToArray();
+        var analyzerItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Analyzers, cancellationToken)
+            .ConfigureAwait(false)).ToArray();
         var nearestRef = _frameworkReducer.GetNearest(nugetFramework, analyzerItems.Select(x => x.TargetFramework));
         if (nearestRef != null)
         {
@@ -403,7 +423,7 @@ public sealed class NuGetHelper : INuGetHelper
         return packageDir;
     }
 
-    private NuGetVersion GetMinVersion(PackageDependency packageDependency)
+    private static NuGetVersion GetMinVersion(PackageDependency packageDependency)
     {
         // need to be optimized since the dependency may do not has a specified min version
         // and the version may be a floating one or exclude 
@@ -433,5 +453,10 @@ public sealed class NuGetHelper : INuGetHelper
             Log(message);
             return Task.CompletedTask;
         }
+    }
+
+    public void Dispose()
+    {
+        _cache.Dispose();
     }
 }

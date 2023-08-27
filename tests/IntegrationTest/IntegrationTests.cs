@@ -324,7 +324,7 @@ public class IntegrationTests
         Assert.True(File.Exists(fullPath));
 
         var fullProjectPath =
-            projectPath.StartsWith("https://")
+            projectPath.StartsWith("https://", StringComparison.Ordinal)
             ? projectPath
             : Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", projectPath)
             ;

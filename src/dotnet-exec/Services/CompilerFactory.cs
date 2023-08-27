@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2022-2023 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
-namespace Exec.Implements;
+using System.Globalization;
+
+namespace Exec.Services;
 
 public sealed class CompilerFactory : ICompilerFactory
 {
@@ -14,7 +16,7 @@ public sealed class CompilerFactory : ICompilerFactory
 
     public ICodeCompiler GetCompiler(string compilerType)
     {
-        return compilerType.ToLower() switch
+        return compilerType.ToLower(CultureInfo.InvariantCulture) switch
         {
             "workspace" => _serviceProvider.GetRequiredService<WorkspaceCodeCompiler>(),
             Helper.Script => _serviceProvider.GetRequiredService<CSharpScriptCompilerExecutor>(),

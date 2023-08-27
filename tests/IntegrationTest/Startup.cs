@@ -8,15 +8,17 @@ using Xunit.DependencyInjection.Logging;
 
 namespace IntegrationTest;
 
-public class Startup
+public static class Startup
 {
-    public void ConfigureServices(IServiceCollection services)
+    private static readonly string[] DebugArgs = new[] { "--debug" };
+
+    public static void ConfigureServices(IServiceCollection services)
     {
-        services.RegisterApplicationServices(new[] { "--debug" });
+        services.RegisterApplicationServices(DebugArgs);
         services.AddLogging(lb => lb.AddXunitOutput(_ => { }));
     }
 
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor outputHelperAccessor, IRefResolver refResolver)
+    public static void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor outputHelperAccessor, IRefResolver refResolver)
     {
         refResolver.DisableCache = true;
     }
