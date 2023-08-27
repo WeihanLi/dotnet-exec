@@ -11,7 +11,7 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
     <PackageVersion Include="NuGet.Protocol" Version="6.7.0" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.59" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.60-preview-20230823-014838" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.7.1" />
