@@ -3,7 +3,6 @@
 
 namespace Exec.Abstractions;
 
-public interface IOptionsConfigureMiddleware
+public interface IOptionsConfigureMiddleware : IAsyncPipelineMiddleware<ExecOptions>
 {
-    Task Execute(ExecOptions options, Func<ExecOptions, Task> next);
 }

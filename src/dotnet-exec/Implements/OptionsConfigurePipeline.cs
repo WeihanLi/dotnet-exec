@@ -11,7 +11,7 @@ public sealed class OptionsConfigurePipeline : IOptionsConfigurePipeline
         var pipelineBuilder = PipelineBuilder.CreateAsync<ExecOptions>();
         foreach (var middleware in middlewares)
         {
-            pipelineBuilder.Use(middleware.Execute);
+            pipelineBuilder.UseMiddleware(middleware);
         }
         _pipeline = pipelineBuilder.Build();
     }

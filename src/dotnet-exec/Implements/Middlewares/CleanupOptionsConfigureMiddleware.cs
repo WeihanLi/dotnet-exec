@@ -5,7 +5,7 @@ namespace Exec.Implements.Middlewares;
 
 public sealed class CleanupOptionsConfigureMiddleware : IOptionsConfigureMiddleware
 {
-    public async Task Execute(ExecOptions options, Func<ExecOptions, Task> next)
+    public async Task InvokeAsync(ExecOptions options, Func<ExecOptions, Task> next)
     {
         await next(options);
         // Cleanup references

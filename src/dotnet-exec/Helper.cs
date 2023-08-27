@@ -232,7 +232,7 @@ public static class Helper
 
     private static HashSet<string> GetGlobalUsings(ExecOptions options)
     {
-        var usings = new HashSet<string>(GetGlobalUsingsInternal(options).SelectMany(_ => _));
+        var usings = new HashSet<string>(GetGlobalUsingsInternal(options).Flatten());
         if (options.Usings.IsNullOrEmpty()) return usings;
 
         foreach (var @using in options.Usings.Where(_ => !_.StartsWith('-')))

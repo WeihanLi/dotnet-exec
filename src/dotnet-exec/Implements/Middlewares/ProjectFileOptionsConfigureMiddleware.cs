@@ -18,7 +18,7 @@ public sealed class ProjectFileOptionsConfigureMiddleware : IOptionsConfigureMid
         _logger = logger;
     }
 
-    public async Task Execute(ExecOptions options, Func<ExecOptions, Task> next)
+    public async Task InvokeAsync(ExecOptions options, Func<ExecOptions, Task> next)
     {
         // exact reference and usings from project file
         if (options.ProjectPath.IsNotNullOrEmpty())
