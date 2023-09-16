@@ -1,7 +1,7 @@
-FROM mcr.microsoft.com/dotnet/runtime:8.0-preview-alpine AS base
+FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine AS base
 LABEL Maintainer="WeihanLi"
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0-preview-alpine AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build-env
 
 WORKDIR /app
 COPY ./src/ ./src/
