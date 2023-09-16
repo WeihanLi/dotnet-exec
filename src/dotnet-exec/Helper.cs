@@ -247,6 +247,10 @@ public static class Helper
             var usingToRemove = @using[1..].Trim();
             usings.Remove(usingToRemove);
             usings.Remove(@using);
+            if (!usingToRemove.StartsWith("global::", StringComparison.OrdinalIgnoreCase))
+            {
+                usings.Remove($"global::{usingToRemove}");
+            }
         }
         return usings;
     }
