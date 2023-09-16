@@ -9,22 +9,13 @@ using WeihanLi.Common.Models;
 
 namespace Exec.Services;
 
-public sealed class CSharpScriptCompilerExecutor : ICodeCompiler, ICodeExecutor
+public sealed class CSharpScriptCompilerExecutor(IRefResolver referenceResolver,
+        IAdditionalScriptContentFetcher scriptContentFetcher, ILogger logger)
+    : ICodeCompiler, ICodeExecutor
 {
-    private readonly IRefResolver _referenceResolver;
-    private readonly IAdditionalScriptContentFetcher _scriptContentFetcher;
-    private readonly ILogger _logger;
-
-    public CSharpScriptCompilerExecutor(IRefResolver referenceResolver, IAdditionalScriptContentFetcher scriptContentFetcher, ILogger logger)
-    {
-        _referenceResolver = referenceResolver;
-        _scriptContentFetcher = scriptContentFetcher;
-        _logger = logger;
-    }
-
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
-        var references = await _referenceResolver.ResolveMetadataReferences(options, false);
+        var references = await referenceResolver.ResolveMetadataReferences(options, false);
         var scriptOptions = ScriptOptions.Default
                 .WithReferences(references)
                 .WithOptimizationLevel(options.Configuration)
@@ -38,7 +29,7 @@ public sealed class CSharpScriptCompilerExecutor : ICodeCompiler, ICodeExecutor
         {
             foreach (var additionalScript in options.AdditionalScripts)
             {
-                var additionalScriptCode = await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken);
+                var additionalScriptCode = await scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken);
                 if (additionalScriptCode.IsSuccess())
                 {
                     script = script.ContinueWith(additionalScriptCode.Data, scriptOptions);
@@ -62,7 +53,7 @@ public sealed class CSharpScriptCompilerExecutor : ICodeCompiler, ICodeExecutor
         }
         if (state.Exception != null)
         {
-            _logger.LogError(state.Exception, "Execute script exception");
+            logger.LogError(state.Exception, "Execute script exception");
         }
         return new Result<int>()
         {

@@ -7,17 +7,10 @@ using WeihanLi.Common.Models;
 
 namespace Exec.Services;
 
-public sealed class SimpleCodeCompiler : ICodeCompiler
+public sealed class SimpleCodeCompiler(IRefResolver referenceResolver,
+        IAdditionalScriptContentFetcher scriptContentFetcher)
+    : ICodeCompiler
 {
-    private readonly IRefResolver _referenceResolver;
-    private readonly IAdditionalScriptContentFetcher _scriptContentFetcher;
-
-    public SimpleCodeCompiler(IRefResolver referenceResolver, IAdditionalScriptContentFetcher scriptContentFetcher)
-    {
-        _referenceResolver = referenceResolver;
-        _scriptContentFetcher = scriptContentFetcher;
-    }
-
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
         ArgumentNullException.ThrowIfNull(options);
@@ -39,7 +32,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
             foreach (var additionalScript in options.AdditionalScripts)
             {
                 var scriptContent =
-                    await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken).ConfigureAwait(false);
+                    await scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(scriptContent.Data))
                     continue;
                 var syntaxTree = CSharpSyntaxTree.ParseText(scriptContent.Data, parseOptions, additionalScript,
@@ -48,7 +41,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
             }
         }
 
-        var metadataReferences = await _referenceResolver.ResolveMetadataReferences(options, true)
+        var metadataReferences = await referenceResolver.ResolveMetadataReferences(options, true)
             .ConfigureAwait(false);
         var compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication,
             optimizationLevel: options.Configuration, nullableContextOptions: NullableContextOptions.Annotations,
@@ -61,7 +54,7 @@ public sealed class SimpleCodeCompiler : ICodeCompiler
         ISourceGenerator[]? generators = null;
         if (options.EnableSourceGeneratorSupport)
         {
-            var analyzerReferences = await _referenceResolver.ResolveAnalyzerReferences(options)
+            var analyzerReferences = await referenceResolver.ResolveAnalyzerReferences(options)
                 .ConfigureAwait(false);
             generators = analyzerReferences
                 .Select(_ => new

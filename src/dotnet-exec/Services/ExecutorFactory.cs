@@ -5,21 +5,14 @@ using System.Globalization;
 
 namespace Exec.Services;
 
-public sealed class ExecutorFactory : IExecutorFactory
+public sealed class ExecutorFactory(IServiceProvider serviceProvider) : IExecutorFactory
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public ExecutorFactory(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
     public ICodeExecutor GetExecutor(string executorType)
     {
         return executorType.ToLower(CultureInfo.InvariantCulture) switch
         {
-            Helper.Script => _serviceProvider.GetRequiredService<CSharpScriptCompilerExecutor>(),
-            _ => _serviceProvider.GetRequiredService<DefaultCodeExecutor>()
+            Helper.Script => serviceProvider.GetRequiredService<CSharpScriptCompilerExecutor>(),
+            _ => serviceProvider.GetRequiredService<DefaultCodeExecutor>()
         };
     }
 }

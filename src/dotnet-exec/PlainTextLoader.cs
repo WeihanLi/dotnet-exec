@@ -6,14 +6,9 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Exec;
 
-public sealed class PlainTextLoader : TextLoader
+public sealed class PlainTextLoader(string text) : TextLoader
 {
-    private readonly TextAndVersion _textAndVersion;
-
-    public PlainTextLoader(string text)
-    {
-        _textAndVersion = TextAndVersion.Create(SourceText.From(text), VersionStamp.Default);
-    }
+    private readonly TextAndVersion _textAndVersion = TextAndVersion.Create(SourceText.From(text), VersionStamp.Default);
 
     public override Task<TextAndVersion> LoadTextAndVersionAsync(LoadTextOptions options, CancellationToken cancellationToken)
     {

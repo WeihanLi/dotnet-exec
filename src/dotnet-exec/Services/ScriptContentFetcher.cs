@@ -5,22 +5,12 @@ using WeihanLi.Common.Models;
 
 namespace Exec.Services;
 
-public class AdditionalScriptContentFetcher : IAdditionalScriptContentFetcher
+public class AdditionalScriptContentFetcher(HttpClient httpClient, IUriTransformer uriTransformer, ILogger logger)
+    : IAdditionalScriptContentFetcher
 {
     // for test only
     internal static IAdditionalScriptContentFetcher InstanceForTest { get; }
         = new AdditionalScriptContentFetcher(new HttpClient(), new UriTransformer(), Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
-
-    private readonly HttpClient _httpClient;
-    private readonly IUriTransformer _uriTransformer;
-    private readonly ILogger _logger;
-
-    public AdditionalScriptContentFetcher(HttpClient httpClient, IUriTransformer uriTransformer, ILogger logger)
-    {
-        _httpClient = httpClient;
-        _uriTransformer = uriTransformer;
-        _logger = logger;
-    }
 
     public async Task<Result<string>> FetchContent(string script, CancellationToken cancellationToken = default)
     {
@@ -29,8 +19,8 @@ public class AdditionalScriptContentFetcher : IAdditionalScriptContentFetcher
         {
             if (Uri.TryCreate(script, UriKind.Absolute, out var uri) && !uri.IsFile)
             {
-                var scriptUrl = _uriTransformer.Transform(script);
-                sourceText = await _httpClient.GetStringAsync(scriptUrl, cancellationToken);
+                var scriptUrl = uriTransformer.Transform(script);
+                sourceText = await httpClient.GetStringAsync(scriptUrl, cancellationToken);
             }
             else
             {
@@ -42,7 +32,7 @@ public class AdditionalScriptContentFetcher : IAdditionalScriptContentFetcher
                 {
                     if (GetType() == typeof(ScriptContentFetcher))
                     {
-                        _logger.LogDebug("The file {ScriptFile} does not exists, treat as {ScriptType}",
+                        logger.LogDebug("The file {ScriptFile} does not exists, treat as {ScriptType}",
                             script, script.EndsWith(';') ? "code" : Helper.Script);
                     }
                     sourceText = script;
@@ -58,13 +48,9 @@ public class AdditionalScriptContentFetcher : IAdditionalScriptContentFetcher
     }
 }
 
-public sealed class ScriptContentFetcher : AdditionalScriptContentFetcher, IScriptContentFetcher
+public sealed class ScriptContentFetcher(HttpClient httpClient, IUriTransformer uriTransformer, ILogger logger)
+    : AdditionalScriptContentFetcher(httpClient, uriTransformer, logger), IScriptContentFetcher
 {
-    public ScriptContentFetcher(HttpClient httpClient, IUriTransformer uriTransformer, ILogger logger)
-         : base(httpClient, uriTransformer, logger)
-    {
-    }
-
     public async Task<Result<string>> FetchContent(ExecOptions options)
     {
         var scriptFile = options.Script;

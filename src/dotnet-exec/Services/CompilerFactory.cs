@@ -5,22 +5,15 @@ using System.Globalization;
 
 namespace Exec.Services;
 
-public sealed class CompilerFactory : ICompilerFactory
+public sealed class CompilerFactory(IServiceProvider serviceProvider) : ICompilerFactory
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public CompilerFactory(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
     public ICodeCompiler GetCompiler(string compilerType)
     {
         return compilerType.ToLower(CultureInfo.InvariantCulture) switch
         {
-            "workspace" => _serviceProvider.GetRequiredService<WorkspaceCodeCompiler>(),
-            Helper.Script => _serviceProvider.GetRequiredService<CSharpScriptCompilerExecutor>(),
-            _ => _serviceProvider.GetRequiredService<SimpleCodeCompiler>()
+            "workspace" => serviceProvider.GetRequiredService<WorkspaceCodeCompiler>(),
+            Helper.Script => serviceProvider.GetRequiredService<CSharpScriptCompilerExecutor>(),
+            _ => serviceProvider.GetRequiredService<SimpleCodeCompiler>()
         };
     }
 }

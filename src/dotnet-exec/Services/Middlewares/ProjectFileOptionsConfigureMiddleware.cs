@@ -7,17 +7,9 @@ using System.Xml.Linq;
 
 namespace Exec.Services.Middlewares;
 
-internal sealed class ProjectFileOptionsConfigureMiddleware : IOptionsConfigureMiddleware
+internal sealed class ProjectFileOptionsConfigureMiddleware
+    (IUriTransformer uriTransformer, ILogger logger) : IOptionsConfigureMiddleware
 {
-    private readonly IUriTransformer _uriTransformer;
-    private readonly ILogger _logger;
-
-    public ProjectFileOptionsConfigureMiddleware(IUriTransformer uriTransformer, ILogger logger)
-    {
-        _uriTransformer = uriTransformer;
-        _logger = logger;
-    }
-
     public async Task InvokeAsync(ExecOptions options, Func<ExecOptions, Task> next)
     {
         // exact reference and usings from project file
@@ -25,7 +17,7 @@ internal sealed class ProjectFileOptionsConfigureMiddleware : IOptionsConfigureM
         {
             var startTime = Stopwatch.GetTimestamp();
             // https://learn.microsoft.com/en-us/dotnet/standard/linq/linq-xml-overview
-            var projectPath = _uriTransformer.Transform(options.ProjectPath);
+            var projectPath = uriTransformer.Transform(options.ProjectPath);
             var element = XElement.Load(projectPath);
             var itemGroups = element.Descendants("ItemGroup").ToArray();
             if (itemGroups.HasValue())
@@ -142,7 +134,7 @@ internal sealed class ProjectFileOptionsConfigureMiddleware : IOptionsConfigureM
                 }
             }
             var duration = ProfilerHelper.GetElapsedTime(startTime);
-            _logger.LogDebug("Exact info from project file elapsed time: {duration}", duration);
+            logger.LogDebug("Exact info from project file elapsed time: {duration}", duration);
         }
         await next(options);
     }

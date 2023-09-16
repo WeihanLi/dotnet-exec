@@ -6,14 +6,9 @@ using WeihanLi.Common.Models;
 
 namespace Exec.Services;
 
-public abstract class CodeExecutor : ICodeExecutor
+public abstract class CodeExecutor(ILogger logger) : ICodeExecutor
 {
-    protected ILogger Logger { get; }
-
-    protected CodeExecutor(ILogger logger)
-    {
-        Logger = logger;
-    }
+    protected ILogger Logger { get; } = logger;
 
     protected async Task<Result<int>> ExecuteAssembly(Assembly assembly, ExecOptions options)
     {
@@ -80,18 +75,11 @@ public abstract class CodeExecutor : ICodeExecutor
     public abstract Task<Result<int>> Execute(CompileResult compileResult, ExecOptions options);
 }
 
-public sealed class DefaultCodeExecutor : CodeExecutor
+public sealed class DefaultCodeExecutor(IRefResolver referenceResolver, ILogger logger) : CodeExecutor(logger)
 {
-    private readonly IRefResolver _referenceResolver;
-
-    public DefaultCodeExecutor(IRefResolver referenceResolver, ILogger logger) : base(logger)
-    {
-        _referenceResolver = referenceResolver;
-    }
-
     public override async Task<Result<int>> Execute(CompileResult compileResult, ExecOptions options)
     {
-        var references = await _referenceResolver.ResolveReferences(options, false);
+        var references = await referenceResolver.ResolveReferences(options, false);
         using var context = new CustomLoadContext(references);
         using var scope = context.EnterContextualReflection();
         var assembly = context.LoadFromStream(compileResult.Stream);

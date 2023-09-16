@@ -7,17 +7,10 @@ using WeihanLi.Common.Models;
 
 namespace Exec.Services;
 
-public sealed class WorkspaceCodeCompiler : ICodeCompiler
+public sealed class WorkspaceCodeCompiler(IRefResolver referenceResolver,
+        IAdditionalScriptContentFetcher scriptContentFetcher)
+    : ICodeCompiler
 {
-    private readonly IRefResolver _referenceResolver;
-    private readonly IAdditionalScriptContentFetcher _scriptContentFetcher;
-
-    public WorkspaceCodeCompiler(IRefResolver referenceResolver, IAdditionalScriptContentFetcher scriptContentFetcher)
-    {
-        _referenceResolver = referenceResolver;
-        _scriptContentFetcher = scriptContentFetcher;
-    }
-
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
         ArgumentNullException.ThrowIfNull(options);
@@ -48,7 +41,7 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
         {
             foreach (var additionalScript in options.AdditionalScripts)
             {
-                var scriptContent = await _scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken).ConfigureAwait(false);
+                var scriptContent = await scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(scriptContent.Data))
                     continue;
 
@@ -58,7 +51,7 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
             }
         }
 
-        var metadataReferences = await _referenceResolver.ResolveMetadataReferences(options, true)
+        var metadataReferences = await referenceResolver.ResolveMetadataReferences(options, true)
             .ConfigureAwait(false);
         projectInfo = projectInfo
                 .WithParseOptions(new CSharpParseOptions(options.GetLanguageVersion()))
@@ -66,7 +59,7 @@ public sealed class WorkspaceCodeCompiler : ICodeCompiler
                 .WithMetadataReferences(metadataReferences);
         if (options.EnableSourceGeneratorSupport)
         {
-            var analyzerReferences = await _referenceResolver.ResolveAnalyzerReferences(options)
+            var analyzerReferences = await referenceResolver.ResolveAnalyzerReferences(options)
                 .ConfigureAwait(false);
             var generatorReferences = analyzerReferences.Select(x => new
             {
