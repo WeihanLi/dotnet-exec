@@ -3,9 +3,7 @@
 
 using Exec.Contracts;
 using System.Diagnostics;
-using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -56,15 +54,7 @@ public sealed class CommandHandler : ICommandHandler
         options.CancellationToken = context.GetCancellationToken();
         if (options.DebugEnabled)
         {
-            _logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, new JsonSerializerOptions()
-            {
-                Converters =
-                {
-                    new JsonStringEnumConverter()
-                },
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                WriteIndented = true,
-            }));
+            _logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, JsonSerializerOptionsHelper.RelaxedJsonWriteIndentedWithEnumStringConverter));
         }
 
         return await Execute(options);

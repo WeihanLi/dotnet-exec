@@ -146,7 +146,7 @@ public static class Helper
                                 return;
                             }
 
-                            var output = JsonSerializer.Serialize(profile, new JsonSerializerOptions() { WriteIndented = true });
+                            var output = JsonSerializer.Serialize(profile, JsonSerializerOptionsHelper.WriteIndented);
                             context.Console.WriteLine(output);
                         }
                     };
@@ -317,3 +317,15 @@ public static class Helper
     }
 }
 
+public static class JsonSerializerOptionsHelper
+{
+    public static JsonSerializerOptions WriteIndented { get; } = new JsonSerializerOptions()
+    {
+        WriteIndented = true
+    };
+
+    public static JsonSerializerOptions RelaxedJsonWriteIndentedWithEnumStringConverter { get; } = new JsonSerializerOptions()
+    {
+        WriteIndented = true
+    };
+}

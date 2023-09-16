@@ -43,7 +43,7 @@ public class AdditionalScriptContentFetcher : IAdditionalScriptContentFetcher
                     if (GetType() == typeof(ScriptContentFetcher))
                     {
                         _logger.LogDebug("The file {ScriptFile} does not exists, treat as {ScriptType}",
-                            script, script.EndsWith(";", StringComparison.Ordinal) ? "code" : Helper.Script);
+                            script, script.EndsWith(';') ? "code" : Helper.Script);
                     }
                     sourceText = script;
                 }
