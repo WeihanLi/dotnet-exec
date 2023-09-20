@@ -12,6 +12,7 @@
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <!-- https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#treatwarningsaserrors -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
   </PropertyGroup>
   <PropertyGroup>
     <!-- https://github.com/dotnet/docs/blob/main/docs/core/project-sdk/msbuild-props.md#code-analysis-properties -->
