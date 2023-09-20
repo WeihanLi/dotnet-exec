@@ -17,10 +17,10 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
     <PackageVersion Include="FluentAssertions" Version="6.6.0" />
     <PackageVersion Include="Moq" Version="4.17.2" />
-    <PackageVersion Include="xunit" Version="2.5.0" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="8.8.2" />
+    <PackageVersion Include="xunit" Version="2.5.1" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="8.9.0" />
     <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="8.1.0" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.1" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
