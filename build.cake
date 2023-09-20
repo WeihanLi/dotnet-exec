@@ -13,7 +13,7 @@ var solutionPath = "./dotnet-exec.sln";
 var srcProjects  = GetFiles("./src/**/*.csproj");
 var testProjects  = GetFiles("./tests/*/*.csproj");
 
-var artifacts = "./artifacts";
+var artifacts = "./artifacts/pkg";
 var branchName = EnvironmentVariable("BUILD_SOURCEBRANCHNAME") ?? "local";
 
 void PrintBuildInfo(ICakeContext context){
