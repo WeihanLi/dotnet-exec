@@ -61,7 +61,7 @@ podman run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
 podman run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
 ```
 
-for full image tag list, see <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
+for the full image tag list, see <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
 
 ## Examples
 
@@ -73,7 +73,7 @@ Execute local file:
 dotnet-exec HttpPathJsonSample.cs
 ```
 
-Execute local file with custom entry point:
+Execute a local file with custom entry point:
 
 ``` sh
 dotnet-exec 'HttpPathJsonSample.cs' --entry MainTest
@@ -91,10 +91,10 @@ Execute raw code:
 dotnet-exec 'Console.WriteLine(1+1);'
 ```
 
-Execute raw script:
+Execute the raw script:
 
 ```sh
-dotnet-exec 'script:1+1'
+dotnet-exec '1 + 1'
 ```
 
 ``` sh
@@ -228,4 +228,4 @@ dotnet-exec 'WebApplication.Create().Run();' --profile web --using '-WeihanLi.Ex
 - [NuGet.Clients](https://github.com/NuGet/NuGet.Client)
 - [System.CommandLine](https://github.com/dotnet/command-line-api)
 - [Thanks JetBrains for the open source Rider license](https://jb.gg/OpenSource?from=dotnet-exec)
-- Thanks the contributors and users for this project
+- Many thanks to the contributors and users for this project
