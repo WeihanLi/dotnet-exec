@@ -8,10 +8,10 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="8.0.0-rc.1.23419.4" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="8.0.0-rc.2.23479.6" />
     <PackageVersion Include="NuGet.Protocol" Version="6.7.0" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.60-preview-20230915-143829" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.60-preview-20231011-104232" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
