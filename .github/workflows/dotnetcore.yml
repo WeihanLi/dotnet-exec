@@ -22,7 +22,7 @@ jobs:
         dotnet-version: |
           6.0.x
           7.0.x
-          8.0.100-rc.1.23455.8
+          8.0.100-rc.2.23502.2
     - name: dotnet info
       run: dotnet --info
     - name: build
@@ -38,7 +38,7 @@ jobs:
         dotnet-version: |
           6.0.x
           7.0.x
-          8.0.100-rc.1.23455.8
+          8.0.100-rc.2.23502.2
     - name: dotnet info
       run: dotnet --info
     - name: build
@@ -54,7 +54,7 @@ jobs:
         dotnet-version: |
           6.0.x
           7.0.x
-          8.0.100-rc.1.23455.8
+          8.0.100-rc.2.23502.2
     - name: dotnet info
       run: dotnet --info
     - name: build
