@@ -55,7 +55,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     private readonly string _globalPackagesFolder;
     private static string GetGlobalPackagesFolder()
     {
-        var dotnetPath = ApplicationHelper.GetDotnetPath();
+        var dotnetPath = Guard.NotNull(ApplicationHelper.GetDotnetPath());
         var result = CommandExecutor.ExecuteAndCapture(dotnetPath, "nuget locals global-packages -l");
         var folder = string.Empty;
         if (result.StandardOut.StartsWith("global-packages:", StringComparison.CurrentCulture))

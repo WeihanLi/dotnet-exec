@@ -10,7 +10,7 @@ public sealed class ProjectReferenceResolver : IReferenceResolver
     public async Task<IEnumerable<string>> Resolve(string reference, string targetFramework,
         CancellationToken cancellationToken = default)
     {
-        var dotnetPath = ApplicationHelper.GetDotnetPath();
+        var dotnetPath = Guard.NotNull(ApplicationHelper.GetDotnetPath());
         var projectPath = GetProjectPath(reference, true);
         var outputDir = Path.Combine(Path.GetDirectoryName(projectPath)!, "bin/build/out");
         var result = await CommandExecutor.ExecuteAndCaptureAsync(dotnetPath, $"build {reference} -o {outputDir}", cancellationToken: cancellationToken)
