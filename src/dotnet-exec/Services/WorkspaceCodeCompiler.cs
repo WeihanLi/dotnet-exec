@@ -35,6 +35,10 @@ public sealed class WorkspaceCodeCompiler(IRefResolver referenceResolver,
         scriptDocument = string.IsNullOrEmpty(code)
             ? scriptDocument.WithFilePath(options.Script)
             : scriptDocument.WithTextLoader(new PlainTextLoader(code));
+        if (scriptDocument.FilePath is null && File.Exists(options.Script))
+        {
+            scriptDocument = scriptDocument.WithFilePath(options.Script);
+        }
 
         var documents = new List<DocumentInfo>() { globalUsingDocument, scriptDocument };
         if (options.AdditionalScripts.HasValue())
@@ -53,8 +57,14 @@ public sealed class WorkspaceCodeCompiler(IRefResolver referenceResolver,
 
         var metadataReferences = await referenceResolver.ResolveMetadataReferences(options, true)
             .ConfigureAwait(false);
+        
+        var parseOptions = new CSharpParseOptions(options.GetLanguageVersion());
+        parseOptions = parseOptions.WithFeatures(new KeyValuePair<string, string>[]
+        {
+            new("InterceptorsPreviewNamespaces", "CSharp12Sample.Generated")
+        });
         projectInfo = projectInfo
-                .WithParseOptions(new CSharpParseOptions(options.GetLanguageVersion()))
+                .WithParseOptions(parseOptions)
                 .WithDocuments(documents)
                 .WithMetadataReferences(metadataReferences);
         if (options.EnableSourceGeneratorSupport)

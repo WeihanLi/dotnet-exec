@@ -372,6 +372,33 @@ public class IntegrationTests
         var result = await _handler.Execute(options);
         Assert.Equal(expectedExitCode, result);
     }
+    
+    [Theory(
+        Skip = "localOnly"
+        )]
+    [InlineData("workspace")]
+    [InlineData("simple")]
+    public async Task InterceptorSample(string compilerType)
+    {
+        var filePath = "InterceptorSample.cs";
+        var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", filePath);
+        Assert.True(File.Exists(fullPath));
+
+        var execOptions = new ExecOptions()
+        {
+            Script = fullPath,
+            IncludeWebReferences = false,
+            IncludeWideReferences = false,
+            CompilerType = compilerType,
+            EnableSourceGeneratorSupport = true
+        };
+
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(execOptions);
+        Assert.Equal(0, result);
+
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
 
     public static IEnumerable<object[]> EntryMethodWithExitCodeTestData()
     {

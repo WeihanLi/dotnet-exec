@@ -16,16 +16,31 @@ public sealed class SimpleCodeCompiler(IRefResolver referenceResolver,
         ArgumentNullException.ThrowIfNull(options);
         var assemblyName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}.dll";
         var parseOptions = new CSharpParseOptions(options.GetLanguageVersion());
+        parseOptions = parseOptions.WithFeatures(new KeyValuePair<string, string>[]
+        {
+            new("InterceptorsPreviewNamespaces", "CSharp12Sample.Generated")
+        });
         var globalUsingCode = Helper.GetGlobalUsingsCodeText(options);
         var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, "__GlobalUsings.cs",
             cancellationToken: options.CancellationToken);
+        var path = "__Script.cs";
+
+        if (File.Exists(options.Script))
+        {
+            path = options.Script;
+            if (string.IsNullOrEmpty(code))
+            {
+                code = await File.ReadAllTextAsync(options.Script, options.CancellationToken).ConfigureAwait(false);
+            }
+        }        
+
         if (string.IsNullOrEmpty(code))
         {
-            code = await File.ReadAllTextAsync(options.Script, options.CancellationToken).ConfigureAwait(false);
+            throw new InvalidOperationException("Code to compile can not be empty");
         }
 
         var scriptSyntaxTree =
-            CSharpSyntaxTree.ParseText(code, parseOptions, "__Script.cs", cancellationToken: options.CancellationToken);
+            CSharpSyntaxTree.ParseText(code, parseOptions, path, cancellationToken: options.CancellationToken);
         var syntaxTreeList = new List<SyntaxTree>() { globalUsingSyntaxTree, scriptSyntaxTree, };
         if (options.AdditionalScripts.HasValue())
         {
@@ -57,12 +72,12 @@ public sealed class SimpleCodeCompiler(IRefResolver referenceResolver,
             var analyzerReferences = await referenceResolver.ResolveAnalyzerReferences(options)
                 .ConfigureAwait(false);
             generators = analyzerReferences
-                .Select(_ => new
+                .Select(r => new
                 {
-                    Generators = _.GetGenerators(LanguageNames.CSharp)
+                    Generators = r.GetGenerators(LanguageNames.CSharp),
                 })
-                .Where(_ => _.Generators.HasValue())
-                .SelectMany(_ => _.Generators)
+                .Where(x => x.Generators.HasValue())
+                .SelectMany(x => x.Generators)
                 .ToArray();
         }
         if (generators.IsNullOrEmpty())
