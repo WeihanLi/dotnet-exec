@@ -45,5 +45,9 @@ public sealed partial class ExecOptions
 
     public bool EnableSourceGeneratorSupport { get; set; }
 
+    public HashSet<string>? ParserPreprocessorSymbolNames { get; set; }
+
+    public KeyValuePair<string, string>[]? ParserFeatures { get; set; }
+
     [JsonIgnore] public CancellationToken CancellationToken { get; set; }
 }
