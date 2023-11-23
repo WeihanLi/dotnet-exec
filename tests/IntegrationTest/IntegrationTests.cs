@@ -372,7 +372,7 @@ public class IntegrationTests
         var result = await _handler.Execute(options);
         Assert.Equal(expectedExitCode, result);
     }
-    
+
     [Theory(
         Skip = "localOnly"
         )]

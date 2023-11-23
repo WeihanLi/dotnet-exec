@@ -26,7 +26,7 @@ public static class DependencyInjectionExtensions
     }
 
     public static IServiceCollection TryAddReferenceResolver<TResolver>(this IServiceCollection serviceCollection)
-        where TResolver : class, IReferenceResolver 
+        where TResolver : class, IReferenceResolver
     {
         ArgumentNullException.ThrowIfNull(serviceCollection);
         serviceCollection.TryAddSingleton<TResolver>();

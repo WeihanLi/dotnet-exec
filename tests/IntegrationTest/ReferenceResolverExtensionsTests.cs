@@ -14,13 +14,13 @@ public class ReferenceResolverExtensionsTests(IServiceProvider serviceProvider)
         var resolvers = serviceProvider.GetServices<IReferenceResolver>().ToArray();
         Assert.Equal(5, resolvers.Length);
     }
-    
+
     [Fact]
     public void NuGetHelperRegisterTest()
     {
         Assert.NotNull(serviceProvider.GetService<INuGetHelper>());
     }
-    
+
     [Fact]
     public void ResolverFactoryRegisterTest()
     {

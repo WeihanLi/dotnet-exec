@@ -75,7 +75,7 @@ public sealed partial class ExecOptions
 
     private static readonly Option<string[]> ParserSymbolNamesOption =
         new(new[] { "--compile-symbol" }, "Preprocessor symbol names for parsing and compiling");
-    
+
     private static readonly Option<string[]> ParserFeaturesOption =
         new(new[] { "--compile-feature" }, "Features for parsing and compiling");
 
@@ -111,8 +111,8 @@ public sealed partial class ExecOptions
         EnableSourceGeneratorSupport = parseResult.HasOption(EnableSourceGeneratorOption);
         ParserPreprocessorSymbolNames = new(parseResult.GetValueForOption(ParserSymbolNamesOption) ?? Array.Empty<string>());
         ParserFeatures = parseResult.GetValueForOption(ParserFeaturesOption)?
-            .Select(x=> x.Split('='))
-            .Select(x=> new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))
+            .Select(x => x.Split('='))
+            .Select(x => new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))
             .ToArray();
 
         if (configProfile != null)

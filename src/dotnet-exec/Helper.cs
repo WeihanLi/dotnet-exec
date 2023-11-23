@@ -63,7 +63,7 @@ public static class Helper
         services.RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<CleanupOptionsConfigureMiddleware>()
             ;
-        
+
         services.RegisterParseOptionsMiddleware<PreprocessorSymbolNamesParserOptionsMiddleware>()
             .RegisterParseOptionsMiddleware<FeaturesParserOptionsMiddleware>()
             ;
@@ -82,14 +82,14 @@ public static class Helper
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsConfigureMiddleware, TMiddleware>());
         return services;
     }
-    
+
     private static IServiceCollection RegisterParseOptionsMiddleware<TMiddleware>
         (this IServiceCollection services) where TMiddleware : class, IParseOptionsMiddleware
     {
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IParseOptionsMiddleware, TMiddleware>());
         return services;
     }
-    
+
     private static IServiceCollection RegisterCompilationOptionsMiddleware<TMiddleware>
         (this IServiceCollection services) where TMiddleware : class, ICompilationOptionsMiddleware
     {

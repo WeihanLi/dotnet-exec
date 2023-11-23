@@ -9,8 +9,8 @@ public sealed class PreprocessorSymbolNamesParserOptionsMiddleware : IParseOptio
 {
     public CSharpParseOptions Configure(CSharpParseOptions parseOptions, ExecOptions options)
     {
-        return options.ParserPreprocessorSymbolNames.IsNullOrEmpty() 
-            ? parseOptions 
+        return options.ParserPreprocessorSymbolNames.IsNullOrEmpty()
+            ? parseOptions
             : parseOptions.WithPreprocessorSymbols(options.ParserPreprocessorSymbolNames)
             ;
     }

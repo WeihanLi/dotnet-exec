@@ -62,7 +62,7 @@ public sealed class WorkspaceCodeCompiler(
 
         var parseOptions = new CSharpParseOptions(options.GetLanguageVersion());
         parseOptions = parseOptionsPipeline.Configure(parseOptions, options);
-        
+
         var metadataReferences = await referenceResolver.ResolveMetadataReferences(options, true)
             .ConfigureAwait(false);
         projectInfo = projectInfo
@@ -92,7 +92,7 @@ public sealed class WorkspaceCodeCompiler(
             optimizationLevel: options.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
         compilationOptions.EnableReferencesSupersedeLowerVersions();
         compilationOptions = compilationOptionsPipeline.Configure(compilationOptions, options);
-        
+
         var compilation = await project
             .WithCompilationOptions(compilationOptions)
             .GetCompilationAsync().ConfigureAwait(false);
