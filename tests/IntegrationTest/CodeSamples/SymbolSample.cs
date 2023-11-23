@@ -5,5 +5,6 @@
 Console.WriteLine("Symbol hit");
 return 0;
 #else
+Console.WriteLine("Symbol not hit");
 return 1;
 #endif
