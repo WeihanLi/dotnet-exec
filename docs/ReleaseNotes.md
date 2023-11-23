@@ -1,8 +1,11 @@
 # Release Notes
 
-## 0.15.0 (To be released)
+## 0.15.0
 
-- Upgrade the Roslyn packages to support c# 12 preview features
+- .NET 8 Release, C# 12 features support
+- Add `--compile-symbol` for compile preprocessor symbol names
+- Add `--compile-feature` for compile features, for interceptor support
+- Rename `--compiler-type` value `default` to `simple`
 
 ## 0.14.0
 
