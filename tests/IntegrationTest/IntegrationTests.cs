@@ -390,7 +390,11 @@ public class IntegrationTests
             IncludeWebReferences = false,
             IncludeWideReferences = false,
             CompilerType = compilerType,
-            EnableSourceGeneratorSupport = true
+            EnableSourceGeneratorSupport = true,
+            ParserFeatures = new KeyValuePair<string, string>[]
+            {
+                new("InterceptorsPreviewNamespaces", "CSharp12Sample.Generated")
+            }
         };
 
         using var output = await ConsoleOutput.CaptureAsync();

@@ -19,12 +19,9 @@ public sealed class SimpleCodeCompiler(
     {
         ArgumentNullException.ThrowIfNull(options);
         var assemblyName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}.dll";
-        var parseOptions = new CSharpParseOptions(options.GetLanguageVersion());
-        parseOptions = parseOptions.WithFeatures(new KeyValuePair<string, string>[]
-        {
-            new("InterceptorsPreviewNamespaces", "CSharp12Sample.Generated")
-        });
         var globalUsingCode = Helper.GetGlobalUsingsCodeText(options);
+        var parseOptions = new CSharpParseOptions(options.GetLanguageVersion());
+        parseOptions = parseOptionsPipeline.Configure(parseOptions, options);
         var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, "__GlobalUsings.cs",
             cancellationToken: options.CancellationToken);
         var path = "__Script.cs";
@@ -42,8 +39,7 @@ public sealed class SimpleCodeCompiler(
         {
             throw new InvalidOperationException("Code to compile can not be empty");
         }
-
-        parseOptions = parseOptionsPipeline.Configure(parseOptions, options);
+        
         var scriptSyntaxTree =
             CSharpSyntaxTree.ParseText(code, parseOptions, path, cancellationToken: options.CancellationToken);
         var syntaxTreeList = new List<SyntaxTree>() { globalUsingSyntaxTree, scriptSyntaxTree, };
@@ -67,8 +63,8 @@ public sealed class SimpleCodeCompiler(
             optimizationLevel: options.Configuration, nullableContextOptions: NullableContextOptions.Annotations,
             allowUnsafe: true);
         compilationOptions.EnableReferencesSupersedeLowerVersions();
-
         compilationOptions = compilationOptionsPipeline.Configure(compilationOptions, options);
+        
         var compilation = CSharpCompilation.Create(assemblyName, syntaxTreeList, metadataReferences, compilationOptions);
         Guard.NotNull(compilation);
 

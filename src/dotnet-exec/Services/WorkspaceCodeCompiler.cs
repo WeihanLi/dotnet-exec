@@ -64,12 +64,6 @@ public sealed class WorkspaceCodeCompiler(
         
         var metadataReferences = await referenceResolver.ResolveMetadataReferences(options, true)
             .ConfigureAwait(false);
-        
-        var parseOptions = new CSharpParseOptions(options.GetLanguageVersion());
-        parseOptions = parseOptions.WithFeatures(new KeyValuePair<string, string>[]
-        {
-            new("InterceptorsPreviewNamespaces", "CSharp12Sample.Generated")
-        });
         projectInfo = projectInfo
                 .WithParseOptions(parseOptions)
                 .WithDocuments(documents)
