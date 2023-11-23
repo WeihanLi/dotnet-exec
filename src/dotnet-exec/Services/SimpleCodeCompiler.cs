@@ -7,8 +7,12 @@ using WeihanLi.Common.Models;
 
 namespace Exec.Services;
 
-public sealed class SimpleCodeCompiler(IRefResolver referenceResolver,
-        IAdditionalScriptContentFetcher scriptContentFetcher)
+public sealed class SimpleCodeCompiler(
+        IRefResolver referenceResolver,
+        IAdditionalScriptContentFetcher scriptContentFetcher,
+        IParseOptionsPipeline parseOptionsPipeline,
+        ICompilationOptionsPipeline compilationOptionsPipeline
+        )
     : ICodeCompiler
 {
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
@@ -24,6 +28,7 @@ public sealed class SimpleCodeCompiler(IRefResolver referenceResolver,
             code = await File.ReadAllTextAsync(options.Script, options.CancellationToken).ConfigureAwait(false);
         }
 
+        parseOptions = parseOptionsPipeline.Configure(parseOptions, options);
         var scriptSyntaxTree =
             CSharpSyntaxTree.ParseText(code, parseOptions, "__Script.cs", cancellationToken: options.CancellationToken);
         var syntaxTreeList = new List<SyntaxTree>() { globalUsingSyntaxTree, scriptSyntaxTree, };
@@ -48,6 +53,7 @@ public sealed class SimpleCodeCompiler(IRefResolver referenceResolver,
             allowUnsafe: true);
         compilationOptions.EnableReferencesSupersedeLowerVersions();
 
+        compilationOptions = compilationOptionsPipeline.Configure(compilationOptions, options);
         var compilation = CSharpCompilation.Create(assemblyName, syntaxTreeList, metadataReferences, compilationOptions);
         Guard.NotNull(compilation);
 

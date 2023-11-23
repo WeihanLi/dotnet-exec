@@ -7,8 +7,12 @@ using WeihanLi.Common.Models;
 
 namespace Exec.Services;
 
-public sealed class WorkspaceCodeCompiler(IRefResolver referenceResolver,
-        IAdditionalScriptContentFetcher scriptContentFetcher)
+public sealed class WorkspaceCodeCompiler(
+        IRefResolver referenceResolver,
+        IAdditionalScriptContentFetcher scriptContentFetcher,
+        IParseOptionsPipeline parseOptionsPipeline,
+        ICompilationOptionsPipeline compilationOptionsPipeline
+        )
     : ICodeCompiler
 {
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
@@ -51,10 +55,13 @@ public sealed class WorkspaceCodeCompiler(IRefResolver referenceResolver,
             }
         }
 
+        var parseOptions = new CSharpParseOptions(options.GetLanguageVersion());
+        parseOptions = parseOptionsPipeline.Configure(parseOptions, options);
+        
         var metadataReferences = await referenceResolver.ResolveMetadataReferences(options, true)
             .ConfigureAwait(false);
         projectInfo = projectInfo
-                .WithParseOptions(new CSharpParseOptions(options.GetLanguageVersion()))
+                .WithParseOptions(parseOptions)
                 .WithDocuments(documents)
                 .WithMetadataReferences(metadataReferences);
         if (options.EnableSourceGeneratorSupport)
@@ -79,7 +86,8 @@ public sealed class WorkspaceCodeCompiler(IRefResolver referenceResolver,
         var compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication,
             optimizationLevel: options.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
         compilationOptions.EnableReferencesSupersedeLowerVersions();
-
+        compilationOptions = compilationOptionsPipeline.Configure(compilationOptions, options);
+        
         var compilation = await project
             .WithCompilationOptions(compilationOptions)
             .GetCompilationAsync().ConfigureAwait(false);
