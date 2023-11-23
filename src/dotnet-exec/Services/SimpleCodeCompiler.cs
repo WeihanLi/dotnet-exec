@@ -28,12 +28,12 @@ public sealed class SimpleCodeCompiler(
 
         if (File.Exists(options.Script))
         {
-            path = options.Script;
+            path = Path.GetFullPath(options.Script);
             if (string.IsNullOrEmpty(code))
             {
                 code = await File.ReadAllTextAsync(options.Script, options.CancellationToken).ConfigureAwait(false);
             }
-        }        
+        }
 
         if (string.IsNullOrEmpty(code))
         {

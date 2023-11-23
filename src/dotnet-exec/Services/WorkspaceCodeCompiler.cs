@@ -41,6 +41,7 @@ public sealed class WorkspaceCodeCompiler(
             : scriptDocument.WithTextLoader(new PlainTextLoader(code));
         if (scriptDocument.FilePath is null && File.Exists(options.Script))
         {
+            var fullPath = Path.GetFullPath(options.Script);
             scriptDocument = scriptDocument.WithFilePath(options.Script);
         }
 
