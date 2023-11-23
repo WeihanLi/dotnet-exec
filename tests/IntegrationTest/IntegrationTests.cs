@@ -435,6 +435,56 @@ public class IntegrationTests
         _outputHelper.WriteLine(output.StandardOutput);
     }
 
+    [Theory]
+    [InlineData("workspace")]
+    [InlineData("simple")]
+    public async Task PreprocessorSymbolNameSample(string compilerType)
+    {
+        var symbolName = "SYMBOL_TEST";
+        var filePath = "SymbolSample.cs";
+        var relativePath = Path.Combine("CodeSamples", filePath);
+        Assert.True(File.Exists(relativePath));
+
+        var execOptions = new ExecOptions()
+        {
+            Script = relativePath,
+            IncludeWebReferences = false,
+            IncludeWideReferences = false,
+            CompilerType = compilerType,
+            ParserPreprocessorSymbolNames = new(){ symbolName }
+        };
+
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(execOptions);
+        Assert.Equal(0, result);
+
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
+    
+    [Theory]
+    [InlineData("workspace")]
+    [InlineData("simple")]
+    public async Task PreprocessorSymbolNameNotDefinedSample(string compilerType)
+    {
+        var filePath = "SymbolSample.cs";
+        var relativePath = Path.Combine("CodeSamples", filePath);
+        Assert.True(File.Exists(relativePath));
+
+        var execOptions = new ExecOptions()
+        {
+            Script = relativePath,
+            IncludeWebReferences = false,
+            IncludeWideReferences = false,
+            CompilerType = compilerType
+        };
+
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(execOptions);
+        Assert.NotEqual(0, result);
+
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
+    
     public static IEnumerable<object[]> EntryMethodWithExitCodeTestData()
     {
         yield return new object[] { 0, @"Console.WriteLine(""Amazing dotnet"");" };
