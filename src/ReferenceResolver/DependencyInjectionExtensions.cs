@@ -13,12 +13,24 @@ public static class DependencyInjectionExtensions
         ArgumentNullException.ThrowIfNull(serviceCollection);
         serviceCollection.AddLogging();
         serviceCollection.TryAddSingleton<INuGetHelper, NuGetHelper>();
-        serviceCollection.TryAddSingleton<IReferenceResolver, FileReferenceResolver>();
-        serviceCollection.TryAddSingleton<IReferenceResolver, FolderReferenceResolver>();
-        serviceCollection.TryAddSingleton<IReferenceResolver, FrameworkReferenceResolver>();
-        serviceCollection.TryAddSingleton<IReferenceResolver, NuGetReferenceResolver>();
-        serviceCollection.TryAddSingleton<IReferenceResolver, ProjectReferenceResolver>();
+        // reference resolver
         serviceCollection.TryAddSingleton<IReferenceResolverFactory, ReferenceResolverFactory>();
+        serviceCollection
+            .TryAddReferenceResolver<FileReferenceResolver>()
+            .TryAddReferenceResolver<FolderReferenceResolver>()
+            .TryAddReferenceResolver<FrameworkReferenceResolver>()
+            .TryAddReferenceResolver<NuGetReferenceResolver>()
+            .TryAddReferenceResolver<ProjectReferenceResolver>()
+            ;
+        return serviceCollection;
+    }
+
+    public static IServiceCollection TryAddReferenceResolver<TResolver>(this IServiceCollection serviceCollection)
+        where TResolver : class, IReferenceResolver 
+    {
+        ArgumentNullException.ThrowIfNull(serviceCollection);
+        serviceCollection.TryAddSingleton<TResolver>();
+        serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<IReferenceResolver, TResolver>());
         return serviceCollection;
     }
 }

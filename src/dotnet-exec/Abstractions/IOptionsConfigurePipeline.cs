@@ -7,3 +7,7 @@ public interface IOptionsConfigurePipeline
 {
     Task Execute(ExecOptions options);
 }
+
+public interface IOptionsConfigureMiddleware : IAsyncPipelineMiddleware<ExecOptions>
+{
+}

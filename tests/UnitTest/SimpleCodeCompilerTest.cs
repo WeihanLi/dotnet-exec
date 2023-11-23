@@ -7,21 +7,16 @@ using Xunit.Abstractions;
 
 namespace UnitTest;
 
-public sealed class SimpleCodeCompilerTest
+public sealed class SimpleCodeCompilerTest(ITestOutputHelper outputHelper)
 {
-    private readonly ITestOutputHelper _outputHelper;
-
-    public SimpleCodeCompilerTest(ITestOutputHelper outputHelper)
-    {
-        _outputHelper = outputHelper;
-    }
+    private readonly ITestOutputHelper _outputHelper = outputHelper;
 
     [Theory]
     [InlineData(@"public static void Main(int num){}")]
     [InlineData(@"public class Program{ public static int Main(){} }")]
     public async Task CompileFailed(string code)
     {
-        var compiler = new SimpleCodeCompiler(RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
+        var compiler = GetSimpleCodeCompiler();
         var result = await compiler.Compile(new ExecOptions(), code);
         Assert.Equal(ResultStatus.ProcessFail, result.Status);
         _outputHelper.WriteLine(result.Msg);
@@ -39,7 +34,7 @@ Console.WriteLine(args.StringJoin(Environment.NewLine));
 ")]
     public async Task CompileWithCustomEntryPoint(string code)
     {
-        var compiler = new SimpleCodeCompiler(RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
+        var compiler = GetSimpleCodeCompiler();
         var result = await compiler.Compile(new ExecOptions(), code);
         _outputHelper.WriteLine($"{result.Msg}");
         Assert.Equal(ResultStatus.Success, result.Status);
@@ -68,7 +63,7 @@ Console.WriteLine("""
 """")]
     public async Task CompileWithPreviewLanguageFeature(string code)
     {
-        var compiler = new SimpleCodeCompiler(RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
+        var compiler = GetSimpleCodeCompiler();
         var result = await compiler.Compile(new ExecOptions()
         {
             EnablePreviewFeatures = true
@@ -76,4 +71,9 @@ Console.WriteLine("""
         _outputHelper.WriteLine($"{result.Msg}");
         Assert.Equal(ResultStatus.Success, result.Status);
     }
+
+    public static SimpleCodeCompiler GetSimpleCodeCompiler() =>
+        new(RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest,
+            new ParseOptionsPipeline(Enumerable.Empty<IParseOptionsMiddleware>()),
+            new CompilationOptionsPipeline(Enumerable.Empty<ICompilationOptionsMiddleware>()));
 }

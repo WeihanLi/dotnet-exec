@@ -63,8 +63,16 @@ public static class Helper
         services.RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<CleanupOptionsConfigureMiddleware>()
             ;
+        
+        services.RegisterParseOptionsMiddleware<PreprocessorSymbolNamesParserOptionsMiddleware>()
+            .RegisterParseOptionsMiddleware<FeaturesParserOptionsMiddleware>()
+            ;
         // register options configure pipeline
         services.AddSingleton<IOptionsConfigurePipeline, OptionsConfigurePipeline>();
+        // register parse options configure pipeline
+        services.AddSingleton<IParseOptionsPipeline, ParseOptionsPipeline>();
+        // register compilation options configure pipeline
+        services.AddSingleton<ICompilationOptionsPipeline, CompilationOptionsPipeline>();
         return services;
     }
 
@@ -72,6 +80,20 @@ public static class Helper
         (this IServiceCollection services) where TMiddleware : class, IOptionsConfigureMiddleware
     {
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsConfigureMiddleware, TMiddleware>());
+        return services;
+    }
+    
+    private static IServiceCollection RegisterParseOptionsMiddleware<TMiddleware>
+        (this IServiceCollection services) where TMiddleware : class, IParseOptionsMiddleware
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IParseOptionsMiddleware, TMiddleware>());
+        return services;
+    }
+    
+    private static IServiceCollection RegisterCompilationOptionsMiddleware<TMiddleware>
+        (this IServiceCollection services) where TMiddleware : class, ICompilationOptionsMiddleware
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<ICompilationOptionsMiddleware, TMiddleware>());
         return services;
     }
 
@@ -323,12 +345,7 @@ public static class Helper
 
 public static class JsonSerializerOptionsHelper
 {
-    public static JsonSerializerOptions WriteIndented { get; } = new JsonSerializerOptions()
-    {
-        WriteIndented = true
-    };
-
-    public static JsonSerializerOptions RelaxedJsonWriteIndentedWithEnumStringConverter { get; } = new JsonSerializerOptions()
+    public static JsonSerializerOptions WriteIndented { get; } = new()
     {
         WriteIndented = true
     };
