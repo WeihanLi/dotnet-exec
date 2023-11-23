@@ -29,6 +29,7 @@ public static class DependencyInjectionExtensions
         where TResolver : class, IReferenceResolver 
     {
         ArgumentNullException.ThrowIfNull(serviceCollection);
+        serviceCollection.TryAddSingleton<TResolver>();
         serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<IReferenceResolver, TResolver>());
         return serviceCollection;
     }
