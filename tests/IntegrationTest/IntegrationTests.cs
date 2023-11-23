@@ -404,7 +404,6 @@ public class IntegrationTests
         _outputHelper.WriteLine(output.StandardOutput);
     }
 
-
     [Theory(
         Skip = "localOnly"
     )]

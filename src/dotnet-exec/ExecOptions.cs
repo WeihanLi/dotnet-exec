@@ -31,7 +31,7 @@ public sealed partial class ExecOptions
     public bool EnablePreviewFeatures { get; set; }
     public OptimizationLevel Configuration { get; set; }
 
-    public string CompilerType { get; set; } = "default";
+    public string CompilerType { get; set; } = "workspace";
 
     public string ExecutorType { get; set; } = "default";
 

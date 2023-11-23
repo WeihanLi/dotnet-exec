@@ -12,7 +12,7 @@ namespace Exec;
 public sealed partial class ExecOptions
 {
     internal const string DefaultTargetFramework =
-#if NET8_0
+#if NET8_0_OR_GREATER
       "net8.0"
 #elif NET7_0
       "net7.0"
@@ -81,7 +81,7 @@ public sealed partial class ExecOptions
 
     static ExecOptions()
     {
-        CompilerTypeOption.FromAmong(Helper.Default, "workspace");
+        CompilerTypeOption.FromAmong("simple", "workspace");
         ExecutorTypeOption.FromAmong(Helper.Default);
         TargetFrameworkOption.FromAmong(Helper.SupportedFrameworks.ToArray());
     }
