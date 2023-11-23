@@ -42,7 +42,7 @@ public sealed class WorkspaceCodeCompiler(
         if (scriptDocument.FilePath is null && File.Exists(options.Script))
         {
             var fullPath = Path.GetFullPath(options.Script);
-            scriptDocument = scriptDocument.WithFilePath(options.Script);
+            scriptDocument = scriptDocument.WithFilePath(fullPath);
         }
 
         var documents = new List<DocumentInfo>() { globalUsingDocument, scriptDocument };

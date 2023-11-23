@@ -404,6 +404,38 @@ public class IntegrationTests
         _outputHelper.WriteLine(output.StandardOutput);
     }
 
+
+    [Theory(
+        Skip = "localOnly"
+    )]
+    [InlineData("workspace")]
+    [InlineData("simple")]
+    public async Task InterceptorRelativeCodePathSample(string compilerType)
+    {
+        var filePath = "InterceptorSample.cs";
+        var relativePath = Path.Combine("CodeSamples", filePath);
+        Assert.True(File.Exists(relativePath));
+
+        var execOptions = new ExecOptions()
+        {
+            Script = relativePath,
+            IncludeWebReferences = false,
+            IncludeWideReferences = false,
+            CompilerType = compilerType,
+            EnableSourceGeneratorSupport = true,
+            ParserFeatures = new KeyValuePair<string, string>[]
+            {
+                new("InterceptorsPreviewNamespaces", "CSharp12Sample.Generated")
+            }
+        };
+
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(execOptions);
+        Assert.Equal(0, result);
+
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
+
     public static IEnumerable<object[]> EntryMethodWithExitCodeTestData()
     {
         yield return new object[] { 0, @"Console.WriteLine(""Amazing dotnet"");" };
