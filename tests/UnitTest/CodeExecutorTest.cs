@@ -11,8 +11,7 @@ namespace UnitTest;
 public sealed class CodeExecutorTest
 {
     private readonly ITestOutputHelper _outputHelper;
-    private readonly SimpleCodeCompiler _compiler = new(
-        RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest);
+    private readonly SimpleCodeCompiler _compiler = SimpleCodeCompilerTest.GetSimpleCodeCompiler();
 
     public CodeExecutorTest(ITestOutputHelper outputHelper)
     {
@@ -112,7 +111,7 @@ class B
 ")]
     public async Task StartupTypeTestException(string code)
     {
-        var options = new ExecOptions() { StartupType = "Test.B" };
+        var options = new ExecOptions { StartupType = "Test.B" };
         var result = await _compiler.Compile(options, code);
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
