@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using NuGet.Versioning;
 using ReferenceResolver;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -37,10 +38,13 @@ public static class Helper
 
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services, string[] args)
     {
+        var isDebugMode = args.Contains("--debug");
+        if (isDebugMode && !Debugger.IsAttached && args.Contains("--attach")) Debugger.Launch();
+        
         services.AddLogging(builder =>
         {
             builder.AddConsole();
-            builder.SetMinimumLevel(args.Contains("--debug") ? LogLevel.Debug : LogLevel.Error);
+            builder.SetMinimumLevel(isDebugMode ? LogLevel.Debug : LogLevel.Error);
         });
         services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>()
             .CreateLogger(ApplicationName));
