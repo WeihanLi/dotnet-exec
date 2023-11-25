@@ -2,9 +2,10 @@
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 using Microsoft.Extensions.Logging.Abstractions;
+using NuGet.Versioning;
 using ReferenceResolver;
 
-namespace UnitTest;
+namespace IntegrationTest;
 public class NuGetHelperTest
 {
     private static readonly NuGetHelper NugetHelper = new(NullLoggerFactory.Instance);
@@ -47,5 +48,23 @@ public class NuGetHelperTest
         var packages = (await NugetHelper.GetPackages(prefix)).ToArray();
         Assert.NotEmpty(packages);
         Assert.Contains("WeihanLi.Common", packages);
+    }
+
+    [Fact]
+    public async Task GetLatestVersion()
+    {
+        var packageId = "WeihanLi.Common";
+        var result = await NugetHelper.GetLatestPackageVersion(packageId);
+        Assert.NotNull(result);
+        Assert.True(result >= new NuGetVersion("1.0.60"));
+    }
+
+    [Fact]
+    public async Task GetVersions()
+    {
+        var packageId = "WeihanLi.Common";
+        var result = (await NugetHelper.GetPackageVersions(packageId)).ToArray();
+        Assert.NotNull(result);
+        Assert.NotEmpty(result);
     }
 }

@@ -21,31 +21,36 @@ namespace ReferenceResolver;
 public interface INuGetHelper
 {
     Task<string[]> ResolvePackageReferences(string targetFramework, string packageId,
-        NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default);
+        NuGetVersion? version, bool includePrerelease, CancellationToken cancellationToken = default);
 
-    Task<string[]> ResolvePackageReferences(NuGetReference nugetReference, string targetFramework, bool includePreview,
+    Task<string[]> ResolvePackageReferences(NuGetReference nugetReference, string targetFramework, bool includePrerelease,
         CancellationToken cancellationToken = default)
         => ResolvePackageReferences(targetFramework, nugetReference.PackageId, nugetReference.PackageVersion,
-            includePreview, cancellationToken);
+            includePrerelease, cancellationToken);
 
-    Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePreview = false, CancellationToken cancellationToken = default);
-    Task<NuGetVersion?> GetLatestPackageVersion(string packageId, bool includePreview = false,
-        CancellationToken cancellationToken = default)
-        => GetPackageVersions(packageId, includePreview, cancellationToken).ContinueWith(r => r.Result.OrderByDescending(v => v).FirstOrDefault(), TaskContinuationOptions.OnlyOnRanToCompletion);
+    Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePrerelease = false, CancellationToken cancellationToken = default);
+    Task<NuGetVersion?> GetLatestPackageVersion(string packageId, bool includePrerelease = false,
+        CancellationToken cancellationToken = default);
     Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageId, NuGetVersion packageVersion, string targetFramework, CancellationToken cancellationToken = default);
     Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null, CancellationToken cancellationToken = default);
     Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, CancellationToken cancellationToken = default);
     Task<IEnumerable<string>> GetPackages(string packagePrefix, bool includePreRelease = true, CancellationToken cancellationToken = default);
 
     Task<string[]> ResolvePackageAnalyzerReferences(string targetFramework, string packageId,
-        NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default);
+        NuGetVersion? version, bool includePrerelease, CancellationToken cancellationToken = default);
 }
 
 public sealed class NuGetHelper : INuGetHelper, IDisposable
 {
     private const string LoggerCategoryName = "NuGet";
 
-    private readonly SourceCacheContext _cache = new();
+    private readonly SourceCacheContext _sourceCacheContext = new()
+    {
+        IgnoreFailedSources = true,
+        DirectDownload = true,
+        NoCache = true
+    };
+    
     private readonly SourceRepository _repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
     private readonly FrameworkReducer _frameworkReducer = new();
 
@@ -155,7 +160,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
             return packageDir;
         }
         var packagerIdentity = new PackageIdentity(packageId, version);
-        var pkgDownloadContext = new PackageDownloadContext(_cache);
+        var pkgDownloadContext = new PackageDownloadContext(_sourceCacheContext);
         var downloadRes = await _repository.GetResourceAsync<DownloadResource>(cancellationToken).ConfigureAwait(false);
         using var downloadResult = await RetryHelper.TryInvokeAsync(async () =>
             await downloadRes.GetDownloadResourceResultAsync(
@@ -168,15 +173,25 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         return Directory.Exists(packageDir) ? packageDir : null;
     }
 
-    public async Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePreview = false, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePrerelease = false, CancellationToken cancellationToken = default)
     {
         var findPackageByIdResource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
             .ConfigureAwait(false);
         var versions = await findPackageByIdResource.GetAllVersionsAsync(
             packageId,
-            _cache,
+            _sourceCacheContext,
             _nugetLogger, cancellationToken).ConfigureAwait(false);
-        return versions.Where(v => includePreview || !v.IsPrerelease);
+        return versions.Where(v => includePrerelease || !v.IsPrerelease);
+    }
+
+    public async Task<NuGetVersion?> GetLatestPackageVersion(string packageId, bool includePrerelease = false,
+        CancellationToken cancellationToken = default)
+    {
+        var packageMetadataResource = await _repository.GetResourceAsync<PackageMetadataResource>(cancellationToken).ConfigureAwait(false);
+        var metaDataResult = await packageMetadataResource.GetMetadataAsync(packageId, includePrerelease, 
+            false, _sourceCacheContext, _nugetLogger, cancellationToken).ConfigureAwait(false);
+        var metaData = metaDataResult?.MaxBy(x => x.Identity.Version);
+        return metaData?.Identity.Version;
     }
 
     public async Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, CancellationToken cancellationToken = default)
@@ -187,7 +202,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
             packageId,
             version,
             stream,
-            _cache,
+            _sourceCacheContext,
             _nugetLogger, cancellationToken).ConfigureAwait(false);
     }
 
@@ -253,11 +268,11 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     }
 
     public async Task<string[]> ResolvePackageReferences(string targetFramework, string packageId,
-        NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default)
+        NuGetVersion? version, bool includePrerelease, CancellationToken cancellationToken = default)
     {
         if (version is null)
         {
-            var versions = await GetPackageVersions(packageId, includePreview, cancellationToken)
+            var versions = await GetPackageVersions(packageId, includePrerelease, cancellationToken)
                 .ConfigureAwait(false);
             // ReSharper disable once SimplifyLinqExpressionUseMinByAndMaxBy
             version = versions.OrderByDescending(v => v).FirstOrDefault();
@@ -289,11 +304,11 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     }
 
     public async Task<string[]> ResolvePackageAnalyzerReferences(string targetFramework, string packageId,
-        NuGetVersion? version, bool includePreview, CancellationToken cancellationToken = default)
+        NuGetVersion? version, bool includePrerelease, CancellationToken cancellationToken = default)
     {
         if (version is null)
         {
-            var versions = await GetPackageVersions(packageId, includePreview, cancellationToken)
+            var versions = await GetPackageVersions(packageId, includePrerelease, cancellationToken)
                 .ConfigureAwait(false);
             // ReSharper disable once SimplifyLinqExpressionUseMinByAndMaxBy
             version = versions.OrderByDescending(v => v).FirstOrDefault();
@@ -338,7 +353,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         var findPkgByIdRes = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
             .ConfigureAwait(false);
         var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageName,
-            new NuGetVersion(packageVersion), _cache, _nugetLogger, cancellationToken).ConfigureAwait(false);
+            new NuGetVersion(packageVersion), _sourceCacheContext, _nugetLogger, cancellationToken).ConfigureAwait(false);
         return dependencyInfo.DependencyGroups;
     }
 
@@ -457,6 +472,6 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
     public void Dispose()
     {
-        _cache.Dispose();
+        _sourceCacheContext.Dispose();
     }
 }
