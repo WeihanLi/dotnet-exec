@@ -14,7 +14,7 @@ public class NuGetReferenceResolverTest
     [Fact]
     public async Task Resolve()
     {
-        var references = await _resolver.Resolve("WeihanLi.Common,1.0.59", ExecOptions.DefaultTargetFramework);
+        var references = await _resolver.Resolve("WeihanLi.Common,1.0.60", ExecOptions.DefaultTargetFramework);
         Assert.NotNull(references);
         Assert.NotEmpty(references);
     }
@@ -22,7 +22,7 @@ public class NuGetReferenceResolverTest
     [Fact]
     public async Task ResolveReference()
     {
-        IReference reference = new NuGetReference("WeihanLi.Common", "1.0.59");
+        IReference reference = new NuGetReference("WeihanLi.Common", "1.0.60");
         Assert.Equal($"nuget: {reference.Reference}", reference.ReferenceWithSchema);
 
         var references = await _resolver.Resolve(reference.Reference, ExecOptions.DefaultTargetFramework);

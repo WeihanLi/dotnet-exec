@@ -17,5 +17,6 @@ public class ReferenceResolverFactoryTest
         var resolver = new ReferenceResolverFactory(null)
             .GetResolver(referenceType);
         Assert.NotNull(resolver);
+        Assert.Equal(referenceType, resolver.ReferenceType);
     }
 }

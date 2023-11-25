@@ -7,7 +7,7 @@ using ReferenceResolver;
 namespace UnitTest;
 public class NuGetHelperTest
 {
-    private static readonly NuGetHelper NugetHelper = new NuGetHelper(NullLoggerFactory.Instance);
+    private static readonly NuGetHelper NugetHelper = new(NullLoggerFactory.Instance);
 
     [Theory]
     [InlineData("Microsoft.NETCore.App.Ref")]
@@ -17,8 +17,7 @@ public class NuGetHelperTest
         Assert.NotNull(versions);
         Assert.DoesNotContain(versions, v => v.OriginalVersion?.Contains("preview") == true);
     }
-
-    // framework reference test
+    
     [Theory]
     [InlineData("Microsoft.NETCore.App.Ref")]
     public async Task GetPackageVersionsIncludePreview(string packageId)
@@ -39,5 +38,14 @@ public class NuGetHelperTest
             );
         Assert.NotEmpty(references);
         Assert.True(references.Length > 3);
+    }
+
+    [Fact]
+    public async Task GetPackages()
+    {
+        var prefix = "WeihanLi";
+        var packages = (await NugetHelper.GetPackages(prefix)).ToArray();
+        Assert.NotEmpty(packages);
+        Assert.Contains("WeihanLi.Common", packages);
     }
 }
