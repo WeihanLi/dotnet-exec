@@ -290,7 +290,7 @@ public static class Helper
         var usingText = usings.Select(x => $"global using {x};").StringJoin(Environment.NewLine);
         return options.EnablePreviewFeatures ?
             // Generate System.Runtime.Versioning.RequiresPreviewFeatures attribute on assembly level
-            $"{usingText}{Environment.NewLine}[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]"
+            $"[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]{Environment.NewLine}{usingText}"
             : usingText
             ;
     }

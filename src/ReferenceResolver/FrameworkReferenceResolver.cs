@@ -100,6 +100,8 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
 
     public static string[] GetImplicitUsings(string frameworkName)
     {
+        if (string.IsNullOrEmpty(frameworkName)) return Array.Empty<string>();
+
         FrameworkAliases.TryGetValue(frameworkName, out var framework);
         framework ??= frameworkName;
         // https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview#implicit-using-directives
