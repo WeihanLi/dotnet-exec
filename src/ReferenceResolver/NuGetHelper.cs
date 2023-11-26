@@ -45,9 +45,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
     private readonly SourceCacheContext _sourceCacheContext = new()
     {
-        IgnoreFailedSources = true,
-        DirectDownload = true,
-        NoCache = true
+        IgnoreFailedSources = true
     };
     
     private readonly SourceRepository _repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
@@ -164,50 +162,22 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     public async Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null, CancellationToken cancellationToken = default)
     {
         var packageDir = GetPackageInstalledDir(packageId, version, packagesDirectory);
-        var nupkgPath = Path.Combine(packageDir, $"{packageId}.{version.ToNormalizedString()}.nupkg");
         if (Directory.Exists(packageDir))
         {
             return packageDir;
         }
-
-        if (!Directory.Exists(packageDir)) 
-            Directory.CreateDirectory(packageDir);
-        
-        try
-        {
-            await using var packageStream = File.Create(nupkgPath);
-            var resource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken).ConfigureAwait(false);
-            await RetryHelper.TryInvokeAsync(
-                async () => await resource.CopyNupkgToStreamAsync(
-                    packageId,
-                    version,
-                    packageStream,
-                    _sourceCacheContext,
-                    _nugetLogger,
-                    cancellationToken)
-                , _ => true, 5).ConfigureAwait(false);
-            _logger.LogInformation("Package({packageId}, {version}) downloaded to {packagePath}", packageId, version, nupkgPath);
-        
-            PackageExtractionContext packageExtractionContext = new(
-                PackageSaveMode.Defaultv3,
-                XmlDocFileSaveMode.None,
-                null,
-                _nugetLogger);
-            await PackageExtractor.ExtractPackageAsync(
-                packageDir,
-                packageStream,
-                new NuGetPackagePathResolver(packageDir),
-                packageExtractionContext,
-                cancellationToken);
-
-            return packageDir;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Download package error");
-            Directory.Delete(packageDir);
-            return null;
-        }
+        var packagerIdentity = new PackageIdentity(packageId, version);
+        var pkgDownloadContext = new PackageDownloadContext(_sourceCacheContext);
+        var downloadRes = await _repository.GetResourceAsync<DownloadResource>(cancellationToken).ConfigureAwait(false);
+        using var downloadResult = await RetryHelper.TryInvokeAsync(async () =>
+            await downloadRes.GetDownloadResourceResultAsync(
+                packagerIdentity,
+                pkgDownloadContext,
+                packagesDirectory ?? _globalPackagesFolder,
+                _nugetLogger,
+                cancellationToken).ConfigureAwait(false), _ => true, 5).ConfigureAwait(false);
+        _logger.LogInformation("Package({packageIdentity}) downloaded to {packageDirectory} from {packageSource}", packagerIdentity, packageDir, downloadResult!.PackageSource ?? "NuGet.org");
+        return Directory.Exists(packageDir) ? packageDir : null;
     }
 
     public async Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePrerelease = false, CancellationToken cancellationToken = default)
@@ -510,23 +480,5 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     public void Dispose()
     {
         _sourceCacheContext.Dispose();
-    }
-}
-
-// Extract NuGet package content directly to the specified target directory (instead of creating subdir)
-file sealed class NuGetPackagePathResolver : PackagePathResolver
-{
-    public NuGetPackagePathResolver(string rootDirectory) : base(rootDirectory, false)
-    {
-    }
-
-    public override string GetPackageDirectoryName(PackageIdentity packageIdentity)
-    {
-        return string.Empty;
-    }
-
-    public override string GetPackageFileName(PackageIdentity packageIdentity)
-    {
-        return packageIdentity.Id + PackagingCoreConstants.NupkgExtension;
     }
 }
