@@ -165,25 +165,40 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     {
         var packageDir = GetPackageInstalledDir(packageId, version, packagesDirectory);
         var nupkgPath = Path.Combine(packageDir, $"{packageId}.{version.ToNormalizedString()}.nupkg");
-        if (File.Exists(packageDir))
+        if (Directory.Exists(packageDir))
         {
-            return nupkgPath;
+            return packageDir;
         }
-        Directory.CreateDirectory(packageDir);
-        
-        using FileStream destinationStream = File.Create(nupkgPath);
+
+        if (!Directory.Exists(packageDir)) 
+            Directory.CreateDirectory(packageDir);
+
+        await using var packageStream = File.Create(nupkgPath);
         var resource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken).ConfigureAwait(false);
         await RetryHelper.TryInvokeAsync(
             async () => await resource.CopyNupkgToStreamAsync(
-                packageId.ToString(),
+                packageId,
                 version,
-                destinationStream,
+                packageStream,
                 _sourceCacheContext,
                 _nugetLogger,
                 cancellationToken)
             , _ => true, 5).ConfigureAwait(false);
         _logger.LogInformation("Package({packageId}, {version}) downloaded to {packagePath}", packageId, version, nupkgPath);
-        return File.Exists(nupkgPath) ? nupkgPath : null;
+        
+        PackageExtractionContext packageExtractionContext = new(
+            PackageSaveMode.Defaultv3,
+            XmlDocFileSaveMode.None,
+            null,
+            _nugetLogger);
+        await PackageExtractor.ExtractPackageAsync(
+            packageDir,
+            packageStream,
+            new NuGetPackagePathResolver(packageDir),
+            packageExtractionContext,
+            cancellationToken);
+        
+        return Directory.Exists(packageDir) ? packageDir : null;
     }
 
     public async Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePrerelease = false, CancellationToken cancellationToken = default)
@@ -486,5 +501,23 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     public void Dispose()
     {
         _sourceCacheContext.Dispose();
+    }
+}
+
+// Extract NuGet package content directly to the specified target directory (instead of creating subdir)
+file sealed class NuGetPackagePathResolver : PackagePathResolver
+{
+    public NuGetPackagePathResolver(string rootDirectory) : base(rootDirectory, false)
+    {
+    }
+
+    public override string GetPackageDirectoryName(PackageIdentity packageIdentity)
+    {
+        return string.Empty;
+    }
+
+    public override string GetPackageFileName(PackageIdentity packageIdentity)
+    {
+        return packageIdentity.Id + PackagingCoreConstants.NupkgExtension;
     }
 }
