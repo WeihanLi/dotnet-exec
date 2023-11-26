@@ -13,7 +13,10 @@ ReferenceResolver | [![ReferenceResolver](https://img.shields.io/nuget/v/Referen
 
 ## Intro
 
-`dotnet-exec` is a command-line tool for executing C# program without a project file, and you can have your custom entry point other than `Main` method
+`dotnet-exec` is a command-line tool for executing C# program without a project file, and you can have your custom entry point other than the `Main` method
+
+Slides:
+- [Makes C# more simple -- .NET Conf China 2022](https://github.com/WeihanLi/dotnet-exec/blob/main/docs/slides/dotnet-conf-china-2022-dotnet-exec_makes_csharp_more_simple.pdf)
 
 ## Install/Update
 
