@@ -182,7 +182,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
                 _nugetLogger,
                 cancellationToken)
             , _ => true, 5).ConfigureAwait(false);
-        _logger.LogInformation("Package({packageId, version}) downloaded to {packageDirectory}", packageId, version, packageDir);
+        _logger.LogInformation("Package({packageId}, {version}) downloaded to {packagePath}", packageId, version, nupkgPath);
         return File.Exists(nupkgPath) ? nupkgPath : null;
     }
 
