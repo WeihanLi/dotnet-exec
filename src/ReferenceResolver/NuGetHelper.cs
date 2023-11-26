@@ -45,7 +45,9 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
     private readonly SourceCacheContext _sourceCacheContext = new()
     {
-        IgnoreFailedSources = true
+        IgnoreFailedSources = true,
+        DirectDownload = true,
+        NoCache = true
     };
     
     private readonly SourceRepository _repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
@@ -162,22 +164,26 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     public async Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null, CancellationToken cancellationToken = default)
     {
         var packageDir = GetPackageInstalledDir(packageId, version, packagesDirectory);
-        if (Directory.Exists(packageDir))
+        var nupkgPath = Path.Combine(packageDir, $"{packageId}.{version.ToNormalizedString()}.nupkg");
+        if (File.Exists(packageDir))
         {
-            return packageDir;
+            return nupkgPath;
         }
-        var packagerIdentity = new PackageIdentity(packageId, version);
-        var pkgDownloadContext = new PackageDownloadContext(_sourceCacheContext);
-        var downloadRes = await _repository.GetResourceAsync<DownloadResource>(cancellationToken).ConfigureAwait(false);
-        using var downloadResult = await RetryHelper.TryInvokeAsync(async () =>
-            await downloadRes.GetDownloadResourceResultAsync(
-                packagerIdentity,
-                pkgDownloadContext,
-                packagesDirectory ?? _globalPackagesFolder,
+        Directory.CreateDirectory(packageDir);
+        
+        using FileStream destinationStream = File.Create(nupkgPath);
+        var resource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken).ConfigureAwait(false);
+        await RetryHelper.TryInvokeAsync(
+            async () => await resource.CopyNupkgToStreamAsync(
+                packageId.ToString(),
+                version,
+                destinationStream,
+                _sourceCacheContext,
                 _nugetLogger,
-                cancellationToken).ConfigureAwait(false), _ => true, 5).ConfigureAwait(false);
-        _logger.LogInformation("Package({packageIdentity}) downloaded to {packageDirectory} from {packageSource}", packagerIdentity, packageDir, downloadResult!.PackageSource ?? "NuGet.org");
-        return Directory.Exists(packageDir) ? packageDir : null;
+                cancellationToken)
+            , _ => true, 5).ConfigureAwait(false);
+        _logger.LogInformation("Package({packageId, version}) downloaded to {packageDirectory}", packageId, version, packageDir);
+        return File.Exists(nupkgPath) ? nupkgPath : null;
     }
 
     public async Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePrerelease = false, CancellationToken cancellationToken = default)
