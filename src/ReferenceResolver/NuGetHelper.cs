@@ -58,15 +58,24 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     private readonly ILogger _logger;
 
     private readonly string _globalPackagesFolder;
-    private static string GetGlobalPackagesFolder()
+    private string GetGlobalPackagesFolder()
     {
         var dotnetPath = Guard.NotNull(ApplicationHelper.GetDotnetPath());
-        var result = CommandExecutor.ExecuteAndCapture(dotnetPath, "nuget locals global-packages -l");
+        
         var folder = string.Empty;
-        if (result.StandardOut.StartsWith("global-packages:", StringComparison.CurrentCulture))
+        try
         {
-            folder = result.StandardOut["global-packages:".Length..].Trim();
+            var result = CommandExecutor.ExecuteAndCapture(dotnetPath, "nuget locals global-packages -l");
+            if (result.ExitCode is 0 && result.StandardOut.StartsWith("global-packages:", StringComparison.Ordinal))
+            {
+                folder = result.StandardOut["global-packages:".Length..].Trim();
+            }
         }
+        catch
+        {
+            // ignore command error
+        }
+        
         if (folder.IsNullOrEmpty())
         {
             var packagesFolder = Environment.GetEnvironmentVariable("NUGET_PACKAGES");
@@ -74,7 +83,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
             if (string.IsNullOrEmpty(packagesFolder))
             {
                 // Nuget globalPackagesFolder resolve
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if (OperatingSystem.IsWindows())
                 {
                     var defaultConfigFilePath =
                         $@"{Environment.GetEnvironmentVariable("APPDATA")}\NuGet\NuGet.Config";
@@ -133,6 +142,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
             folder = packagesFolder;
         }
+        _logger.LogInformation("GlobalPackagesFolder: {PackagesFolder}", folder);
         return folder;
     }
 
