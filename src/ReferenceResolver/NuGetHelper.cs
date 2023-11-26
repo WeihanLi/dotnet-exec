@@ -45,8 +45,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
     private readonly SourceCacheContext _sourceCacheContext = new()
     {
-        IgnoreFailedSources = true,
-        NoCache = true
+        IgnoreFailedSources = true
     };
     
     private readonly SourceRepository _repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
