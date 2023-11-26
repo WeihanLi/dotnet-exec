@@ -172,33 +172,42 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
         if (!Directory.Exists(packageDir)) 
             Directory.CreateDirectory(packageDir);
-
-        await using var packageStream = File.Create(nupkgPath);
-        var resource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken).ConfigureAwait(false);
-        await RetryHelper.TryInvokeAsync(
-            async () => await resource.CopyNupkgToStreamAsync(
-                packageId,
-                version,
+        
+        try
+        {
+            await using var packageStream = File.Create(nupkgPath);
+            var resource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken).ConfigureAwait(false);
+            await RetryHelper.TryInvokeAsync(
+                async () => await resource.CopyNupkgToStreamAsync(
+                    packageId,
+                    version,
+                    packageStream,
+                    _sourceCacheContext,
+                    _nugetLogger,
+                    cancellationToken)
+                , _ => true, 5).ConfigureAwait(false);
+            _logger.LogInformation("Package({packageId}, {version}) downloaded to {packagePath}", packageId, version, nupkgPath);
+        
+            PackageExtractionContext packageExtractionContext = new(
+                PackageSaveMode.Defaultv3,
+                XmlDocFileSaveMode.None,
+                null,
+                _nugetLogger);
+            await PackageExtractor.ExtractPackageAsync(
+                packageDir,
                 packageStream,
-                _sourceCacheContext,
-                _nugetLogger,
-                cancellationToken)
-            , _ => true, 5).ConfigureAwait(false);
-        _logger.LogInformation("Package({packageId}, {version}) downloaded to {packagePath}", packageId, version, nupkgPath);
-        
-        PackageExtractionContext packageExtractionContext = new(
-            PackageSaveMode.Defaultv3,
-            XmlDocFileSaveMode.None,
-            null,
-            _nugetLogger);
-        await PackageExtractor.ExtractPackageAsync(
-            packageDir,
-            packageStream,
-            new NuGetPackagePathResolver(packageDir),
-            packageExtractionContext,
-            cancellationToken);
-        
-        return Directory.Exists(packageDir) ? packageDir : null;
+                new NuGetPackagePathResolver(packageDir),
+                packageExtractionContext,
+                cancellationToken);
+
+            return packageDir;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Download package error");
+            Directory.Delete(packageDir);
+            return null;
+        }
     }
 
     public async Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePrerelease = false, CancellationToken cancellationToken = default)
