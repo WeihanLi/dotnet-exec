@@ -285,12 +285,11 @@ public static class Helper
     {
         ArgumentNullException.ThrowIfNull(options);
         var usings = GetGlobalUsings(options);
-        if (usings.IsNullOrEmpty()) return string.Empty;
-
-        var usingText = usings.Select(x => $"global using {x};").StringJoin(Environment.NewLine);
+        var usingText = UsingManager.GetGlobalUsingsCodeText(usings);
         return options.EnablePreviewFeatures ?
             // Generate System.Runtime.Versioning.RequiresPreviewFeatures attribute on assembly level
-            $"[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]{Environment.NewLine}{usingText}"
+            // global usings have to be placed before anything else
+            $"{usingText}{Environment.NewLine}[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]"
             : usingText
             ;
     }

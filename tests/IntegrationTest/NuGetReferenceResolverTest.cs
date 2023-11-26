@@ -4,7 +4,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using ReferenceResolver;
 
-namespace UnitTest;
+namespace IntegrationTest;
 
 public class NuGetReferenceResolverTest
 {
