@@ -46,7 +46,6 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     private readonly SourceCacheContext _sourceCacheContext = new()
     {
         IgnoreFailedSources = true,
-        DirectDownload = true,
         NoCache = true
     };
     
