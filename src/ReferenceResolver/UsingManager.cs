@@ -26,7 +26,7 @@ public static class UsingManager
                 var usingToRemove = @using[1..].Trim();
                 usingList.Remove(usingToRemove);
                 usingList.Remove(@using);
-                if (!usingToRemove.StartsWith("global::", StringComparison.OrdinalIgnoreCase))
+                if (!usingToRemove.StartsWith("global::", StringComparison.Ordinal))
                 {
                     usingList.Remove($"global::{usingToRemove}");
                 }
