@@ -41,7 +41,7 @@ public interface INuGetHelper
 
 public sealed class NuGetHelper : INuGetHelper, IDisposable
 {
-    private const string LoggerCategoryName = "NuGet";
+    private const string LoggerCategoryName = "NuGetClient";
 
     private readonly SourceCacheContext _sourceCacheContext = new()
     {
@@ -51,7 +51,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     private readonly SourceRepository _repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
     private readonly FrameworkReducer _frameworkReducer = new();
 
-    private readonly NugetLoggingAdapter _nugetLogger;
+    private readonly LoggerBase _nugetLogger;
     private readonly ILogger _logger;
 
     private readonly string _globalPackagesFolder;
@@ -145,9 +145,8 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
     public NuGetHelper(ILoggerFactory loggerFactory)
     {
-        _nugetLogger = new NugetLoggingAdapter(loggerFactory);
         _logger = loggerFactory.CreateLogger(LoggerCategoryName);
-
+        _nugetLogger = new NugetLoggingAdapter(_logger);
         _globalPackagesFolder = GetGlobalPackagesFolder();
     }
 
@@ -222,7 +221,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
             .ConfigureAwait(false);
         if (dependencyGroupInfo.Count <= 0)
         {
-            return new Dictionary<string, NuGetVersion>();
+            return [];
         }
 
         var nugetFramework = NuGetFramework.Parse(targetFramework);
@@ -452,33 +451,30 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         return (packageDependency.VersionRange.MinVersion ?? packageDependency.VersionRange.MaxVersion)!;
     }
 
-    private sealed class NugetLoggingAdapter(ILoggerFactory loggerFactory) : LoggerBase
-    {
-        private readonly ILogger _logger = loggerFactory.CreateLogger("NuGetClient");
+    public void Dispose() => _sourceCacheContext.Dispose();
+}
 
-        public override void Log(ILogMessage message)
+file sealed class NugetLoggingAdapter(ILogger logger) : LoggerBase
+{
+    private readonly ILogger _logger = logger;
+
+    public override void Log(ILogMessage message)
+    {
+        var logLevel = message.Level switch
         {
-            var logLevel = message.Level switch
-            {
-                NuGetLogLevel.Debug => LogLevel.Debug,
-                NuGetLogLevel.Information => LogLevel.Information,
-                NuGetLogLevel.Warning => LogLevel.Warning,
-                NuGetLogLevel.Error => LogLevel.Error,
-                NuGetLogLevel.Verbose => LogLevel.Trace,
-                NuGetLogLevel.Minimal => LogLevel.Warning,
-                _ => LogLevel.None
-            };
-            _logger.Log(logLevel, message.FormatWithCode());
-        }
-        public override Task LogAsync(ILogMessage message)
-        {
-            Log(message);
-            return Task.CompletedTask;
-        }
+            NuGetLogLevel.Debug => LogLevel.Debug,
+            NuGetLogLevel.Information => LogLevel.Information,
+            NuGetLogLevel.Warning => LogLevel.Warning,
+            NuGetLogLevel.Error => LogLevel.Error,
+            NuGetLogLevel.Verbose => LogLevel.Trace,
+            NuGetLogLevel.Minimal => LogLevel.Warning,
+            _ => LogLevel.None
+        };
+        _logger.Log(logLevel, message.FormatWithCode());
     }
-
-    public void Dispose()
+    public override Task LogAsync(ILogMessage message)
     {
-        _sourceCacheContext.Dispose();
+        Log(message);
+        return Task.CompletedTask;
     }
 }
