@@ -18,14 +18,19 @@ public sealed class ConfigProfileManager : IConfigProfileManager
 
     static ConfigProfileManager()
     {
-        if (!Directory.Exists(ProfileFolder))
+        try
         {
-            Directory.CreateDirectory(ProfileFolder);
+            EnsureFolderCreated(ProfileFolder);
+        }
+        catch (Exception e)
+        {
+            InvokeHelper.OnInvokeException?.Invoke(e);
         }
     }
 
     public async Task ConfigureProfile(string profileName, ConfigProfile profile)
     {
+        EnsureFolderCreated(ProfileFolder);
         var profilePath = Path.Combine(ProfileFolder, $"{profileName}.json");
         await using var fs = File.OpenWrite(profilePath);
         await JsonSerializer.SerializeAsync(fs, profile, JsonSerializerOptionsHelper.WriteIndented);
@@ -33,6 +38,8 @@ public sealed class ConfigProfileManager : IConfigProfileManager
 
     public Task DeleteProfile(string profileName)
     {
+        if (!Directory.Exists(ProfileFolder)) return Task.CompletedTask;
+        
         var profilePath = Path.Combine(ProfileFolder, $"{profileName}.json");
         if (File.Exists(profilePath))
         {
@@ -43,6 +50,8 @@ public sealed class ConfigProfileManager : IConfigProfileManager
 
     public async Task<ConfigProfile?> GetProfile(string profileName)
     {
+        if (!Directory.Exists(ProfileFolder)) return null;
+        
         var profilePath = Path.Combine(ProfileFolder, $"{profileName}.json");
         if (!File.Exists(profilePath)) return null;
 
@@ -52,10 +61,31 @@ public sealed class ConfigProfileManager : IConfigProfileManager
 
     public Task<string[]> ListProfiles()
     {
+        if (!Directory.Exists(ProfileFolder)) return Task.FromResult(Array.Empty<string>());
+        
         var profileNames = Directory.GetFiles(ProfileFolder, "*.json")
             .Select(Path.GetFileNameWithoutExtension)
             .WhereNotNull()
             .ToArray();
         return profileNames.WrapTask();
+    }
+
+    private static void EnsureFolderCreated(string folderPath)
+    {
+        if (Directory.Exists(folderPath))
+            return;
+        
+        var parent = Directory.GetParent(folderPath);
+        if (parent is null || parent.Exists) return;
+
+        // ensure path created
+        EnsureFolderCreated(parent.FullName);
+        
+        // create parent folder if necessary
+        if (!Directory.Exists(parent.FullName))
+            Directory.CreateDirectory(parent.FullName);
+        
+        // create path
+        Directory.CreateDirectory(folderPath);
     }
 }
