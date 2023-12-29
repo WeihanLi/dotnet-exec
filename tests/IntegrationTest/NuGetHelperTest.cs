@@ -25,9 +25,10 @@ public class NuGetHelperTest
     {
         var versions = await NugetHelper.GetPackageVersions(packageId, true).ToArrayAsync();
         Assert.NotNull(versions);
+        Assert.NotEmpty(versions);
         Assert.Contains(versions, v => v.Version.OriginalVersion?.Contains("preview") == true);
-        var maxVersion = versions.Max();
-        Assert.NotNull(maxVersion);
+        var maxVersion = versions.MaxBy(x=> x.Version);
+        Assert.NotNull(maxVersion.Source);
     }
 
     [Theory]
