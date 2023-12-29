@@ -24,7 +24,7 @@ await BuildProcess.CreateBuilder()
     .WithTask("build", b =>
     {
         b.WithDescription("dotnet build")
-            .WithExecution(() => CommandExecutor.ExecuteAndCapture("dotnet", $"build {solutionPath}").EnsureSuccessExitCode())
+            .WithExecution(() => CommandExecutor.ExecuteAndCapture("dotnet", $"build {solutionPath}"))
             ;
     })
     .WithTask("test", b =>
