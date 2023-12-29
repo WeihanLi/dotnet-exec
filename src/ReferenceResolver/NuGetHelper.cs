@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.Logging;
 using NuGet.Common;
+using NuGet.Configuration;
 using NuGet.Frameworks;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
@@ -10,7 +11,6 @@ using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using System.Collections.Concurrent;
-using System.Xml;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using NuGetLogLevel = NuGet.Common.LogLevel;
@@ -43,116 +43,42 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 {
     private const string LoggerCategoryName = "NuGetClient";
 
+    private readonly HashSet<SourceRepository> _nugetSources = new(new NuGetSourceRepositoryComparer());
+
     private readonly SourceCacheContext _sourceCacheContext = new()
     {
         IgnoreFailedSources = true
     };
+
+    private readonly ISettings _nugetSettings = Settings.LoadDefaultSettings(Environment.CurrentDirectory);
+    private readonly PackageSourceMapping _packageSourceMapping;
+    private readonly SourceRepository _defaultRepository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
     
-    private readonly SourceRepository _repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
     private readonly FrameworkReducer _frameworkReducer = new();
 
     private readonly LoggerBase _nugetLogger;
     private readonly ILogger _logger;
 
     private readonly string _globalPackagesFolder;
-    private string GetGlobalPackagesFolder()
-    {
-        var dotnetPath = Guard.NotNull(ApplicationHelper.GetDotnetPath());
-        
-        var folder = string.Empty;
-        try
-        {
-            var result = CommandExecutor.ExecuteAndCapture(dotnetPath, "nuget locals global-packages -l");
-            if (result.ExitCode is 0 && result.StandardOut.StartsWith("global-packages:", StringComparison.Ordinal))
-            {
-                folder = result.StandardOut["global-packages:".Length..].Trim();
-            }
-        }
-        catch
-        {
-            // ignore command error
-        }
-        
-        if (folder.IsNullOrEmpty())
-        {
-            var packagesFolder = Environment.GetEnvironmentVariable("NUGET_PACKAGES");
-
-            if (string.IsNullOrEmpty(packagesFolder))
-            {
-                // Nuget globalPackagesFolder resolve
-                if (OperatingSystem.IsWindows())
-                {
-                    var defaultConfigFilePath =
-                        $@"{Environment.GetEnvironmentVariable("APPDATA")}\NuGet\NuGet.Config";
-                    if (File.Exists(defaultConfigFilePath))
-                    {
-                        var doc = new XmlDocument();
-                        doc.Load(defaultConfigFilePath);
-                        var node = doc.SelectSingleNode("/configuration/config/add[@key='globalPackagesFolder']");
-                        if (node != null)
-                        {
-                            packagesFolder = node.Attributes?["value"]?.Value;
-                        }
-                    }
-
-                    if (string.IsNullOrEmpty(packagesFolder))
-                    {
-                        packagesFolder = $@"{Environment.GetEnvironmentVariable("USERPROFILE")}\.nuget\packages";
-                    }
-                }
-                else
-                {
-                    var defaultConfigFilePath =
-                        $@"{Environment.GetEnvironmentVariable("HOME")}/.config/NuGet/NuGet.Config";
-                    if (File.Exists(defaultConfigFilePath))
-                    {
-                        var doc = new XmlDocument();
-                        doc.Load(defaultConfigFilePath);
-                        var node = doc.SelectSingleNode("/configuration/config/add[@key='globalPackagesFolder']");
-                        if (node != null)
-                        {
-                            packagesFolder = node.Attributes?["value"]?.Value;
-                        }
-                    }
-
-                    if (string.IsNullOrEmpty(packagesFolder))
-                    {
-                        defaultConfigFilePath = $@"{Environment.GetEnvironmentVariable("HOME")}/.nuget/NuGet/NuGet.Config";
-                        if (File.Exists(defaultConfigFilePath))
-                        {
-                            var doc = new XmlDocument();
-                            doc.Load(defaultConfigFilePath);
-                            var node = doc.SelectSingleNode("/configuration/config/add[@key='globalPackagesFolder']");
-                            if (node != null)
-                            {
-                                packagesFolder = node.Value;
-                            }
-                        }
-                    }
-
-                    if (string.IsNullOrEmpty(packagesFolder))
-                    {
-                        packagesFolder = $@"{Environment.GetEnvironmentVariable("HOME")}/.nuget/packages";
-                    }
-                }
-            }
-
-            folder = packagesFolder;
-        }
-        _logger.LogInformation("GlobalPackagesFolder: {PackagesFolder}", folder);
-        return folder;
-    }
 
     public NuGetHelper(ILoggerFactory loggerFactory)
     {
         _logger = loggerFactory.CreateLogger(LoggerCategoryName);
-        _nugetLogger = new NugetLoggingAdapter(_logger);
-        _globalPackagesFolder = GetGlobalPackagesFolder();
+        _nugetLogger = new NuGetLoggingAdapter(_logger);
+        _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(_nugetSettings);
+        
+        var resourceProviders = Repository.Provider.GetCoreV3().ToArray();
+        foreach (var packageSource in SettingsUtility.GetEnabledSources(_nugetSettings))
+        {
+            _nugetSources.Add(new SourceRepository(packageSource, resourceProviders));
+        }
+        _nugetSources.Add(_defaultRepository);
+        _packageSourceMapping = PackageSourceMapping.GetPackageSourceMapping(_nugetSettings);
     }
 
     public async Task<IEnumerable<string>> GetPackages(string packagePrefix, bool includePreRelease = true, CancellationToken cancellationToken = default)
     {
-        var resource = await _repository.GetResourceAsync<AutoCompleteResource>(cancellationToken).ConfigureAwait(false);
+        var resource = await _defaultRepository.GetResourceAsync<AutoCompleteResource>(cancellationToken).ConfigureAwait(false);
         var result = await resource.IdStartsWith(packagePrefix, includePreRelease, _nugetLogger, cancellationToken)
             .ConfigureAwait(false);
         return result;
@@ -165,9 +91,10 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         {
             return packageDir;
         }
+
         var packagerIdentity = new PackageIdentity(packageId, version);
         var pkgDownloadContext = new PackageDownloadContext(_sourceCacheContext);
-        var downloadRes = await _repository.GetResourceAsync<DownloadResource>(cancellationToken).ConfigureAwait(false);
+        var downloadRes = await _defaultRepository.GetResourceAsync<DownloadResource>(cancellationToken).ConfigureAwait(false);
         using var downloadResult = await RetryHelper.TryInvokeAsync(async () =>
             await downloadRes.GetDownloadResourceResultAsync(
                 packagerIdentity,
@@ -181,7 +108,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
     public async Task<IEnumerable<NuGetVersion>> GetPackageVersions(string packageId, bool includePrerelease = false, CancellationToken cancellationToken = default)
     {
-        var findPackageByIdResource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
+        var findPackageByIdResource = await _defaultRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
             .ConfigureAwait(false);
         var versions = await findPackageByIdResource.GetAllVersionsAsync(
             packageId,
@@ -193,7 +120,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     public async Task<NuGetVersion?> GetLatestPackageVersion(string packageId, bool includePrerelease = false,
         CancellationToken cancellationToken = default)
     {
-        var packageMetadataResource = await _repository.GetResourceAsync<PackageMetadataResource>(cancellationToken).ConfigureAwait(false);
+        var packageMetadataResource = await _defaultRepository.GetResourceAsync<PackageMetadataResource>(cancellationToken).ConfigureAwait(false);
         var metaDataResult = await packageMetadataResource.GetMetadataAsync(packageId, includePrerelease, 
             false, _sourceCacheContext, _nugetLogger, cancellationToken).ConfigureAwait(false);
         var metaData = metaDataResult?.MaxBy(x => x.Identity.Version);
@@ -202,7 +129,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
     public async Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, CancellationToken cancellationToken = default)
     {
-        var findPackageByIdResource = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
+        var findPackageByIdResource = await _defaultRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
             .ConfigureAwait(false);
         return await findPackageByIdResource.CopyNupkgToStreamAsync(
             packageId,
@@ -356,7 +283,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
             return dependencies;
         }
 
-        var findPkgByIdRes = await _repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
+        var findPkgByIdRes = await _defaultRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
             .ConfigureAwait(false);
         var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageName,
             new NuGetVersion(packageVersion), _sourceCacheContext, _nugetLogger, cancellationToken).ConfigureAwait(false);
@@ -454,10 +381,8 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     public void Dispose() => _sourceCacheContext.Dispose();
 }
 
-file sealed class NugetLoggingAdapter(ILogger logger) : LoggerBase
+file sealed class NuGetLoggingAdapter(ILogger logger) : LoggerBase
 {
-    private readonly ILogger _logger = logger;
-
     public override void Log(ILogMessage message)
     {
         var logLevel = message.Level switch
@@ -470,11 +395,27 @@ file sealed class NugetLoggingAdapter(ILogger logger) : LoggerBase
             NuGetLogLevel.Minimal => LogLevel.Warning,
             _ => LogLevel.None
         };
-        _logger.Log(logLevel, message.FormatWithCode());
+        logger.Log(logLevel, message.FormatWithCode());
     }
     public override Task LogAsync(ILogMessage message)
     {
         Log(message);
         return Task.CompletedTask;
+    }
+}
+
+file sealed class NuGetSourceRepositoryComparer : IEqualityComparer<SourceRepository>
+{
+    public bool Equals(SourceRepository? x, SourceRepository? y)
+    {
+        if (x == null)
+            return y is null;
+        
+        return y != null && x.PackageSource.Source.Equals(y.PackageSource.Source, StringComparison.Ordinal);
+    }
+
+    public int GetHashCode(SourceRepository obj)
+    {
+        return obj.PackageSource.Source.GetHashCode();
     }
 }
