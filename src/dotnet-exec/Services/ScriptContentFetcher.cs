@@ -103,7 +103,7 @@ public sealed class ScriptContentFetcher(HttpClient httpClient, IUriTransformer 
                 || line.StartsWith("// reference:", StringComparison.Ordinal)
                        )
             {
-                var reference = line.Split(':', 2)[1].Trim().TrimEnd(';');
+                var reference = line.Split(':', 2)[1].Trim().TrimEnd(';').Trim('"');
                 if (reference.IsNotNullOrEmpty())
                 {
                     scriptReferences.Add(reference);
@@ -119,7 +119,7 @@ public sealed class ScriptContentFetcher(HttpClient httpClient, IUriTransformer 
                 || line.StartsWith("// using:", StringComparison.Ordinal)
                )
             {
-                var @using = line.Split(':', 2)[1].Trim().TrimEnd(';');
+                var @using = line.Split(':', 2)[1].Trim().TrimEnd(';').Trim('"');
                 if (@using.IsNotNullOrEmpty())
                 {
                     scriptUsings.Add(@using);
