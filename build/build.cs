@@ -1,10 +1,6 @@
 // Copyright (c) 2022-2023 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
-// r: nuget:Microsoft.Extensions.FileSystemGlobbing
-// r: nuget:WeihanLi.Common
-
-using Microsoft.Extensions.FileSystemGlobbing;
 using Newtonsoft.Json;
 
 // dump runtime info
