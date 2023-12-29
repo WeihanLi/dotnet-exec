@@ -95,13 +95,12 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
                     if (options.UseRefAssembliesForCompile)
                     {
                         var packageId = FrameworkReferenceResolver.GetReferencePackageName(framework);
-                        var versions = await nugetHelper.GetPackageVersions(packageId, true, options.CancellationToken);
                         var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
-                        var version = versions
-                            .Where(x => x.Major == nugetFramework.Version.Major
-                                        && x.Minor == nugetFramework.Version.Minor)
-                            .Max();
-                        return await nugetHelper.ResolvePackageReferences(options.TargetFramework, packageId, version,
+                        var version = await nugetHelper.GetPackageVersions(packageId, true, x => x.Major == nugetFramework.Version.Major
+                            && x.Minor == nugetFramework.Version.Minor, options.CancellationToken)
+                            .OrderByDescending(x=> x.Version)
+                            .FirstOrDefaultAsync(options.CancellationToken);
+                        return await nugetHelper.ResolvePackageReferences(options.TargetFramework, packageId, version.Version,
                             true,
                             options.CancellationToken);
                     }
@@ -113,13 +112,12 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
                 {
                     // fallback to nuget package
                     var packageId = FrameworkReferenceResolver.GetRuntimePackageName(framework);
-                    var versions = await nugetHelper.GetPackageVersions(packageId, true, options.CancellationToken);
                     var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
-                    var version = versions
-                        .Where(x => x.Major == nugetFramework.Version.Major
-                                    && x.Minor == nugetFramework.Version.Minor)
-                        .Max();
-                    return await nugetHelper.ResolvePackageReferences(options.TargetFramework, packageId, version,
+                    var version = await nugetHelper.GetPackageVersions(packageId, true, x => x.Major == nugetFramework.Version.Major
+                        && x.Minor == nugetFramework.Version.Minor, options.CancellationToken)
+                        .OrderByDescending(x=> x.Version)
+                        .FirstOrDefaultAsync(options.CancellationToken);
+                    return await nugetHelper.ResolvePackageReferences(options.TargetFramework, packageId, version.Version,
                         true,
                         options.CancellationToken);
                 }
@@ -178,13 +176,12 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
                 if (references.HasValue()) return references;
 
                 var packageId = FrameworkReferenceResolver.GetReferencePackageName(framework);
-                var versions = await nugetHelper.GetPackageVersions(packageId, true, options.CancellationToken);
                 var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
-                var version = versions
-                    .Where(x => x.Major == nugetFramework.Version.Major
-                                && x.Minor == nugetFramework.Version.Minor)
-                    .Max();
-                return await nugetHelper.ResolvePackageAnalyzerReferences(options.TargetFramework, packageId, version,
+                var version = await nugetHelper.GetPackageVersions(packageId, true, x => x.Major == nugetFramework.Version.Major
+                    && x.Minor == nugetFramework.Version.Minor, options.CancellationToken)
+                    .OrderByDescending(x=> x.Version)
+                    .FirstOrDefaultAsync(options.CancellationToken);
+                return await nugetHelper.ResolvePackageAnalyzerReferences(options.TargetFramework, packageId, version.Version,
                     true,
                     options.CancellationToken);
             })

@@ -14,18 +14,18 @@ public class NuGetHelperTest
     [InlineData("Microsoft.NETCore.App.Ref")]
     public async Task GetPackageVersions(string packageId)
     {
-        var versions = await NugetHelper.GetPackageVersions(packageId);
+        var versions = await NugetHelper.GetPackageVersions(packageId).ToArrayAsync();
         Assert.NotNull(versions);
-        Assert.DoesNotContain(versions, v => v.OriginalVersion?.Contains("preview") == true);
+        Assert.DoesNotContain(versions, v => v.Version.OriginalVersion?.Contains("preview") == true);
     }
     
     [Theory]
     [InlineData("Microsoft.NETCore.App.Ref")]
     public async Task GetPackageVersionsIncludePreview(string packageId)
     {
-        var versions = (await NugetHelper.GetPackageVersions(packageId, true)).ToArray();
+        var versions = await NugetHelper.GetPackageVersions(packageId, true).ToArrayAsync();
         Assert.NotNull(versions);
-        Assert.Contains(versions, v => v.OriginalVersion?.Contains("preview") == true);
+        Assert.Contains(versions, v => v.Version.OriginalVersion?.Contains("preview") == true);
         var maxVersion = versions.Max();
         Assert.NotNull(maxVersion);
     }
@@ -45,7 +45,7 @@ public class NuGetHelperTest
     public async Task GetPackages()
     {
         var prefix = "WeihanLi";
-        var packages = (await NugetHelper.GetPackages(prefix)).ToArray();
+        var packages = await NugetHelper.GetPackages(prefix).ToArrayAsync();
         Assert.NotEmpty(packages);
         Assert.Contains("WeihanLi.Common", packages);
     }
@@ -63,8 +63,9 @@ public class NuGetHelperTest
     public async Task GetVersions()
     {
         var packageId = "WeihanLi.Common";
-        var result = (await NugetHelper.GetPackageVersions(packageId)).ToArray();
+        var result = await NugetHelper.GetPackageVersions(packageId).ToArrayAsync();
         Assert.NotNull(result);
         Assert.NotEmpty(result);
+        Assert.Contains(result, v => v.Version is { Major: 1, Minor: 0, Patch: 60 });
     }
 }
