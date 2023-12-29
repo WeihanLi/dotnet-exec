@@ -3,11 +3,11 @@
     "dotnet-exec": {
       "commandName": "Project",
       "commandLineArgs": "\"C:\\projects\\sources\\SamplesInPractice\\net6sample\\RandomSharedSample\\Program.cs\" --debug",
-      "targetFramework": "net7.0"
+      "targetFramework": "net8.0"
     },
     "framework-test": {
       "commandName": "Project",
-      "targetFramework": "net7.0",
+      "targetFramework": "net8.0",
       "commandLineArgs": "typeof(object).Assembly.Location -f net6.0 --wide false --debug"
     },
     "framework-invalid-test": {
@@ -17,32 +17,32 @@
     },
     "reference-test": {
       "commandName": "Project",
-      "targetFramework": "net7.0",
+      "targetFramework": "net8.0",
       "commandLineArgs": "code:typeof(CsvHelper).Assembly.Location.Dump() -r nuget:WeihanLi.Npoi,2.4.2 -u WeihanLi.Npoi --debug"
     },
     "script-test": {
       "commandName": "Project",
-      "targetFramework": "net7.0",
+      "targetFramework": "net8.0",
       "commandLineArgs": "script:1+1 --debug"
     },
     "help-test": {
       "commandName": "Project",
-      "targetFramework": "net7.0",
+      "targetFramework": "net8.0",
       "commandLineArgs": "-h"
     },
     "profile-list": {
       "commandName": "Project",
-      "targetFramework": "net7.0",
+      "targetFramework": "net8.0",
       "commandLineArgs": "profile ls"
     },
     "profile-use-test": {
       "commandName": "Project",
-      "targetFramework": "net7.0",
+      "targetFramework": "net8.0",
       "commandLineArgs": "WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run(); --profile web --debug"
     },
     "reference-using-remove-test": {
       "commandName": "Project",
-      "targetFramework": "net7.0",
+      "targetFramework": "net8.0",
       "commandLineArgs": "WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run(); --profile web --reference -nuget:WeihanLi.Web.Extensions --using -WeihanLi.Web.Extensions --debug"
     }
   }
