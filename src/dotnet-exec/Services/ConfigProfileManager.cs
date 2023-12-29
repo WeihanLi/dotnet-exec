@@ -12,7 +12,7 @@ public sealed class ConfigProfileManager : IConfigProfileManager
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         ".dotnet",
         "tools",
-        Helper.ApplicationName,
+        ".dotnet-exec",
         "profiles"
     );
 
@@ -76,6 +76,17 @@ public sealed class ConfigProfileManager : IConfigProfileManager
     {
         if (Directory.Exists(folderPath)) return;
         
+        var parent = Directory.GetParent(folderPath);
+        if (parent is null || parent.Exists) return;
+
+        // ensure path created
+        EnsureFolderCreated(parent.FullName);
+
+        // create parent folder if necessary
+        if (!Directory.Exists(parent.FullName))
+            Directory.CreateDirectory(parent.FullName);
+
+        // create folder
         Directory.CreateDirectory(folderPath);
     }
 }
