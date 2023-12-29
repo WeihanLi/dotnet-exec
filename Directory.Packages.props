@@ -23,4 +23,7 @@
     <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="8.1.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
   </ItemGroup>
+  <ItemGroup>
+    <GlobalPackageReference Include="PolySharp" Version="1.14.1" />
+  </ItemGroup>
 </Project>
