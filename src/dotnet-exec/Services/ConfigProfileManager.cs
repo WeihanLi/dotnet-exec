@@ -12,7 +12,8 @@ public sealed class ConfigProfileManager : IConfigProfileManager
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         ".dotnet",
         "tools",
-        ".dotnet-exec",
+        ".config",
+        Helper.ApplicationName,
         "profiles"
     );
 
