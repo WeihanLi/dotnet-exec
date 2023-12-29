@@ -74,20 +74,8 @@ public sealed class ConfigProfileManager : IConfigProfileManager
 
     private static void EnsureFolderCreated(string folderPath)
     {
-        if (Directory.Exists(folderPath))
-            return;
-
-        var parent = Directory.GetParent(folderPath);
-        if (parent is null || parent.Exists) return;
-
-        // ensure path created
-        EnsureFolderCreated(parent.FullName);
+        if (Directory.Exists(folderPath)) return;
         
-        // create parent folder if necessary
-        if (!Directory.Exists(parent.FullName))
-            Directory.CreateDirectory(parent.FullName);
-        
-        // create path
         Directory.CreateDirectory(folderPath);
     }
 }
