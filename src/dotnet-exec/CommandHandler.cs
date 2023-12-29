@@ -73,8 +73,7 @@ public sealed class CommandHandler(ILogger logger,
         var compiler = compilerFactory.GetCompiler(options.CompilerType);
         var compileStartTime = Stopwatch.GetTimestamp();
         var compileResult = await compiler.Compile(options, sourceText);
-        var compileEndTime = Stopwatch.GetTimestamp();
-        var compileElapsed = ProfilerHelper.GetElapsedTime(compileStartTime, compileEndTime);
+        var compileElapsed = ProfilerHelper.GetElapsedTime(compileStartTime);
         logger.LogDebug("Compile elapsed: {elapsed}", compileElapsed);
 
         if (!compileResult.IsSuccess())
