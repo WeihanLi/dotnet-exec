@@ -8,9 +8,4 @@
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" />
     <PackageReference Include="WeihanLi.Common" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\build.cs">
-      <Link>build.cs</Link>
-    </Compile>
-  </ItemGroup>
 </Project>

@@ -20,14 +20,15 @@ var stable = Argument("stable", false);
 var apiKey = Argument( "apiKey", "");
 
 var solutionPath = "./dotnet-exec.sln";
-var srcProjects = GetFiles("./src/**/*.csproj");
-var testProjects = GetFiles("./src/**/*.csproj");
+string[] srcProjects = ["./src/dotnet-exec/dotnet-exec.csproj", "./src/ReferenceResolver/ReferenceResolver.csproj"];
+string[] testProjects = [ "./tests/UnitTest/UnitTest.csproj", "./tests/IntegrationTest/IntegrationTest.csproj" ];
 
 await BuildProcess.CreateBuilder()
+    .WithTask("hello", b => {})
     .WithTask("build", b =>
     {
         b.WithDescription("dotnet build")
-            .WithExecution(() => CommandExecutor.ExecuteCommandAsync($"dotnet build {solutionPath}"))
+            .WithExecution(() => CommandExecutor.ExecuteAndCapture("dotnet", $"build {solutionPath}").EnsureSuccessExitCode())
             ;
     })
     .WithTask("test", b =>
@@ -62,7 +63,7 @@ await BuildProcess.CreateBuilder()
             //
             if (!string.IsNullOrEmpty(apiKey))
             {
-                foreach (var file in GetFiles("./artifacts/packages/*.nupkg"))
+                foreach (var file in Directory.GetFiles("./artifacts/packages/", "*.nupkg"))
                 {
                     await CommandExecutor.ExecuteCommandAsync($"dotnet nuget push {file} -k {apiKey}");
                 }
@@ -77,20 +78,13 @@ T? Argument<T>(string argumentName, T? defaultValue = default)
 {
     for (var i = 0; i < args.Length-1; i++)
     {
-        if (args[i] == argumentName)
+        if (args[i] == $"--{argumentName}" || args[i] == $"-{argumentName}")
         {
             return args[i + 1].To<T>();
         }
     }
 
     return defaultValue;
-}
-
-string[] GetFiles(string pattern)
-{
-    var matcher = new Matcher();
-    matcher.AddInclude(pattern);
-    return matcher.GetResultsInFullPath(".").ToArray();
 }
 
 file sealed class BuildProcess
