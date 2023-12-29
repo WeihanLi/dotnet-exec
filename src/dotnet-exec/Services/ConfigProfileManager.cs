@@ -30,7 +30,9 @@ public sealed class ConfigProfileManager : IConfigProfileManager
 
     public async Task ConfigureProfile(string profileName, ConfigProfile profile)
     {
-        EnsureFolderCreated(ProfileFolder);
+        if (!Directory.Exists(ProfileFolder))
+            throw new InvalidOperationException($"Could not create profiles folder, please create the folder(`{ProfileFolder}`) manually");
+
         var profilePath = Path.Combine(ProfileFolder, $"{profileName}.json");
         await using var fs = File.OpenWrite(profilePath);
         await JsonSerializer.SerializeAsync(fs, profile, JsonSerializerOptionsHelper.WriteIndented);
@@ -74,7 +76,7 @@ public sealed class ConfigProfileManager : IConfigProfileManager
     {
         if (Directory.Exists(folderPath))
             return;
-        
+
         var parent = Directory.GetParent(folderPath);
         if (parent is null || parent.Exists) return;
 
