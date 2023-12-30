@@ -58,39 +58,44 @@ await BuildProcess.CreateBuilder()
         .WithDependency("test")
         .WithExecution(async () =>
         {
-            foreach (var project in srcProjects)
+            if (stable)
             {
-                if (stable)
+                foreach (var project in srcProjects)
                 {
                     await ExecuteCommandAsync($"dotnet pack {project} -o ./artifacts/packages");
                 }
-                else
-                {
-                    var suffix = $"preview-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
-                    await ExecuteCommandAsync($"dotnet pack {project} -o ./artifacts/packages --version-suffix {suffix}");   
-                }
             }
+            else
+            {
+                var suffix = $"preview-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
+                foreach (var project in srcProjects)
+                {
+                    await ExecuteCommandAsync($"dotnet pack {project} -o ./artifacts/packages --version-suffix {suffix}");
+                }
+            }            
 
             if (noPush)
             {
                 Console.WriteLine("Skip push there's noPush specified");
                 return;
             }
-            if (!OperatingSystem.IsWindows())
-            {
-                Console.WriteLine("Skip push since we're not on Windows");
-                return;
-            }
+            
             if (string.IsNullOrEmpty(apiKey))
             {
+                // try to get apiKey from environment variable
                 apiKey = Environment.GetEnvironmentVariable("NuGet__ApiKey");
-            }
-            if (!string.IsNullOrEmpty(apiKey))
-            {                
-                foreach (var file in Directory.GetFiles("./artifacts/packages/", "*.nupkg"))
+                
+                if (string.IsNullOrEmpty(apiKey))
                 {
-                    await ExecuteCommandAsync($"dotnet nuget push {file} -k {apiKey} --skip-duplicate");
+                    Console.WriteLine("Skip push since there's no apiKey found");
+                    return;
                 }
+            }
+
+            // push nuget packages
+            foreach (var file in Directory.GetFiles("./artifacts/packages/", "*.nupkg"))
+            {
+                await ExecuteCommandAsync($"dotnet nuget push {file} -k {apiKey} --skip-duplicate");
             }
         }))
     .WithTask("Default", b => b.WithDependency("hello").WithDependency("pack"))
