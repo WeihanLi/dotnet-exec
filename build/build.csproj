@@ -5,6 +5,7 @@
     <AssemblyName>build</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CliWrap" />
     <PackageReference Include="WeihanLi.Common" />
   </ItemGroup>
 </Project>
