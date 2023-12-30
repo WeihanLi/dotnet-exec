@@ -5,20 +5,20 @@ namespace Exec.Contracts;
 
 public sealed class ConfigProfile
 {
-    private HashSet<string> _usings = new();
+    private readonly HashSet<string> _usings = new(StringComparer.Ordinal);
 
     public HashSet<string> Usings
     {
         get => _usings;
-        set => _usings = value ?? new();
+        init => _usings = Guard.NotNull(value);
     }
 
-    private HashSet<string> _references = new();
+    private readonly HashSet<string> _references = new(StringComparer.Ordinal);
 
     public HashSet<string> References
     {
         get => _references;
-        set => _references = value ?? new();
+        init => _references = Guard.NotNull(value);
     }
 
     public bool IncludeWebReferences { get; set; }

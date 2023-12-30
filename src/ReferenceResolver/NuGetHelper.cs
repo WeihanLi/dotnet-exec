@@ -119,7 +119,9 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
                     cancellationToken).ConfigureAwait(false), _ => true, 5).ConfigureAwait(false);
             if (downloadResult?.Status != DownloadResourceResultStatus.Available)
                 continue;
-            _logger.LogInformation("Package({packageIdentity}) downloaded to {packageDirectory} from {packageSource}", packagerIdentity, packageDir, downloadResult.PackageSource);
+            
+            _logger.LogInformation("Package({PackageIdentity}) downloaded to {PackageDirectory} from {PackageSource}", 
+                packagerIdentity, packageDir, downloadResult.PackageSource ?? sourceRepository.PackageSource.Name);
         }
         
         return Directory.Exists(packageDir) ? packageDir : null;

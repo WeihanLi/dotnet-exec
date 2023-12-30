@@ -23,8 +23,8 @@ public sealed partial class ExecOptions
 
     public bool IncludeWebReferences { get; set; }
 
-    public HashSet<string> References { get; set; } = new();
-    public HashSet<string> Usings { get; set; } = new();
+    public HashSet<string> References { get; set; } = new(StringComparer.Ordinal);
+    public HashSet<string> Usings { get; set; } = new(StringComparer.Ordinal);
 
     public HashSet<string>? AdditionalScripts { get; set; }
 

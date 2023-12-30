@@ -12,7 +12,8 @@ public static class UsingManager
         var usingList = new HashSet<string>(
             string.IsNullOrEmpty(frameworkOfImplicitUsing)
             ? Array.Empty<string>()
-            : FrameworkReferenceResolver.GetImplicitUsings(frameworkOfImplicitUsing)
+            : FrameworkReferenceResolver.GetImplicitUsings(frameworkOfImplicitUsing),
+            StringComparer.Ordinal
         );
         
         if (usings is { Count: > 0 })

@@ -22,6 +22,7 @@ namespace Exec;
 
 public static class Helper
 {
+    // update to FrozonSet when target .NET 8 only 
     private static readonly ImmutableHashSet<string> SpecialConsoleDiagnosticIds = new[]
     {
         // Program does not contain a static 'Main' method suitable for an entry point
@@ -30,7 +31,7 @@ public static class Helper
         // The method declaration for Main was invalid
         // https://learn.microsoft.com/en-us/dotnet/csharp/misc/CS0028
         "CS0028"
-    }.ToImmutableHashSet();
+    }.ToImmutableHashSet(StringComparer.OrdinalIgnoreCase);
 
     public const string ApplicationName = "dotnet-exec";
     public const string Default = "default";
