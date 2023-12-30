@@ -127,6 +127,12 @@ string? ArgumentInternal(string argumentName)
 
             return args[i + 1];
         }
+
+        if (args[i].StartsWith($"-{argumentName}="))
+            return args[i].Substring($"-{argumentName}=".Length);
+        
+        if (args[i].StartsWith($"--{argumentName}="))
+            return args[i].Substring($"--{argumentName}=".Length);
     }
 
     return null;
