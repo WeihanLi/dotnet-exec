@@ -41,8 +41,11 @@ public sealed partial class ExecOptions
     private static readonly Option<OptimizationLevel> ConfigurationOption =
         new(["-c", "--configuration"], "Compile configuration/OptimizationLevel");
 
-    private static readonly Option<string> ArgumentsOption =
-        new(["--args", "--arguments"], "Input arguments");
+    private static readonly Option<string?> ArgumentsOption =
+        new(["--args", "--arguments"], "Input arguments")
+        {
+            Arity = ArgumentArity.ZeroOrOne
+        };
 
     private static readonly Option<bool> DebugOption = new("--debug", "Enable debug logs for debug");
 
