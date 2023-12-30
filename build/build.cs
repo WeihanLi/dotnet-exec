@@ -19,8 +19,13 @@ string[] testProjects = [ "./tests/UnitTest/UnitTest.csproj", "./tests/Integrati
 await BuildProcess.CreateBuilder()
     .WithSetup(() =>
     {
+        // cleanup artifacts
         if (Directory.Exists("./artifacts/packages"))
             Directory.Delete("./artifacts/packages", true);
+
+        // args
+        Console.WriteLine("Arguments");
+        Console.WriteLine($"    {args.StringJoin(" ")}");
 
         // dump runtime info
         Console.WriteLine("RuntimeInfo:");
@@ -29,10 +34,7 @@ await BuildProcess.CreateBuilder()
             Formatting = Formatting.Indented
         }));
     })
-    .WithTask("hello", _ =>
-    {
-        Console.WriteLine("Hello dotnet-exec build");
-    })
+    .WithTask("hello", b => b.WithExecution(() => Console.WriteLine("Hello dotnet-exec build")))
     .WithTask("build", b =>
     {
         b.WithDescription("dotnet build")
@@ -96,18 +98,20 @@ await BuildProcess.CreateBuilder()
                 }
             }
         }))
-    .WithTask("Default", b => b.WithDependency("pack"))
+    .WithTask("Default", b => b.WithDependency("hello").WithDependency("pack"))
     .Build()
     .ExecuteAsync(target);
 
 
 T? Argument<T>(string argumentName, T? defaultValue = default)
 {
-    for (var i = 0; i < args.Length-1; i++)
+    for (var i = 0; i < args.Length; i++)
     {
         if (args[i] == $"--{argumentName}" || args[i] == $"-{argumentName}")
         {
-            if (typeof(T) == typeof(bool) && args[i + 1].StartsWith('-'))
+            if (typeof(T) == typeof(bool) 
+                && ((i + 1) == args.Length || args[i + 1].StartsWith('-'))
+                )
                 return (T)(object)true;
             
             return args[i + 1].To<T>();
@@ -119,7 +123,7 @@ T? Argument<T>(string argumentName, T? defaultValue = default)
 
 async Task ExecuteCommandAsync(string commandText)
 {
-    Console.WriteLine($"Executing command: \n\t  {commandText}");
+    Console.WriteLine($"Executing command: \n    {commandText}");
     Console.WriteLine();
     var splits = commandText.Split([' '], 2);
     var result = await Cli.Wrap(splits[0])
@@ -135,7 +139,7 @@ file sealed class BuildProcess
 {
     public IReadOnlyCollection<BuildTask> Tasks { get; init; } = [];
     public Func<Task>? Setup { private get; init; }
-    public Func<Task>? CleanUp { private get; init; }
+    public Func<Task>? Cleanup { private get; init; }
 
     public async Task ExecuteAsync(string target)
     {
@@ -152,8 +156,8 @@ file sealed class BuildProcess
         }
         finally
         {
-            if (CleanUp != null)
-                await CleanUp.Invoke();
+            if (Cleanup != null)
+                await Cleanup.Invoke();
         }                
     }
 
@@ -178,7 +182,7 @@ file sealed class BuildProcess
 file sealed class BuildProcessBuilder
 {
     private readonly List<BuildTask> _tasks = [];
-    private Func<Task>? _setup, _cleanUp;
+    private Func<Task>? _setup, _cleanup;
 
     public BuildProcessBuilder WithTask(string name, Action<BuildTaskBuilder> buildTaskConfigure)
     {
@@ -202,15 +206,15 @@ file sealed class BuildProcessBuilder
         return this;
     }
     
-    public BuildProcessBuilder WithCleanUp(Action cleanUpFunc)
+    public BuildProcessBuilder WithCleanup(Action cleanupFunc)
     {
-        _cleanUp = cleanUpFunc.WrapTask();
+        _cleanup = cleanupFunc.WrapTask();
         return this;
     }
 
-    public BuildProcessBuilder WithCleanUp(Func<Task> cleanUpFunc)
+    public BuildProcessBuilder WithCleanup(Func<Task> cleanupFunc)
     {
-        _cleanUp = cleanUpFunc;
+        _cleanup = cleanupFunc;
         return this;
     }
 
@@ -220,7 +224,7 @@ file sealed class BuildProcessBuilder
         {
             Tasks = _tasks,
             Setup = _setup,
-            CleanUp = _cleanUp
+            Cleanup = _cleanup
         };
     }
 }
