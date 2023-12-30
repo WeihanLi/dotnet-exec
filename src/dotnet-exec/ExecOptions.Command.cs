@@ -118,7 +118,7 @@ public sealed partial class ExecOptions
             .Select(x => x.Split('='))
             .Select(x => new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))
             .ToArray();
-        DryRun = parseResult.GetValueForOption(DryRunOption);
+        DryRun = parseResult.HasOption(DryRunOption);
         DebugEnabled = parseResult.HasOption(DebugOption) || DryRun;
 
         if (configProfile != null)

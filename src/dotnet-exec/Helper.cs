@@ -39,7 +39,7 @@ public static class Helper
 
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services, string[] args)
     {
-        var isDebugMode = args.Contains("--debug");
+        var isDebugMode = args.Contains("--debug") || args.Contains("--dry-run");
         if (isDebugMode && !Debugger.IsAttached && args.Contains("--attach")) Debugger.Launch();
         
         services.AddLogging(builder =>

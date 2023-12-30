@@ -44,6 +44,11 @@
       "commandName": "Project",
       "targetFramework": "net8.0",
       "commandLineArgs": "WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run(); --profile web --reference -nuget:WeihanLi.Web.Extensions --using -WeihanLi.Web.Extensions --debug"
+    },
+    "dry-run-test": {
+      "commandName": "Project",
+      "targetFramework": "net8.0",
+      "commandLineArgs": "'1+2' --dry-run"
     }
   }
 }
