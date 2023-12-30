@@ -73,7 +73,7 @@ await BuildProcess.CreateBuilder()
 
             if (noPush)
             {
-                Console.WriteLine("Skip push there's noPush");
+                Console.WriteLine("Skip push there's noPush specified");
                 return;
             }
             if (!OperatingSystem.IsWindows())
@@ -86,12 +86,7 @@ await BuildProcess.CreateBuilder()
                 apiKey = Environment.GetEnvironmentVariable("NuGet__ApiKey");
             }
             if (!string.IsNullOrEmpty(apiKey))
-            {
-                // work around for local push
-                // should be removed when push package using CI
-                if (Environment.GetEnvironmentVariable("CI") is null) 
-                    Environment.SetEnvironmentVariable("CI", "true");
-                
+            {                
                 foreach (var file in Directory.GetFiles("./artifacts/packages/", "*.nupkg"))
                 {
                     await ExecuteCommandAsync($"dotnet nuget push {file} -k {apiKey} --skip-duplicate");
