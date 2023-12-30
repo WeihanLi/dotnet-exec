@@ -49,5 +49,7 @@ public sealed partial class ExecOptions
 
     public KeyValuePair<string, string>[]? ParserFeatures { get; set; }
 
+    public bool DryRun { get; set; }
+
     [JsonIgnore] public CancellationToken CancellationToken { get; set; }
 }

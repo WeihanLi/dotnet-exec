@@ -82,6 +82,8 @@ public sealed partial class ExecOptions
     private static readonly Option<string[]> ParserFeaturesOption =
         new(["--compile-feature"], "Features for parsing and compiling");
 
+    private static readonly Option<bool> DryRunOption = new(["--dry-run", "--no-exec"], "Dry-run, would not execute script and output debug info");
+
     static ExecOptions()
     {
         CompilerTypeOption.FromAmong("simple", "workspace");
@@ -107,7 +109,6 @@ public sealed partial class ExecOptions
         References = [..parseResult.GetValueForOption(ReferencesOption) ?? Array.Empty<string>()];
         Usings = [..parseResult.GetValueForOption(UsingsOption) ?? Array.Empty<string>()];
         AdditionalScripts = new(parseResult.GetValueForOption(AdditionalScriptsOption) ?? Array.Empty<string>(), StringComparer.Ordinal);
-        DebugEnabled = parseResult.HasOption(DebugOption);
         UseRefAssembliesForCompile = parseResult.GetValueForOption(UseRefAssembliesForCompileOption);
         ConfigProfile = parseResult.GetValueForOption(ConfigProfileOption);
         EnablePreviewFeatures = parseResult.HasOption(PreviewOption);
@@ -117,6 +118,8 @@ public sealed partial class ExecOptions
             .Select(x => x.Split('='))
             .Select(x => new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))
             .ToArray();
+        DryRun = parseResult.GetValueForOption(DryRunOption);
+        DebugEnabled = parseResult.HasOption(DebugOption) || DryRun;
 
         if (configProfile != null)
         {
