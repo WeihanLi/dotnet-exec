@@ -351,6 +351,7 @@ public static class JsonSerializerOptionsHelper
 {
     public static JsonSerializerOptions WriteIndented { get; } = new()
     {
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         WriteIndented = true
     };
 }
