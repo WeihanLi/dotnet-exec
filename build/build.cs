@@ -19,7 +19,9 @@ string[] testProjects = [ "./tests/UnitTest/UnitTest.csproj", "./tests/Integrati
 await BuildProcess.CreateBuilder()
     .WithSetup(() =>
     {
-        Directory.Delete(".artifacts/packages", true);
+        if (Directory.Exists("./artifacts/packages"))
+            Directory.Delete("./artifacts/packages", true);
+
         // dump runtime info
         Console.WriteLine("RuntimeInfo:");
         Console.WriteLine(ApplicationHelper.RuntimeInfo.ToJson(new JsonSerializerSettings()
