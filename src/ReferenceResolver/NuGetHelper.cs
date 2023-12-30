@@ -18,32 +18,6 @@ using NuGetLogLevel = NuGet.Common.LogLevel;
 
 namespace ReferenceResolver;
 
-public interface INuGetHelper
-{
-    Task<string[]> ResolvePackageReferences(string targetFramework, string packageId,
-        NuGetVersion? version, bool includePrerelease, CancellationToken cancellationToken = default);
-
-    Task<string[]> ResolvePackageReferences(NuGetReference nugetReference, string targetFramework, bool includePrerelease,
-        CancellationToken cancellationToken = default)
-        => ResolvePackageReferences(targetFramework, nugetReference.PackageId, nugetReference.PackageVersion,
-            includePrerelease, cancellationToken);
-
-    IAsyncEnumerable<(NuGetSourceInfo Source, NuGetVersion Version)> GetPackageVersions(string packageId, bool includePrerelease = false, 
-        Func<NuGetVersion, bool>? predict = null, CancellationToken cancellationToken = default);
-    
-    Task<NuGetVersion?> GetLatestPackageVersion(string packageId, bool includePrerelease = false,
-        CancellationToken cancellationToken = default);
-    Task<(NuGetSourceInfo Source, NuGetVersion Version)?> GetLatestPackageVersionWithSource(string packageId, bool includePrerelease = false,
-        CancellationToken cancellationToken = default);
-    Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageId, NuGetVersion packageVersion, string targetFramework, CancellationToken cancellationToken = default);
-    Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null, CancellationToken cancellationToken = default);
-    Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, CancellationToken cancellationToken = default);
-    IAsyncEnumerable<string> GetPackages(string packagePrefix, bool includePreRelease = true, CancellationToken cancellationToken = default);
-
-    Task<string[]> ResolvePackageAnalyzerReferences(string targetFramework, string packageId,
-        NuGetVersion? version, bool includePrerelease, CancellationToken cancellationToken = default);
-}
-
 public sealed class NuGetHelper : INuGetHelper, IDisposable
 {
     private const string LoggerCategoryName = "NuGetClient";
@@ -417,7 +391,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
         return analyzerItems.Length > 0
             ? analyzerItems[0].Items.Select(x => Path.Combine(packageDir, x)).ToArray()
-            : Array.Empty<string>();
+            : [];
     }
 
     private string GetPackageInstalledDir(string packageId, NuGetVersion packageVersion, string? packagesDirectory = null)
@@ -446,13 +420,13 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     public void Dispose() => _sourceCacheContext.Dispose();
 }
 
-public sealed class NuGetSourceInfo
+public sealed class NuGetSourceInfo(string name, string source)
 {
-    public required string Name { get; init; }
-    public required string Source { get; init; }
+    public string Name => name;
+    public string Source => source;
 
     public static NuGetSourceInfo FromSourceRepository(SourceRepository sourceRepository)
-        => new() { Name = sourceRepository.PackageSource.Name, Source = sourceRepository.PackageSource.Source };
+        => new(sourceRepository.PackageSource.Name, sourceRepository.PackageSource.Source);
 }
 
 file sealed class NuGetLoggingAdapter(ILogger logger) : LoggerBase
