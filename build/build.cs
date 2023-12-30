@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 
 //
 var target = Guard.NotNull(Argument("target", "Default"));
-var stable = Argument("stable", false);
-var noPush = Argument("noPush", false);
 var apiKey = Argument("apiKey", "");
+var stable = ArgumentBool("stable", false);
+var noPush = ArgumentBool("noPush", false);
 
 var solutionPath = "./dotnet-exec.sln";
 string[] srcProjects = ["./src/dotnet-exec/dotnet-exec.csproj", "./src/ReferenceResolver/ReferenceResolver.csproj"];
@@ -103,22 +103,33 @@ await BuildProcess.CreateBuilder()
     .ExecuteAsync(target);
 
 
-T? Argument<T>(string argumentName, T? defaultValue = default)
+bool ArgumentBool(string argumentName, bool defaultValue = default)
+{
+    var value = ArgumentInternal(argumentName);
+    if (value is null) return defaultValue;
+    if (value == string.Empty || value == "1") return true;
+    return bool.Parse(value);
+}
+
+string? Argument(string argumentName, string? defaultValue = default)
+{
+    return ArgumentInternal(argumentName) ?? defaultValue;
+}
+
+string? ArgumentInternal(string argumentName)
 {
     for (var i = 0; i < args.Length; i++)
     {
         if (args[i] == $"--{argumentName}" || args[i] == $"-{argumentName}")
         {
-            if (typeof(T) == typeof(bool) 
-                && ((i + 1) == args.Length || args[i + 1].StartsWith('-'))
-                )
-                return (T)(object)true;
-            
-            return args[i + 1].To<T>();
+            if (((i + 1) == args.Length || args[i + 1].StartsWith('-')))
+                return string.Empty;
+
+            return args[i + 1];
         }
     }
 
-    return defaultValue;
+    return null;
 }
 
 async Task ExecuteCommandAsync(string commandText)
