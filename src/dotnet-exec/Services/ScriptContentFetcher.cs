@@ -101,12 +101,17 @@ public sealed class ScriptContentFetcher(HttpClient httpClient, IUriTransformer 
                 || line.StartsWith("// r:", StringComparison.Ordinal)
                 || line.StartsWith("//reference:", StringComparison.Ordinal)
                 || line.StartsWith("// reference:", StringComparison.Ordinal)
+                // support #r syntax, roslyn compiler could not compile
+                // || line.StartsWith("#r:", StringComparison.Ordinal)
+                // || line.StartsWith("# r:", StringComparison.Ordinal)
+                // || line.StartsWith("#reference:", StringComparison.Ordinal)
+                // || line.StartsWith("# reference:", StringComparison.Ordinal)
                        )
             {
                 var reference = line.Split(':', 2)[1].Trim().TrimEnd(';').Trim('"');
                 if (reference.IsNotNullOrEmpty())
                 {
-                    scriptReferences.Add(reference);
+                    scriptReferences.Add(Helper.ReferenceNormalize(reference));
                 }
 
                 continue;

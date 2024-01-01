@@ -348,8 +348,17 @@ public static class Helper
 
     public static string ReferenceNormalize(string reference)
     {
-        var typedReference = ReferenceResolverFactory.ParseReference(reference);
-        return typedReference.ReferenceWithSchema;
+        IReference typedReference; 
+        if (reference.StartsWith('-'))
+        {
+            typedReference = ReferenceResolverFactory.ParseReference(reference[1..]);
+            return $"-{typedReference.ReferenceWithSchema}";
+        }
+        else
+        {
+            typedReference = ReferenceResolverFactory.ParseReference(reference);
+            return typedReference.ReferenceWithSchema;
+        }
     }
 }
 

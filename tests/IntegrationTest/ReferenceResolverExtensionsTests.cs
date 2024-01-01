@@ -28,7 +28,7 @@ public class ReferenceResolverExtensionsTests(IServiceProvider serviceProvider)
         Assert.NotNull(serviceProvider.GetService<IReferenceResolverFactory>());
     }
 
-    public class Startup
+    public static class Startup
     {
         public static void ConfigureServices(IServiceCollection services)
         {

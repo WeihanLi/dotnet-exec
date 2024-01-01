@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2022-2023 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
+using ReferenceResolver;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -108,9 +109,8 @@ internal sealed class ProjectFileOptionsConfigureMiddleware
                         }
                     }
 
-                    var reference =
-                        $"nuget: {packageId}{(string.IsNullOrEmpty(packageVersion) ? "" : $", {packageVersion}")}";
-                    options.References.Add(reference);
+                    IReference reference = new NuGetReference(packageId, packageVersion);
+                    options.References.Add(reference.ReferenceWithSchema);
                 }
 
                 if (File.Exists(projectPath))
@@ -127,8 +127,8 @@ internal sealed class ProjectFileOptionsConfigureMiddleware
                         if (!File.Exists(referenceProjectPath))
                             continue;
 
-                        var projectReference = $"project: {referenceProjectFullPath}";
-                        options.References.Add(projectReference);
+                        IReference projectReference = new ProjectReference(referenceProjectFullPath);
+                        options.References.Add(projectReference.ReferenceWithSchema);
                     }
 
                 }

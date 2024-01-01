@@ -47,7 +47,7 @@ public class IntegrationTests
         var execOptions = new ExecOptions()
         {
             Script = fullPath,
-            Arguments = new[] { "--hello", "world" },
+            Arguments = ["--hello", "world"],
             IncludeWebReferences = true,
             IncludeWideReferences = true,
             CompilerType = Helper.Default,
@@ -84,7 +84,7 @@ public class IntegrationTests
         var execOptions = new ExecOptions()
         {
             Script = fullPath,
-            Arguments = new[] { "--hello", "world" },
+            Arguments = ["--hello", "world"],
             IncludeWebReferences = true,
             IncludeWideReferences = true,
             CompilerType = "workspace",
@@ -153,10 +153,7 @@ public class IntegrationTests
         var result = await _handler.Execute(new ExecOptions()
         {
             Script = "WriteLine(Math.PI)",
-            Usings = new()
-            {
-                "static System.Console"
-            }
+            Usings = ["static System.Console"]
         });
         Assert.Equal(0, result);
         _outputHelper.WriteLine(output.StandardOutput);
@@ -169,10 +166,7 @@ public class IntegrationTests
         var result = await _handler.Execute(new ExecOptions()
         {
             Script = "MyConsole.WriteLine(Math.PI)",
-            Usings = new()
-            {
-                "MyConsole = System.Console"
-            }
+            Usings = ["MyConsole = System.Console"]
         });
         Assert.Equal(0, result);
         _outputHelper.WriteLine(output.StandardOutput);
@@ -204,14 +198,8 @@ public class IntegrationTests
     {
         var options = new ExecOptions()
         {
-            References = new()
-            {
-                "nuget:WeihanLi.Npoi,2.4.2"
-            },
-            Usings = new()
-            {
-                "WeihanLi.Npoi"
-            },
+            References = ["nuget:WeihanLi.Npoi,2.4.2"],
+            Usings = ["WeihanLi.Npoi"],
             Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump();"
         };
         var result = await _handler.Execute(options);
@@ -228,14 +216,8 @@ public class IntegrationTests
         using var output = await ConsoleOutput.CaptureAsync();
         var options = new ExecOptions()
         {
-            References = new()
-            {
-                dllPath
-            },
-            Usings = new()
-            {
-                "WeihanLi.Npoi"
-            },
+            References = [dllPath],
+            Usings = ["WeihanLi.Npoi"],
             Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump()"
         };
         var result = await _handler.Execute(options);
@@ -255,14 +237,8 @@ public class IntegrationTests
         using var output = await ConsoleOutput.CaptureAsync();
         var options = new ExecOptions()
         {
-            References = new()
-            {
-                $"folder:{folder}"
-            },
-            Usings = new()
-            {
-                "WeihanLi.Npoi"
-            },
+            References = [$"folder:{folder}"],
+            Usings = ["WeihanLi.Npoi"],
             Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump()"
         };
         var result = await _handler.Execute(options);
@@ -283,14 +259,8 @@ public class IntegrationTests
         using var output = await ConsoleOutput.CaptureAsync();
         var options = new ExecOptions()
         {
-            References = new()
-            {
-                $"project:{path}"
-            },
-            Usings = new()
-            {
-                "WeihanLi.Npoi"
-            },
+            References = [$"project:{path}"],
+            Usings = ["WeihanLi.Npoi"],
             Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump()"
         };
         var result = await _handler.Execute(options);
@@ -391,10 +361,10 @@ public class IntegrationTests
             IncludeWideReferences = false,
             CompilerType = compilerType,
             EnableSourceGeneratorSupport = true,
-            ParserFeatures = new KeyValuePair<string, string>[]
-            {
+            ParserFeatures =
+            [
                 new("InterceptorsPreviewNamespaces", "CSharp12Sample.Generated")
-            }
+            ]
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
@@ -422,10 +392,10 @@ public class IntegrationTests
             IncludeWideReferences = false,
             CompilerType = compilerType,
             EnableSourceGeneratorSupport = true,
-            ParserFeatures = new KeyValuePair<string, string>[]
-            {
+            ParserFeatures =
+            [
                 new("InterceptorsPreviewNamespaces", "CSharp12Sample.Generated")
-            }
+            ]
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
@@ -451,7 +421,7 @@ public class IntegrationTests
             IncludeWebReferences = false,
             IncludeWideReferences = false,
             CompilerType = compilerType,
-            ParserPreprocessorSymbolNames = new(){ symbolName }
+            ParserPreprocessorSymbolNames = [symbolName]
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
@@ -484,18 +454,56 @@ public class IntegrationTests
 
         _outputHelper.WriteLine(output.StandardOutput);
     }
+
+    [Fact]
+    public async Task ReferenceDuplicateTest()
+    {
+        var code = """
+        // r: nuget: WeihanLi.Common,1.0.60
+        // r: nuget: WeihanLi.Common, 1.0.60
+        // r: "nuget: WeihanLi.Common, 1.0.60"
+        Console.WriteLine("Hello World!");
+        """;
+        var options = new ExecOptions()
+        {
+            Script = code,
+            DryRun = true,
+        };
+        await _handler.Execute(options);
+        Assert.Single(options.References);
+    }
+    
+    
+    [Fact]
+    public async Task ReferenceDuplicateRemoveTest()
+    {
+        var code = """
+                   // r: nuget:WeihanLi.Common,1.0.60
+                   // r: "nuget: WeihanLi.Common, 1.0.60"
+                   Console.WriteLine("Hello World!");
+                   """;
+        var options = new ExecOptions()
+        {
+            Script = code,
+            DryRun = true,
+            References = ["-nuget: WeihanLi.Common, 1.0.60"]
+        };
+        await _handler.Execute(options);
+        Assert.Empty(options.References);
+    }
+
     
     public static IEnumerable<object[]> EntryMethodWithExitCodeTestData()
     {
-        yield return new object[] { 0, @"Console.WriteLine(""Amazing dotnet"");" };
+        yield return [0, @"Console.WriteLine(""Amazing dotnet"");"];
 
-        yield return new object[] { 0, "return 0;" };
-        yield return new object[] { 1, "return 1;" };
+        yield return [0, "return 0;"];
+        yield return [1, "return 1;"];
 
-        yield return new object[] { 0, "return await Task.FromResult(0);" };
-        yield return new object[] { 1, "return await Task.FromResult(1);" };
+        yield return [0, "return await Task.FromResult(0);"];
+        yield return [1, "return await Task.FromResult(1);"];
 
-        yield return new object[] { 0, "return await ValueTask.FromResult(0);" };
-        yield return new object[] { 1, "return await ValueTask.FromResult(1);" };
+        yield return [0, "return await ValueTask.FromResult(0);"];
+        yield return [1, "return await ValueTask.FromResult(1);"];
     }
 }
