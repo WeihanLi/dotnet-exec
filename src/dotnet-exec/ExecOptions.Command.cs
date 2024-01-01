@@ -82,7 +82,7 @@ public sealed partial class ExecOptions
     private static readonly Option<string[]> ParserFeaturesOption =
         new(["--compile-feature"], "Features for parsing and compiling");
 
-    private static readonly Option<bool> DryRunOption = new(["--dry-run", "--no-exec"], "Dry-run, would not execute script and output debug info");
+    private static readonly Option<bool> DryRunOption = new(["--dry-run"], "Dry-run, would not execute script and output debug info");
 
     static ExecOptions()
     {
