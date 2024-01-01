@@ -106,6 +106,10 @@ public sealed partial class ExecOptions
         IncludeWebReferences = parseResult.GetValueForOption(WebReferencesOption);
         CompilerType = parseResult.GetValueForOption(CompilerTypeOption) ?? Helper.Default;
         ExecutorType = parseResult.GetValueForOption(ExecutorTypeOption) ?? Helper.Default;
+        foreach (var reference in (parseResult.GetValueForOption(ReferencesOption) ?? []))
+        {
+            References.Add(Helper.ReferenceNormalize(reference));
+        }
         References = [..parseResult.GetValueForOption(ReferencesOption) ?? Array.Empty<string>()];
         Usings = [..parseResult.GetValueForOption(UsingsOption) ?? Array.Empty<string>()];
         AdditionalScripts = new(parseResult.GetValueForOption(AdditionalScriptsOption) ?? Array.Empty<string>(), StringComparer.Ordinal);

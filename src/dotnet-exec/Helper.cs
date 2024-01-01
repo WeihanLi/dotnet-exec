@@ -345,6 +345,12 @@ public static class Helper
             .SetMethod!
             .Invoke(compilationOptions, new object[] { true });
     }
+
+    public static string ReferenceNormalize(string reference)
+    {
+        var typedReference = ReferenceResolverFactory.ParseReference(reference);
+        return typedReference.ReferenceWithSchema;
+    }
 }
 
 public static class JsonSerializerOptionsHelper

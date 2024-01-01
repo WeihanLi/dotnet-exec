@@ -11,13 +11,27 @@ namespace ReferenceResolver;
 
 public sealed class ReferenceResolverFactory : IReferenceResolverFactory
 {
-    private static readonly char[] ReferenceSchemaSeparator = new[] { ':' };
+    private static readonly char[] ReferenceSchemaSeparator = [':'];
 
     private readonly IServiceProvider _serviceProvider;
 
     public ReferenceResolverFactory(IServiceProvider? serviceProvider)
     {
         _serviceProvider = serviceProvider ?? DependencyResolver.Current;
+    }
+
+    public static IReference ParseReference(string referenceWithSchema)
+    {
+        var (referenceType, reference) = GetReferenceType(referenceWithSchema);
+        return referenceType switch
+        {
+            ReferenceType.LocalFile => new FileReference(reference),
+            ReferenceType.LocalFolder => new FolderReference(reference),
+            ReferenceType.NuGetPackage => NuGetReference.Parse(reference),
+            ReferenceType.FrameworkReference => new FrameworkReference(reference),
+            ReferenceType.ProjectReference => new ProjectReference(reference),
+            _ => throw new InvalidOperationException($"Not supported reference {referenceWithSchema}")
+        };
     }
 
     public IReferenceResolver GetResolver(ReferenceType referenceType)
@@ -62,10 +76,16 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
         return await resolver.ResolveAnalyzerReferences(referenceWithoutSchema, targetFramework, analyzerAssemblyLoader, cancellationToken)
             .ConfigureAwait(false);
     }
-
+    
     private (string reference, IReferenceResolver referenceResolver) GetReferenceAndResolver(string fullReference)
     {
         ArgumentNullException.ThrowIfNull(fullReference);
+        var (referenceType, reference) = GetReferenceType(fullReference);
+        return (reference, GetResolver(referenceType));
+    }
+
+    private static (ReferenceType ReferenceType, string Reference) GetReferenceType(string fullReference)
+    {
         var splits = fullReference.Split(ReferenceSchemaSeparator, 2, StringSplitOptions.TrimEntries);
         var schema = "file";
         if (splits.Length == 2 && ReferenceTypeCache.Value.ContainsKey(splits[0]))
@@ -74,10 +94,13 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
         }
         var referenceWithoutSchema = splits.Length > 1 ? splits[1] : splits[0];
 
-        if (!ReferenceTypeCache.Value.TryGetValue(schema, out var referenceType))
-            throw new ArgumentException($"Unsupported reference type({fullReference})", nameof(fullReference));
+        if (ReferenceTypeCache.Value.TryGetValue(schema, out var referenceType))
+            return (referenceType, referenceWithoutSchema);
+        
+        if (File.Exists(fullReference))
+            return (ReferenceType.LocalFile, fullReference);
 
-        return (referenceWithoutSchema, GetResolver(referenceType));
+        throw new ArgumentException($"Unsupported reference type({fullReference})", nameof(fullReference));
     }
 
     private static readonly Lazy<Dictionary<string, ReferenceType>> ReferenceTypeCache = new(() =>
