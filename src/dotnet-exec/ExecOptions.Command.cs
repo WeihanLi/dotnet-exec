@@ -111,8 +111,8 @@ public sealed partial class ExecOptions
         {
             References.Add(Helper.ReferenceNormalize(reference));
         }
-        References = [..parseResult.GetValueForOption(ReferencesOption) ?? Array.Empty<string>()];
-        Usings = [..parseResult.GetValueForOption(UsingsOption) ?? Array.Empty<string>()];
+        References = [.. parseResult.GetValueForOption(ReferencesOption) ?? Array.Empty<string>()];
+        Usings = [.. parseResult.GetValueForOption(UsingsOption) ?? Array.Empty<string>()];
         AdditionalScripts = new(parseResult.GetValueForOption(AdditionalScriptsOption) ?? Array.Empty<string>(), StringComparer.Ordinal);
         UseRefAssembliesForCompile = parseResult.GetValueForOption(UseRefAssembliesForCompileOption);
         ConfigProfile = parseResult.GetValueForOption(ConfigProfileOption);

@@ -15,9 +15,9 @@ public interface INuGetHelper
         => ResolvePackageReferences(targetFramework, nugetReference.PackageId, nugetReference.PackageVersion,
             includePrerelease, cancellationToken);
 
-    IAsyncEnumerable<(NuGetSourceInfo Source, NuGetVersion Version)> GetPackageVersions(string packageId, bool includePrerelease = false, 
+    IAsyncEnumerable<(NuGetSourceInfo Source, NuGetVersion Version)> GetPackageVersions(string packageId, bool includePrerelease = false,
         Func<NuGetVersion, bool>? predict = null, CancellationToken cancellationToken = default);
-    
+
     Task<NuGetVersion?> GetLatestPackageVersion(string packageId, bool includePrerelease = false,
         CancellationToken cancellationToken = default);
     Task<(NuGetSourceInfo Source, NuGetVersion Version)?> GetLatestPackageVersionWithSource(string packageId, bool includePrerelease = false,

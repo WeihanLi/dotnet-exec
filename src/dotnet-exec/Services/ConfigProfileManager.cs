@@ -42,7 +42,7 @@ public sealed class ConfigProfileManager : IConfigProfileManager
     public Task DeleteProfile(string profileName)
     {
         if (!Directory.Exists(ProfileFolder)) return Task.CompletedTask;
-        
+
         var profilePath = Path.Combine(ProfileFolder, $"{profileName}.json");
         if (File.Exists(profilePath))
         {
@@ -54,7 +54,7 @@ public sealed class ConfigProfileManager : IConfigProfileManager
     public async Task<ConfigProfile?> GetProfile(string profileName)
     {
         if (!Directory.Exists(ProfileFolder)) return null;
-        
+
         var profilePath = Path.Combine(ProfileFolder, $"{profileName}.json");
         if (!File.Exists(profilePath)) return null;
 
@@ -65,7 +65,7 @@ public sealed class ConfigProfileManager : IConfigProfileManager
     public Task<string[]> ListProfiles()
     {
         if (!Directory.Exists(ProfileFolder)) return Task.FromResult(Array.Empty<string>());
-        
+
         var profileNames = Directory.GetFiles(ProfileFolder, "*.json")
             .Select(Path.GetFileNameWithoutExtension)
             .WhereNotNull()
@@ -76,7 +76,7 @@ public sealed class ConfigProfileManager : IConfigProfileManager
     private static void EnsureFolderCreated(string folderPath)
     {
         if (Directory.Exists(folderPath)) return;
-        
+
         var parent = Directory.GetParent(folderPath);
         if (parent is null || parent.Exists) return;
 

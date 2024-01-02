@@ -76,7 +76,7 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
         return await resolver.ResolveAnalyzerReferences(referenceWithoutSchema, targetFramework, analyzerAssemblyLoader, cancellationToken)
             .ConfigureAwait(false);
     }
-    
+
     private (string reference, IReferenceResolver referenceResolver) GetReferenceAndResolver(string fullReference)
     {
         ArgumentNullException.ThrowIfNull(fullReference);
@@ -96,7 +96,7 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
 
         if (ReferenceTypeCache.Value.TryGetValue(schema, out var referenceType))
             return (referenceType, referenceWithoutSchema);
-        
+
         if (File.Exists(fullReference))
             return (ReferenceType.LocalFile, fullReference);
 

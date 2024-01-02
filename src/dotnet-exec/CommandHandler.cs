@@ -81,10 +81,10 @@ public sealed class CommandHandler(ILogger logger,
             logger.LogError($"Compile error:{Environment.NewLine}{compileResult.Msg}");
             return -2;
         }
-        
+
         // return if dry-run
         if (options.DryRun) return 0;
-        
+
         Guard.NotNull(compileResult.Data);
         // execute
         var executor = executorFactory.GetExecutor(options.ExecutorType);

@@ -30,7 +30,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     private readonly PackageSourceMapping _packageSourceMapping;
     private readonly string _globalPackagesFolder;
     private readonly FrameworkReducer _frameworkReducer = new();
-    
+
     private readonly LoggerBase _nugetLogger;
     private readonly ILogger _logger;
 
@@ -38,7 +38,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     {
         _logger = loggerFactory.CreateLogger(LoggerCategoryName);
         _nugetLogger = new NuGetLoggingAdapter(_logger);
-        
+
         var configProfilePath = Environment.GetEnvironmentVariable("REFERENCE_RESOLVER_NUGET_CONFIG_PATH");
         ISettings nugetSettings;
         var root = Environment.CurrentDirectory;
@@ -46,14 +46,14 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         {
             nugetSettings = Settings.LoadSpecificSettings(root, Path.GetFullPath(configProfilePath));
             _logger.LogInformation(
-                "NuGetHelper is using the specific nuget config file {NuGetConfigPath}, current working directory: {Root}", 
+                "NuGetHelper is using the specific nuget config file {NuGetConfigPath}, current working directory: {Root}",
                 configProfilePath, root);
         }
         else
         {
             nugetSettings = Settings.LoadDefaultSettings(root);
         }
-        
+
         _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(nugetSettings);
         var resourceProviders = Repository.Provider.GetCoreV3().ToArray();
         foreach (var packageSource in SettingsUtility.GetEnabledSources(nugetSettings))
@@ -65,8 +65,8 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         _packageSourceMapping = PackageSourceMapping.GetPackageSourceMapping(nugetSettings);
     }
 
-    public async IAsyncEnumerable<string> GetPackages(string packagePrefix, bool includePreRelease = true, 
-        [EnumeratorCancellation]CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<string> GetPackages(string packagePrefix, bool includePreRelease = true,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         foreach (var repository in GetPackageSourceRepositories())
         {
@@ -90,7 +90,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
         var packagerIdentity = new PackageIdentity(packageId, version);
         var pkgDownloadContext = new PackageDownloadContext(_sourceCacheContext);
-        
+
         foreach (var sourceRepository in GetPackageSourceRepositories(packageId))
         {
             var downloadRes = await sourceRepository.GetResourceAsync<DownloadResource>(cancellationToken).ConfigureAwait(false);
@@ -103,16 +103,16 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
                     cancellationToken).ConfigureAwait(false), _ => true, 5).ConfigureAwait(false);
             if (downloadResult?.Status != DownloadResourceResultStatus.Available)
                 continue;
-            
-            _logger.LogInformation("Package({PackageIdentity}) downloaded to {PackageDirectory} from {PackageSource}", 
+
+            _logger.LogInformation("Package({PackageIdentity}) downloaded to {PackageDirectory} from {PackageSource}",
                 packagerIdentity, packageDir, downloadResult.PackageSource ?? sourceRepository.PackageSource.Name);
         }
-        
+
         return Directory.Exists(packageDir) ? packageDir : null;
     }
 
-    public async IAsyncEnumerable<(NuGetSourceInfo Source, NuGetVersion Version)> GetPackageVersions(string packageId, bool includePrerelease = false, Func<NuGetVersion, bool>? predict = null, 
-        [EnumeratorCancellation]CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<(NuGetSourceInfo Source, NuGetVersion Version)> GetPackageVersions(string packageId, bool includePrerelease = false, Func<NuGetVersion, bool>? predict = null,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         foreach (var sourceRepository in GetPackageSourceRepositories(packageId))
         {
@@ -135,7 +135,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         CancellationToken cancellationToken = default)
         => GetLatestPackageVersionWithSource(packageId, includePrerelease, cancellationToken)
             .ContinueWith(r => r.Result?.Version, cancellationToken);
-    
+
     public async Task<(NuGetSourceInfo Source, NuGetVersion Version)?> GetLatestPackageVersionWithSource(string packageId, bool includePrerelease = false,
         CancellationToken cancellationToken = default)
     {
@@ -154,8 +154,8 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         // ReSharper disable once SimplifyLinqExpressionUseMinByAndMaxBy
         var maxVersion = versions
             // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            .Where(x=> x.Version != null)
-            .OrderByDescending(v=> v.Version)
+            .Where(x => x.Version != null)
+            .OrderByDescending(v => v.Version)
             .FirstOrDefault();
         return maxVersion;
     }
@@ -174,7 +174,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
                 _nugetLogger, cancellationToken).ConfigureAwait(false);
             if (result) return true;
         }
-        
+
         return false;
     }
 
@@ -410,7 +410,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
             packageVersion.ToString());
         return packageDir;
     }
- 
+
     private IEnumerable<SourceRepository> GetPackageSourceRepositories(string? packageId = null)
     {
         if (!_packageSourceMapping.IsEnabled || string.IsNullOrEmpty(packageId))
@@ -468,7 +468,7 @@ file sealed class NuGetSourceRepositoryComparer : IEqualityComparer<SourceReposi
     {
         if (x == null)
             return y is null;
-        
+
         return y != null && x.PackageSource.Source.Equals(y.PackageSource.Source, StringComparison.Ordinal);
     }
 

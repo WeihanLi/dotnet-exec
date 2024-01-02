@@ -41,7 +41,7 @@ public static class Helper
     {
         var isDebugMode = args.Contains("--debug") || args.Contains("--dry-run");
         if (isDebugMode && !Debugger.IsAttached && args.Contains("--attach")) Debugger.Launch();
-        
+
         services.AddLogging(builder =>
         {
             builder.AddConsole();
@@ -348,7 +348,7 @@ public static class Helper
 
     public static string ReferenceNormalize(string reference)
     {
-        IReference typedReference; 
+        IReference typedReference;
         if (reference.StartsWith('-'))
         {
             typedReference = ReferenceResolverFactory.ParseReference(reference[1..]);

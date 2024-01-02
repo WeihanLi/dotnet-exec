@@ -25,16 +25,16 @@ public sealed record NuGetReference(string PackageId, NuGetVersion? PackageVersi
         packageVersion = PackageVersion?.ToString();
         hasVersion = PackageVersion != null;
     }
-    
+
     private static readonly char[] Separator = [',', ':'];
     public static NuGetReference Parse(string reference)
     {
-        var splits = reference.Split(Separator, 2, 
+        var splits = reference.Split(Separator, 2,
             StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.RemoveEmptyEntries);
         var packageId = splits[0];
-        if (splits.Length != 2 || string.IsNullOrEmpty(splits[1])) 
+        if (splits.Length != 2 || string.IsNullOrEmpty(splits[1]))
             return new(packageId, (NuGetVersion?)null);
-        
+
         var packageVersion = NuGetVersion.Parse(splits[1]);
         return new(packageId, packageVersion);
     }

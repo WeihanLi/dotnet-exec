@@ -18,7 +18,7 @@ public class NuGetHelperTest
         Assert.NotNull(versions);
         Assert.DoesNotContain(versions, v => v.Version.OriginalVersion?.Contains("preview") == true);
     }
-    
+
     [Theory]
     [InlineData("Microsoft.NETCore.App.Ref")]
     public async Task GetPackageVersionsIncludePreview(string packageId)
@@ -27,7 +27,7 @@ public class NuGetHelperTest
         Assert.NotNull(versions);
         Assert.NotEmpty(versions);
         Assert.Contains(versions, v => v.Version.OriginalVersion?.Contains("preview") == true);
-        var maxVersion = versions.MaxBy(x=> x.Version);
+        var maxVersion = versions.MaxBy(x => x.Version);
         Assert.NotNull(maxVersion.Source);
     }
 

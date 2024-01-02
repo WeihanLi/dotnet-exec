@@ -430,7 +430,7 @@ public class IntegrationTests
 
         _outputHelper.WriteLine(output.StandardOutput);
     }
-    
+
     [Theory]
     [InlineData("workspace")]
     [InlineData("simple")]
@@ -472,8 +472,7 @@ public class IntegrationTests
         await _handler.Execute(options);
         Assert.Single(options.References);
     }
-    
-    
+
     [Fact]
     public async Task ReferenceDuplicateRemoveTest()
     {
@@ -491,7 +490,7 @@ public class IntegrationTests
         await _handler.Execute(options);
         Assert.Empty(options.References);
     }
-    
+
     [Fact]
     public async Task ReferenceDuplicateRemoveTest2()
     {
@@ -510,7 +509,7 @@ public class IntegrationTests
         Assert.Empty(options.References);
     }
 
-    
+
     public static IEnumerable<object[]> EntryMethodWithExitCodeTestData()
     {
         yield return [0, @"Console.WriteLine(""Amazing dotnet"");"];

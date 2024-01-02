@@ -39,7 +39,7 @@ public class ReferenceTest
         var reference2 = new NuGetReference("ReferenceResolver", "1.0.0");
         Assert.Equal(reference1, reference2);
     }
-    
+
     [Fact]
     public async Task NuGetReferenceResolveTest()
     {

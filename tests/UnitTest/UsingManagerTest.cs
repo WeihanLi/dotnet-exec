@@ -16,7 +16,7 @@ public class UsingManagerTest
         Assert.NotEmpty(usings);
         Assert.Equal(2, usings.Count);
     }
-    
+
     [Fact]
     public void GetRemoveUsing()
     {
@@ -27,8 +27,8 @@ public class UsingManagerTest
         Assert.Single(usings);
         Assert.Equal("WeihanLi.Common", usings.First());
     }
-    
-    
+
+
     [Fact]
     public void GetRemoveGlobalUsing()
     {
@@ -39,7 +39,7 @@ public class UsingManagerTest
         Assert.Single(usings);
         Assert.Equal("WeihanLi.Common", usings.First());
     }
-    
+
     [Fact]
     public void GetGlobalUsingText()
     {

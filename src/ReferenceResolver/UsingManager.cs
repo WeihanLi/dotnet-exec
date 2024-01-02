@@ -15,7 +15,7 @@ public static class UsingManager
             : FrameworkReferenceResolver.GetImplicitUsings(frameworkOfImplicitUsing),
             StringComparer.Ordinal
         );
-        
+
         if (usings is { Count: > 0 })
         {
             foreach (var @using in usings.Where(u => !u.StartsWith('-')))
@@ -33,11 +33,11 @@ public static class UsingManager
                 }
             }
         }
-        
+
         return usingList;
     }
-    
-    public static string GetGlobalUsingsCodeText(ICollection<string> usings, 
+
+    public static string GetGlobalUsingsCodeText(ICollection<string> usings,
         string? frameworkOfImplicitUsing = null)
     {
         var usingList = GetUsings(usings, frameworkOfImplicitUsing);
