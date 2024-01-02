@@ -29,7 +29,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         IgnoreFailedSources = true
     };
 
-    private readonly ISettings _nugetSettings = Settings.LoadDefaultSettings(Environment.CurrentDirectory);
+    private readonly ISettings _nugetSettings;
     private readonly PackageSourceMapping _packageSourceMapping;
     
     private readonly FrameworkReducer _frameworkReducer = new();
@@ -43,8 +43,18 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     {
         _logger = loggerFactory.CreateLogger(LoggerCategoryName);
         _nugetLogger = new NuGetLoggingAdapter(_logger);
-        _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(_nugetSettings);
         
+        var configProfilePath = Environment.GetEnvironmentVariable("DOTNET_EXEC_NUGET_CONFIG_PATH");
+        if (!string.IsNullOrEmpty(configProfilePath) && File.Exists(configProfilePath))
+        {
+            _nugetSettings = Settings.LoadSpecificSettings(Environment.CurrentDirectory, Path.GetFullPath(configProfilePath));
+        }
+        else
+        {
+            _nugetSettings = Settings.LoadDefaultSettings(Environment.CurrentDirectory);
+        }
+        
+        _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(_nugetSettings);
         var resourceProviders = Repository.Provider.GetCoreV3().ToArray();
         foreach (var packageSource in SettingsUtility.GetEnabledSources(_nugetSettings))
         {
