@@ -39,6 +39,7 @@ jobs:
     - name: Build and push web
       id: docker_build_web_release
       uses: docker/build-push-action@v2
+      if: ${{ github.event_name == 'release' }}
       with:
         context: ./
         file: ./Dockerfile.web
