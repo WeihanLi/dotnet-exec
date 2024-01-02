@@ -41,13 +41,17 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         
         var configProfilePath = Environment.GetEnvironmentVariable("REFERENCE_RESOLVER_NUGET_CONFIG_PATH");
         ISettings nugetSettings;
+        var root = Environment.CurrentDirectory;
         if (!string.IsNullOrEmpty(configProfilePath) && File.Exists(configProfilePath))
         {
-            nugetSettings = Settings.LoadSpecificSettings(Environment.CurrentDirectory, Path.GetFullPath(configProfilePath));
+            nugetSettings = Settings.LoadSpecificSettings(root, Path.GetFullPath(configProfilePath));
+            _logger.LogInformation(
+                "NuGetHelper is using the specific nuget config file {NuGetConfigPath}, current working directory: {Root}", 
+                configProfilePath, root);
         }
         else
         {
-            nugetSettings = Settings.LoadDefaultSettings(Environment.CurrentDirectory);
+            nugetSettings = Settings.LoadDefaultSettings(root);
         }
         
         _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(nugetSettings);
