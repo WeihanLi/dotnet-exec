@@ -352,13 +352,11 @@ public static class Helper
         if (reference.StartsWith('-'))
         {
             typedReference = ReferenceResolverFactory.ParseReference(reference[1..]);
-            return $"-{typedReference.ReferenceWithSchema}";
+            return $"- {typedReference.ReferenceWithSchema}";
         }
-        else
-        {
-            typedReference = ReferenceResolverFactory.ParseReference(reference);
-            return typedReference.ReferenceWithSchema;
-        }
+
+        typedReference = ReferenceResolverFactory.ParseReference(reference);
+        return typedReference.ReferenceWithSchema;
     }
 }
 

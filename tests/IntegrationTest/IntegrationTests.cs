@@ -491,6 +491,24 @@ public class IntegrationTests
         await _handler.Execute(options);
         Assert.Empty(options.References);
     }
+    
+    [Fact]
+    public async Task ReferenceDuplicateRemoveTest2()
+    {
+        var code = """
+                   // r: nuget:WeihanLi.Common,1.0.60
+                   // r: "nuget: WeihanLi.Common, 1.0.60"
+                   Console.WriteLine("Hello World!");
+                   """;
+        var options = new ExecOptions()
+        {
+            Script = code,
+            DryRun = true,
+            References = ["- nuget: WeihanLi.Common, 1.0.60"]
+        };
+        await _handler.Execute(options);
+        Assert.Empty(options.References);
+    }
 
     
     public static IEnumerable<object[]> EntryMethodWithExitCodeTestData()

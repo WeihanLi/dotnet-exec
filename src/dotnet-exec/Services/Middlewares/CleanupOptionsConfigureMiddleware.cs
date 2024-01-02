@@ -12,7 +12,7 @@ internal sealed class CleanupOptionsConfigureMiddleware : IOptionsConfigureMiddl
         var referenceToRemoved = options.References.Where(r => r.StartsWith('-')).ToArray();
         foreach (var reference in referenceToRemoved)
         {
-            var referenceToRemove = reference[1..];
+            var referenceToRemove = reference[1..].Trim();
             options.References.Remove(referenceToRemove);
             options.References.Remove(reference);
         }
