@@ -12,8 +12,9 @@ on:
       - 'Directory.*'
       - 'src/**'
       - 'build/**'
-jobs:
-  build:
+jobs:  
+  docker-build:
+    if: github.repository == 'WeihanLi/dotnet-exec'
     runs-on: ubuntu-latest
 
     steps:
