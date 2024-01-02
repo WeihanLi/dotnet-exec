@@ -16,7 +16,7 @@ public abstract class CodeExecutor(ILogger logger) : ICodeExecutor
         {
             var assembliesString = assembly.GetReferencedAssemblies()
               .Select(x => x.FullName)
-              .StringJoin(";");
+              .StringJoin("; ");
             Logger.LogDebug("ReferencedAssemblies: {assemblies}", assembliesString);
         }
         var entryMethod = assembly.EntryPoint;
@@ -46,12 +46,12 @@ public abstract class CodeExecutor(ILogger logger) : ICodeExecutor
                 object? returnValue = null;
                 if (parameters.IsNullOrEmpty())
                 {
-                    returnValue = entryMethod.Invoke(null, Array.Empty<object?>());
+                    returnValue = entryMethod.Invoke(null, []);
                     executed = true;
                 }
                 else if (parameters.Length == 1 && parameters[0].ParameterType == typeof(string[]))
                 {
-                    returnValue = entryMethod.Invoke(null, new object?[] { options.Arguments });
+                    returnValue = entryMethod.Invoke(null, [options.Arguments]);
                     executed = true;
                 }
                 await TaskHelper.ToTask(returnValue).ConfigureAwait(false);
