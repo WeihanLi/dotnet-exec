@@ -1,5 +1,15 @@
 # Release Notes
 
+## 0.16.0(To be released)
+
+- Update config profile directory path to fix config profile error in Linux Platform
+- Add private nuget source support via nuget config
+- Add `--nuget-config` option to specify a nuget config file path
+- Add `--dry-run` option to compile code without execution
+- Add reference normalize to avoid duplicate references
+- Allow more style of references
+- Replace cake build with dotnet-exec + C# script
+
 ## 0.15.0
 
 - .NET 8 Release, C# 12 features support
