@@ -83,6 +83,7 @@ public sealed partial class ExecOptions
         new(["--compile-feature"], "Features for parsing and compiling");
 
     private static readonly Option<bool> DryRunOption = new(["--dry-run"], "Dry-run, would not execute script and output debug info");
+    private static readonly Option<string> NuGetConfigFileOption = new(["--nuget-config"], "NuGet config file path to use");
 
     static ExecOptions()
     {
@@ -124,6 +125,11 @@ public sealed partial class ExecOptions
             .ToArray();
         DryRun = parseResult.HasOption(DryRunOption);
         DebugEnabled = parseResult.HasOption(DebugOption) || DryRun;
+        var nugetConfigFile = parseResult.GetValueForOption(NuGetConfigFileOption);
+        if (!string.IsNullOrEmpty(nugetConfigFile))
+        {
+            Environment.SetEnvironmentVariable("REFERENCE_RESOLVER_NUGET_CONFIG_PATH", nugetConfigFile);
+        }
 
         if (configProfile != null)
         {

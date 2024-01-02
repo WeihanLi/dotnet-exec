@@ -23,21 +23,16 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     private const string LoggerCategoryName = "NuGetClient";
 
     private readonly HashSet<SourceRepository> _nugetSources = new(new NuGetSourceRepositoryComparer());
-
     private readonly SourceCacheContext _sourceCacheContext = new()
     {
         IgnoreFailedSources = true
     };
-
-    private readonly ISettings _nugetSettings;
     private readonly PackageSourceMapping _packageSourceMapping;
-    
+    private readonly string _globalPackagesFolder;
     private readonly FrameworkReducer _frameworkReducer = new();
-
+    
     private readonly LoggerBase _nugetLogger;
     private readonly ILogger _logger;
-
-    private readonly string _globalPackagesFolder;
 
     public NuGetHelper(ILoggerFactory loggerFactory)
     {
@@ -45,24 +40,25 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         _nugetLogger = new NuGetLoggingAdapter(_logger);
         
         var configProfilePath = Environment.GetEnvironmentVariable("REFERENCE_RESOLVER_NUGET_CONFIG_PATH");
+        ISettings nugetSettings;
         if (!string.IsNullOrEmpty(configProfilePath) && File.Exists(configProfilePath))
         {
-            _nugetSettings = Settings.LoadSpecificSettings(Environment.CurrentDirectory, Path.GetFullPath(configProfilePath));
+            nugetSettings = Settings.LoadSpecificSettings(Environment.CurrentDirectory, Path.GetFullPath(configProfilePath));
         }
         else
         {
-            _nugetSettings = Settings.LoadDefaultSettings(Environment.CurrentDirectory);
+            nugetSettings = Settings.LoadDefaultSettings(Environment.CurrentDirectory);
         }
         
-        _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(_nugetSettings);
+        _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(nugetSettings);
         var resourceProviders = Repository.Provider.GetCoreV3().ToArray();
-        foreach (var packageSource in SettingsUtility.GetEnabledSources(_nugetSettings))
+        foreach (var packageSource in SettingsUtility.GetEnabledSources(nugetSettings))
         {
             _nugetSources.Add(new SourceRepository(packageSource, resourceProviders));
         }
         // try add nuget.org
         _nugetSources.Add(Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json"));
-        _packageSourceMapping = PackageSourceMapping.GetPackageSourceMapping(_nugetSettings);
+        _packageSourceMapping = PackageSourceMapping.GetPackageSourceMapping(nugetSettings);
     }
 
     public async IAsyncEnumerable<string> GetPackages(string packagePrefix, bool includePreRelease = true, 
