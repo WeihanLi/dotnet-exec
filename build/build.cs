@@ -108,7 +108,7 @@ bool ArgumentBool(string argumentName, bool defaultValue = default)
     var value = ArgumentInternal(argumentName);
     if (value is null) return defaultValue;
     if (value == string.Empty || value == "1") return true;
-    return bool.Parse(value);
+    return value is "0" ? false : bool.Parse(value);
 }
 
 string? Argument(string argumentName, string? defaultValue = default)
