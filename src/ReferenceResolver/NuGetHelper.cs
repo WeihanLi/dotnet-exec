@@ -44,7 +44,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         _logger = loggerFactory.CreateLogger(LoggerCategoryName);
         _nugetLogger = new NuGetLoggingAdapter(_logger);
         
-        var configProfilePath = Environment.GetEnvironmentVariable("DOTNET_EXEC_NUGET_CONFIG_PATH");
+        var configProfilePath = Environment.GetEnvironmentVariable("REFERENCE_RESOLVER_NUGET_CONFIG_PATH");
         if (!string.IsNullOrEmpty(configProfilePath) && File.Exists(configProfilePath))
         {
             _nugetSettings = Settings.LoadSpecificSettings(Environment.CurrentDirectory, Path.GetFullPath(configProfilePath));
