@@ -1,10 +1,7 @@
 // Copyright (c) 2022-2023 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
-// r: "nuget: CliWrap, 3.6.4"
-
 using CliWrap;
-using Newtonsoft.Json;
 
 //
 var target = Guard.NotNull(Argument("target", "Default"));
@@ -142,14 +139,10 @@ async Task ExecuteCommandAsync(string commandText)
 {
     Console.WriteLine($"Executing command: \n    {commandText}");
     Console.WriteLine();
-    var splits = commandText.Split([' '], 2);
-    var result = await Cli.Wrap(splits[0])
-        .WithArguments(splits.Length > 1 ? splits[1] : string.Empty)
-        .WithStandardErrorPipe(PipeTarget.ToStream(Console.OpenStandardError()))
-        .WithStandardOutputPipe(PipeTarget.ToStream(Console.OpenStandardOutput()))
-        .ExecuteAsync();
+
+    var result = await CommandExecutor.ExecuteCommandAndOutputAsync(commandText);
+    result.EnsureSuccessExitCode();
     Console.WriteLine();
-    Console.WriteLine($"ExitCode: {result.ExitCode} ElapsedTime: {result.RunTime}");
 }
 
 file sealed class BuildProcess
