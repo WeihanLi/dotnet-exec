@@ -31,7 +31,7 @@ jobs:
       with:
         path: ~/.nuget/packages
         # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.*') }}
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.*', '**/*.csproj') }}
         restore-keys: |
           ${{ matrix.os }}-nuget
     - name: dotnet info
@@ -50,6 +50,13 @@ jobs:
           6.x
           7.x
           8.x
+    - uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.*', '**/*.csproj') }}
+        restore-keys: |
+          windows-nuget
     - name: dotnet info
       run: dotnet --info
     - name: build
