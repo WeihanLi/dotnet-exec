@@ -84,6 +84,8 @@ public sealed partial class ExecOptions
 
     private static readonly Option<bool> DryRunOption = new(["--dry-run"], "Dry-run, would not execute script and output debug info");
     private static readonly Option<string> NuGetConfigFileOption = new(["--nuget-config"], "NuGet config file path to use");
+    private static readonly Option<string[]> EnvOption =
+        new(["--env"], "Set environment variable for process, usage example: --env name=test --env value=123");
 
     static ExecOptions()
     {
@@ -123,6 +125,10 @@ public sealed partial class ExecOptions
             .Select(x => x.Split('='))
             .Select(x => new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))
             .ToArray();
+        EnvVariables = parseResult.GetValueForOption(EnvOption)?
+            .Select(x=> x.Split('='))
+            .Select(x => new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))
+            .ToArray();
         DryRun = parseResult.HasOption(DryRunOption);
         DebugEnabled = parseResult.HasOption(DebugOption) || DryRun;
         var nugetConfigFile = parseResult.GetValueForOption(NuGetConfigFileOption);
@@ -157,6 +163,14 @@ public sealed partial class ExecOptions
             foreach (var profileUsing in configProfile.Usings)
             {
                 Usings.Add(profileUsing);
+            }
+        }
+
+        if (EnvVariables is { Length: > 0 })
+        {
+            foreach (var envVariable in EnvVariables)
+            {
+                Environment.SetEnvironmentVariable(envVariable.Key, envVariable.Value);
             }
         }
     }

@@ -48,6 +48,7 @@ public sealed partial class ExecOptions
     public HashSet<string>? ParserPreprocessorSymbolNames { get; set; }
 
     public KeyValuePair<string, string>[]? ParserFeatures { get; set; }
+    public KeyValuePair<string, string>[]? EnvVariables { get; set; }
 
     public bool DryRun { get; set; }
 
