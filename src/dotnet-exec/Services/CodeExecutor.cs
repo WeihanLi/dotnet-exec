@@ -34,42 +34,43 @@ public abstract class CodeExecutor(ILogger logger) : ICodeExecutor
             entryMethod = staticMethods.MinBy(m => m.GetParameters().Length);
         }
 
-        var returnExitCode = 0;
-        var executed = false;
-        if (entryMethod is not null)
-        {
-            var parameters = entryMethod.GetParameters();
-            Logger.LogDebug("Entry is found, {entryName}, returnType: {returnType}",
-                $"{entryMethod.DeclaringType!.FullName}.{entryMethod.Name}", entryMethod.ReturnType.FullName);
-            try
-            {
-                object? returnValue = null;
-                if (parameters.IsNullOrEmpty())
-                {
-                    returnValue = entryMethod.Invoke(null, []);
-                    executed = true;
-                }
-                else if (parameters.Length == 1 && parameters[0].ParameterType == typeof(string[]))
-                {
-                    returnValue = entryMethod.Invoke(null, [options.Arguments]);
-                    executed = true;
-                }
-                await TaskHelper.ToTask(returnValue).ConfigureAwait(false);
-                returnExitCode = returnValue switch
-                {
-                    ValueTask<int> valueTaskValue => valueTaskValue.Result,
-                    Task<int> taskValue => taskValue.Result,
-                    int value => value,
-                    _ => 0
-                };
-            }
-            catch (Exception e)
-            {
-                return Result.Fail(e.ToString(), ResultStatus.ProcessFail, (int)ResultStatus.ProcessFail);
-            }
-        }
 
-        return executed ? Result.Success(returnExitCode) : Result.Fail("No valid EntryPoint found", ResultStatus.RequestError, (int)ResultStatus.RequestError);
+        if (entryMethod is null)
+            return Result.Fail("No valid EntryPoint found", ResultStatus.RequestError, (int)ResultStatus.RequestError);
+        
+        var parameters = entryMethod.GetParameters();
+        Logger.LogDebug("Entry is found, {entryName}, returnType: {returnType}",
+            $"{entryMethod.DeclaringType!.FullName}.{entryMethod.Name}", entryMethod.ReturnType.FullName);
+        try
+        {
+            object? returnValue = null;
+            if (parameters.IsNullOrEmpty())
+            {
+                returnValue = entryMethod.Invoke(null, []);
+            }
+            else if (parameters.Length == 1 && parameters[0].ParameterType == typeof(string[]))
+            {
+                returnValue = entryMethod.Invoke(null, [options.Arguments]);
+            }
+            else
+            {
+                return Result.Fail("No valid EntryPoint found", ResultStatus.RequestError, (int)ResultStatus.RequestError);
+            }
+            
+            await TaskHelper.ToTask(returnValue).ConfigureAwait(false);
+            var returnExitCode = returnValue switch
+            {
+                ValueTask<int> valueTaskValue => valueTaskValue.Result,
+                Task<int> taskValue => taskValue.Result,
+                int value => value,
+                _ => 0
+            };
+            return Result.Success(returnExitCode);
+        }
+        catch (Exception e)
+        {
+            return Result.Fail(e.ToString(), ResultStatus.ProcessFail, (int)ResultStatus.ProcessFail);
+        }
     }
 
     public abstract Task<Result<int>> Execute(CompileResult compileResult, ExecOptions options);
