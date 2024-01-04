@@ -1,6 +1,6 @@
 # Release Notes
 
-## 0.16.0(To be released)
+## 0.16.0
 
 - Update config profile directory path to fix config profile error in Linux Platform
 - Add private nuget source support via nuget config
@@ -8,6 +8,8 @@
 - Add `--dry-run` option to compile code without execution
 - Add reference normalize to avoid duplicate references
 - Allow more style of references
+- Support `--env` option to setup environment
+- Support `--` to pass raw command arguments
 - Replace cake build with dotnet-exec + C# script
 
 ## 0.15.0
