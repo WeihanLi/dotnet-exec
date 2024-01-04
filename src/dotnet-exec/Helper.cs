@@ -81,6 +81,8 @@ public static class Helper
         return services;
     }
 
+    public static string[] CommandArguments { get; set; } = [];
+
     private static IServiceCollection RegisterOptionsConfigureMiddleware<TMiddleware>
         (this IServiceCollection services) where TMiddleware : class, IOptionsConfigureMiddleware
     {

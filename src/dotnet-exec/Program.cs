@@ -6,4 +6,11 @@ await using var serviceProvider = new ServiceCollection()
     .BuildServiceProvider();
 var command = ExecOptions.GetCommand();
 command.Initialize(serviceProvider);
+var index = Array.IndexOf(args, "--");
+if (index > -1 && index < args.Length)
+{
+    var normalizedArgs = args[..index];
+    Helper.CommandArguments = args[(index + 1)..];
+    return await command.InvokeAsync(normalizedArgs);
+}
 return await command.InvokeAsync(args);

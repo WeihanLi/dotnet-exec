@@ -49,6 +49,11 @@
       "commandName": "Project",
       "targetFramework": "net8.0",
       "commandLineArgs": "'1+2' --dry-run"
+    },
+    "waw-test": {
+      "commandName": "Project",
+      "targetFramework": "net8.0",
+      "commandLineArgs": "'1+2' -- --target hello"
     }
   }
 }

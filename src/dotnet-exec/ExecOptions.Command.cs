@@ -102,8 +102,14 @@ public sealed partial class ExecOptions
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption)
             .GetValueOrDefault(DefaultTargetFramework);
         Configuration = parseResult.GetValueForOption(ConfigurationOption);
+
         Arguments = CommandLineStringSplitter.Instance
             .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
+        if (Arguments.IsNullOrEmpty() && Helper.CommandArguments.HasValue())
+        {
+            Arguments = Helper.CommandArguments;
+        }
+
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
         IncludeWideReferences = parseResult.GetValueForOption(WideReferencesOption);
         IncludeWebReferences = parseResult.GetValueForOption(WebReferencesOption);
