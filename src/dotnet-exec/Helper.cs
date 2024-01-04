@@ -239,8 +239,8 @@ public static class Helper
 
         if (options.IncludeWideReferences)
         {
-            yield return new[]
-            {
+            yield return
+            [
                 "global::Microsoft.Extensions.Configuration",
                 "global::Microsoft.Extensions.DependencyInjection",
                 "global::Microsoft.Extensions.Logging",
@@ -249,7 +249,7 @@ public static class Helper
                 "global::WeihanLi.Common.Helpers",
                 "global::WeihanLi.Extensions",
                 "global::WeihanLi.Extensions.Dump"
-            };
+            ];
         }
 
         const string frameworkPrefix = "framework:";
@@ -314,7 +314,7 @@ public static class Helper
     }
 
     // ReSharper disable once InconsistentNaming
-    private static readonly HashSet<string> _supportedFrameworks = new();
+    private static readonly HashSet<string> _supportedFrameworks = [];
     public static HashSet<string> SupportedFrameworks
     {
         get
