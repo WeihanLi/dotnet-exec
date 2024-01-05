@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2022-2023 Weihan Li. All rights reserved.
+﻿// Copyright (c) 2022-2024 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 using System.Reflection;
@@ -37,7 +37,7 @@ public abstract class CodeExecutor(ILogger logger) : ICodeExecutor
 
         if (entryMethod is null)
             return Result.Fail("No valid EntryPoint found", ResultStatus.RequestError, (int)ResultStatus.RequestError);
-        
+
         var parameters = entryMethod.GetParameters();
         Logger.LogDebug("Entry is found, {entryName}, returnType: {returnType}",
             $"{entryMethod.DeclaringType!.FullName}.{entryMethod.Name}", entryMethod.ReturnType.FullName);
@@ -56,7 +56,7 @@ public abstract class CodeExecutor(ILogger logger) : ICodeExecutor
             {
                 return Result.Fail("No valid EntryPoint found", ResultStatus.RequestError, (int)ResultStatus.RequestError);
             }
-            
+
             await TaskHelper.ToTask(returnValue).ConfigureAwait(false);
             var returnExitCode = returnValue switch
             {

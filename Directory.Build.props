@@ -4,7 +4,7 @@
     <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Copyright>Copyright 2022-2023 (c) WeihanLi</Copyright>
+    <Copyright>Copyright 2022-2024 (c) WeihanLi</Copyright>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/WeihanLi/dotnet-exec</RepositoryUrl>
     <Product>dotnet-exec</Product>

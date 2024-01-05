@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2022-2023 Weihan Li. All rights reserved.
+﻿// Copyright (c) 2022-2024 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 using Exec.Commands;
@@ -103,7 +103,7 @@ public sealed partial class ExecOptions
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption)
             .GetValueOrDefault(DefaultTargetFramework);
         Configuration = parseResult.GetValueForOption(ConfigurationOption);
-        
+
         if (Helper.CommandArguments.HasValue())
         {
             Arguments = Helper.CommandArguments;
@@ -111,7 +111,7 @@ public sealed partial class ExecOptions
         else
         {
             Arguments = CommandLineStringSplitter.Instance
-                .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();    
+                .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
         }
 
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
@@ -136,7 +136,7 @@ public sealed partial class ExecOptions
             .Select(x => new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))
             .ToArray();
         EnvVariables = parseResult.GetValueForOption(EnvOption)?
-            .Select(x=> x.Split('='))
+            .Select(x => x.Split('='))
             .Select(x => new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))
             .ToArray();
         DryRun = parseResult.HasOption(DryRunOption);
