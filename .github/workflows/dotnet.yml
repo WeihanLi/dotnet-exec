@@ -57,8 +57,14 @@ jobs:
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.*', '**/*.csproj') }}
         restore-keys: |
           windows-nuget
+    - name: Setup dotnet-sonar
+      run: |
+        dotnet tool update --global dotnet-sonar
+        dotnet-sonarscanner begin /k:"WeihanLi_dotnet-exec" /o:"weihanli" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
     - name: dotnet info
       run: dotnet --info
     - name: build
       shell: pwsh
       run: .\build.ps1
+    - name: post build
+      run: dotnet-sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
