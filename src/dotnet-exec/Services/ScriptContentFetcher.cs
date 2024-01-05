@@ -30,7 +30,7 @@ public class AdditionalScriptContentFetcher(HttpClient httpClient, IUriTransform
                 }
                 else
                 {
-                    if (GetType() == typeof(ScriptContentFetcher))
+                    if (this is ScriptContentFetcher)
                     {
                         logger.LogDebug("The file {ScriptFile} does not exists, treat as {ScriptType}",
                             script, script.EndsWith(';') ? "code" : Helper.Script);
