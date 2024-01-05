@@ -6,6 +6,8 @@
     <Description>Aims to simplify the references for the Roslyn compilation during runtime</Description>
     <PackageProjectUrl>https://github.com/WeihanLi/dotnet-exec/tree/main/src/ReferenceResolver</PackageProjectUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- https://learn.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu5104 -->
+    <NoWarn>$(NoWarn);NU5104</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" Visible="false" PackagePath="" />
