@@ -16,7 +16,7 @@ public sealed class AnalyzerAssemblyLoader : IAnalyzerAssemblyLoader
 
     public Assembly LoadFromPath(string fullPath)
     {
-        return Assembly.LoadFrom(fullPath);
+        return Assembly.Load(fullPath);
     }
 
     public void AddDependencyLocation(string fullPath)

@@ -331,7 +331,6 @@ public static class Helper
 
     public static IEnumerable<string> GetDependencyFrameworks(ExecOptions options)
     {
-        ArgumentNullException.ThrowIfNull(options);
         yield return FrameworkReferenceResolver.FrameworkNames.Default;
         if (options.IncludeWebReferences)
         {
