@@ -6,5 +6,5 @@ dotnet tool update --global dotnet-execute --prerelease
 # configure dotnet tool path
 export PATH="$PATH:$HOME/.dotnet/tools"
 
-echo "dotnet-exec ./build/build.cs --args $@"
-dotnet-exec ./build/build.cs --args "$@"
+echo "dotnet-exec ./build/build.cs -- $@"
+dotnet-exec ./build/build.cs -- "$@"
