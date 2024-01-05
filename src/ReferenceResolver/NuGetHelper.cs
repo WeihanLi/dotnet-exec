@@ -339,7 +339,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         {
             throw new InvalidOperationException("Package could not be downloaded");
         }
-        //
+
         var nugetFramework = NuGetFramework.Parse(targetFramework);
         using var packageReader = new PackageFolderReader(packageDir);
 
@@ -385,7 +385,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         {
             throw new InvalidOperationException("Package could not be downloaded");
         }
-        //
+
         var nugetFramework = NuGetFramework.Parse(targetFramework);
         using var packageReader = new PackageFolderReader(packageDir);
         var analyzerItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Analyzers, cancellationToken)
