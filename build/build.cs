@@ -14,7 +14,9 @@ Arguments:
 target: {{target}}
 stable: {{stable}}
 noPush: {{noPush}}
-args:   {{args.StringJoin(";; ")}}
+args:   
+{{args.StringJoin("\n")}}
+
 """);
 
 var solutionPath = "./dotnet-exec.sln";
