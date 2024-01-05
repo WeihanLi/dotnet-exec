@@ -21,6 +21,7 @@ namespace ReferenceResolver;
 public sealed class NuGetHelper : INuGetHelper, IDisposable
 {
     private const string LoggerCategoryName = "NuGetClient";
+    public const string NuGetConfigEnvName = "REFERENCE_RESOLVER_NUGET_CONFIG_PATH";
 
     private readonly HashSet<SourceRepository> _nugetSources = new(new NuGetSourceRepositoryComparer());
     private readonly SourceCacheContext _sourceCacheContext = new()
@@ -39,7 +40,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         _logger = loggerFactory.CreateLogger(LoggerCategoryName);
         _nugetLogger = new NuGetLoggingAdapter(_logger);
 
-        var configProfilePath = Environment.GetEnvironmentVariable("REFERENCE_RESOLVER_NUGET_CONFIG_PATH");
+        var configProfilePath = Environment.GetEnvironmentVariable(NuGetConfigEnvName);
         ISettings nugetSettings;
         var root = Environment.CurrentDirectory;
         if (!string.IsNullOrEmpty(configProfilePath) && File.Exists(configProfilePath))

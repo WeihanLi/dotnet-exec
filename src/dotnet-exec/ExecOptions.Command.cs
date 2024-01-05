@@ -5,6 +5,7 @@ using Exec.Commands;
 using Exec.Contracts;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using ReferenceResolver;
 using System.Reflection;
 
 namespace Exec;
@@ -42,7 +43,7 @@ public sealed partial class ExecOptions
         new(["-c", "--configuration"], "Compile configuration/OptimizationLevel");
 
     private static readonly Option<string?> ArgumentsOption =
-        new(["--args", "--arguments"], "Input arguments")
+        new(["--args", "--arguments"], "Input arguments, Obsoleted, please use `-- <args[0]> <args[1]>` instead")
         {
             Arity = ArgumentArity.ZeroOrOne
         };
@@ -102,12 +103,15 @@ public sealed partial class ExecOptions
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption)
             .GetValueOrDefault(DefaultTargetFramework);
         Configuration = parseResult.GetValueForOption(ConfigurationOption);
-
-        Arguments = CommandLineStringSplitter.Instance
-            .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
-        if (Arguments.IsNullOrEmpty() && Helper.CommandArguments.HasValue())
+        
+        if (Helper.CommandArguments.HasValue())
         {
             Arguments = Helper.CommandArguments;
+        }
+        else
+        {
+            Arguments = CommandLineStringSplitter.Instance
+                .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();    
         }
 
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
@@ -140,7 +144,7 @@ public sealed partial class ExecOptions
         var nugetConfigFile = parseResult.GetValueForOption(NuGetConfigFileOption);
         if (!string.IsNullOrEmpty(nugetConfigFile))
         {
-            Environment.SetEnvironmentVariable("REFERENCE_RESOLVER_NUGET_CONFIG_PATH", nugetConfigFile);
+            Environment.SetEnvironmentVariable(NuGetHelper.NuGetConfigEnvName, nugetConfigFile);
         }
 
         if (configProfile != null)
