@@ -43,7 +43,7 @@ public sealed partial class ExecOptions
         new(["-c", "--configuration"], "Compile configuration/OptimizationLevel");
 
     private static readonly Option<string?> ArgumentsOption =
-        new(["--args", "--arguments"], "Input arguments, Obsoleted, please use `-- <args[0]> <args[1]>` instead")
+        new(["--args", "--arguments"], "Input arguments, please use `-- <args[0]> <args[1]>` instead")
         {
             Arity = ArgumentArity.ZeroOrOne
         };

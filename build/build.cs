@@ -1,10 +1,21 @@
 // Copyright (c) 2022-2023 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
+// if (args.IsNullOrEmpty()) args = ["--target", "build"];
+
 var target = Guard.NotNull(Argument("target", "Default"));
 var apiKey = Argument("apiKey", "");
 var stable = ArgumentBool("stable");
 var noPush = ArgumentBool("noPush");
+
+Console.WriteLine($$"""
+Arguments:
+
+target: {{target}}
+stable: {{stable}}
+noPush: {{noPush}}
+args:   {{args.StringJoin(";; ")}}
+""");
 
 var solutionPath = "./dotnet-exec.sln";
 string[] srcProjects = ["./src/dotnet-exec/dotnet-exec.csproj", "./src/ReferenceResolver/ReferenceResolver.csproj"];
@@ -16,10 +27,6 @@ await BuildProcess.CreateBuilder()
         // cleanup artifacts
         if (Directory.Exists("./artifacts/packages"))
             Directory.Delete("./artifacts/packages", true);
-
-        // args
-        Console.WriteLine("Arguments");
-        Console.WriteLine($"    {args.StringJoin(" ")}");
 
         // dump runtime info
         Console.WriteLine("RuntimeInfo:");
@@ -180,12 +187,13 @@ file sealed class BuildProcess
 
     private static async Task ExecuteTask(BuildTask task, CancellationToken cancellationToken)
     {
+        Console.WriteLine($"===== Task {task.Name} {task.Description} executing ======");
+        // execute dependency tasks
         foreach (var dependencyTask in task.Dependencies)
         {
             await ExecuteTask(dependencyTask, cancellationToken);
         }
-
-        Console.WriteLine($"===== Task {task.Name} {task.Description} executing ======");
+        // execute task
         await task.ExecuteAsync(cancellationToken);
         Console.WriteLine($"===== Task {task.Name} {task.Description} executed ======");
     }
