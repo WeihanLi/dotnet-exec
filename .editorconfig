@@ -61,6 +61,8 @@ dotnet_style_explicit_tuple_names = true:suggestion
 [*.cs]
 # namespace style
 csharp_style_namespace_declarations=file_scoped:warning
+# prefer primary constructor
+csharp_style_prefer_primary_constructors = true:suggestion
 
 # Prefer "var" everywhere
 csharp_style_var_for_built_in_types = true:suggestion
