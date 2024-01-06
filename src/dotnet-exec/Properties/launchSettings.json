@@ -45,6 +45,11 @@
       "targetFramework": "net8.0",
       "commandLineArgs": "WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run(); --profile web --reference -nuget:WeihanLi.Web.Extensions --using -WeihanLi.Web.Extensions --debug"
     },
+    "reference-duplicate-test": {
+      "commandName": "Project",
+      "targetFramework": "net8.0",
+      "commandLineArgs": "'1+2' -r nuget:CsvHelper,30.0.1 -r \"nuget:CsvHelper, 30.0.1\" -r \"nuget: CsvHelper, 30.0.1\" --dry-run"
+    },
     "dry-run-test": {
       "commandName": "Project",
       "targetFramework": "net8.0",

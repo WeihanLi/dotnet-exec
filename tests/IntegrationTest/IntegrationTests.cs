@@ -459,9 +459,10 @@ public class IntegrationTests
     public async Task ReferenceDuplicateTest()
     {
         var code = """
-        // r: nuget: WeihanLi.Common,1.0.60
-        // r: nuget: WeihanLi.Common, 1.0.60
-        // r: "nuget: WeihanLi.Common, 1.0.60"
+        // r: nuget:WeihanLi.Common,1.0.61
+        // r: nuget: WeihanLi.Common,1.0.61
+        // r: nuget: WeihanLi.Common, 1.0.61
+        // r: "nuget: WeihanLi.Common, 1.0.61"
         Console.WriteLine("Hello World!");
         """;
         var options = new ExecOptions()
