@@ -45,7 +45,7 @@ public class FrameworkReferenceResolverTest
         Assert.NotNull(references);
         Assert.NotEmpty(references);
     }
-    
+
     [Theory]
     [InlineData(FrameworkReferenceResolver.FrameworkNames.Default)]
     [InlineData(FrameworkReferenceResolver.FrameworkNames.Web)]
@@ -57,7 +57,7 @@ public class FrameworkReferenceResolverTest
         Assert.NotNull(runtimePackageName);
         Assert.NotEmpty(runtimePackageName);
     }
-    
+
     [Theory]
     [InlineData("")]
     [InlineData(FrameworkReferenceResolver.FrameworkNames.Default)]
@@ -94,8 +94,7 @@ public class FrameworkReferenceResolverTest
         Assert.NotNull(implicitUsings);
         Assert.NotEmpty(implicitUsings);
     }
-    
-    
+
     [Theory]
     [InlineData("")]
     [InlineData("wtf")]

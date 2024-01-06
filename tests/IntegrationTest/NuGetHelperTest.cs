@@ -50,7 +50,7 @@ public class NuGetHelperTest
         Assert.NotEmpty(packages);
         Assert.Contains("WeihanLi.Common", packages.SelectMany(p => p.Packages));
     }
-    
+
     [Fact]
     public async Task SearchPackages()
     {
@@ -58,7 +58,7 @@ public class NuGetHelperTest
         var result = await NuGetHelper.SearchPackages(prefix).ToArrayAsync();
         Assert.NotEmpty(result);
         var packages = result.SelectMany(x => x.SearchResult).ToArray();
-        Assert.Contains("WeihanLi.Common", packages.Select(x=> x.Identity.Id), StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("WeihanLi.Common", packages.Select(x => x.Identity.Id), StringComparer.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class NuGetHelperTest
         Assert.NotNull(sources);
         Assert.NotEmpty(sources);
     }
-    
+
     [Theory]
     [InlineData("WeihanLi.Common")]
     public void GetSourcesWithPackageId(string packageId)

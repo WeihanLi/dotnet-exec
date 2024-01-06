@@ -55,7 +55,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         else
         {
             nugetSettings = Settings.LoadDefaultSettings(root);
-            _logger.LogInformation("NuGetHelper is using the default nuget config file, current working directory: {Root}",  root);
+            _logger.LogInformation("NuGetHelper is using the default nuget config file, current working directory: {Root}", root);
         }
 
         _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(nugetSettings);
@@ -73,7 +73,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     {
         return GetPackageSourceRepositories(packageId).Select(NuGetSourceInfo.FromSourceRepository);
     }
-    
+
     public async IAsyncEnumerable<(NuGetSourceInfo Source, IEnumerable<IPackageSearchMetadata> SearchResult)> SearchPackages(
         string keyword, bool includePreRelease = true,
         int take = 20, int skip = 0,
@@ -87,7 +87,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
             yield return (NuGetSourceInfo.FromSourceRepository(repository), result);
         }
     }
-    
+
     public async IAsyncEnumerable<(NuGetSourceInfo Source, IEnumerable<string> Packages)> GetPackages(string packagePrefix, bool includePreRelease = true,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -324,7 +324,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
         throw new InvalidOperationException($"no supported target framework for package({packageId}:{packageVersion})");
     }
-    
+
     private async Task<IReadOnlyList<PackageDependencyGroup>> GetPackageDependencyGroups(string packageId, NuGetVersion packageVersion, CancellationToken cancellationToken)
     {
         var packageDir = GetPackageInstalledDir(packageId, packageVersion);

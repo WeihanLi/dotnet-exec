@@ -150,23 +150,23 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
     {
         if (frameworkName.IsNullOrEmpty())
             frameworkName = FrameworkNames.Default;
-        
-        if (FrameworkAliases.TryGetValue(frameworkName, out var fName)) 
+
+        if (FrameworkAliases.TryGetValue(frameworkName, out var fName))
             frameworkName = fName;
-        
+
         var packsDir = Path.Combine(DotnetDirectory, "packs");
         var referencePackageName = $"{frameworkName}.Ref";
         var frameworkDir = Path.Combine(packsDir, referencePackageName);
         if (!Directory.Exists(frameworkDir)) return [];
-        
+
         IEnumerable<string> versions = Directory.GetDirectories(frameworkDir);
         var versionPrefix = targetFramework["net".Length..];
         versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x)
             .StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase));
         var targetVersionDir = versions.OrderByDescending(x => x).First();
-        var targetDir = Path.Combine([targetVersionDir, ..folder]);
+        var targetDir = Path.Combine([targetVersionDir, .. folder]);
         if (!Directory.Exists(targetDir)) return [];
-        
+
         var dllFiles = Directory.GetFiles(targetDir, "*.dll", SearchOption.AllDirectories);
         return dllFiles;
     }
@@ -175,10 +175,10 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
     {
         if (frameworkName.IsNullOrEmpty())
             frameworkName = FrameworkNames.Default;
-        
-        if (FrameworkAliases.TryGetValue(frameworkName, out var fName)) 
+
+        if (FrameworkAliases.TryGetValue(frameworkName, out var fName))
             frameworkName = fName;
-        
+
         var sharedDir = Path.Combine(DotnetDirectory, "shared");
         var frameworkDir = Path.Combine(sharedDir, frameworkName);
         if (!Directory.Exists(frameworkDir))
