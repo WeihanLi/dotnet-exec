@@ -9,29 +9,36 @@ public static class UsingManager
         ICollection<string> usings, string? frameworkOfImplicitUsing = null
         )
     {
-        var usingList = new HashSet<string>(
+        var frameworkImplicitUsing =
             string.IsNullOrEmpty(frameworkOfImplicitUsing)
-            ? Array.Empty<string>()
-            : FrameworkReferenceResolver.GetImplicitUsings(frameworkOfImplicitUsing),
+                ? []
+                : FrameworkReferenceResolver.GetImplicitUsings(frameworkOfImplicitUsing);
+        var usingList = new HashSet<string>(
+            frameworkImplicitUsing,
             StringComparer.Ordinal
         );
-
-        if (usings is { Count: > 0 })
+        if (frameworkImplicitUsing is { Length: > 0 })
         {
-            foreach (var @using in usings.Where(u => !u.StartsWith('-')))
+            foreach (var @using in FrameworkReferenceResolver.GetImplicitUsings(FrameworkReferenceResolver.FrameworkNames.Default))
             {
                 usingList.Add(@using);
             }
-            foreach (var @using in usings.Where(u => u.StartsWith('-')))
-            {
-                var usingToRemove = @using[1..].Trim();
-                usingList.Remove(usingToRemove);
-                usingList.Remove(@using);
-                if (!usingToRemove.StartsWith("global::", StringComparison.Ordinal))
-                {
-                    usingList.Remove($"global::{usingToRemove}");
-                }
-            }
+        }
+
+        if (usings.IsNullOrEmpty()) return usingList;
+        
+        foreach (var @using in usings.Where(u => !u.StartsWith('-')))
+        {
+            usingList.Add(@using);
+        }
+        
+        foreach (var @using in usings.Where(u => u.StartsWith('-')))
+        {
+            var usingToRemove = @using[1..].Trim();
+            usingList.Remove(usingToRemove);
+            usingList.Remove(@using);
+            if (!usingToRemove.StartsWith("global::", StringComparison.Ordinal)) 
+                usingList.Remove($"global::{usingToRemove}");
         }
 
         return usingList;

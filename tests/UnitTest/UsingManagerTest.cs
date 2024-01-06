@@ -16,6 +16,34 @@ public class UsingManagerTest
         Assert.NotEmpty(usings);
         Assert.Equal(2, usings.Count);
     }
+    
+    [Theory]
+    [InlineData(nameof(FrameworkReferenceResolver.FrameworkNames.Default))]
+    [InlineData(FrameworkReferenceResolver.FrameworkNames.Default)]
+    [InlineData(nameof(FrameworkReferenceResolver.FrameworkNames.Web))]
+    [InlineData(FrameworkReferenceResolver.FrameworkNames.Web)]
+    public void GetNormalUsingWithFrameworkImplicitUsing(string frameworkName)
+    {
+        var usingArray = new[] { "WeihanLi.Common", "static WeihanLi.Common.Helpers" };
+        var usings = UsingManager.GetUsings(usingArray, frameworkName);
+        Assert.NotNull(usings);
+        Assert.NotEmpty(usings);
+        Assert.True(usings.Count > 2);
+        Assert.Contains("global::System", usings);
+    }
+    
+    [Theory]
+    [InlineData(nameof(FrameworkReferenceResolver.FrameworkNames.Default))]
+    [InlineData(FrameworkReferenceResolver.FrameworkNames.Default)]
+    [InlineData(nameof(FrameworkReferenceResolver.FrameworkNames.Web))]
+    [InlineData(FrameworkReferenceResolver.FrameworkNames.Web)]
+    public void GetUsingWithFrameworkImplicitUsingOnly(string frameworkName)
+    {
+        var usings = UsingManager.GetUsings([], frameworkName);
+        Assert.NotNull(usings);
+        Assert.NotEmpty(usings);
+        Assert.Contains("global::System", usings);
+    }
 
     [Fact]
     public void GetRemoveUsing()
@@ -27,8 +55,7 @@ public class UsingManagerTest
         Assert.Single(usings);
         Assert.Equal("WeihanLi.Common", usings.First());
     }
-
-
+    
     [Fact]
     public void GetRemoveGlobalUsing()
     {
