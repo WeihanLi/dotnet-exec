@@ -20,4 +20,11 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\nuget.config">
+      <Link>Assets\nuget.config</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

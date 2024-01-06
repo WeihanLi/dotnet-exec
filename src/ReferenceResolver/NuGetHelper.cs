@@ -41,19 +41,21 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         _logger = loggerFactory.CreateLogger(LoggerCategoryName);
         _nugetLogger = new NuGetLoggingAdapter(_logger);
 
-        var configProfilePath = Environment.GetEnvironmentVariable(NuGetConfigEnvName);
+        var configFilePath = Environment.GetEnvironmentVariable(NuGetConfigEnvName);
         ISettings nugetSettings;
         var root = Environment.CurrentDirectory;
-        if (!string.IsNullOrEmpty(configProfilePath) && File.Exists(configProfilePath))
+        if (!string.IsNullOrEmpty(configFilePath) && File.Exists(configFilePath))
         {
-            nugetSettings = Settings.LoadSpecificSettings(root, Path.GetFullPath(configProfilePath));
+            var configFileFullPath = Path.GetFullPath(configFilePath);
+            nugetSettings = Settings.LoadSpecificSettings(root, configFileFullPath);
             _logger.LogInformation(
                 "NuGetHelper is using the specific nuget config file {NuGetConfigPath}, current working directory: {Root}",
-                configProfilePath, root);
+                configFilePath, root);
         }
         else
         {
             nugetSettings = Settings.LoadDefaultSettings(root);
+            _logger.LogInformation("NuGetHelper is using the default nuget config file, current working directory: {Root}",  root);
         }
 
         _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(nugetSettings);
@@ -195,67 +197,6 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         return false;
     }
 
-    public async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageId, NuGetVersion packageVersion, string targetFramework, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(packageId);
-        ArgumentNullException.ThrowIfNull(packageVersion);
-        ArgumentNullException.ThrowIfNull(targetFramework);
-        var dependencyGroupInfo = await GetPackageDependencyGroups(packageId, packageVersion, cancellationToken)
-            .ConfigureAwait(false);
-        if (dependencyGroupInfo.Count <= 0)
-        {
-            return [];
-        }
-
-        var nugetFramework = NuGetFramework.Parse(targetFramework);
-        var nearestFramework = _frameworkReducer.GetNearest(nugetFramework, dependencyGroupInfo.Select(x => x.TargetFramework));
-        if (nearestFramework != null)
-        {
-            var bestDependency = dependencyGroupInfo.First(x => x.TargetFramework == nearestFramework);
-            var list = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
-            foreach (var package in bestDependency.Packages)
-            {
-                var packageMinVersion = GetMinVersion(package);
-                if (list.TryGetValue(package.Id, out var versionValue))
-                {
-                    if (versionValue < packageMinVersion)
-                    {
-                        list[package.Id] = packageMinVersion;
-                    }
-                }
-                else
-                {
-                    list.Add(package.Id, packageMinVersion);
-                }
-
-                var childrenDependencies =
-                    await GetPackageDependencies(package.Id, packageMinVersion, targetFramework, cancellationToken)
-                        .ConfigureAwait(false);
-                if (childrenDependencies is { Count: > 0 })
-                {
-                    foreach (var childrenDependency in childrenDependencies)
-                    {
-                        if (list.TryGetValue(childrenDependency.Key, out var value))
-                        {
-                            if (value < childrenDependency.Value)
-                            {
-                                list[childrenDependency.Key] = childrenDependency.Value;
-                            }
-                        }
-                        else
-                        {
-                            list.Add(childrenDependency.Key, childrenDependency.Value);
-                        }
-                    }
-                }
-            }
-
-            return list;
-        }
-
-        throw new InvalidOperationException($"no supported target framework for package({packageId}:{packageVersion})");
-    }
-
     public async Task<string[]> ResolvePackageReferences(string targetFramework, string packageId,
         NuGetVersion? version, bool includePrerelease, CancellationToken cancellationToken = default)
     {
@@ -323,6 +264,67 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         return references.Distinct().ToArray();
     }
 
+    private async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageId, NuGetVersion packageVersion, string targetFramework, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(packageId);
+        ArgumentNullException.ThrowIfNull(packageVersion);
+        ArgumentNullException.ThrowIfNull(targetFramework);
+        var dependencyGroupInfo = await GetPackageDependencyGroups(packageId, packageVersion, cancellationToken)
+            .ConfigureAwait(false);
+        if (dependencyGroupInfo.Count <= 0)
+        {
+            return [];
+        }
+
+        var nugetFramework = NuGetFramework.Parse(targetFramework);
+        var nearestFramework = _frameworkReducer.GetNearest(nugetFramework, dependencyGroupInfo.Select(x => x.TargetFramework));
+        if (nearestFramework != null)
+        {
+            var bestDependency = dependencyGroupInfo.First(x => x.TargetFramework == nearestFramework);
+            var list = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
+            foreach (var package in bestDependency.Packages)
+            {
+                var packageMinVersion = GetMinVersion(package);
+                if (list.TryGetValue(package.Id, out var versionValue))
+                {
+                    if (versionValue < packageMinVersion)
+                    {
+                        list[package.Id] = packageMinVersion;
+                    }
+                }
+                else
+                {
+                    list.Add(package.Id, packageMinVersion);
+                }
+
+                var childrenDependencies =
+                    await GetPackageDependencies(package.Id, packageMinVersion, targetFramework, cancellationToken)
+                        .ConfigureAwait(false);
+                if (childrenDependencies is { Count: > 0 })
+                {
+                    foreach (var childrenDependency in childrenDependencies)
+                    {
+                        if (list.TryGetValue(childrenDependency.Key, out var value))
+                        {
+                            if (value < childrenDependency.Value)
+                            {
+                                list[childrenDependency.Key] = childrenDependency.Value;
+                            }
+                        }
+                        else
+                        {
+                            list.Add(childrenDependency.Key, childrenDependency.Value);
+                        }
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        throw new InvalidOperationException($"no supported target framework for package({packageId}:{packageVersion})");
+    }
+    
     private async Task<IReadOnlyList<PackageDependencyGroup>> GetPackageDependencyGroups(string packageId, NuGetVersion packageVersion, CancellationToken cancellationToken)
     {
         var packageDir = GetPackageInstalledDir(packageId, packageVersion);

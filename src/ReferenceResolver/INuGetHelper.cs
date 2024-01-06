@@ -28,9 +28,6 @@ public interface INuGetHelper
         bool includePrerelease = false,
         CancellationToken cancellationToken = default);
 
-    Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageId, NuGetVersion packageVersion,
-        string targetFramework, CancellationToken cancellationToken = default);
-
     Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null,
         CancellationToken cancellationToken = default);
 
@@ -41,8 +38,7 @@ public interface INuGetHelper
         NuGetVersion? version, bool includePrerelease, CancellationToken cancellationToken = default);
 
     Task<string[]> ResolvePackageReferences(NuGetReference nugetReference, string targetFramework,
-        bool includePrerelease,
-        CancellationToken cancellationToken = default)
+        bool includePrerelease, CancellationToken cancellationToken = default)
         => ResolvePackageReferences(targetFramework, nugetReference.PackageId, nugetReference.PackageVersion,
             includePrerelease, cancellationToken);
     
