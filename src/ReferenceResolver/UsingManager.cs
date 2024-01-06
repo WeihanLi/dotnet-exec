@@ -26,18 +26,18 @@ public static class UsingManager
         }
 
         if (usings.IsNullOrEmpty()) return usingList;
-        
+
         foreach (var @using in usings.Where(u => !u.StartsWith('-')))
         {
             usingList.Add(@using);
         }
-        
+
         foreach (var @using in usings.Where(u => u.StartsWith('-')))
         {
             var usingToRemove = @using[1..].Trim();
             usingList.Remove(usingToRemove);
             usingList.Remove(@using);
-            if (!usingToRemove.StartsWith("global::", StringComparison.Ordinal)) 
+            if (!usingToRemove.StartsWith("global::", StringComparison.Ordinal))
                 usingList.Remove($"global::{usingToRemove}");
         }
 

@@ -16,7 +16,7 @@ public class UsingManagerTest
         Assert.NotEmpty(usings);
         Assert.Equal(2, usings.Count);
     }
-    
+
     [Theory]
     [InlineData(nameof(FrameworkReferenceResolver.FrameworkNames.Default))]
     [InlineData(FrameworkReferenceResolver.FrameworkNames.Default)]
@@ -31,7 +31,7 @@ public class UsingManagerTest
         Assert.True(usings.Count > 2);
         Assert.Contains("global::System", usings);
     }
-    
+
     [Theory]
     [InlineData(nameof(FrameworkReferenceResolver.FrameworkNames.Default))]
     [InlineData(FrameworkReferenceResolver.FrameworkNames.Default)]
@@ -55,7 +55,7 @@ public class UsingManagerTest
         Assert.Single(usings);
         Assert.Equal("WeihanLi.Common", usings.First());
     }
-    
+
     [Fact]
     public void GetRemoveGlobalUsing()
     {
