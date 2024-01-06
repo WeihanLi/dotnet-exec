@@ -28,8 +28,6 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
     public Task<IEnumerable<string>> Resolve(string reference, string targetFramework,
         CancellationToken cancellationToken = default)
     {
-        if (reference.IsNullOrEmpty())
-            reference = FrameworkNames.Default;
         var references = ResolveFrameworkReferencesViaRuntimeShared(reference, targetFramework);
         return Task.FromResult<IEnumerable<string>>(references);
     }
@@ -44,8 +42,6 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
     public static Task<IEnumerable<string>> ResolveForCompile(string reference, string targetFramework,
         CancellationToken cancellationToken = default)
     {
-        if (reference.IsNullOrEmpty())
-            reference = FrameworkNames.Default;
         var references = ResolveFrameworkReferencesViaSdkPacks(reference, targetFramework);
         return Task.FromResult<IEnumerable<string>>(references);
     }
@@ -100,15 +96,15 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
 
     public static string[] GetImplicitUsings(string frameworkName)
     {
-        if (string.IsNullOrEmpty(frameworkName)) return Array.Empty<string>();
+        if (string.IsNullOrEmpty(frameworkName)) return [];
 
         FrameworkAliases.TryGetValue(frameworkName, out var framework);
         framework ??= frameworkName;
         // https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview#implicit-using-directives
         return framework switch
         {
-            FrameworkNames.Default => new[]
-            {
+            FrameworkNames.Default =>
+            [
                 "global::System",
                 "global::System.Collections.Generic",
                 "global::System.IO",
@@ -117,9 +113,9 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
                 "global::System.Text",
                 "global::System.Threading",
                 "global::System.Threading.Tasks"
-            },
-            FrameworkNames.Web => new[]
-            {
+            ],
+            FrameworkNames.Web =>
+            [
                 "global::System.Net.Http.Json",
                 "global::Microsoft.AspNetCore.Builder",
                 "global::Microsoft.AspNetCore.Hosting",
@@ -129,81 +125,69 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
                 "global::Microsoft.Extensions.DependencyInjection",
                 "global::Microsoft.Extensions.Hosting",
                 "global::Microsoft.Extensions.Logging"
-            },
-            FrameworkNames.WindowsDesktop => new[]
-            {
+            ],
+            FrameworkNames.WindowsDesktop =>
+            [
                 "global::System.Drawing",
                 "global::System.Windows.Forms"
-            },
-            _ => Array.Empty<string>()
+            ],
+            _ => []
         };
     }
 
     private static string[] ResolveFrameworkReferencesViaSdkPacks(string frameworkName, string targetFramework)
     {
-        if (FrameworkAliases.TryGetValue(frameworkName, out var fName))
-        {
-            frameworkName = fName;
-        }
-        var packsDir = Path.Combine(DotnetDirectory, "packs");
-        var referencePackageName = $"{frameworkName}.Ref";
-        var frameworkDir = Path.Combine(packsDir, referencePackageName);
-        if (Directory.Exists(frameworkDir))
-        {
-            var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();
-            var versionPrefix = targetFramework["net".Length..];
-            versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x)
-                .StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase));
-            var targetVersionDir = versions.OrderByDescending(x => x).First();
-            var targetReferenceDir = Path.Combine(targetVersionDir, "ref", targetFramework);
-            var refFiles = Directory.GetFiles(targetReferenceDir, "*.dll");
-            return refFiles;
-        }
-        return Array.Empty<string>();
+        return GetFrameworkReferenceDllViaSdkPacks(frameworkName, targetFramework, "ref", targetFramework);
     }
 
     private static string[] ResolveFrameworkAnalyzerReferencesViaSdkPacks(string frameworkName, string targetFramework)
     {
-        if (FrameworkAliases.TryGetValue(frameworkName, out var fName))
-        {
+        return GetFrameworkReferenceDllViaSdkPacks(frameworkName, targetFramework, "analyzers");
+    }
+
+    private static string[] GetFrameworkReferenceDllViaSdkPacks(string frameworkName, string targetFramework,
+        params string[] folder)
+    {
+        if (frameworkName.IsNullOrEmpty())
+            frameworkName = FrameworkNames.Default;
+        
+        if (FrameworkAliases.TryGetValue(frameworkName, out var fName)) 
             frameworkName = fName;
-        }
+        
         var packsDir = Path.Combine(DotnetDirectory, "packs");
         var referencePackageName = $"{frameworkName}.Ref";
         var frameworkDir = Path.Combine(packsDir, referencePackageName);
-        if (Directory.Exists(frameworkDir))
-        {
-            var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();
-            var versionPrefix = targetFramework["net".Length..];
-            versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x)
-                .StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase));
-            var targetVersionDir = versions.OrderByDescending(x => x).First();
-            var targetAnalyzerDir = Path.Combine(targetVersionDir, "analyzers");
-            if (Directory.Exists(targetAnalyzerDir))
-            {
-                var analyzerFiles = Directory.GetFiles(targetAnalyzerDir, "*.dll", SearchOption.AllDirectories);
-                return analyzerFiles;
-            }
-        }
-        return Array.Empty<string>();
+        if (!Directory.Exists(frameworkDir)) return [];
+        
+        IEnumerable<string> versions = Directory.GetDirectories(frameworkDir);
+        var versionPrefix = targetFramework["net".Length..];
+        versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x)
+            .StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase));
+        var targetVersionDir = versions.OrderByDescending(x => x).First();
+        var targetDir = Path.Combine([targetVersionDir, ..folder]);
+        if (!Directory.Exists(targetDir)) return [];
+        
+        var dllFiles = Directory.GetFiles(targetDir, "*.dll", SearchOption.AllDirectories);
+        return dllFiles;
     }
 
     private static string[] ResolveFrameworkReferencesViaRuntimeShared(string frameworkName, string targetFramework)
     {
-        if (FrameworkAliases.TryGetValue(frameworkName, out var fName))
-        {
+        if (frameworkName.IsNullOrEmpty())
+            frameworkName = FrameworkNames.Default;
+        
+        if (FrameworkAliases.TryGetValue(frameworkName, out var fName)) 
             frameworkName = fName;
-        }
+        
         var sharedDir = Path.Combine(DotnetDirectory, "shared");
         var frameworkDir = Path.Combine(sharedDir, frameworkName);
         if (!Directory.Exists(frameworkDir))
-        {
-            return Array.Empty<string>();
-        }
+            return [];
 
         Guard.NotNull(frameworkDir);
-        var versions = Directory.GetDirectories(frameworkDir).AsEnumerable();
+        IEnumerable<string> versions = Directory.GetDirectories(frameworkDir);
         var versionPrefix = targetFramework["net".Length..];
+        // filter versions to match target framework like 8.0
         versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x)
             .StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase));
         var targetVersionDir = versions.OrderByDescending(x => x).First();
