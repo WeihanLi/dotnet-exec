@@ -21,6 +21,7 @@ namespace ReferenceResolver;
 public sealed class NuGetHelper : INuGetHelper, IDisposable
 {
     private const string LoggerCategoryName = "NuGetClient";
+    private const string NuGetOrgSourceUrl = "https://api.nuget.org/v3/index.json";
     public const string NuGetConfigEnvName = "REFERENCE_RESOLVER_NUGET_CONFIG_PATH";
 
     private readonly HashSet<SourceRepository> _nugetSources = new(new NuGetSourceRepositoryComparer());
@@ -61,12 +62,31 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         {
             _nugetSources.Add(new SourceRepository(packageSource, resourceProviders));
         }
-        // try add nuget.org
-        _nugetSources.Add(Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json"));
+        // try add nuget.org to ensure NuGet org source exists
+        _nugetSources.Add(Repository.Factory.GetCoreV3(NuGetOrgSourceUrl));
         _packageSourceMapping = PackageSourceMapping.GetPackageSourceMapping(nugetSettings);
     }
 
-    public async IAsyncEnumerable<string> GetPackages(string packagePrefix, bool includePreRelease = true,
+    public IEnumerable<NuGetSourceInfo> GetSources(string? packageId = null)
+    {
+        return GetPackageSourceRepositories(packageId).Select(NuGetSourceInfo.FromSourceRepository);
+    }
+    
+    public async IAsyncEnumerable<(NuGetSourceInfo Source, IEnumerable<IPackageSearchMetadata> SearchResult)> SearchPackages(
+        string keyword, bool includePreRelease = true,
+        int take = 20, int skip = 0,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        foreach (var repository in GetPackageSourceRepositories())
+        {
+            var resource = await repository.GetResourceAsync<PackageSearchResource>(cancellationToken).ConfigureAwait(false);
+            var result = await resource.SearchAsync(keyword, new SearchFilter(includePreRelease), skip, take, _nugetLogger,
+                cancellationToken);
+            yield return (NuGetSourceInfo.FromSourceRepository(repository), result);
+        }
+    }
+    
+    public async IAsyncEnumerable<(NuGetSourceInfo Source, IEnumerable<string> Packages)> GetPackages(string packagePrefix, bool includePreRelease = true,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         foreach (var repository in GetPackageSourceRepositories())
@@ -74,10 +94,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
             var resource = await repository.GetResourceAsync<AutoCompleteResource>(cancellationToken).ConfigureAwait(false);
             var result = await resource.IdStartsWith(packagePrefix, includePreRelease, _nugetLogger, cancellationToken)
                 .ConfigureAwait(false);
-            foreach (var item in result)
-            {
-                yield return item;
-            }
+            yield return (NuGetSourceInfo.FromSourceRepository(repository), result);
         }
     }
 
@@ -117,7 +134,6 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     {
         foreach (var sourceRepository in GetPackageSourceRepositories(packageId))
         {
-            var sourceInfo = NuGetSourceInfo.FromSourceRepository(sourceRepository);
             var findPackageByIdResource = await sourceRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
                 .ConfigureAwait(false);
             var versions = await findPackageByIdResource.GetAllVersionsAsync(
@@ -127,7 +143,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
             foreach (var version in versions.Where(v => includePrerelease || !v.IsPrerelease))
             {
                 if (predict is null || predict(version))
-                    yield return (sourceInfo, version);
+                    yield return (NuGetSourceInfo.FromSourceRepository(sourceRepository), version);
             }
         }
     }

@@ -48,7 +48,7 @@ public class NuGetHelperTest
         var prefix = "WeihanLi";
         var packages = await NugetHelper.GetPackages(prefix).ToArrayAsync();
         Assert.NotEmpty(packages);
-        Assert.Contains("WeihanLi.Common", packages);
+        Assert.Contains("WeihanLi.Common", packages.SelectMany(p => p.Packages));
     }
 
     [Fact]
