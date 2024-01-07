@@ -97,13 +97,6 @@ public static class Helper
         return services;
     }
 
-    private static IServiceCollection RegisterCompilationOptionsMiddleware<TMiddleware>
-        (this IServiceCollection services) where TMiddleware : class, ICompilationOptionsMiddleware
-    {
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<ICompilationOptionsMiddleware, TMiddleware>());
-        return services;
-    }
-
     public static void Initialize(this Command command, IServiceProvider serviceProvider)
     {
         ArgumentNullException.ThrowIfNull(command);
