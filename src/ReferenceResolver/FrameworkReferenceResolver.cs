@@ -81,16 +81,8 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
     public static string GetRuntimePackageName(string frameworkName)
     {
         FrameworkAliases.TryGetValue(frameworkName, out var framework);
-        framework ??= frameworkName;
-        var platform = OperatingSystem.IsWindows() ? "win"
-            : OperatingSystem.IsLinux() ? "linux"
-            : OperatingSystem.IsMacOS() ? "osx"
-            : null;
-        if (platform is null)
-        {
-            throw new ArgumentException("Unknown OS-platform");
-        }
-        var fullPackageName = $"{framework}.Runtime.{platform}-{RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant()}";
+        // need testing on maui Browser(wasm)/Android/IOS etc...
+        var fullPackageName = $"{framework}.Runtime.{RuntimeInformation.RuntimeIdentifier}";
         return fullPackageName;
     }
 
