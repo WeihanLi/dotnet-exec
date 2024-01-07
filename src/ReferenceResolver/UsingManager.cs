@@ -9,15 +9,11 @@ public static class UsingManager
         ICollection<string> usings, string? frameworkOfImplicitUsing = null
         )
     {
-        var frameworkImplicitUsing =
-            string.IsNullOrEmpty(frameworkOfImplicitUsing)
+        var frameworkImplicitUsing = string.IsNullOrEmpty(frameworkOfImplicitUsing)
                 ? []
                 : FrameworkReferenceResolver.GetImplicitUsings(frameworkOfImplicitUsing);
-        var usingList = new HashSet<string>(
-            frameworkImplicitUsing,
-            StringComparer.Ordinal
-        );
-        if (frameworkImplicitUsing is { Length: > 0 })
+        var usingList = new HashSet<string>(frameworkImplicitUsing, StringComparer.Ordinal);
+        if (frameworkImplicitUsing.HasValue())
         {
             foreach (var @using in FrameworkReferenceResolver.GetImplicitUsings(FrameworkReferenceResolver.FrameworkNames.Default))
             {
