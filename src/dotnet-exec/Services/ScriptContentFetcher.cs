@@ -5,12 +5,12 @@ using WeihanLi.Common.Models;
 
 namespace Exec.Services;
 
-public class AdditionalScriptContentFetcher(HttpClient httpClient, IUriTransformer uriTransformer, ILogger logger)
+public class AdditionalScriptContentFetcher(HttpClient httpClient, IUriTransformer uriTransformer)
     : IAdditionalScriptContentFetcher
 {
     // for test only
     internal static IAdditionalScriptContentFetcher InstanceForTest { get; }
-        = new AdditionalScriptContentFetcher(new HttpClient(), new UriTransformer(), Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+        = new AdditionalScriptContentFetcher(new HttpClient(), new UriTransformer());
 
     public async Task<Result<string>> FetchContent(string script, CancellationToken cancellationToken = default)
     {
@@ -24,17 +24,13 @@ public class AdditionalScriptContentFetcher(HttpClient httpClient, IUriTransform
             }
             else
             {
-                if (File.Exists(script))
+                var isValidFileName = !Path.GetInvalidFileNameChars().Any(script.Contains);
+                if (isValidFileName && File.Exists(script))
                 {
                     sourceText = await File.ReadAllTextAsync(script, cancellationToken);
                 }
                 else
                 {
-                    if (this is ScriptContentFetcher)
-                    {
-                        logger.LogDebug("The file {ScriptFile} does not exists, treat as {ScriptType}",
-                            script, script.EndsWith(';') ? "code" : Helper.Script);
-                    }
                     sourceText = script;
                 }
             }
@@ -48,8 +44,8 @@ public class AdditionalScriptContentFetcher(HttpClient httpClient, IUriTransform
     }
 }
 
-public sealed class ScriptContentFetcher(HttpClient httpClient, IUriTransformer uriTransformer, ILogger logger)
-    : AdditionalScriptContentFetcher(httpClient, uriTransformer, logger), IScriptContentFetcher
+public sealed class ScriptContentFetcher(HttpClient httpClient, IUriTransformer uriTransformer)
+    : AdditionalScriptContentFetcher(httpClient, uriTransformer), IScriptContentFetcher
 {
     public async Task<Result<string>> FetchContent(ExecOptions options)
     {
