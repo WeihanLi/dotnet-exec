@@ -37,7 +37,7 @@ jobs:
     - name: dotnet info
       run: dotnet --info
     - name: dotnet-exec
-      uses: WeihanLi/dotnet-exec-action@0.1.0
+      uses: WeihanLi/dotnet-exec-action@0.1.1
       with:
         script: "./build/build.cs"
         arguments: "target=test"
