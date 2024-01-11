@@ -18,3 +18,4 @@ WORKDIR /app
 COPY --from=build-env /app/artifacts/ ./
 ENV PATH="/app:${PATH}"
 USER app
+ENTRYPOINT [ "dotnet-exec" ]
