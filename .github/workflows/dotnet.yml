@@ -36,11 +36,8 @@ jobs:
           ${{ matrix.os }}-nuget
     - name: dotnet info
       run: dotnet --info
-    - name: dotnet-exec
-      uses: WeihanLi/dotnet-exec-action@0.1.2
-      with:
-        script: "./build/build.cs"
-        arguments: "target=test"
+    - name: build
+      run: bash build.sh --target=test
   
       
   windows-build:
