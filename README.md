@@ -45,29 +45,29 @@ dotnet tool update -g dotnet-execute --add-source https://api.nuget.org/v3/index
 Execute with docker
 
 ``` sh
-docker run --rm weihanli/dotnet-exec:latest dotnet-exec "1+1"
+docker run --rm weihanli/dotnet-exec:latest "1+1"
 ```
 
 ``` sh
-docker run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
+docker run --rm weihanli/dotnet-exec:latest "Guid.NewGuid()"
 ```
 
 ``` sh
-docker run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
+docker run --rm --pull=always weihanli/dotnet-exec:latest "ApplicationHelper.RuntimeInfo"
 ```
 
 Execute with podman
 
 ``` sh
-podman run --rm weihanli/dotnet-exec:latest dotnet-exec "1+1"
+podman run --rm weihanli/dotnet-exec:latest "1+1"
 ```
 
 ``` sh
-podman run --rm weihanli/dotnet-exec:latest dotnet-exec "Guid.NewGuid()"
+podman run --rm weihanli/dotnet-exec:latest "Guid.NewGuid()"
 ```
 
 ``` sh
-podman run --rm --pull=always weihanli/dotnet-exec:latest dotnet-exec "ApplicationHelper.RuntimeInfo"
+podman run --rm --pull=always weihanli/dotnet-exec:latest "ApplicationHelper.RuntimeInfo"
 ```
 
 for the full image tag list, see <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
@@ -223,7 +223,6 @@ dotnet-exec 'WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run();' --prof
 ```
 
 ![image](https://user-images.githubusercontent.com/7604648/205428791-48f0863b-ca9a-4a55-93cd-bb5514845c5d.png)
-
 
 Executing with specific profile config and remove preset specific using:
 
