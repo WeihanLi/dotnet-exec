@@ -18,6 +18,11 @@ ReferenceResolver | [![ReferenceResolver](https://img.shields.io/nuget/v/Referen
 Slides:
 - [Makes C# more simple -- .NET Conf China 2022](https://github.com/WeihanLi/dotnet-exec/blob/main/docs/slides/dotnet-conf-china-2022-dotnet-exec_makes_csharp_more_simple.pdf)
 
+Github Action for executing without dotnet environment
+
+- https://github.com/WeihanLi/dotnet-exec-action
+- https://github.com/marketplace/actions/dotnet-exec
+
 ## Install/Update
 
 ### dotnet tool
