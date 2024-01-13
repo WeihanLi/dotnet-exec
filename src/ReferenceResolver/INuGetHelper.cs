@@ -11,27 +11,27 @@ public interface INuGetHelper
     IEnumerable<NuGetSourceInfo> GetSources(string? packageId = null);
 
     IAsyncEnumerable<(NuGetSourceInfo Source, IEnumerable<IPackageSearchMetadata> SearchResult)> SearchPackages(
-        string keyword, bool includePreRelease = true, int take = 20, int skip = 0,
+        string keyword, bool includePrerelease = true, int take = 20, int skip = 0, string? source = null,
         CancellationToken cancellationToken = default);
 
     IAsyncEnumerable<(NuGetSourceInfo Source, IEnumerable<string> Packages)> GetPackages(string packagePrefix,
-        bool includePreRelease = true, CancellationToken cancellationToken = default);
+        bool includePrerelease = true, string? source = null, CancellationToken cancellationToken = default);
 
     IAsyncEnumerable<(NuGetSourceInfo Source, NuGetVersion Version)> GetPackageVersions(string packageId,
         bool includePrerelease = false,
-        Func<NuGetVersion, bool>? predict = null, CancellationToken cancellationToken = default);
+        Func<NuGetVersion, bool>? predict = null, string? source = null, CancellationToken cancellationToken = default);
 
-    Task<NuGetVersion?> GetLatestPackageVersion(string packageId, bool includePrerelease = false,
+    Task<NuGetVersion?> GetLatestPackageVersion(string packageId, bool includePrerelease = false, string? source = null,
         CancellationToken cancellationToken = default);
 
     Task<(NuGetSourceInfo Source, NuGetVersion Version)?> GetLatestPackageVersionWithSource(string packageId,
-        bool includePrerelease = false,
+        bool includePrerelease = false, string? source = null,
         CancellationToken cancellationToken = default);
 
-    Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null,
+    Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null, string? source = null,
         CancellationToken cancellationToken = default);
 
-    Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream,
+    Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, string? source = null,
         CancellationToken cancellationToken = default);
 
     Task<string[]> ResolvePackageReferences(string targetFramework, string packageId,

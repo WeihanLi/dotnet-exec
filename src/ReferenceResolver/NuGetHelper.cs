@@ -75,32 +75,33 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     }
 
     public async IAsyncEnumerable<(NuGetSourceInfo Source, IEnumerable<IPackageSearchMetadata> SearchResult)> SearchPackages(
-        string keyword, bool includePreRelease = true,
-        int take = 20, int skip = 0,
+        string keyword, bool includePrerelease = true,
+        int take = 20, int skip = 0, string? source = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        foreach (var repository in GetPackageSourceRepositories())
+        foreach (var repository in GetPackageSourceRepositories(source: source))
         {
             var resource = await repository.GetResourceAsync<PackageSearchResource>(cancellationToken).ConfigureAwait(false);
-            var result = await resource.SearchAsync(keyword, new SearchFilter(includePreRelease), skip, take, _nugetLogger,
+            var result = await resource.SearchAsync(keyword, new SearchFilter(includePrerelease), skip, take, _nugetLogger,
                 cancellationToken);
             yield return (NuGetSourceInfo.FromSourceRepository(repository), result);
         }
     }
 
-    public async IAsyncEnumerable<(NuGetSourceInfo Source, IEnumerable<string> Packages)> GetPackages(string packagePrefix, bool includePreRelease = true,
+    public async IAsyncEnumerable<(NuGetSourceInfo Source, IEnumerable<string> Packages)> GetPackages(
+        string packagePrefix, bool includePrerelease = true, string? source = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        foreach (var repository in GetPackageSourceRepositories())
+        foreach (var repository in GetPackageSourceRepositories(source: source))
         {
             var resource = await repository.GetResourceAsync<AutoCompleteResource>(cancellationToken).ConfigureAwait(false);
-            var result = await resource.IdStartsWith(packagePrefix, includePreRelease, _nugetLogger, cancellationToken)
+            var result = await resource.IdStartsWith(packagePrefix, includePrerelease, _nugetLogger, cancellationToken)
                 .ConfigureAwait(false);
             yield return (NuGetSourceInfo.FromSourceRepository(repository), result);
         }
     }
 
-    public async Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null, CancellationToken cancellationToken = default)
+    public async Task<string?> DownloadPackage(string packageId, NuGetVersion version, string? packagesDirectory = null, string? source = null, CancellationToken cancellationToken = default)
     {
         var packageDir = GetPackageInstalledDir(packageId, version, packagesDirectory);
         if (Directory.Exists(packageDir))
@@ -111,7 +112,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         var packagerIdentity = new PackageIdentity(packageId, version);
         var pkgDownloadContext = new PackageDownloadContext(_sourceCacheContext);
 
-        foreach (var sourceRepository in GetPackageSourceRepositories(packageId))
+        foreach (var sourceRepository in GetPackageSourceRepositories(packageId, source))
         {
             var downloadRes = await sourceRepository.GetResourceAsync<DownloadResource>(cancellationToken).ConfigureAwait(false);
             using var downloadResult = await RetryHelper.TryInvokeAsync(async () =>
@@ -131,10 +132,11 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         return Directory.Exists(packageDir) ? packageDir : null;
     }
 
-    public async IAsyncEnumerable<(NuGetSourceInfo Source, NuGetVersion Version)> GetPackageVersions(string packageId, bool includePrerelease = false, Func<NuGetVersion, bool>? predict = null,
+    public async IAsyncEnumerable<(NuGetSourceInfo Source, NuGetVersion Version)> GetPackageVersions(
+        string packageId, bool includePrerelease = false, Func<NuGetVersion, bool>? predict = null, string? source = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        foreach (var sourceRepository in GetPackageSourceRepositories(packageId))
+        foreach (var sourceRepository in GetPackageSourceRepositories(packageId, source))
         {
             var findPackageByIdResource = await sourceRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
                 .ConfigureAwait(false);
@@ -150,15 +152,16 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         }
     }
 
-    public Task<NuGetVersion?> GetLatestPackageVersion(string packageId, bool includePrerelease = false,
+    public Task<NuGetVersion?> GetLatestPackageVersion(string packageId, bool includePrerelease = false, string? source = null,
         CancellationToken cancellationToken = default)
-        => GetLatestPackageVersionWithSource(packageId, includePrerelease, cancellationToken)
+        => GetLatestPackageVersionWithSource(packageId, includePrerelease, source, cancellationToken)
             .ContinueWith(r => r.Result?.Version, cancellationToken);
 
-    public async Task<(NuGetSourceInfo Source, NuGetVersion Version)?> GetLatestPackageVersionWithSource(string packageId, bool includePrerelease = false,
+    public async Task<(NuGetSourceInfo Source, NuGetVersion Version)?> GetLatestPackageVersionWithSource(
+        string packageId, bool includePrerelease = false, string? source = null,
         CancellationToken cancellationToken = default)
     {
-        var versions = await GetPackageSourceRepositories(packageId)
+        var versions = await GetPackageSourceRepositories(packageId, source)
             .Select(async repo =>
             {
                 var packageMetadataResource = await repo.GetResourceAsync<PackageMetadataResource>(cancellationToken)
@@ -179,9 +182,10 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         return maxVersion;
     }
 
-    public async Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, CancellationToken cancellationToken = default)
+    public async Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, 
+        string? source = null, CancellationToken cancellationToken = default)
     {
-        foreach (var sourceRepository in GetPackageSourceRepositories(packageId))
+        foreach (var sourceRepository in GetPackageSourceRepositories(packageId, source))
         {
             var findPackageByIdResource = await sourceRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
                 .ConfigureAwait(false);
@@ -202,7 +206,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     {
         if (version is null)
         {
-            version = await GetLatestPackageVersion(packageId, includePrerelease, cancellationToken)
+            version = await GetLatestPackageVersion(packageId, includePrerelease, null, cancellationToken)
                 .ConfigureAwait(false);
             if (version is null)
             {
@@ -236,7 +240,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     {
         if (version is null)
         {
-            version = await GetLatestPackageVersion(packageId, includePrerelease, cancellationToken);
+            version = await GetLatestPackageVersion(packageId, includePrerelease, null, cancellationToken);
             if (version is null)
             {
                 throw new InvalidOperationException($"No package version found for package {packageId}");
@@ -351,7 +355,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
     private async Task<string[]> ResolvePackageInternal(string targetFramework, string packageId, NuGetVersion version, CancellationToken cancellationToken)
     {
-        await DownloadPackage(packageId, version, null, cancellationToken).ConfigureAwait(false);
+        await DownloadPackage(packageId, version, null, null, cancellationToken).ConfigureAwait(false);
         var packageDir = GetPackageInstalledDir(packageId, version);
         if (!Directory.Exists(packageDir))
         {
@@ -397,7 +401,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
     private async Task<string[]> ResolvePackageAnalyzerInternal(string targetFramework, string packageId, NuGetVersion version, CancellationToken cancellationToken)
     {
-        await DownloadPackage(packageId, version, null, cancellationToken).ConfigureAwait(false);
+        await DownloadPackage(packageId, version, null, null, cancellationToken).ConfigureAwait(false);
         var packageDir = GetPackageInstalledDir(packageId, version);
         if (!Directory.Exists(packageDir))
         {
@@ -430,10 +434,13 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         return packageDir;
     }
 
-    private IEnumerable<SourceRepository> GetPackageSourceRepositories(string? packageId = null)
+    private IEnumerable<SourceRepository> GetPackageSourceRepositories(string? packageId = null, string? source = null)
     {
         if (!_packageSourceMapping.IsEnabled || string.IsNullOrEmpty(packageId))
             return _nugetSources;
+
+        if (!string.IsNullOrEmpty(source))
+            return [_nugetSources.First(x => x.PackageSource.Name == source || x.PackageSource.Source == source)];
 
         var packageSources = new HashSet<string>(_packageSourceMapping.GetConfiguredPackageSources(packageId));
         return _nugetSources.Where(x => packageSources.Contains(x.PackageSource.Source) || packageSources.Contains(x.PackageSource.Name));
