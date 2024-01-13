@@ -97,7 +97,7 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
                         var packageId = FrameworkReferenceResolver.GetReferencePackageName(framework);
                         var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
                         var version = await nugetHelper.GetPackageVersions(packageId, true, x => x.Major == nugetFramework.Version.Major
-                            && x.Minor == nugetFramework.Version.Minor, options.CancellationToken)
+                            && x.Minor == nugetFramework.Version.Minor, null, options.CancellationToken)
                             .OrderByDescending(x => x.Version)
                             .FirstOrDefaultAsync(options.CancellationToken);
                         return await nugetHelper.ResolvePackageReferences(options.TargetFramework, packageId, version.Version,
@@ -114,7 +114,7 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
                     var packageId = FrameworkReferenceResolver.GetRuntimePackageName(framework);
                     var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
                     var version = await nugetHelper.GetPackageVersions(packageId, true, x => x.Major == nugetFramework.Version.Major
-                        && x.Minor == nugetFramework.Version.Minor, options.CancellationToken)
+                        && x.Minor == nugetFramework.Version.Minor, null, options.CancellationToken)
                         .OrderByDescending(x => x.Version)
                         .FirstOrDefaultAsync(options.CancellationToken);
                     return await nugetHelper.ResolvePackageReferences(options.TargetFramework, packageId, version.Version,
@@ -178,7 +178,7 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
                 var packageId = FrameworkReferenceResolver.GetReferencePackageName(framework);
                 var nugetFramework = NuGetFramework.Parse(options.TargetFramework);
                 var version = await nugetHelper.GetPackageVersions(packageId, true, x => x.Major == nugetFramework.Version.Major
-                    && x.Minor == nugetFramework.Version.Minor, options.CancellationToken)
+                    && x.Minor == nugetFramework.Version.Minor, null, options.CancellationToken)
                     .OrderByDescending(x => x.Version)
                     .FirstOrDefaultAsync(options.CancellationToken);
                 return await nugetHelper.ResolvePackageAnalyzerReferences(options.TargetFramework, packageId, version.Version,
