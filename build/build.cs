@@ -105,7 +105,7 @@ await BuildProcess.CreateBuilder()
         }))
     .WithTask("Default", b => b.WithDependency("hello").WithDependency("pack"))
     .Build()
-    .ExecuteAsync(target, InvokeHelper.GetExitToken());
+    .ExecuteAsync(target, ApplicationHelper.ExitToken);
 
 bool ArgumentBool(string argumentName, bool defaultValue = default)
 {
