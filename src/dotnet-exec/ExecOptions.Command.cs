@@ -186,7 +186,7 @@ public sealed partial class ExecOptions
 
     public static Command GetCommand()
     {
-        var command = new Command(Helper.ApplicationName);
+        var command = new Command(Helper.ApplicationName, "dotnet-exec, execute C# script/program from command line");
         command.AddCommand(new ConfigProfileCommand());
         foreach (var argument in GetArguments())
         {
