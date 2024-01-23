@@ -49,14 +49,14 @@ public sealed class CommandHandler(ILogger logger,
         if (options.Script.IsNullOrWhiteSpace())
         {
             logger.LogError("The script {ScriptFile} can not be empty", options.Script);
-            return -1;
+            return ExitCodes.InvalidScript;
         }
         // fetch script
         var fetchResult = await scriptContentFetcher.FetchContent(options);
         if (!fetchResult.IsSuccess())
         {
             logger.LogError(fetchResult.Msg);
-            return -1;
+            return ExitCodes.FetchError;
         }
 
         // execute options configure pipeline
@@ -79,11 +79,11 @@ public sealed class CommandHandler(ILogger logger,
         if (!compileResult.IsSuccess())
         {
             logger.LogError($"Compile error:{Environment.NewLine}{compileResult.Msg}");
-            return -2;
+            return ExitCodes.CompileError;
         }
 
         // return if dry-run
-        if (options.DryRun) return 0;
+        if (options.DryRun) return ExitCodes.Success;
 
         Guard.NotNull(compileResult.Data);
         // execute
@@ -95,7 +95,7 @@ public sealed class CommandHandler(ILogger logger,
             if (!executeResult.IsSuccess())
             {
                 logger.LogError($"Execute error:{Environment.NewLine}{executeResult.Msg}");
-                return -3;
+                return ExitCodes.ExecuteError;
             }
             var elapsed = ProfilerHelper.GetElapsedTime(executeStartTime);
             logger.LogDebug("Execute elapsed: {elapsed}", elapsed);
@@ -108,12 +108,12 @@ public sealed class CommandHandler(ILogger logger,
         catch (OperationCanceledException) when (options.CancellationToken.IsCancellationRequested)
         {
             logger.LogWarning("Execution cancelled...");
-            return -998;
+            return ExitCodes.OperationCancelled;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Execute code exception");
-            return -999;
+            return ExitCodes.ExecuteException;
         }
     }
 }
