@@ -11,6 +11,7 @@ using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
@@ -469,6 +470,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     public void Dispose() => _sourceCacheContext.Dispose();
 }
 
+[ExcludeFromCodeCoverage]
 public sealed class NuGetSourceInfo(string name, string source)
 {
     public string Name => name;
@@ -478,6 +480,7 @@ public sealed class NuGetSourceInfo(string name, string source)
         => new(sourceRepository.PackageSource.Name, sourceRepository.PackageSource.Source);
 }
 
+[ExcludeFromCodeCoverage]
 file sealed class NuGetLoggingAdapter(ILogger logger) : LoggerBase
 {
     public override void Log(ILogMessage message)
@@ -501,6 +504,7 @@ file sealed class NuGetLoggingAdapter(ILogger logger) : LoggerBase
     }
 }
 
+[ExcludeFromCodeCoverage]
 file sealed class NuGetSourceRepositoryComparer : IEqualityComparer<SourceRepository>
 {
     public bool Equals(SourceRepository? x, SourceRepository? y)

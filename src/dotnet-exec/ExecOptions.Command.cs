@@ -6,10 +6,12 @@ using Exec.Contracts;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using ReferenceResolver;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace Exec;
 
+[ExcludeFromCodeCoverage]
 public sealed partial class ExecOptions
 {
     public const string DefaultTargetFramework =
