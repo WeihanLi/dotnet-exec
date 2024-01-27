@@ -1,5 +1,10 @@
 # Release Notes
 
+## 0.17.0(To be released)
+
+- Refactor `NuGetHelper`, support `sources` options for nuget sources filters
+- docker image enhancements, add `entrypoint` and default `command`
+
 ## 0.16.0
 
 - Update config profile directory path to fix config profile error in Linux Platform
