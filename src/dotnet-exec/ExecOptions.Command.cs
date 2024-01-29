@@ -141,7 +141,7 @@ public sealed partial class ExecOptions
             .Select(x => new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))
             .ToArray();
         DryRun = parseResult.HasOption(DryRunOption);
-        DebugEnabled = parseResult.HasOption(DebugOption) || DryRun;
+        DebugEnabled = Helper.DebugModelEnabled(Environment.GetCommandLineArgs());
         var nugetConfigFile = parseResult.GetValueForOption(NuGetConfigFileOption);
         if (!string.IsNullOrEmpty(nugetConfigFile))
         {

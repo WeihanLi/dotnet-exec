@@ -37,9 +37,19 @@ public static class Helper
     public const string Default = "default";
     public const string Script = "script";
 
+    private const string EnableDebugEnvName = "DOTNET_EXEC_DEBUG_ENABLED";
+    public static bool DebugModelEnabled(string[] args)
+    {
+        if (args.Contains("--debug") || args.Contains("--dry-run"))
+            return true;
+        
+        var enableDebugValue = Environment.GetEnvironmentVariable(EnableDebugEnvName);
+        return bool.TryParse(enableDebugValue, out var enableDebug) && enableDebug;
+    }
+
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services, string[] args)
     {
-        var isDebugMode = args.Contains("--debug") || args.Contains("--dry-run");
+        var isDebugMode = DebugModelEnabled(args);
         if (isDebugMode && !Debugger.IsAttached && args.Contains("--attach")) Debugger.Launch();
 
         services.AddLogging(builder =>
