@@ -22,7 +22,7 @@ namespace Exec;
 
 public static class Helper
 {
-    // update to FrozonSet when target .NET 8 only 
+    // update to FrozonSet when target .NET 8 or greater only 
     private static readonly ImmutableHashSet<string> SpecialConsoleDiagnosticIds = new[]
     {
         // Program does not contain a static 'Main' method suitable for an entry point
