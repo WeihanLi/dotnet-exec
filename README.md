@@ -42,7 +42,7 @@ dotnet tool update -g dotnet-execute --prerelease
 Install failed? try the command below:
 
 ```sh
-dotnet tool update -g dotnet-execute --add-source https://api.nuget.org/v3/index.json --ignore-failed-sources
+dotnet tool update -g dotnet-execute --prerelease --add-source https://api.nuget.org/v3/index.json --ignore-failed-sources
 ```
 
 ### Container support
