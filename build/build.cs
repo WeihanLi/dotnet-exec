@@ -1,10 +1,10 @@
 // Copyright (c) 2022-2024 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
-var target = Guard.NotNull(Argument("target", "Default"));
-var apiKey = Argument("apiKey", "");
-var stable = ArgumentBool("stable");
-var noPush = ArgumentBool("noPush");
+var target = Guard.NotNull(CommandLineParser.GetArgumentValue(args, "target", "Default"));
+var apiKey = CommandLineParser.GetArgumentValue(args, "apiKey");
+var stable = CommandLineParser.GetBoolArgumentValue(args, "stable");
+var noPush = CommandLineParser.GetBoolArgumentValue(args, "noPush");
 
 Console.WriteLine($$"""
 Arguments:
@@ -106,43 +106,6 @@ await BuildProcess.CreateBuilder()
     .WithTask("Default", b => b.WithDependency("hello").WithDependency("pack"))
     .Build()
     .ExecuteAsync(target, ApplicationHelper.ExitToken);
-
-bool ArgumentBool(string argumentName, bool defaultValue = default)
-{
-    var value = ArgumentInternal(argumentName);
-    if (value is null) return defaultValue;
-    if (value == string.Empty) return true;
-    return bool.Parse(value);
-}
-
-string? Argument(string argumentName, string? defaultValue = default)
-{
-    return ArgumentInternal(argumentName) ?? defaultValue;
-}
-
-string? ArgumentInternal(string argumentName)
-{
-    for (var i = 0; i < args.Length; i++)
-    {
-        if (args[i] == $"--{argumentName}" || args[i] == $"-{argumentName}")
-        {
-            if (i + 1 == args.Length || args[i + 1].StartsWith('-'))
-                return string.Empty;
-
-            return args[i + 1];
-        }
-
-        if (args[i].StartsWith($"-{argumentName}=", StringComparison.Ordinal) 
-            || args[i].StartsWith($"-{argumentName}:", StringComparison.Ordinal))
-            return args[i][$"-{argumentName}=".Length..];
-
-        if (args[i].StartsWith($"--{argumentName}=", StringComparison.Ordinal)
-            || args[i].StartsWith($"--{argumentName}:", StringComparison.Ordinal))
-            return args[i][$"--{argumentName}=".Length..];
-    }
-
-    return null;
-}
 
 async Task ExecuteCommandAsync(string commandText, CancellationToken cancellationToken = default)
 {
