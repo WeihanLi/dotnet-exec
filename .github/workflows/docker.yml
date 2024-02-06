@@ -37,6 +37,7 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}
+
     - name: Build and push web release
       id: docker_build_web_release
       uses: docker/build-push-action@v5
@@ -47,6 +48,15 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}-web
 
+    - name: Build and push web
+      id: docker_build_web
+      uses: docker/build-push-action@v5
+      with:
+        context: ./
+        file: ./Dockerfile.web
+        push: true
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:web
+
     - name: Build and push latest
       id: docker_build_latest
       uses: docker/build-push-action@v5
@@ -56,11 +66,3 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:latest
         # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
-    - name: Build and push web
-      id: docker_build_web
-      uses: docker/build-push-action@v5
-      with:
-        context: ./
-        file: ./Dockerfile.web
-        push: true
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:web
