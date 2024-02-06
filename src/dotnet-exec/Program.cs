@@ -4,8 +4,7 @@
 using Exec.Contracts;
 using System.Text.Json;
 
-var infoIndex = Array.IndexOf(args, "--info");
-if (infoIndex > -1)
+if (args is ["--info"])
 {
     var info = new InfoModel();
     Console.WriteLine(JsonSerializer.Serialize(info, JsonHelper.WriteIntendedUnsafeEncoderOptions));
