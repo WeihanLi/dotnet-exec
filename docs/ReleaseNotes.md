@@ -3,8 +3,9 @@
 ## 0.17.0
 
 - Refactor `NuGetHelper`, support `sources` options for nuget sources filters
-- docker image enhancements, add `entrypoint`, default `command` and configure `dotnet-exec` executable
+- docker image enhancements, add `entrypoint`, default `command` and configure `dotnet-exec` as executable
 - add env `DOTNET_EXEC_DEBUG_ENABLED` to enable debug model
+- add `--info` for output the tool and runtime info
 
 ## 0.16.0
 
