@@ -4,5 +4,8 @@
     <VersionMinor>17</VersionMinor>
     <VersionPatch>0</VersionPatch>
     <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
+    <VersionSuffix Condition="'$(Configuration)'=='Debug' AND '$(VersionSuffix)'==''">dev</VersionSuffix>
+    <InformationalVersion Condition="'$(VersionSuffix)'==''">$(VersionPrefix)</InformationalVersion>
+    <InformationalVersion Condition="'$(VersionSuffix)'!=''">$(VersionPrefix)-$(VersionSuffix)</InformationalVersion>
   </PropertyGroup>
 </Project>
