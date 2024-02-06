@@ -178,7 +178,7 @@ public static class Helper
                                 return;
                             }
 
-                            var output = JsonSerializer.Serialize(profile, JsonSerializerOptionsHelper.WriteIndented);
+                            var output = JsonSerializer.Serialize(profile, JsonHelper.WriteIntendedUnsafeEncoderOptions);
                             context.Console.WriteLine(output);
                         }
                     };
@@ -364,11 +364,3 @@ public static class Helper
     }
 }
 
-public static class JsonSerializerOptionsHelper
-{
-    public static JsonSerializerOptions WriteIndented { get; } = new()
-    {
-        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        WriteIndented = true
-    };
-}

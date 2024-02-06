@@ -21,7 +21,15 @@ public sealed class CommandHandler(ILogger logger,
     public async Task<int> InvokeAsync(InvocationContext context)
     {
         var parseResult = context.ParseResult;
-
+        // 0. dump version info when info option exists
+        var dumpInfo = parseResult.HasOption(ExecOptions.InfoOption);
+        if (dumpInfo)
+        {
+            var info = new InfoModel();
+            Console.WriteLine(JsonSerializer.Serialize(info, JsonHelper.WriteIntendedUnsafeEncoderOptions));
+            return 0;
+        }
+        
         // 1. options binding
         var options = new ExecOptions();
         var profileName = parseResult.GetValueForOption(ExecOptions.ConfigProfileOption);
@@ -38,7 +46,7 @@ public sealed class CommandHandler(ILogger logger,
         options.CancellationToken = context.GetCancellationToken();
         if (options.DebugEnabled)
         {
-            logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, JsonSerializerOptionsHelper.WriteIndented));
+            logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, JsonHelper.WriteIntendedUnsafeEncoderOptions));
         }
 
         return await Execute(options);

@@ -36,7 +36,7 @@ public sealed class ConfigProfileManager : IConfigProfileManager
 
         var profilePath = Path.Combine(ProfileFolder, $"{profileName}.json");
         await using var fs = File.OpenWrite(profilePath);
-        await JsonSerializer.SerializeAsync(fs, profile, JsonSerializerOptionsHelper.WriteIndented);
+        await JsonSerializer.SerializeAsync(fs, profile, JsonHelper.WriteIntendedUnsafeEncoderOptions);
     }
 
     public Task DeleteProfile(string profileName)
