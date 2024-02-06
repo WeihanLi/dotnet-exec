@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2022-2024 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace Exec.Contracts;
@@ -9,19 +10,20 @@ namespace Exec.Contracts;
 /// Dump version info
 /// https://github.com/dotnet/core/blob/main/samples/dotnet-runtimeinfo/Program.cs
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class InfoModel
 {
     public string ToolVersion { get; init; }
-        = typeof(Helper).Assembly.ImageRuntimeVersion;
+        = ApplicationHelper.GetLibraryInfo(typeof(Helper)).LibraryVersion;
 
     public string CommonVersion { get; init; }
-        = typeof(Guard).Assembly.ImageRuntimeVersion;
+        = ApplicationHelper.GetLibraryInfo(typeof(Guard)).LibraryVersion;
 
     public string NuGetVersion { get; init; }
-        = typeof(NuGet.Common.NullLogger).Assembly.ImageRuntimeVersion;
+        = ApplicationHelper.GetLibraryInfo(typeof(NuGet.Common.NullLogger)).LibraryVersion;
 
     public string RoslynVersion { get; init; }
-        = typeof(Microsoft.CodeAnalysis.CSharp.CSharpCompilation).Assembly.ImageRuntimeVersion;
+        = ApplicationHelper.GetLibraryInfo(typeof(Microsoft.CodeAnalysis.CSharp.CSharpCompilation)).LibraryVersion;
 
     public string EnvironmentVersion { get; init; } = Environment.Version.ToString();
     public string FrameworkDescription { get; init; } = RuntimeInformation.FrameworkDescription;
