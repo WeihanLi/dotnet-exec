@@ -108,9 +108,10 @@ internal sealed class ProjectFileOptionsConfigureMiddleware
                             packageVersion = newPackageVersion;
                         }
                     }
-
-                    IReference reference = new NuGetReference(packageId, packageVersion);
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+                    IReference reference = new NuGetReference(packageId, packageVersion);                    
                     options.References.Add(reference.ReferenceWithSchema);
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance                    
                 }
 
                 if (File.Exists(projectPath))
@@ -127,8 +128,10 @@ internal sealed class ProjectFileOptionsConfigureMiddleware
                         if (!File.Exists(referenceProjectPath))
                             continue;
 
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
                         IReference projectReference = new ProjectReference(referenceProjectFullPath);
                         options.References.Add(projectReference.ReferenceWithSchema);
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
                     }
 
                 }

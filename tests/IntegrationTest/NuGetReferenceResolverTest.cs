@@ -22,8 +22,10 @@ public class NuGetReferenceResolverTest
     [Fact]
     public async Task ResolveReference()
     {
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance        
         IReference reference = new NuGetReference("WeihanLi.Common", "1.0.60");
         Assert.Equal($"nuget: {reference.Reference}", reference.ReferenceWithSchema);
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
 
         var references = await _resolver.Resolve(reference.Reference, ExecOptions.DefaultTargetFramework);
         Assert.NotNull(references);
