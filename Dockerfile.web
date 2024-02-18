@@ -1,7 +1,7 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-preview-alpine AS base
 LABEL Maintainer="WeihanLi"
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:9.0-preview-alpine AS build-env
 
 WORKDIR /app
 COPY ./src/ ./src/
@@ -11,7 +11,7 @@ COPY ./Directory.Build.targets ./
 COPY ./Directory.Packages.props ./
 WORKDIR /app/src/dotnet-exec/
 ENV HUSKY=0
-RUN dotnet publish -f net8.0 -o /app/artifacts
+RUN dotnet publish -f net9.0 -o /app/artifacts
 
 FROM base AS final
 WORKDIR /app
