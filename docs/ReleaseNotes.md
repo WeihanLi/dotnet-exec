@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.18.0
+
+- Add `net9.0` target support
+
 ## 0.17.0
 
 - Refactor `NuGetHelper`, support `sources` options for nuget sources filters
