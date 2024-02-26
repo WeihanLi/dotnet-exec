@@ -10,12 +10,7 @@ COPY ./Directory.Build.targets ./
 COPY ./Directory.Packages.props ./
 WORKDIR /app/src/dotnet-exec/
 ENV HUSKY=0
-# Use shell logic to determine the publish method
-RUN if [ "$RuntimeImageRepo" = "aspnet" ]; then \
-        dotnet publish -f net9.0 -a $TARGETARCH -o /app/out/ ;\
-    else \
-        dotnet publish -f net9.0 --use-current-runtime --sc -a $TARGETARCH -o /app/out/ ; \
-    fi
+RUN dotnet publish -f net9.0 -a $TARGETARCH -o /app/out/
 
 FROM mcr.microsoft.com/dotnet/${RuntimeImageRepo}:9.0-preview-alpine AS final
 LABEL Maintainer="WeihanLi"
