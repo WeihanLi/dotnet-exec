@@ -1,4 +1,4 @@
-ARG RuntimeImageRepo=runtime-deps
+ARG RuntimeImageRepo=runtime
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-preview-alpine AS build-env
 ARG TARGETARCH
