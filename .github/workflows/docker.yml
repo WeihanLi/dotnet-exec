@@ -54,7 +54,7 @@ jobs:
       if: ${{ github.event_name == 'release' }}
       with:
         context: ./
-        file: ./Dockerfile.web
+        file: ./Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}-web
         platforms: ${{ env.ContainerPlatforms }}
@@ -65,7 +65,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: ./
-        file: ./Dockerfile.web
+        file: ./Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:web
         platforms: ${{ env.ContainerPlatforms }}
