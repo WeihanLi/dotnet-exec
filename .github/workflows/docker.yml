@@ -15,8 +15,7 @@ on:
       - 'build/**'
       - '.github/workflows/docker.yml'
 env:
-  ContainerPlatforms: "linux/amd64"
-  # ContainerPlatforms: "linux/amd64,linux/arm64,linux/arm"  
+  ContainerPlatforms: "linux/amd64,linux/arm64,linux/arm"  
 jobs:  
   docker-build:
     if: github.repository == 'WeihanLi/dotnet-exec'

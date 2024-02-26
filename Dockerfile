@@ -1,10 +1,7 @@
 ARG SdkImage=mcr.microsoft.com/dotnet/sdk:9.0-preview-alpine
 ARG RuntimeImage=mcr.microsoft.com/dotnet/runtime:9.0-preview-alpine
 
-FROM  --platform=$BUILDPLATFORM ${RuntimeImage} AS base
-LABEL Maintainer="WeihanLi"
-
-FROM ${SdkImage} AS build-env
+FROM --platform=$BUILDPLATFORM $SdkImage AS build-env
 ARG TARGETARCH
 WORKDIR /app
 COPY ./src/ ./src/
@@ -16,7 +13,9 @@ WORKDIR /app/src/dotnet-exec/
 ENV HUSKY=0
 RUN dotnet publish -f net9.0 -a $TARGETARCH -o /app/artifacts
 
-FROM base AS final
+FROM --platform=$BUILDPLATFORM $RuntimeImage AS final
+LABEL Maintainer="WeihanLi"
+LABEL Repository="https://github.com/WeihanLi/dotnet-exec"
 WORKDIR /app
 COPY --from=build-env /app/artifacts/ ./
 ENV PATH="/app:${PATH}"
