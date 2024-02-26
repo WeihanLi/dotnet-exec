@@ -1,7 +1,10 @@
-FROM  --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime:9.0-preview-alpine AS base
+ARG SdkImage=mcr.microsoft.com/dotnet/sdk:9.0-preview-alpine
+ARG RuntimeImage=mcr.microsoft.com/dotnet/runtime:9.0-preview-alpine
+
+FROM  --platform=$BUILDPLATFORM ${RuntimeImage} AS base
 LABEL Maintainer="WeihanLi"
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0-preview-alpine AS build-env
+FROM ${SdkImage} AS build-env
 ARG TARGETARCH
 WORKDIR /app
 COPY ./src/ ./src/
