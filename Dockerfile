@@ -13,7 +13,7 @@ WORKDIR /app/src/dotnet-exec/
 ENV HUSKY=0
 RUN dotnet publish -f net9.0 -a $TARGETARCH -o /app/out/
 
-FROM --platform=$BUILDPLATFORM $RuntimeImage AS final
+FROM $RuntimeImage AS final
 LABEL Maintainer="WeihanLi"
 LABEL Repository="https://github.com/WeihanLi/dotnet-exec"
 WORKDIR /app
