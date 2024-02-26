@@ -1,7 +1,6 @@
-ARG SdkImage=mcr.microsoft.com/dotnet/sdk:9.0-preview-alpine
-ARG RuntimeImage=mcr.microsoft.com/dotnet/runtime:9.0-preview-alpine
+ARG RuntimeImageRepo=runtime-deps
 
-FROM --platform=$BUILDPLATFORM $SdkImage AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-preview-alpine AS build-env
 ARG TARGETARCH
 WORKDIR /app
 COPY ./src/ ./src/
@@ -11,9 +10,14 @@ COPY ./Directory.Build.targets ./
 COPY ./Directory.Packages.props ./
 WORKDIR /app/src/dotnet-exec/
 ENV HUSKY=0
-RUN dotnet publish -f net9.0 -a $TARGETARCH -o /app/out/
+# Use shell logic to determine the publish method
+RUN if [ "$RuntimeImageRepo" = "aspnet" ]; then \
+        dotnet publish -f net9.0 -a $TARGETARCH -o /app/out/ \
+    else \
+        dotnet publish -f net9.0 --use-current-runtime --sc -a $TARGETARCH -o /app/out/ \
+    fi
 
-FROM $RuntimeImage AS final
+FROM mcr.microsoft.com/dotnet/${RuntimeImage}:9.0-preview-alpine AS final
 LABEL Maintainer="WeihanLi"
 LABEL Repository="https://github.com/WeihanLi/dotnet-exec"
 WORKDIR /app

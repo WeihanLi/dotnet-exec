@@ -57,7 +57,7 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}-web
         platforms: ${{ env.ContainerPlatforms }}
-        build-args: "RuntimeImage=mcr.microsoft.com/dotnet/aspnet:9.0-preview-alpine"
+        build-args: "RuntimeImageRepo=aspnet"
 
     - name: Build and push web
       id: docker_build_web
@@ -68,7 +68,7 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:web
         platforms: ${{ env.ContainerPlatforms }}
-        build-args: "RuntimeImage=mcr.microsoft.com/dotnet/aspnet:9.0-preview-alpine"
+        build-args: "RuntimeImageRepo=aspnet"
 
     - name: Build and push latest
       id: docker_build_latest
