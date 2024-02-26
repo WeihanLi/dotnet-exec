@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-preview-alpine AS base
+FROM  --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/aspnet:9.0-preview-alpine AS base
 LABEL Maintainer="WeihanLi"
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0-preview-alpine AS build-env
