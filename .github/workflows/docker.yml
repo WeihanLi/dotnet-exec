@@ -46,7 +46,7 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}
-        platforms: "$ContainerPlatforms"
+        platforms: ${{ env.ContainerPlatforms }}
 
     - name: Build and push web release
       id: docker_build_web_release
@@ -57,7 +57,7 @@ jobs:
         file: ./Dockerfile.web
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}-web
-        platforms: "$ContainerPlatforms"
+        platforms: ${{ env.ContainerPlatforms }}
 
     - name: Build and push web
       id: docker_build_web
@@ -67,7 +67,7 @@ jobs:
         file: ./Dockerfile.web
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:web
-        platforms: "$ContainerPlatforms"
+        platforms: ${{ env.ContainerPlatforms }}
 
     - name: Build and push latest
       id: docker_build_latest
@@ -78,4 +78,4 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:latest
-        platforms: "$ContainerPlatforms"
+        platforms: ${{ env.ContainerPlatforms }}
