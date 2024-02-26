@@ -37,6 +37,8 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}
+        multiPlatform: true
+        platform: linux/amd64,linux/arm64
 
     - name: Build and push web release
       id: docker_build_web_release
@@ -47,6 +49,8 @@ jobs:
         file: ./Dockerfile.web
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}-web
+        multiPlatform: true
+        platform: linux/amd64,linux/arm64
 
     - name: Build and push web
       id: docker_build_web
@@ -56,13 +60,17 @@ jobs:
         file: ./Dockerfile.web
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:web
+        multiPlatform: true
+        platform: linux/amd64,linux/arm64
 
     - name: Build and push latest
       id: docker_build_latest
       uses: docker/build-push-action@v5
       with:
+        # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
         context: ./
         file: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:latest
-        # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:latest        
+        multiPlatform: true
+        platform: linux/amd64,linux/arm64
