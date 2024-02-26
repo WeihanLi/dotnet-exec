@@ -6,8 +6,10 @@
     "ghcr.io/devcontainers/features/dotnet:2": {
       "version": "9.0.100-preview.1.24101.2",
       "additionalVersions": "latest,lts"
-    }    
+    }
   },
+  "onCreateCommand": "dotnet tool update -g dotnet-execute --prerelease",
+  "postCreateCommand": "",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -16,5 +18,8 @@
         "DavidAnson.vscode-markdownlint"
       ]
     }
+  },
+  "remoteEnv": {
+    "HUSKY": "0"
   }
 }
