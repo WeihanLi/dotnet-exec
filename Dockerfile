@@ -11,14 +11,14 @@ COPY ./Directory.Build.targets ./
 COPY ./Directory.Packages.props ./
 WORKDIR /app/src/dotnet-exec/
 ENV HUSKY=0
-RUN dotnet publish -f net9.0 -a $TARGETARCH -o /app/artifacts
+RUN dotnet publish -f net9.0 -a $TARGETARCH -o /app/out/
 
 FROM --platform=$BUILDPLATFORM $RuntimeImage AS final
 LABEL Maintainer="WeihanLi"
 LABEL Repository="https://github.com/WeihanLi/dotnet-exec"
 WORKDIR /app
-COPY --from=build-env /app/artifacts/ ./
+COPY --from=build-env /app/out/ ./
 ENV PATH="/app:${PATH}"
-RUN chmod +x ./dotnet-exec
-ENTRYPOINT [ "dotnet-exec" ]
+RUN chmod +x /app/dotnet-exec
+ENTRYPOINT [ "/app/dotnet-exec" ]
 CMD [ "--help" ]
