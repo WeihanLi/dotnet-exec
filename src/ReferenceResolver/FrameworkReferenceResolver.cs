@@ -102,6 +102,7 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
                 "global::System.IO",
                 "global::System.Linq",
                 "global::System.Net.Http",
+                "global::System.Net.Http.Json", // add this to simplify the http request
                 "global::System.Text",
                 "global::System.Threading",
                 "global::System.Threading.Tasks"
