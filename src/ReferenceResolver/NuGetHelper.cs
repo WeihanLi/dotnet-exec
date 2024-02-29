@@ -122,7 +122,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
                     pkgDownloadContext,
                     packagesDirectory ?? _globalPackagesFolder,
                     _nugetLogger,
-                    cancellationToken).ConfigureAwait(false), _ => true, 5).ConfigureAwait(false);
+                    cancellationToken).ConfigureAwait(false), _ => true, 5, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (downloadResult?.Status != DownloadResourceResultStatus.Available)
                 continue;
 
