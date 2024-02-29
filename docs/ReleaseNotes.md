@@ -3,6 +3,10 @@
 ## 0.18.0
 
 - Add `net9.0` target support
+- Multi-platform container image support(`linux/amd64`/`linux/arm64`/`linux/arm`)
+- Enhancements for `ProjectReferenceResolver`, add retry for building project
+- Include `System.Net.Http.Json` namespace by default
+- Support `--compile-out` option to export compile result
 
 ## 0.17.0
 
