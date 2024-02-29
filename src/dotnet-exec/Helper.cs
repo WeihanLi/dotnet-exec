@@ -291,12 +291,13 @@ public static class Helper
         ArgumentNullException.ThrowIfNull(options);
         var usings = GetGlobalUsings(options);
         var usingText = UsingManager.GetGlobalUsingsCodeText(usings);
-        return options.EnablePreviewFeatures ?
-            // Generate System.Runtime.Versioning.RequiresPreviewFeatures attribute on assembly level
-            // global usings have to be placed before anything else
-            $"{usingText}{Environment.NewLine}[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]"
-            : usingText
-            ;
+
+        // global usings have to be placed before anything else
+        // Generate System.Runtime.Versioning.RequiresPreviewFeatures attribute on assembly level if needed
+        if (options.EnablePreviewFeatures)
+            usingText = $"{usingText}{Environment.NewLine}[assembly:System.Runtime.Versioning.RequiresPreviewFeatures]";
+
+        return usingText;
     }
 
     private static void LoadSupportedFrameworks()
