@@ -15,7 +15,8 @@ on:
       - 'build/**'
       - '.github/workflows/docker.yml'
 env:
-  ContainerPlatforms: "linux/amd64,linux/arm64,linux/arm"  
+  DOCKER_HUB_USERNAME: "weihanli"
+  ContainerPlatforms: "linux/amd64,linux/arm64,linux/arm"
 jobs:  
   docker-build:
     if: github.repository == 'WeihanLi/dotnet-exec'
@@ -33,7 +34,7 @@ jobs:
     - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        username: ${{ env.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
     - name: Build and push release
@@ -44,7 +45,7 @@ jobs:
         context: ./
         file: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}
+        tags: ${{ env.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}
         platforms: ${{ env.ContainerPlatforms }}
 
     - name: Build and push web release
@@ -55,7 +56,7 @@ jobs:
         context: ./
         file: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}-web
+        tags: ${{ env.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}-web
         platforms: ${{ env.ContainerPlatforms }}
         build-args: "RuntimeImageRepo=aspnet"
 
@@ -66,7 +67,7 @@ jobs:
         context: ./
         file: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:web
+        tags: ${{ env.DOCKER_HUB_USERNAME }}/dotnet-exec:web
         platforms: ${{ env.ContainerPlatforms }}
         build-args: "RuntimeImageRepo=aspnet"
 
@@ -78,5 +79,5 @@ jobs:
         context: ./
         file: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dotnet-exec:latest
+        tags: ${{ env.DOCKER_HUB_USERNAME }}/dotnet-exec:latest
         platforms: ${{ env.ContainerPlatforms }}
