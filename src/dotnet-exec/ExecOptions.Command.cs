@@ -91,7 +91,8 @@ public sealed partial class ExecOptions
     private static readonly Option<string> NuGetConfigFileOption = new(["--nuget-config"], "NuGet config file path to use");
     private static readonly Option<string[]> EnvOption =
         new(["--env"], "Set environment variable for process, usage example: --env name=test --env value=123");
-    internal static readonly Option<bool> InfoOption = new(["--info"], "Tool version and runtime info");
+    private static readonly Option<bool> InfoOption = new(["--info"], "Tool version and runtime info");
+    private static readonly Option<string?> CompileOutputOption = new(["--compile-out"], "Compiled dll output path");
 
     static ExecOptions()
     {
@@ -143,6 +144,7 @@ public sealed partial class ExecOptions
             .Select(x => x.Split('='))
             .Select(x => new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))
             .ToArray();
+        CompileOutput = parseResult.GetValueForOption(CompileOutputOption);
         DryRun = parseResult.HasOption(DryRunOption);
         DebugEnabled = Helper.DebugModelEnabled(Environment.GetCommandLineArgs());
         var nugetConfigFile = parseResult.GetValueForOption(NuGetConfigFileOption);

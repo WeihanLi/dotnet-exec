@@ -82,6 +82,21 @@ public sealed class CommandHandler(ILogger logger,
             return ExitCodes.CompileError;
         }
 
+        // output compiled assembly if needed
+        if (!string.IsNullOrEmpty(options.CompileOutput))
+        {
+            var dir = Path.GetDirectoryName(options.CompileOutput);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            var originalPosition = compileResult.Data!.Stream.Position;
+            compileResult.Data.Stream.Seek(0, SeekOrigin.Begin);
+            using var fs = File.Create(options.CompileOutput);
+            await compileResult.Data!.Stream.CopyToAsync(fs);
+            compileResult.Data!.Stream.Position = originalPosition;
+        }
+
         // return if dry-run
         if (options.DryRun) return ExitCodes.Success;
 

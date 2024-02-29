@@ -52,5 +52,7 @@ public sealed partial class ExecOptions
 
     public bool DryRun { get; set; }
 
+    public string? CompileOutput { get; set; }
+
     [JsonIgnore] public CancellationToken CancellationToken { get; set; }
 }
