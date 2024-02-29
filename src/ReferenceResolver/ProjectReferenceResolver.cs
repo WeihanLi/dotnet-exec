@@ -12,13 +12,16 @@ public sealed class ProjectReferenceResolver : IReferenceResolver
     {
         var dotnetPath = Guard.NotNull(ApplicationHelper.GetDotnetPath());
         var projectPath = GetProjectPath(reference, true);
-        var outputDir = Path.Combine(Path.GetDirectoryName(projectPath)!, "bin/build/out");
-        var result = await CommandExecutor.ExecuteAndCaptureAsync(dotnetPath, $"build {reference} -o {outputDir}", cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-        if (result.ExitCode != 0)
+        var outputDir = Path.Combine(Path.GetDirectoryName(projectPath)!, "bin/_exec_build/_out");
+        var result = await RetryHelper.TryInvokeAsync(async () => 
+        {
+            return await CommandExecutor.ExecuteAndCaptureAsync(dotnetPath, $"build {reference} -o {outputDir}", cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+        }, r => r?.ExitCode is 0, 5);
+        if (result?.ExitCode != 0)
         {
             throw new InvalidOperationException(
-                $"Failed to build project {reference}, {result.StandardOut}, {(string.IsNullOrEmpty(result.StandardError) ? "" : $"Error: {result.StandardError}")}");
+                $"Failed to build project {reference}, {result?.StandardOut}, {(string.IsNullOrEmpty(result?.StandardError) ? "" : $"Error: {result.StandardError}")}");
         }
 
         return Directory.GetFiles(outputDir, "*.dll");
