@@ -42,9 +42,8 @@ public static class Helper
     {
         if (args.Contains("--debug") || args.Contains("--dry-run"))
             return true;
-        
-        var enableDebugValue = Environment.GetEnvironmentVariable(EnableDebugEnvName);
-        return bool.TryParse(enableDebugValue, out var enableDebug) && enableDebug;
+
+        return EnvHelper.Val(EnableDebugEnvName).ToBoolean();
     }
 
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services, string[] args)
