@@ -1,10 +1,6 @@
 #!/bin/sh
 
-# Install dotnet-exec tool
-dotnet tool update --global dotnet-execute --prerelease
-
-# configure dotnet tool path
-export PATH="$PATH:$HOME/.dotnet/tools"
+dotnet build -c Release ./src/dotnet-exec/dotnet-exec.csproj -f net9.0 -o ./artifacts/out
 
 echo "dotnet-exec ./build/build.cs --args $@"
-dotnet-exec ./build/build.cs --args "$@"
+./artifacts/out/dotnet-exec ./build/build.cs --args "$@"
