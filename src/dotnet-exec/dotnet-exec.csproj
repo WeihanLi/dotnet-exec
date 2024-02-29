@@ -9,6 +9,7 @@
     <PackageTags>exec;execute;script;run</PackageTags>
     <Description>`dotnet-exec` is a command-line tool for excuting C# program with custom entry point</Description>
     <PackageProjectUrl>https://github.com/WeihanLi/dotnet-exec</PackageProjectUrl>
+    <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
