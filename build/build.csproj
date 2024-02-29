@@ -3,8 +3,10 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>build</AssemblyName>
+    <EnableDefaultItems>false</EnableDefaultItems>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="build.cs" />
     <PackageReference Include="WeihanLi.Common" />
   </ItemGroup>
 </Project>
