@@ -3,6 +3,7 @@
 
 dotnet build -c Release ./src/dotnet-exec/dotnet-exec.csproj -f net9.0 -o ./artifacts/out
 
+./artifacts/out/dotnet-exec.exe --info
+
 # Execute CSharp script
-Write-Host "dotnet-exec ./build/build.cs --args $ARGS" -ForegroundColor GREEN
 ./artifacts/out/dotnet-exec.exe ./build/build.cs --args "$ARGS"
