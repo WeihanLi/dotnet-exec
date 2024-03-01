@@ -90,10 +90,18 @@ public sealed class CommandHandler(ILogger logger,
             {
                 Directory.CreateDirectory(dir);
             }
+            var outputPath = options.CompileOutput;
+            if (string.IsNullOrEmpty(Path.GetFileName(outputPath)))
+            {
+                outputPath = Path.Combine(dir ?? Environment.CurrentDirectory, $"{compileResult.Data!.Compilation.AssemblyName}.dll");
+            }
+            
             var originalPosition = compileResult.Data!.Stream.Position;
             compileResult.Data.Stream.Seek(0, SeekOrigin.Begin);
-            using var fs = File.Create(options.CompileOutput);
-            await compileResult.Data!.Stream.CopyToAsync(fs);
+            
+            using var fs = File.Create(outputPath);
+            await compileResult.Data.Stream.CopyToAsync(fs);
+
             compileResult.Data!.Stream.Position = originalPosition;
         }
 

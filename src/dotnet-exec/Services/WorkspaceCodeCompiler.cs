@@ -19,21 +19,13 @@ public sealed class WorkspaceCodeCompiler(
     {
         ArgumentNullException.ThrowIfNull(options);
         var projectName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}";
-        var assemblyName = $"{projectName}.dll";
+        var assemblyName = projectName;
         var projectInfo = ProjectInfo.Create(
             ProjectId.CreateNewId(),
             VersionStamp.Default,
             projectName,
             assemblyName,
             LanguageNames.CSharp);
-
-        var globalUsingCode = Helper.GetGlobalUsingsCodeText(options);
-        var globalUsingDocument = DocumentInfo.Create(
-            DocumentId.CreateNewId(projectInfo.Id, "__GlobalUsings"),
-            "__GlobalUsings",
-            loader: new PlainTextLoader(globalUsingCode),
-            filePath: "__GlobalUsings.cs",
-            isGenerated: true);
 
         var scriptDocument = DocumentInfo.Create(DocumentId.CreateNewId(projectInfo.Id, "__Script"), "__Script.cs");
         scriptDocument = string.IsNullOrEmpty(code)
@@ -45,6 +37,13 @@ public sealed class WorkspaceCodeCompiler(
             scriptDocument = scriptDocument.WithFilePath(fullPath);
         }
 
+        var globalUsingCode = Helper.GetGlobalUsingsCodeText(options);
+        var globalUsingDocument = DocumentInfo.Create(
+            DocumentId.CreateNewId(projectInfo.Id, "__GlobalUsings"),
+            "__GlobalUsings",
+            loader: new PlainTextLoader(globalUsingCode),
+            filePath: "__GlobalUsings.cs",
+            isGenerated: true);
         var documents = new List<DocumentInfo>() { globalUsingDocument, scriptDocument };
         if (options.AdditionalScripts.HasValue())
         {

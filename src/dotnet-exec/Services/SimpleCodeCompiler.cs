@@ -18,14 +18,11 @@ public sealed class SimpleCodeCompiler(
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
         ArgumentNullException.ThrowIfNull(options);
-        var assemblyName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}.dll";
+        var assemblyName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}";
         var globalUsingCode = Helper.GetGlobalUsingsCodeText(options);
         var parseOptions = new CSharpParseOptions(options.GetLanguageVersion());
-        parseOptions = parseOptionsPipeline.Configure(parseOptions, options);
-        var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, "__GlobalUsings.cs",
-            cancellationToken: options.CancellationToken);
+        parseOptions = parseOptionsPipeline.Configure(parseOptions, options);        
         var path = "__Script.cs";
-
         if (File.Exists(options.Script))
         {
             path = Path.GetFullPath(options.Script);
@@ -40,8 +37,9 @@ public sealed class SimpleCodeCompiler(
             throw new InvalidOperationException("Code to compile can not be empty");
         }
 
-        var scriptSyntaxTree =
-            CSharpSyntaxTree.ParseText(code, parseOptions, path, cancellationToken: options.CancellationToken);
+        var scriptSyntaxTree = CSharpSyntaxTree.ParseText(code, parseOptions, path, cancellationToken: options.CancellationToken);
+        var globalUsingSyntaxTree = CSharpSyntaxTree.ParseText(globalUsingCode, parseOptions, "__GlobalUsings.cs",
+            cancellationToken: options.CancellationToken);
         var syntaxTreeList = new List<SyntaxTree>() { globalUsingSyntaxTree, scriptSyntaxTree, };
         if (options.AdditionalScripts.HasValue())
         {
