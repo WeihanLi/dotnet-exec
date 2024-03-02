@@ -40,7 +40,7 @@ public static class Helper
     private const string EnableDebugEnvName = "DOTNET_EXEC_DEBUG_ENABLED";
     public static bool DebugModelEnabled(string[] args)
     {
-        if (args.Contains("--debug") || args.Contains("--dry-run"))
+        if (args.Contains("--debug"))
             return true;
 
         return EnvHelper.Val(EnableDebugEnvName).ToBoolean();
