@@ -26,7 +26,10 @@ public sealed partial class ExecOptions
 #endif
         ;
 
-    private static readonly Argument<string> ScriptArgument = new("script", "CSharp script to execute");
+    private static readonly Argument<string[]> ScriptArgument = new("script", "CSharp script to execute")
+    {
+        Arity = ArgumentArity.OneOrMore
+    };
 
     private static readonly Option<string> TargetFrameworkOption = new(["-f", "--framework"],
         () => DefaultTargetFramework, "Target framework");
@@ -103,7 +106,7 @@ public sealed partial class ExecOptions
 
     public void BindCommandLineArguments(ParseResult parseResult, ConfigProfile? configProfile)
     {
-        Script = Guard.NotNull(parseResult.GetValueForArgument(ScriptArgument));
+        Script = Guard.NotNull(parseResult.GetValueForArgument(ScriptArgument).FirstOrDefault());
         StartupType = parseResult.GetValueForOption(StartupTypeOption);
         EntryPoint = parseResult.GetValueForOption(EntryPointOption).GetValueOrDefault("MainTest");
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption)
@@ -130,7 +133,7 @@ public sealed partial class ExecOptions
             References.Add(Helper.ReferenceNormalize(reference));
         }
         Usings = [.. parseResult.GetValueForOption(UsingsOption) ?? Array.Empty<string>()];
-        AdditionalScripts = new(parseResult.GetValueForOption(AdditionalScriptsOption) ?? Array.Empty<string>(), StringComparer.Ordinal);
+        AdditionalScripts = new(parseResult.GetValueForArgument(ScriptArgument)[1..].Union(parseResult.GetValueForOption(AdditionalScriptsOption) ?? []), StringComparer.Ordinal);
         UseRefAssembliesForCompile = parseResult.GetValueForOption(UseRefAssembliesForCompileOption);
         ConfigProfile = parseResult.GetValueForOption(ConfigProfileOption);
         EnablePreviewFeatures = parseResult.HasOption(PreviewOption);
