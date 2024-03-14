@@ -57,14 +57,7 @@ public abstract class CodeExecutor(ILogger logger) : ICodeExecutor
                 return Result.Fail("No valid EntryPoint found", ResultStatus.RequestError, (int)ResultStatus.RequestError);
             }
 
-            await TaskHelper.ToTask(returnValue).ConfigureAwait(false);
-            var returnExitCode = returnValue switch
-            {
-                ValueTask<int> valueTaskValue => valueTaskValue.Result,
-                Task<int> taskValue => taskValue.Result,
-                int value => value,
-                _ => 0
-            };
+            var returnExitCode = await TaskHelper.ToTask<int>(returnValue).ConfigureAwait(false);
             return Result.Success(returnExitCode);
         }
         catch (Exception e)
