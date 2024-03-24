@@ -2,7 +2,7 @@
   <PropertyGroup>
     <!-- Enable central package management -->
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <RoslynVersion>4.9.2</RoslynVersion>
+    <RoslynVersion>4.10.0-2.final</RoslynVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(RoslynVersion)" />
@@ -20,8 +20,8 @@
     <PackageVersion Include="FluentAssertions" Version="6.6.0" />
     <PackageVersion Include="xunit" Version="2.7.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="8.9.1" />
-    <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="8.1.0" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="9.0.1" />
+    <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="9.0.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
   </ItemGroup>
   <ItemGroup>
