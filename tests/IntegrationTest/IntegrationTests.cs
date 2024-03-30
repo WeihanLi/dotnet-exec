@@ -113,6 +113,32 @@ public class IntegrationTests
     }
 
     [Theory]
+    [InlineData("HelloScriptSample")]
+    public async Task ScriptSamplesTest(string sampleFileName)
+    {
+        var filePath = $"{sampleFileName}.csx";
+        var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", filePath);
+        Assert.True(File.Exists(fullPath));
+
+        var execOptions = new ExecOptions()
+        {
+            Script = fullPath,
+            Arguments = ["--hello", "world"],
+            IncludeWebReferences = true,
+            IncludeWideReferences = true,
+            CompilerType = Helper.Script,
+            ExecutorType = Helper.Script,
+            EnableSourceGeneratorSupport = sampleFileName.Contains("SourceGenerator")
+        };
+
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(execOptions);
+        Assert.Equal(0, result);
+
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
+    
+    [Theory]
     [InlineData("code:Console.Write(\"Hello .NET\");")]
     [InlineData("code:\"Hello .NET\".Dump();")]
     [InlineData("code:\"Hello .NET\".Dump()")]
