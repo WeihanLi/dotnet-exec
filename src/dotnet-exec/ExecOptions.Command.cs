@@ -127,7 +127,12 @@ public sealed partial class ExecOptions
         IncludeWideReferences = parseResult.GetValueForOption(WideReferencesOption);
         IncludeWebReferences = parseResult.GetValueForOption(WebReferencesOption);
         CompilerType = parseResult.GetValueForOption(CompilerTypeOption) ?? Helper.Default;
-        ExecutorType = parseResult.GetValueForOption(ExecutorTypeOption) ?? Helper.Default;
+        var executorTypeValue = parseResult.GetValueForOption(ExecutorTypeOption);
+        ExecutorType = string.IsNullOrEmpty(executorTypeValue)
+            ? Helper.Script.EqualsIgnoreCase(CompilerType)
+                ? Helper.Script
+                : Helper.Default
+            : executorTypeValue;
         foreach (var reference in parseResult.GetValueForOption(ReferencesOption) ?? [])
         {
             References.Add(Helper.ReferenceNormalize(reference));
