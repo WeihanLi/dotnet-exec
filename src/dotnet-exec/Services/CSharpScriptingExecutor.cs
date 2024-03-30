@@ -1,9 +1,11 @@
 ﻿// Copyright (c) 2022-2024 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting.Hosting;
 using Microsoft.CodeAnalysis.Scripting;
+using System.Globalization;
 using WeihanLi.Common.Extensions;
 using WeihanLi.Common.Models;
 
@@ -37,8 +39,16 @@ public sealed class CSharpScriptCompilerExecutor(IRefResolver referenceResolver,
             }
         }
         script = script.ContinueWith(code, scriptOptions);
+        var diagnostics = script.Compile(options.CancellationToken);
+        if (diagnostics.Any(x => x.Severity == DiagnosticSeverity.Error))
+        {
+            return Result.Fail<CompileResult>(diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error)
+                .Select(d => d.GetMessage(CultureInfo.InvariantCulture))
+                .StringJoin(Environment.NewLine));
+        }
         var compileResult = new CompileResult(null!, null!, null!);
         compileResult.SetProperty(nameof(Script), script);
+        compileResult.SetProperty(nameof(Diagnostic), diagnostics);
         return Result.Success(compileResult);
     }
 
