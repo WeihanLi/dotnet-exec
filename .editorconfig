@@ -100,3 +100,7 @@ dotnet_diagnostic.IDE00055.severity = warning
 dotnet_diagnostic.IDE0005.severity = warning
 # File header template
 dotnet_diagnostic.IDE0073.severity = warning
+
+[*.{cs,vb}]
+dotnet_diagnostic.IDE0011.severity = none
+dotnet_diagnostic.IDE0046.severity = none

@@ -26,4 +26,4 @@ if (index > -1 && index < args.Length)
 return await command.InvokeAsync(args);
 
 [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-internal partial class Program {}
+internal partial class Program { }

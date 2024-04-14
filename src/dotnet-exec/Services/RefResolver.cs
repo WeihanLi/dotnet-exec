@@ -88,7 +88,7 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
                 if (compilation)
                 {
                     var references =
-                        await FrameworkReferenceResolver.ResolveForCompile(framework, options.TargetFramework, options.CancellationToken)
+                        await FrameworkReferenceResolver.ResolveForCompile(framework, options.TargetFramework)
                             .ContinueWith(r => r.Result.ToArray());
                     if (references.HasValue()) return references;
 
@@ -126,8 +126,8 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
             .WhenAll();
         if (options.IncludeWideReferences)
         {
-            return frameworkReferences.Append(new[]
-                {
+            return frameworkReferences.Append(
+                [
                     typeof(Microsoft.Extensions.Configuration.IConfiguration).Assembly.Location,
                     typeof(Microsoft.Extensions.Configuration.ConfigurationManager).Assembly.Location,
                     typeof(ServiceCollection).Assembly.Location,
@@ -138,7 +138,7 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
                     typeof(Microsoft.Extensions.Primitives.ChangeToken).Assembly.Location,
                     typeof(Newtonsoft.Json.JsonConvert).Assembly.Location,
                     typeof(DependencyResolver).Assembly.Location,
-                })
+                ])
                 .SelectMany(x => x)
                 .Distinct()
                 .ToArray();
@@ -151,7 +151,7 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
     {
         if (references.IsNullOrEmpty())
         {
-            return Array.Empty<string>();
+            return [];
         }
         // non-framework references
         var result = await references
@@ -194,7 +194,7 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
     {
         if (references.IsNullOrEmpty())
         {
-            return Enumerable.Empty<string>();
+            return [];
         }
         // non-framework references
         var result = await references

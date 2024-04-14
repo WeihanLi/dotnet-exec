@@ -25,14 +25,7 @@ public class AdditionalScriptContentFetcher(HttpClient httpClient, IUriTransform
             else
             {
                 var isValidFilePath = !Path.GetInvalidPathChars().Any(script.Contains);
-                if (isValidFilePath && File.Exists(script))
-                {
-                    sourceText = await File.ReadAllTextAsync(script, cancellationToken);
-                }
-                else
-                {
-                    sourceText = script;
-                }
+                sourceText = isValidFilePath && File.Exists(script) ? await File.ReadAllTextAsync(script, cancellationToken) : script;
             }
         }
         catch (Exception e)

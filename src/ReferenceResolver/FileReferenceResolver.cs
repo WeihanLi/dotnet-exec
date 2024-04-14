@@ -11,7 +11,7 @@ public sealed class FileReferenceResolver : IReferenceResolver
     {
         var fileInfo = new FileInfo(reference);
         return fileInfo.Exists
-            ? Task.FromResult<IEnumerable<string>>(new[] { fileInfo.FullName })
+            ? Task.FromResult<IEnumerable<string>>([fileInfo.FullName])
             : Task.FromResult(Enumerable.Empty<string>());
     }
 }

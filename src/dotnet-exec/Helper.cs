@@ -347,7 +347,7 @@ public static class Helper
         typeof(CompilationOptions)
             .GetProperty("ReferencesSupersedeLowerVersions", BindingFlags.Instance | BindingFlags.NonPublic)!
             .SetMethod!
-            .Invoke(compilationOptions, new object[] { true });
+            .Invoke(compilationOptions, [true]);
     }
 
     public static string ReferenceNormalize(string reference)

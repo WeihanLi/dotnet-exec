@@ -7,7 +7,7 @@ public static class ExitCodes
 {
     public const int OperationCancelled = -1;
     public const int Success = 0;
-    
+
     public const int InvalidScript = -1;
     public const int FetchError = -2;
     public const int CompileError = -3;

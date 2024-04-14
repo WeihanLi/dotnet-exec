@@ -12,7 +12,7 @@ public class ReferenceTest
     public void FileReferenceTypeTest()
     {
 #pragma warning disable CA1859 // Use concrete types when possible for improved performance
-        IReference reference = new FileReference("ReferenceResolver.dll");        
+        IReference reference = new FileReference("ReferenceResolver.dll");
         Assert.Equal(ReferenceType.LocalFile, reference.ReferenceType);
         Assert.Equal($"file: {reference.Reference}", reference.ReferenceWithSchema);
 #pragma warning restore CA1859 // Use concrete types when possible for improved performance

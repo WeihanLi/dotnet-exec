@@ -55,8 +55,6 @@ public sealed partial class ExecOptions
             Arity = ArgumentArity.ZeroOrOne
         };
 
-    private static readonly Option<bool> DebugOption = new("--debug", "Enable debug logs for debug");
-
     private static readonly Option<bool> UseRefAssembliesForCompileOption = new("--ref-compile",
         "Use Ref assemblies for compile, when not found from local download from nuget");
 
@@ -94,8 +92,13 @@ public sealed partial class ExecOptions
     private static readonly Option<string> NuGetConfigFileOption = new(["--nuget-config"], "NuGet config file path to use");
     private static readonly Option<string[]> EnvOption =
         new(["--env"], "Set environment variable for process, usage example: --env name=test --env value=123");
-    private static readonly Option<bool> InfoOption = new(["--info"], "Tool version and runtime info");
+
     private static readonly Option<string?> CompileOutputOption = new(["--compile-out"], "Compiled dll output path");
+
+#pragma warning disable IDE0052
+    private static readonly Option<bool> DebugOption = new("--debug", "Enable debug logs for debug");
+    private static readonly Option<bool> InfoOption = new(["--info"], "Tool version and runtime info");
+#pragma warning restore IDE0052
 
     static ExecOptions()
     {
@@ -113,15 +116,10 @@ public sealed partial class ExecOptions
             .GetValueOrDefault(DefaultTargetFramework);
         Configuration = parseResult.GetValueForOption(ConfigurationOption);
 
-        if (Helper.CommandArguments.HasValue())
-        {
-            Arguments = Helper.CommandArguments;
-        }
-        else
-        {
-            Arguments = CommandLineStringSplitter.Instance
+        Arguments = Helper.CommandArguments.HasValue()
+            ? Helper.CommandArguments
+            : CommandLineStringSplitter.Instance
                 .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
-        }
 
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
         IncludeWideReferences = parseResult.GetValueForOption(WideReferencesOption);
@@ -137,13 +135,13 @@ public sealed partial class ExecOptions
         {
             References.Add(Helper.ReferenceNormalize(reference));
         }
-        Usings = [.. parseResult.GetValueForOption(UsingsOption) ?? Array.Empty<string>()];
+        Usings = [.. parseResult.GetValueForOption(UsingsOption) ?? []];
         AdditionalScripts = new(parseResult.GetValueForArgument(ScriptArgument)[1..].Union(parseResult.GetValueForOption(AdditionalScriptsOption) ?? []), StringComparer.Ordinal);
         UseRefAssembliesForCompile = parseResult.GetValueForOption(UseRefAssembliesForCompileOption);
         ConfigProfile = parseResult.GetValueForOption(ConfigProfileOption);
         EnablePreviewFeatures = parseResult.HasOption(PreviewOption);
         EnableSourceGeneratorSupport = parseResult.HasOption(EnableSourceGeneratorOption);
-        ParserPreprocessorSymbolNames = new(parseResult.GetValueForOption(ParserSymbolNamesOption) ?? Array.Empty<string>(), StringComparer.Ordinal);
+        ParserPreprocessorSymbolNames = new(parseResult.GetValueForOption(ParserSymbolNamesOption) ?? [], StringComparer.Ordinal);
         ParserFeatures = parseResult.GetValueForOption(ParserFeaturesOption)?
             .Select(x => x.Split('='))
             .Select(x => new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))

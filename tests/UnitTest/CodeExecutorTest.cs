@@ -25,7 +25,7 @@ public sealed class CodeExecutorTest
     {
         var execOptions = new ExecOptions()
         {
-            Arguments = new[] { "--hello", "world" }
+            Arguments = ["--hello", "world"]
         };
         var result = await _compiler.Compile(execOptions, code);
         _outputHelper.WriteLine($"{result.Msg}");

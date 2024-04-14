@@ -21,7 +21,7 @@ public sealed class SimpleCodeCompiler(
         var assemblyName = $"{Helper.ApplicationName}_{Guid.NewGuid():N}";
         var globalUsingCode = Helper.GetGlobalUsingsCodeText(options);
         var parseOptions = new CSharpParseOptions(options.GetLanguageVersion());
-        parseOptions = parseOptionsPipeline.Configure(parseOptions, options);        
+        parseOptions = parseOptionsPipeline.Configure(parseOptions, options);
         var path = "__Script.cs";
         if (File.Exists(options.Script))
         {

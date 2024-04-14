@@ -137,7 +137,7 @@ public class IntegrationTests
 
         _outputHelper.WriteLine(output.StandardOutput);
     }
-    
+
     [Theory]
     [InlineData("code:Console.Write(\"Hello .NET\");")]
     [InlineData("code:\"Hello .NET\".Dump();")]

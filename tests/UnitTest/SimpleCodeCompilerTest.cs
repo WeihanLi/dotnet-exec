@@ -74,6 +74,6 @@ Console.WriteLine("""
 
     public static SimpleCodeCompiler GetSimpleCodeCompiler() =>
         new(RefResolver.InstanceForTest, AdditionalScriptContentFetcher.InstanceForTest,
-            new ParseOptionsPipeline(Enumerable.Empty<IParseOptionsMiddleware>()),
-            new CompilationOptionsPipeline(Enumerable.Empty<ICompilationOptionsMiddleware>()));
+            new ParseOptionsPipeline([]),
+            new CompilationOptionsPipeline([]));
 }

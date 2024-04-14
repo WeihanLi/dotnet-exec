@@ -21,7 +21,7 @@ public sealed class CommandHandler(ILogger logger,
     public async Task<int> InvokeAsync(InvocationContext context)
     {
         var parseResult = context.ParseResult;
-        
+
         // 1. options binding
         var options = new ExecOptions();
         var profileName = parseResult.GetValueForOption(ExecOptions.ConfigProfileOption);
@@ -95,10 +95,10 @@ public sealed class CommandHandler(ILogger logger,
             {
                 outputPath = Path.Combine(dir ?? Environment.CurrentDirectory, $"{compileResult.Data!.Compilation.AssemblyName}.dll");
             }
-            
+
             var originalPosition = compileResult.Data!.Stream.Position;
             compileResult.Data.Stream.Seek(0, SeekOrigin.Begin);
-            
+
             using var fs = File.Create(outputPath);
             await compileResult.Data.Stream.CopyToAsync(fs);
 

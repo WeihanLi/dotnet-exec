@@ -15,7 +15,7 @@ public sealed partial class ExecOptions
     public string? StartupType { get; set; } = string.Empty;
     public string EntryPoint { get; set; } = "MainTest";
 
-    public string[] Arguments { get; set; } = Array.Empty<string>();
+    public string[] Arguments { get; set; } = [];
 
     public string ProjectPath { get; set; } = string.Empty;
 

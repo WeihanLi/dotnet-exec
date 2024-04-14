@@ -30,6 +30,6 @@ public sealed class InfoModel
     public string RuntimeIdentifier { get; init; } = RuntimeInformation.RuntimeIdentifier;
     public int ProcessorCount { get; set; } = Environment.ProcessorCount;
     public string OSArchitecture { get; set; } = RuntimeInformation.OSArchitecture.ToString();
-    public string OSDescription { get; set; }= RuntimeInformation.OSDescription;
+    public string OSDescription { get; set; } = RuntimeInformation.OSDescription;
     public string OSVersion { get; set; } = Environment.OSVersion.VersionString;
 }

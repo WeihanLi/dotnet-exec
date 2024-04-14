@@ -39,15 +39,13 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
             .WrapTask<IEnumerable<string>>();
     }
 
-    public static Task<IEnumerable<string>> ResolveForCompile(string reference, string targetFramework,
-        CancellationToken cancellationToken = default)
+    public static Task<IEnumerable<string>> ResolveForCompile(string reference, string targetFramework)
     {
         var references = ResolveFrameworkReferencesViaSdkPacks(reference, targetFramework);
         return Task.FromResult<IEnumerable<string>>(references);
     }
 
-    public static Task<IEnumerable<string>> ResolveDefaultReferences(string targetFramework, bool forCompile = false,
-        CancellationToken cancellationToken = default)
+    public static Task<IEnumerable<string>> ResolveDefaultReferences(string targetFramework, bool forCompile = false)
     {
         if (forCompile)
             return Task.FromResult<IEnumerable<string>>(

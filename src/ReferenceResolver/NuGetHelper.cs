@@ -122,7 +122,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
                     pkgDownloadContext,
                     packagesDirectory ?? _globalPackagesFolder,
                     _nugetLogger,
-                    cancellationToken).ConfigureAwait(false), r => r is { Status: DownloadResourceResultStatus.Available or DownloadResourceResultStatus.NotFound }, 
+                    cancellationToken).ConfigureAwait(false), r => r is { Status: DownloadResourceResultStatus.Available or DownloadResourceResultStatus.NotFound },
                     10, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (downloadResult?.Status != DownloadResourceResultStatus.Available)
                 continue;
@@ -184,7 +184,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         return maxVersion;
     }
 
-    public async Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream, 
+    public async Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream,
         string[]? sources = null, CancellationToken cancellationToken = default)
     {
         foreach (var sourceRepository in GetPackageSourceRepositories(packageId, sources))
@@ -390,15 +390,13 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         }
 
         var runtimeItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Runtimes, cancellationToken).ConfigureAwait(false)).FirstOrDefault();
-        if (runtimeItems != null)
-        {
-            return runtimeItems
+        return runtimeItems != null
+            ? runtimeItems
                 .Items
                 .Where(x => ".dll".EqualsIgnoreCase(Path.GetExtension(x)))
                 .Select(x => Path.Combine(packageDir, x))
-                .ToArray();
-        }
-        return [];
+                .ToArray()
+            : [];
     }
 
     private async Task<string[]> ResolvePackageAnalyzerInternal(string targetFramework, string packageId, NuGetVersion version, CancellationToken cancellationToken)
@@ -415,18 +413,16 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         var analyzerItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Analyzers, cancellationToken)
             .ConfigureAwait(false)).ToArray();
         var nearestRef = _frameworkReducer.GetNearest(nugetFramework, analyzerItems.Select(x => x.TargetFramework));
-        if (nearestRef != null)
-        {
-            return analyzerItems.First(x => x.TargetFramework == nearestRef)
+        return nearestRef != null
+            ? analyzerItems.First(x => x.TargetFramework == nearestRef)
                  .Items
                  .Where(x => ".dll".EqualsIgnoreCase(Path.GetExtension(x)))
                  .Select(x => Path.Combine(packageDir, x))
-                 .ToArray();
-        }
-
-        return analyzerItems.Length > 0
-            ? analyzerItems[0].Items.Select(x => Path.Combine(packageDir, x)).ToArray()
-            : [];
+                 .ToArray()
+            : analyzerItems.Length > 0
+              ? analyzerItems[0].Items.Select(x => Path.Combine(packageDir, x)).ToArray()
+              : []
+              ;
     }
 
     private string GetPackageInstalledDir(string packageId, NuGetVersion packageVersion, string? packagesDirectory = null)
@@ -445,7 +441,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         if (_packageSourceMapping.IsEnabled)
         {
             var packageSources = new HashSet<string>(_packageSourceMapping.GetConfiguredPackageSources(packageId));
-            filterSources = _nugetSources.Where(x => packageSources.Contains(x.PackageSource.Source) || packageSources.Contains(x.PackageSource.Name));    
+            filterSources = _nugetSources.Where(x => packageSources.Contains(x.PackageSource.Source) || packageSources.Contains(x.PackageSource.Name));
         }
         else
         {
@@ -510,10 +506,7 @@ file sealed class NuGetSourceRepositoryComparer : IEqualityComparer<SourceReposi
 {
     public bool Equals(SourceRepository? x, SourceRepository? y)
     {
-        if (x == null)
-            return y is null;
-
-        return y != null && x.PackageSource.Source.Equals(y.PackageSource.Source, StringComparison.Ordinal);
+        return x == null ? y is null : y != null && x.PackageSource.Source.Equals(y.PackageSource.Source, StringComparison.Ordinal);
     }
 
     public int GetHashCode(SourceRepository obj)
