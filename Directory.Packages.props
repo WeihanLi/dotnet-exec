@@ -9,18 +9,18 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Condition="'$(TargetFramework)'!='net9.0'" Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
-    <PackageVersion Condition="'$(TargetFramework)'=='net9.0'" Include="Microsoft.Extensions.Logging.Console" Version="9.0.0-preview.2.24128.5" />
+    <PackageVersion Condition="'$(TargetFramework)'=='net9.0'" Include="Microsoft.Extensions.Logging.Console" Version="9.0.0-preview.3.24172.9" />
     <PackageVersion Include="NuGet.Protocol" Version="6.9.1" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.64-preview-20240314-151324" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.64-preview-20240412-234923" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageVersion Include="FluentAssertions" Version="6.6.0" />
-    <PackageVersion Include="xunit" Version="2.7.0" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="9.0.1" />
+    <PackageVersion Include="xunit" Version="2.7.1" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.8" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="9.1.0" />
     <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="9.0.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
   </ItemGroup>
