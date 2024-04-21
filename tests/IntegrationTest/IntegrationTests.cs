@@ -350,8 +350,8 @@ public class IntegrationTests
         };
         using var output = await ConsoleOutput.CaptureAsync();
         var result = await _handler.Execute(options);
-        Assert.Equal(0, result);
         _outputHelper.WriteLine(output.StandardOutput);
+        Assert.Equal(0, result);
         // Assert.Equal(version, output.StandardOutput);
     }
 
