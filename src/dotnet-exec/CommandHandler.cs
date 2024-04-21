@@ -120,11 +120,9 @@ public sealed class CommandHandler(ILogger logger,
                 logger.LogError($"Execute error:{Environment.NewLine}{executeResult.Msg}");
                 return ExitCodes.ExecuteError;
             }
+
             var elapsed = ProfilerHelper.GetElapsedTime(executeStartTime);
             logger.LogDebug("Execute elapsed: {elapsed}", elapsed);
-
-            // wait for console flush
-            await Console.Out.FlushAsync();
 
             return executeResult.Data;
         }
@@ -137,6 +135,11 @@ public sealed class CommandHandler(ILogger logger,
         {
             logger.LogError(ex, "Execute code exception");
             return ExitCodes.ExecuteException;
+        }
+        finally
+        {
+            // wait for console flush
+            await Console.Out.FlushAsync();
         }
     }
 }
