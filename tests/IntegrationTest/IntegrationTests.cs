@@ -114,6 +114,7 @@ public class IntegrationTests
 
     [Theory]
     [InlineData("HelloScriptSample")]
+    [InlineData("ScriptReferenceSample")]
     public async Task ScriptSamplesTest(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.csx";
@@ -127,8 +128,7 @@ public class IntegrationTests
             IncludeWebReferences = true,
             IncludeWideReferences = true,
             CompilerType = Helper.Script,
-            ExecutorType = Helper.Script,
-            EnableSourceGeneratorSupport = sampleFileName.Contains("SourceGenerator")
+            ExecutorType = Helper.Script
         };
 
         using var output = await ConsoleOutput.CaptureAsync();

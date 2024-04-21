@@ -99,7 +99,7 @@ public sealed class CommandHandler(ILogger logger,
             var originalPosition = compileResult.Data!.Stream.Position;
             compileResult.Data.Stream.Seek(0, SeekOrigin.Begin);
 
-            using var fs = File.Create(outputPath);
+            await using var fs = File.Create(outputPath);
             await compileResult.Data.Stream.CopyToAsync(fs);
 
             compileResult.Data!.Stream.Position = originalPosition;

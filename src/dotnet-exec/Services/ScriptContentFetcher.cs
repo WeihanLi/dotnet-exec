@@ -78,21 +78,36 @@ public sealed class ScriptContentFetcher(HttpClient httpClient, IUriTransformer 
         var scriptReferences = new HashSet<string>();
         var scriptUsings = new HashSet<string>();
 
+        var replacements = new List<KeyValuePair<string, string>>();
         foreach (var line in sourceText.Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
         {
+            var lineText = line;
+
             if (!line.StartsWith("//", StringComparison.Ordinal))
             {
-                break;
+                if (line.Length > 3 &&
+                    line[0] is '#'
+                    && line[1] is 'r' or 'u'
+                    && line[2] is ' '
+                    )
+                {
+                    lineText = $"//{line[1]}: {line[2..]}";
+                    replacements.Add(new(line, lineText));
+                }
+                else
+                {
+                    break;
+                }
             }
 
             // exact reference from file
-            if (line.StartsWith("//r:", StringComparison.Ordinal)
-                || line.StartsWith("// r:", StringComparison.Ordinal)
-                || line.StartsWith("//reference:", StringComparison.Ordinal)
-                || line.StartsWith("// reference:", StringComparison.Ordinal)
+            if (lineText.StartsWith("//r:", StringComparison.Ordinal)
+                || lineText.StartsWith("// r:", StringComparison.Ordinal)
+                || lineText.StartsWith("//reference:", StringComparison.Ordinal)
+                || lineText.StartsWith("// reference:", StringComparison.Ordinal)
                        )
             {
-                var reference = line.Split(':', 2)[1].Trim().TrimEnd(';').Trim('"');
+                var reference = lineText.Split(':', 2)[1].Trim().TrimEnd(';').Trim('"');
                 if (reference.IsNotNullOrEmpty())
                 {
                     scriptReferences.Add(Helper.ReferenceNormalize(reference));
@@ -102,13 +117,13 @@ public sealed class ScriptContentFetcher(HttpClient httpClient, IUriTransformer 
             }
 
             // exact using from file
-            if (line.StartsWith("//u:", StringComparison.Ordinal)
-                || line.StartsWith("// u:", StringComparison.Ordinal)
-                || line.StartsWith("//using:", StringComparison.Ordinal)
-                || line.StartsWith("// using:", StringComparison.Ordinal)
+            if (lineText.StartsWith("//u:", StringComparison.Ordinal)
+                || lineText.StartsWith("// u:", StringComparison.Ordinal)
+                || lineText.StartsWith("//using:", StringComparison.Ordinal)
+                || lineText.StartsWith("// using:", StringComparison.Ordinal)
                )
             {
-                var @using = line.Split(':', 2)[1].Trim().TrimEnd(';').Trim('"');
+                var @using = lineText.Split(':', 2)[1].Trim().TrimEnd(';').Trim('"');
                 if (@using.IsNotNullOrEmpty())
                 {
                     scriptUsings.Add(@using);
@@ -137,6 +152,11 @@ public sealed class ScriptContentFetcher(HttpClient httpClient, IUriTransformer 
                 }
             }
             options.Usings = scriptUsings;
+        }
+
+        foreach (var replacement in replacements)
+        {
+            sourceText = sourceText.Replace(replacement.Key, replacement.Value);
         }
 
         return Result.Success<string>(sourceText);
