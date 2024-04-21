@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.19.0
+
+- feature: multi file as arguments enhancement
+- feature: script reference support
+- feature: support web reference environment variable, and enabled by default for `dotnet-exec:web` container image
+
 ## 0.18.0
 
 - Add `net9.0` target support
