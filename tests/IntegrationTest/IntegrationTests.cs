@@ -502,15 +502,15 @@ public class IntegrationTests
     public async Task ReferenceDuplicateRemoveTest()
     {
         var code = """
-                   // r: nuget:WeihanLi.Common,1.0.60
-                   // r: "nuget: WeihanLi.Common, 1.0.60"
+                   // r: nuget:WeihanLi.Common,1.0.64
+                   // r: "nuget: WeihanLi.Common, 1.0.64"
                    Console.WriteLine("Hello World!");
                    """;
         var options = new ExecOptions()
         {
             Script = code,
             DryRun = true,
-            References = ["-nuget: WeihanLi.Common, 1.0.60"]
+            References = ["-nuget: WeihanLi.Common, 1.0.64"]
         };
         await _handler.Execute(options);
         Assert.Empty(options.References);
@@ -520,15 +520,15 @@ public class IntegrationTests
     public async Task ReferenceDuplicateRemoveTest2()
     {
         var code = """
-                   // r: nuget:WeihanLi.Common,1.0.60
-                   // r: "nuget: WeihanLi.Common, 1.0.60"
+                   // r: nuget:WeihanLi.Common
+                   // r: "nuget: WeihanLi.Common"
                    Console.WriteLine("Hello World!");
                    """;
         var options = new ExecOptions()
         {
             Script = code,
             DryRun = true,
-            References = ["- nuget: WeihanLi.Common, 1.0.60"]
+            References = ["- nuget: WeihanLi.Common"]
         };
         await _handler.Execute(options);
         Assert.Empty(options.References);
