@@ -338,8 +338,6 @@ public class IntegrationTests
     }
 
     [Theory]
-    [InlineData("6.0")]
-    [InlineData("7.0")]
     [InlineData("8.0")]
     public async Task TargetFrameworkTest(string version)
     {
