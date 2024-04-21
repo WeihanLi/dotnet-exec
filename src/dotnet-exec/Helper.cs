@@ -22,7 +22,6 @@ namespace Exec;
 
 public static class Helper
 {
-    // update to FrozonSet when target .NET 8 or greater only 
     private static readonly ImmutableHashSet<string> SpecialConsoleDiagnosticIds = new[]
     {
         // Program does not contain a static 'Main' method suitable for an entry point
@@ -38,6 +37,7 @@ public static class Helper
     public const string Script = "script";
 
     private const string EnableDebugEnvName = "DOTNET_EXEC_DEBUG_ENABLED";
+    public const string EnableWebReferenceEnvName = "DOTNET_EXEC_WEB_REF_ENABLED";
     public static bool DebugModelEnabled(string[] args)
     {
         if (args.Contains("--debug"))

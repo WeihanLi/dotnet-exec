@@ -123,7 +123,7 @@ public sealed partial class ExecOptions
 
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
         IncludeWideReferences = parseResult.GetValueForOption(WideReferencesOption);
-        IncludeWebReferences = parseResult.GetValueForOption(WebReferencesOption);
+        IncludeWebReferences = parseResult.GetValueForOption(WebReferencesOption) || EnvHelper.Val(Helper.EnableWebReferenceEnvName).ToBoolean();
         CompilerType = parseResult.GetValueForOption(CompilerTypeOption) ?? Helper.Default;
         var executorTypeValue = parseResult.GetValueForOption(ExecutorTypeOption);
         ExecutorType = string.IsNullOrEmpty(executorTypeValue)

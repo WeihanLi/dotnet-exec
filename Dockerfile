@@ -16,6 +16,9 @@ RUN dotnet publish -f net9.0 -a $TARGETARCH -o /app/out/
 FROM mcr.microsoft.com/dotnet/${RuntimeImageRepo}:9.0-preview-alpine AS final
 LABEL Maintainer="WeihanLi"
 LABEL Repository="https://github.com/WeihanLi/dotnet-exec"
+RUN if [ "$RuntimeImageRepo" = "aspnet" ]; then \
+      export DOTNET_EXEC_WEB_REF_ENABLED=true; \
+    fi
 WORKDIR /app
 COPY --from=build-env /app/out/ ./
 ENV PATH="/app:${PATH}"
