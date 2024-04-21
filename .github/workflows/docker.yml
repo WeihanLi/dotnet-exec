@@ -59,7 +59,9 @@ jobs:
         push: true
         tags: ${{ env.DOCKER_HUB_USERNAME }}/dotnet-exec:${{ github.event.release.tag_name }}-web
         platforms: ${{ env.ContainerPlatforms }}
-        build-args: "RuntimeImageRepo=aspnet"
+        build-args: |
+          "RuntimeImageRepo=aspnet"
+          "WebReferenceEnabled=true"
 
     - name: Build and push web
       id: docker_build_web
@@ -70,7 +72,9 @@ jobs:
         push: true
         tags: ${{ env.DOCKER_HUB_USERNAME }}/dotnet-exec:web
         platforms: ${{ env.ContainerPlatforms }}
-        build-args: "RuntimeImageRepo=aspnet"
+        build-args: |
+          "RuntimeImageRepo=aspnet"
+          "WebReferenceEnabled=true"
 
     - name: Build and push latest
       id: docker_build_latest
