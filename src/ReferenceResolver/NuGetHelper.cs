@@ -336,18 +336,26 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         var packageDir = GetPackageInstalledDir(packageId, packageVersion);
         if (Directory.Exists(packageDir))
         {
-            using var packageReader = new PackageFolderReader(packageDir);
-            var dependencies = (await packageReader.GetPackageDependenciesAsync(cancellationToken)
+            try
+            {
+                using var packageReader = new PackageFolderReader(packageDir);
+                var dependencies = (await packageReader.GetPackageDependenciesAsync(cancellationToken)
                     .ConfigureAwait(false)).ToArray();
-            return dependencies;
+                return dependencies;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Exception when GetPackageDependenciesAsync from PackageFolderReader");
+            }
         }
 
         foreach (var repository in GetPackageSourceRepositories(packageId))
         {
             var findPkgByIdRes = await repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
                 .ConfigureAwait(false);
-            var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(packageId,
-                new NuGetVersion(packageVersion), _sourceCacheContext, _nugetLogger, cancellationToken).ConfigureAwait(false);
+            var dependencyInfo = await findPkgByIdRes.GetDependencyInfoAsync(
+                packageId, new NuGetVersion(packageVersion), _sourceCacheContext, _nugetLogger, cancellationToken
+            ).ConfigureAwait(false);
             if (dependencyInfo != null)
                 return dependencyInfo.DependencyGroups;
         }
