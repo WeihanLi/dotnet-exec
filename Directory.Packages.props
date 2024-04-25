@@ -20,7 +20,7 @@
     <PackageVersion Include="FluentAssertions" Version="6.6.0" />
     <PackageVersion Include="xunit" Version="2.7.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.8" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="9.1.0" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="9.2.1" />
     <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="9.0.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
   </ItemGroup>
