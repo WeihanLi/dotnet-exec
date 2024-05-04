@@ -451,7 +451,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         return packageDir;
     }
 
-    private IEnumerable<SourceRepository> GetPackageSourceRepositories(string? packageId = null, string[]? sources = null)
+    public IEnumerable<SourceRepository> GetPackageSourceRepositories(string? packageId = null, string[]? sources = null)
     {
         if (string.IsNullOrEmpty(packageId))
             return _nugetSources;
