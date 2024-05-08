@@ -538,6 +538,7 @@ public class IntegrationTests
     public static IEnumerable<object[]> EntryMethodWithExitCodeTestData()
     {
         yield return [0, @"Console.WriteLine(""Amazing dotnet"");"];
+        yield return [1, "Environment.ExitCode = 1;"];
 
         yield return [0, "return 0;"];
         yield return [1, "return 1;"];

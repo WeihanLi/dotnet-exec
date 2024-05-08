@@ -124,7 +124,7 @@ public sealed class CommandHandler(ILogger logger,
             var elapsed = ProfilerHelper.GetElapsedTime(executeStartTime);
             logger.LogDebug("Execute elapsed: {elapsed}", elapsed);
 
-            return executeResult.Data;
+            return Environment.ExitCode is not 0 ? Environment.ExitCode : executeResult.Data;
         }
         catch (OperationCanceledException) when (options.CancellationToken.IsCancellationRequested)
         {
