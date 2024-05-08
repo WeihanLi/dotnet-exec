@@ -13,10 +13,12 @@ public class IntegrationTests
     private readonly IExecutorFactory _executorFactory;
     private readonly ITestOutputHelper _outputHelper;
 
-    public IntegrationTests(CommandHandler handler,
+    public IntegrationTests(
+        CommandHandler handler,
         ICompilerFactory compilerFactory,
         IExecutorFactory executorFactory,
-        ITestOutputHelper outputHelper)
+        ITestOutputHelper outputHelper
+        )
     {
         _handler = handler;
         _compilerFactory = compilerFactory;
@@ -367,6 +369,21 @@ public class IntegrationTests
         Assert.Equal(expectedExitCode, result);
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    public async Task EnvironmentExitCode(int exitCode)
+    {
+        var exePath = typeof(CommandHandler).Assembly.Location
+            .Replace(".dll", OperatingSystem.IsWindows() ? ".exe" : "");
+        var result = await CommandExecutor.ExecuteAndCaptureAsync(
+            exePath, $"\"Environment.ExitCode = {exitCode};\""
+            );
+        _outputHelper.WriteLine(result.StandardOut);
+        _outputHelper.WriteLine(result.StandardError);
+        Assert.Equal(exitCode, result.ExitCode);
+    }
+
     [Theory(
         Skip = "localOnly"
         )]
@@ -534,11 +551,9 @@ public class IntegrationTests
         Assert.Empty(options.References);
     }
 
-
     public static IEnumerable<object[]> EntryMethodWithExitCodeTestData()
     {
         yield return [0, @"Console.WriteLine(""Amazing dotnet"");"];
-        yield return [1, "Environment.ExitCode = 1;"];
 
         yield return [0, "return 0;"];
         yield return [1, "return 1;"];
