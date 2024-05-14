@@ -13,7 +13,7 @@
     <PackageVersion Include="NuGet.Protocol" Version="6.9.1" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.64" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.65-preview-20240513-154555" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
