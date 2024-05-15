@@ -40,7 +40,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     public NuGetHelper(ILoggerFactory loggerFactory)
     {
         _logger = loggerFactory.CreateLogger(LoggerCategoryName);
-        _nugetLogger = new NuGetLoggingAdapter(_logger);
+        _nugetLogger = new NuGetLoggerLoggingAdapter(_logger);
 
         var configFilePath = Environment.GetEnvironmentVariable(NuGetConfigEnvName);
         ISettings nugetSettings;
@@ -497,7 +497,7 @@ public sealed class NuGetSourceInfo(string name, string source)
 }
 
 [ExcludeFromCodeCoverage]
-file sealed class NuGetLoggingAdapter(ILogger logger) : LoggerBase
+public sealed class NuGetLoggerLoggingAdapter(ILogger logger) : LoggerBase
 {
     public override void Log(ILogMessage message)
     {
@@ -508,7 +508,7 @@ file sealed class NuGetLoggingAdapter(ILogger logger) : LoggerBase
             NuGetLogLevel.Warning => LogLevel.Warning,
             NuGetLogLevel.Error => LogLevel.Error,
             NuGetLogLevel.Verbose => LogLevel.Trace,
-            NuGetLogLevel.Minimal => LogLevel.Warning,
+            NuGetLogLevel.Minimal => LogLevel.Information,
             _ => LogLevel.None
         };
         logger.Log(logLevel, message.FormatWithCode());
