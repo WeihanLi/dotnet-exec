@@ -9,6 +9,9 @@ namespace ReferenceResolver;
 public interface INuGetHelper
 {
     IEnumerable<NuGetSourceInfo> GetSources(string? packageId = null);
+
+    SourceRepository GetNuGetOrgSourceRepository() => GetPackageSourceRepositories(null, [NuGetHelper.NuGetOrgSourceUrl]).First();
+    
     IEnumerable<SourceRepository> GetPackageSourceRepositories(string? packageId = null, string[]? sources = null);
 
     IAsyncEnumerable<(NuGetSourceInfo Source, IEnumerable<IPackageSearchMetadata> SearchResult)> SearchPackages(
