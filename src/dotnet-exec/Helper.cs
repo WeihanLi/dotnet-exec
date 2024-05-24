@@ -207,7 +207,7 @@ public static class Helper
             error.AppendLine(message);
         }
 
-        return Result.Fail<CompileResult>(error.ToString(), ResultStatus.ProcessFail);
+        return Result.Fail<CompileResult>(error.ToString(), ResultStatus.InternalError);
     }
 
     private static async Task<(Compilation Compilation, EmitResult EmitResult, MemoryStream? Assembly)>

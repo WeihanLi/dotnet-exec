@@ -67,8 +67,8 @@ public sealed class CSharpScriptCompilerExecutor(IRefResolver referenceResolver,
         }
         return new Result<int>()
         {
-            Data = state.Exception is null ? 0 : (int)ResultStatus.ProcessFail,
-            Status = state.Exception is null ? ResultStatus.Success : ResultStatus.ProcessFail,
+            Data = state.Exception is null ? 0 : (int)ResultStatus.InternalError,
+            Status = state.Exception is null ? ResultStatus.Success : ResultStatus.InternalError,
             Msg = state.Exception?.ToString()
         };
     }

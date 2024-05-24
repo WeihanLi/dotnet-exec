@@ -30,7 +30,7 @@ public class AdditionalScriptContentFetcher(HttpClient httpClient, IUriTransform
         }
         catch (Exception e)
         {
-            return Result.Fail<string>($"Fail to fetch script content, {e}", ResultStatus.ProcessFail);
+            return Result.Fail<string>($"Fail to fetch script content, {e}", ResultStatus.InternalError);
         }
 
         return Result.Success<string>(sourceText);

@@ -36,7 +36,7 @@ public abstract class CodeExecutor(ILogger logger) : ICodeExecutor
 
 
         if (entryMethod is null)
-            return Result.Fail("No valid EntryPoint found", ResultStatus.RequestError, (int)ResultStatus.RequestError);
+            return Result.Fail("No valid EntryPoint found", ResultStatus.BadRequest, (int)ResultStatus.BadRequest);
 
         var parameters = entryMethod.GetParameters();
         Logger.LogDebug("Entry is found, {entryName}, returnType: {returnType}",
@@ -54,7 +54,7 @@ public abstract class CodeExecutor(ILogger logger) : ICodeExecutor
             }
             else
             {
-                return Result.Fail("No valid EntryPoint found", ResultStatus.RequestError, (int)ResultStatus.RequestError);
+                return Result.Fail("No valid EntryPoint found", ResultStatus.BadRequest, (int)ResultStatus.BadRequest);
             }
 
             var returnExitCode = await TaskHelper.ToTask<int>(returnValue).ConfigureAwait(false);
@@ -62,7 +62,7 @@ public abstract class CodeExecutor(ILogger logger) : ICodeExecutor
         }
         catch (Exception e)
         {
-            return Result.Fail(e.ToString(), ResultStatus.ProcessFail, (int)ResultStatus.ProcessFail);
+            return Result.Fail(e.ToString(), ResultStatus.InternalError, (int)ResultStatus.InternalError);
         }
     }
 

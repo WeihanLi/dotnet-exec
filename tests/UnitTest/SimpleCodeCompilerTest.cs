@@ -18,7 +18,7 @@ public sealed class SimpleCodeCompilerTest(ITestOutputHelper outputHelper)
     {
         var compiler = GetSimpleCodeCompiler();
         var result = await compiler.Compile(new ExecOptions(), code);
-        Assert.Equal(ResultStatus.ProcessFail, result.Status);
+        Assert.Equal(ResultStatus.InternalError, result.Status);
         _outputHelper.WriteLine(result.Msg);
     }
 
