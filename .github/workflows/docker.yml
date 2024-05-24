@@ -16,8 +16,7 @@ on:
       - '.github/workflows/docker.yml'
 env:
   DOCKER_HUB_USERNAME: "weihanli"
-  # ContainerPlatforms: "linux/amd64,linux/arm64,linux/arm" # there's arm32 support issue https://github.com/dotnet/dotnet-docker/issues/5360
-  ContainerPlatforms: "linux/amd64,linux/arm64"
+  ContainerPlatforms: "linux/amd64,linux/arm64,linux/arm"
 jobs:  
   docker-build:
     if: github.repository == 'WeihanLi/dotnet-exec'
