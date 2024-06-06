@@ -72,7 +72,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
 
     public IEnumerable<NuGetSourceInfo> GetSources(string? packageId = null)
     {
-        return GetPackageSourceRepositories(packageId).Select(NuGetSourceInfo.FromSourceRepository);
+        return GetSourceRepositories(packageId).Select(NuGetSourceInfo.FromSourceRepository);
     }
 
     public async IAsyncEnumerable<(NuGetSourceInfo Source, IEnumerable<IPackageSearchMetadata> SearchResult)> SearchPackages(
@@ -80,7 +80,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         int take = 20, int skip = 0, string[]? sources = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        foreach (var repository in GetPackageSourceRepositories(null, sources))
+        foreach (var repository in GetSourceRepositories(null, sources))
         {
             var resource = await repository.GetResourceAsync<PackageSearchResource>(cancellationToken)
                 .ConfigureAwait(false);
@@ -95,7 +95,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         string packagePrefix, bool includePrerelease = true, string[]? sources = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        foreach (var repository in GetPackageSourceRepositories(null, sources))
+        foreach (var repository in GetSourceRepositories(null, sources))
         {
             var resource = await repository.GetResourceAsync<AutoCompleteResource>(cancellationToken)
                 .ConfigureAwait(false);
@@ -116,7 +116,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         var packagerIdentity = new PackageIdentity(packageId, version);
         var pkgDownloadContext = new PackageDownloadContext(_sourceCacheContext);
 
-        foreach (var sourceRepository in GetPackageSourceRepositories(packageId, sources))
+        foreach (var sourceRepository in GetSourceRepositories(packageId, sources))
         {
             var downloadRes = await sourceRepository.GetResourceAsync<DownloadResource>(cancellationToken)
                 .ConfigureAwait(false);
@@ -143,7 +143,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         string packageId, bool includePrerelease = false, Func<NuGetVersion, bool>? predict = null, string[]? sources = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        foreach (var sourceRepository in GetPackageSourceRepositories(packageId, sources))
+        foreach (var sourceRepository in GetSourceRepositories(packageId, sources))
         {
             var findPackageByIdResource = await sourceRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
                 .ConfigureAwait(false);
@@ -169,7 +169,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         string packageId, bool includePrerelease = false, string[]? sources = null,
         CancellationToken cancellationToken = default)
     {
-        var versions = await GetPackageSourceRepositories(packageId, sources)
+        var versions = await GetSourceRepositories(packageId, sources)
             .Select(async repo =>
             {
                 var packageMetadataResource = await repo.GetResourceAsync<PackageMetadataResource>(cancellationToken)
@@ -193,7 +193,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     public async Task<bool> GetPackageStream(string packageId, NuGetVersion version, Stream stream,
         string[]? sources = null, CancellationToken cancellationToken = default)
     {
-        foreach (var sourceRepository in GetPackageSourceRepositories(packageId, sources))
+        foreach (var sourceRepository in GetSourceRepositories(packageId, sources))
         {
             var findPackageByIdResource = await sourceRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
                 .ConfigureAwait(false);
@@ -357,7 +357,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
             }
         }
 
-        foreach (var repository in GetPackageSourceRepositories(packageId))
+        foreach (var repository in GetSourceRepositories(packageId))
         {
             var findPkgByIdRes = await repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
                 .ConfigureAwait(false);
@@ -451,13 +451,11 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         return packageDir;
     }
 
-    public IEnumerable<SourceRepository> GetPackageSourceRepositories(string? packageId = null, string[]? sources = null)
+    public IEnumerable<SourceRepository> GetSourceRepositories(string? packageId = null, string[]? sources = null)
     {
-        if (string.IsNullOrEmpty(packageId))
-            return _nugetSources;
-
         IEnumerable<SourceRepository> filterSources;
-        if (_packageSourceMapping.IsEnabled)
+
+        if (_packageSourceMapping.IsEnabled && !string.IsNullOrEmpty(packageId))
         {
             var packageSources = new HashSet<string>(_packageSourceMapping.GetConfiguredPackageSources(packageId));
             filterSources = _nugetSources.Where(x => packageSources.Contains(x.PackageSource.Source) || packageSources.Contains(x.PackageSource.Name));

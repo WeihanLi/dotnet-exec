@@ -10,9 +10,7 @@ public interface INuGetHelper
 {
     IEnumerable<NuGetSourceInfo> GetSources(string? packageId = null);
 
-    SourceRepository GetNuGetOrgSourceRepository() => GetPackageSourceRepositories(null, [NuGetHelper.NuGetOrgSourceUrl]).First();
-
-    IEnumerable<SourceRepository> GetPackageSourceRepositories(string? packageId = null, string[]? sources = null);
+    IEnumerable<SourceRepository> GetSourceRepositories(string? packageId = null, string[]? sources = null);
 
     IAsyncEnumerable<(NuGetSourceInfo Source, IEnumerable<IPackageSearchMetadata> SearchResult)> SearchPackages(
         string keyword, bool includePrerelease = true, int take = 20, int skip = 0, string[]? sources = null,
@@ -48,4 +46,9 @@ public interface INuGetHelper
 
     Task<string[]> ResolvePackageAnalyzerReferences(string targetFramework, string packageId,
         NuGetVersion? version, bool includePrerelease, CancellationToken cancellationToken = default);
+}
+
+public static class NuGetHelperExtensions
+{
+    public static SourceRepository GetNuGetOrgSourceRepository(this INuGetHelper nugetHelper) => nugetHelper.GetSourceRepositories(null, [NuGetHelper.NuGetOrgSourceUrl]).First();
 }
