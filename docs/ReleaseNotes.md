@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.20.0
+
+- feature: respect `Environment.ExitCode`
+- feature: container image add back arm32 support, arm32 container issue fixed in .NET 9 preview 4
+- feature: support `GetSourceRepositories` on `INuGetHelper`, public `NuGetLoggerLoggingAdapter` 
+
 ## 0.19.0
 
 - feature: multi file as arguments enhancement
