@@ -22,7 +22,7 @@ namespace ReferenceResolver;
 public sealed class NuGetHelper : INuGetHelper, IDisposable
 {
     private const string LoggerCategoryName = "NuGetClient";
-    public const string NuGetOrgSourceUrl = "https://api.nuget.org/v3/index.json";
+    internal const string NuGetOrgSourceUrl = "https://api.nuget.org/v3/index.json";
     public const string NuGetConfigEnvName = "REFERENCE_RESOLVER_NUGET_CONFIG_PATH";
 
     private readonly HashSet<SourceRepository> _nugetSources = new(new NuGetSourceRepositoryComparer());
