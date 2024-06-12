@@ -1,10 +1,10 @@
 // Copyright (c) 2022-2024 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
-var target = CommandLineParser.ArgValue(args, "target", "Default");
-var apiKey = CommandLineParser.ArgValue(args, "apiKey");
-var stable = CommandLineParser.ArgValue(args, "stable").ToBoolean();
-var noPush = CommandLineParser.ArgValue(args, "noPush").ToBoolean();
+var target = CommandLineParser.Val("target", "Default", args);
+var apiKey = CommandLineParser.Val("apiKey", null, args);
+var stable = CommandLineParser.Val("stable", null, args).ToBoolean();
+var noPush = CommandLineParser.Val("noPush", null, args).ToBoolean();
 
 Console.WriteLine($$"""
 Arguments:
@@ -18,8 +18,14 @@ args:
 """);
 
 var solutionPath = "./dotnet-exec.sln";
-string[] srcProjects = ["./src/dotnet-exec/dotnet-exec.csproj", "./src/ReferenceResolver/ReferenceResolver.csproj"];
-string[] testProjects = ["./tests/UnitTest/UnitTest.csproj", "./tests/IntegrationTest/IntegrationTest.csproj"];
+string[] srcProjects = [
+    "./src/dotnet-exec/dotnet-exec.csproj",
+    "./src/ReferenceResolver/ReferenceResolver.csproj"
+];
+string[] testProjects = [
+    "./tests/UnitTest/UnitTest.csproj", 
+    "./tests/IntegrationTest/IntegrationTest.csproj"
+];
 
 await new BuildProcessBuilder()
     .WithSetup(() =>
@@ -45,7 +51,7 @@ await new BuildProcessBuilder()
             {
                 foreach (var project in testProjects)
                 {
-                    await ExecuteCommandAsync($"dotnet test --collect:\"XPlat Code Coverage;Format=cobertura,opencover;ExcludeByAttribute=ExcludeFromCodeCoverage,Obsolete,GeneratedCode,CompilerGenerated\" {project}", cancellationToken);
+                    await ExecuteCommandAsync($"dotnet test -v:diag --collect:\"XPlat Code Coverage;Format=cobertura,opencover;ExcludeByAttribute=ExcludeFromCodeCoverage,Obsolete,GeneratedCode,CompilerGenerated\" {project}", cancellationToken);
                 }
             })
             ;
