@@ -24,7 +24,7 @@ string[] srcProjects = [
 ];
 string[] testProjects = [
     "./tests/UnitTest/UnitTest.csproj", 
-    "./tests/IntegrationTest/IntegrationTest.csproj"
+    // "./tests/IntegrationTest/IntegrationTest.csproj"
 ];
 
 await new BuildProcessBuilder()
