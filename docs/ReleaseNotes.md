@@ -1,5 +1,10 @@
 # Release Notes
 
+## 0.21.0
+
+- upgrade for .NET 9 preview 5 release
+- upgrade roslyn packages to support new C# features
+
 ## 0.20.0
 
 - feature: respect `Environment.ExitCode`
