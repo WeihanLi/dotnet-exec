@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <VersionMajor>0</VersionMajor>
-    <VersionMinor>21</VersionMinor>
+    <VersionMinor>22</VersionMinor>
     <VersionPatch>0</VersionPatch>
     <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
     <VersionSuffix Condition="'$(Configuration)'=='Debug' AND '$(VersionSuffix)'==''">dev</VersionSuffix>
