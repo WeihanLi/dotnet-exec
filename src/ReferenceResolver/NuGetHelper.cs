@@ -140,22 +140,35 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     }
 
     public async IAsyncEnumerable<(NuGetSourceInfo Source, NuGetVersion Version)> GetPackageVersions(
-        string packageId, bool includePrerelease = false, Func<NuGetVersion, bool>? predict = null, string[]? sources = null,
+        string packageId, bool includePrerelease = false, bool includeUnlisted = false, Func<NuGetVersion, bool>? predict = null, string[]? sources = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         foreach (var sourceRepository in GetSourceRepositories(packageId, sources))
         {
-            var findPackageByIdResource = await sourceRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
+            if (includeUnlisted && includePrerelease)
+            {
+                var findPackageByIdResource = await sourceRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken)
                 .ConfigureAwait(false);
-            var versions = await findPackageByIdResource.GetAllVersionsAsync(
+                var versions = await findPackageByIdResource.GetAllVersionsAsync(
                 packageId,
                 _sourceCacheContext,
                 _nugetLogger, cancellationToken)
                 .ConfigureAwait(false);
-            foreach (var version in versions.Where(v => includePrerelease || !v.IsPrerelease))
+                foreach (var version in versions)
+                {
+                    if (predict is null || predict(version))
+                        yield return (NuGetSourceInfo.FromSourceRepository(sourceRepository), version);
+                }
+            }
+            else
             {
-                if (predict is null || predict(version))
-                    yield return (NuGetSourceInfo.FromSourceRepository(sourceRepository), version);
+                var packageMetadataResource = await sourceRepository.GetResourceAsync<PackageMetadataResource>(cancellationToken).ConfigureAwait(false);
+                var metadata = await packageMetadataResource.GetMetadataAsync(packageId, includePrerelease, includeUnlisted, _sourceCacheContext, _nugetLogger, cancellationToken);
+                foreach (var item in metadata)
+                {
+                    if (predict is null || predict(item.Identity.Version))
+                        yield return (NuGetSourceInfo.FromSourceRepository(sourceRepository), item.Identity.Version);
+                }
             }
         }
     }

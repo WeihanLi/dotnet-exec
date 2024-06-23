@@ -21,7 +21,10 @@ public interface INuGetHelper
 
     IAsyncEnumerable<(NuGetSourceInfo Source, NuGetVersion Version)> GetPackageVersions(string packageId,
         bool includePrerelease = false,
-        Func<NuGetVersion, bool>? predict = null, string[]? sources = null, CancellationToken cancellationToken = default);
+        bool includeUnlisted = false,
+        Func<NuGetVersion, bool>? predict = null,
+        string[]? sources = null,
+        CancellationToken cancellationToken = default);
 
     Task<NuGetVersion?> GetLatestPackageVersion(string packageId, bool includePrerelease = false, string[]? sources = null,
         CancellationToken cancellationToken = default);
