@@ -15,8 +15,8 @@
     <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
-    <Using Include="Exec"/>
-    <Using Include="Exec.Abstractions"/>
+    <Using Include="Exec" />
+    <Using Include="Exec.Abstractions" />
     <Using Include="Microsoft.Extensions.DependencyInjection" />
     <Using Include="Microsoft.Extensions.Logging" />
     <Using Include="System.CommandLine" />

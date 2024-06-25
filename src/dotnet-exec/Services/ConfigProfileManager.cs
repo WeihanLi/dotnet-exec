@@ -53,7 +53,7 @@ public sealed class ConfigProfileManager : IConfigProfileManager
 
     public async Task<ConfigProfile?> GetProfile(string profileName)
     {
-        if (!Directory.Exists(ProfileFolder)) return null;
+        if (string.IsNullOrEmpty(profileName) || !Directory.Exists(ProfileFolder)) return null;
 
         var profilePath = Path.Combine(ProfileFolder, $"{profileName}.json");
         if (!File.Exists(profilePath)) return null;

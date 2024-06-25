@@ -73,6 +73,7 @@ public static class Helper
         services.AddReferenceResolvers();
         services.AddSingleton<IRefResolver, RefResolver>();
         services.AddSingleton<IConfigProfileManager, ConfigProfileManager>();
+        services.AddSingleton<IRepl, Repl>();
 
         services.RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<CleanupOptionsConfigureMiddleware>()
@@ -111,79 +112,98 @@ public static class Helper
         ArgumentNullException.ThrowIfNull(command);
         command.Handler = serviceProvider.GetRequiredService<ICommandHandler>();
         var profileManager = serviceProvider.GetRequiredService<IConfigProfileManager>();
+        var repl = serviceProvider.GetRequiredService<IRepl>();
+
         foreach (var subcommand in command.Subcommands)
         {
-            if (subcommand is ConfigProfileCommand configProfileCommand)
+
+            switch (subcommand)
             {
-                foreach (var configSubcommand in configProfileCommand.Subcommands)
-                {
-                    Func<InvocationContext, Task> commandHandler = configSubcommand.Name switch
+                case ConfigProfileCommand configProfileCommand:
+                    foreach (var configSubcommand in configProfileCommand.Subcommands)
                     {
-                        "set" => async context =>
+                        Func<InvocationContext, Task> profileCommandHandler = configSubcommand.Name switch
                         {
-                            var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
-                            if (string.IsNullOrEmpty(profileName))
-                                return;
+                            "set" => async context =>
+                            {
+                                var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
+                                if (string.IsNullOrEmpty(profileName))
+                                    return;
 
-                            var profile = new ConfigProfile()
-                            {
-                                Usings = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.UsingsOption) ?? Enumerable.Empty<string>()),
-                                References = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.ReferencesOption) ?? Enumerable.Empty<string>()),
-                                IncludeWideReferences = context.ParseResult.GetValueForOption(ExecOptions.WideReferencesOption),
-                                IncludeWebReferences = context.ParseResult.HasOption(ExecOptions.WebReferencesOption),
-                                EntryPoint = context.ParseResult.GetValueForOption(ExecOptions.EntryPointOption),
-                                EnablePreviewFeatures = context.ParseResult.HasOption(ExecOptions.PreviewOption)
-                            };
-                            await profileManager.ConfigureProfile(profileName, profile).ConfigureAwait(false);
-                        }
-                        ,
-                        "rm" => async context =>
-                        {
-                            var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
-                            if (string.IsNullOrEmpty(profileName))
-                            {
-                                return;
+                                var profile = new ConfigProfile()
+                                {
+                                    Usings = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.UsingsOption) ?? Enumerable.Empty<string>()),
+                                    References = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.ReferencesOption) ?? Enumerable.Empty<string>()),
+                                    IncludeWideReferences = context.ParseResult.GetValueForOption(ExecOptions.WideReferencesOption),
+                                    IncludeWebReferences = context.ParseResult.HasOption(ExecOptions.WebReferencesOption),
+                                    EntryPoint = context.ParseResult.GetValueForOption(ExecOptions.EntryPointOption),
+                                    EnablePreviewFeatures = context.ParseResult.HasOption(ExecOptions.PreviewOption)
+                                };
+                                await profileManager.ConfigureProfile(profileName, profile).ConfigureAwait(false);
                             }
-                            await profileManager.DeleteProfile(profileName).ConfigureAwait(false);
-                        }
-                        ,
-                        "ls" => async context =>
-                        {
-                            var profiles = await profileManager.ListProfiles().ConfigureAwait(false);
-                            if (profiles.IsNullOrEmpty())
+                            ,
+                            "rm" => async context =>
                             {
-                                context.Console.WriteLine("No profiles found");
-                                return;
+                                var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
+                                if (string.IsNullOrEmpty(profileName))
+                                {
+                                    return;
+                                }
+                                await profileManager.DeleteProfile(profileName).ConfigureAwait(false);
                             }
-                            context.Console.WriteLine("Profiles:");
-                            foreach (var profile in profiles)
+                            ,
+                            "ls" => async context =>
                             {
-                                context.Console.WriteLine($"- {profile}");
+                                var profiles = await profileManager.ListProfiles().ConfigureAwait(false);
+                                if (profiles.IsNullOrEmpty())
+                                {
+                                    context.Console.WriteLine("No profiles found");
+                                    return;
+                                }
+                                context.Console.WriteLine("Profiles:");
+                                foreach (var profile in profiles)
+                                {
+                                    context.Console.WriteLine($"- {profile}");
+                                }
                             }
-                        }
-                        ,
-                        _ => async context =>
-                        {
-                            var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
-                            if (string.IsNullOrEmpty(profileName))
+                            ,
+                            _ => async context =>
                             {
-                                return;
-                            }
+                                var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
+                                if (string.IsNullOrEmpty(profileName))
+                                {
+                                    return;
+                                }
 
-                            var profile = await profileManager.GetProfile(profileName).ConfigureAwait(false);
-                            if (profile is null)
-                            {
-                                context.Console.WriteLine($"The profile [{profileName}] does not exists");
-                                return;
-                            }
+                                var profile = await profileManager.GetProfile(profileName).ConfigureAwait(false);
+                                if (profile is null)
+                                {
+                                    context.Console.WriteLine($"The profile [{profileName}] does not exists");
+                                    return;
+                                }
 
-                            var output = JsonSerializer.Serialize(profile, JsonHelper.WriteIntendedUnsafeEncoderOptions);
-                            context.Console.WriteLine(output);
-                        }
+                                var output = JsonSerializer.Serialize(profile, JsonHelper.WriteIntendedUnsafeEncoderOptions);
+                                context.Console.WriteLine(output);
+                            }
+                        };
+                        configSubcommand.SetHandler(profileCommandHandler);
+                    }
+                    break;
+
+                case ReplCommand replCommand:
+                    Func<InvocationContext, Task> replCommandHandler = async context =>
+                    {
+                        var parseResult = context.ParseResult;
+                        var options = new ExecOptions();
+                        var profileName = parseResult.GetValueForOption(ExecOptions.ConfigProfileOption);
+                        options.BindReplCommandLineArguments(parseResult, await profileManager.GetProfile(profileName ?? string.Empty));
+                        options.CancellationToken = context.GetCancellationToken();
+                        await repl.Run(options);
                     };
-                    configSubcommand.SetHandler(commandHandler);
-                }
+                    replCommand.SetHandler(replCommandHandler);
+                    break;
             }
+
         }
     }
 

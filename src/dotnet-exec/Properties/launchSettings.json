@@ -59,6 +59,11 @@
       "commandName": "Project",
       "targetFramework": "net8.0",
       "commandLineArgs": "'1+2' -- --target hello"
+    },
+    "repl-test": {
+      "commandName": "Project",
+      "targetFramework": "net8.0",
+      "commandLineArgs": "repl"
     }
   }
 }

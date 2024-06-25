@@ -110,17 +110,12 @@ public sealed partial class ExecOptions
     public void BindCommandLineArguments(ParseResult parseResult, ConfigProfile? configProfile)
     {
         Script = Guard.NotNull(parseResult.GetValueForArgument(ScriptArgument).FirstOrDefault());
+
+        BindReplCommandLineArguments(parseResult, configProfile);
+
         StartupType = parseResult.GetValueForOption(StartupTypeOption);
         EntryPoint = parseResult.GetValueForOption(EntryPointOption).GetValueOrDefault("MainTest");
-        TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption)
-            .GetValueOrDefault(DefaultTargetFramework);
         Configuration = parseResult.GetValueForOption(ConfigurationOption);
-
-        Arguments = Helper.CommandArguments.HasValue()
-            ? Helper.CommandArguments
-            : CommandLineStringSplitter.Instance
-                .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
-
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
         IncludeWideReferences = parseResult.GetValueForOption(WideReferencesOption);
         IncludeWebReferences = parseResult.GetValueForOption(WebReferencesOption) || EnvHelper.Val(Helper.EnableWebReferenceEnvName).ToBoolean();
@@ -131,12 +126,32 @@ public sealed partial class ExecOptions
                 ? Helper.Script
                 : Helper.Default
             : executorTypeValue;
+        AdditionalScripts = new(parseResult.GetValueForArgument(ScriptArgument)[1..].Union(parseResult.GetValueForOption(AdditionalScriptsOption) ?? []), StringComparer.Ordinal);
+        CompileOutput = parseResult.GetValueForOption(CompileOutputOption);
+        DryRun = parseResult.HasOption(DryRunOption);
+        DebugEnabled = Helper.DebugModelEnabled(Environment.GetCommandLineArgs());
+    }
+
+    public void BindReplCommandLineArguments(ParseResult parseResult, ConfigProfile? configProfile)
+    {
+        TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption)
+            .GetValueOrDefault(DefaultTargetFramework);
+        Configuration = parseResult.GetValueForOption(ConfigurationOption);
+        Arguments = Helper.CommandArguments.HasValue()
+            ? Helper.CommandArguments
+            : CommandLineStringSplitter.Instance
+                .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
+
+        ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
+        IncludeWideReferences = parseResult.GetValueForOption(WideReferencesOption);
+        IncludeWebReferences = parseResult.GetValueForOption(WebReferencesOption) || EnvHelper.Val(Helper.EnableWebReferenceEnvName).ToBoolean();
+        ExecutorType = CompilerType = Helper.Script;
         foreach (var reference in parseResult.GetValueForOption(ReferencesOption) ?? [])
         {
             References.Add(Helper.ReferenceNormalize(reference));
         }
         Usings = [.. parseResult.GetValueForOption(UsingsOption) ?? []];
-        AdditionalScripts = new(parseResult.GetValueForArgument(ScriptArgument)[1..].Union(parseResult.GetValueForOption(AdditionalScriptsOption) ?? []), StringComparer.Ordinal);
+        AdditionalScripts = new(parseResult.GetValueForOption(AdditionalScriptsOption) ?? [], StringComparer.Ordinal);
         UseRefAssembliesForCompile = parseResult.GetValueForOption(UseRefAssembliesForCompileOption);
         ConfigProfile = parseResult.GetValueForOption(ConfigProfileOption);
         EnablePreviewFeatures = parseResult.HasOption(PreviewOption);
@@ -150,9 +165,6 @@ public sealed partial class ExecOptions
             .Select(x => x.Split('='))
             .Select(x => new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))
             .ToArray();
-        CompileOutput = parseResult.GetValueForOption(CompileOutputOption);
-        DryRun = parseResult.HasOption(DryRunOption);
-        DebugEnabled = Helper.DebugModelEnabled(Environment.GetCommandLineArgs());
         var nugetConfigFile = parseResult.GetValueForOption(NuGetConfigFileOption);
         if (!string.IsNullOrEmpty(nugetConfigFile))
         {
@@ -197,18 +209,25 @@ public sealed partial class ExecOptions
         }
     }
 
+
     public static Command GetCommand()
     {
         var command = new Command(Helper.ApplicationName, "dotnet-exec, execute C# script/program from command line");
-        command.AddCommand(new ConfigProfileCommand());
+        var replCommand = new ReplCommand();
+        // arguments
         foreach (var argument in GetArguments())
         {
             command.AddArgument(argument);
         }
+        // options
         foreach (var option in GetOptions())
         {
             command.AddOption(option);
+            replCommand.AddOption(option);
         }
+        // add sub commands
+        command.AddCommand(new ConfigProfileCommand());
+        command.AddCommand(replCommand);
         return command;
     }
 
