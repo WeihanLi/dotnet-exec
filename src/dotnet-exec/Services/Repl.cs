@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting.Hosting;
 using Microsoft.CodeAnalysis.Scripting;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using WeihanLi.Common.Models;
 
@@ -16,6 +17,7 @@ public interface IRepl
     Task Run(ExecOptions options);
 }
 
+[ExcludeFromCodeCoverage]
 internal sealed class Repl
     (
         IRefResolver referenceResolver,
