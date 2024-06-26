@@ -112,7 +112,6 @@ public static class Helper
         ArgumentNullException.ThrowIfNull(command);
         command.Handler = serviceProvider.GetRequiredService<ICommandHandler>();
         var profileManager = serviceProvider.GetRequiredService<IConfigProfileManager>();
-        var repl = serviceProvider.GetRequiredService<IRepl>();
 
         foreach (var subcommand in command.Subcommands)
         {
@@ -188,19 +187,6 @@ public static class Helper
                         };
                         configSubcommand.SetHandler(profileCommandHandler);
                     }
-                    break;
-
-                case ReplCommand replCommand:
-                    Func<InvocationContext, Task> replCommandHandler = async context =>
-                    {
-                        var parseResult = context.ParseResult;
-                        var options = new ExecOptions();
-                        var profileName = parseResult.GetValueForOption(ExecOptions.ConfigProfileOption);
-                        options.BindReplCommandLineArguments(parseResult, await profileManager.GetProfile(profileName ?? string.Empty));
-                        options.CancellationToken = context.GetCancellationToken();
-                        await repl.Run(options);
-                    };
-                    replCommand.SetHandler(replCommandHandler);
                     break;
             }
 

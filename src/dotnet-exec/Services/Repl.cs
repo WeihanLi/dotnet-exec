@@ -14,7 +14,7 @@ namespace Exec.Services;
 
 public interface IRepl
 {
-    Task Run(ExecOptions options);
+    Task RunAsync(ExecOptions options);
 }
 
 [ExcludeFromCodeCoverage]
@@ -24,7 +24,7 @@ internal sealed class Repl
         IAdditionalScriptContentFetcher scriptContentFetcher
     ) : IRepl
 {
-    public async Task Run(ExecOptions options)
+    public async Task RunAsync(ExecOptions options)
     {
         var references = await referenceResolver.ResolveMetadataReferences(options, false);
         var scriptOptions = ScriptOptions.Default

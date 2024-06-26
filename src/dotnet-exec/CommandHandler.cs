@@ -2,6 +2,7 @@
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 using Exec.Contracts;
+using Exec.Services;
 using System.Diagnostics;
 using System.Text.Json;
 using WeihanLi.Common.Models;
@@ -13,7 +14,9 @@ public sealed class CommandHandler(ILogger logger,
         IExecutorFactory executorFactory,
         IScriptContentFetcher scriptContentFetcher,
         IConfigProfileManager profileManager,
-        IOptionsConfigurePipeline optionsConfigurePipeline)
+        IOptionsConfigurePipeline optionsConfigurePipeline,
+        IRepl repl
+        )
     : ICommandHandler
 {
     public int Invoke(InvocationContext context) => InvokeAsync(context).GetAwaiter().GetResult();
@@ -48,8 +51,8 @@ public sealed class CommandHandler(ILogger logger,
     {
         if (options.Script.IsNullOrWhiteSpace())
         {
-            logger.LogError("The script {ScriptFile} can not be empty", options.Script);
-            return ExitCodes.InvalidScript;
+            await repl.RunAsync(options);
+            return 0;
         }
         // fetch script
         var fetchResult = await scriptContentFetcher.FetchContent(options);
