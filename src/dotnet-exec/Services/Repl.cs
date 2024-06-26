@@ -61,10 +61,22 @@ internal sealed class Repl
 
             if (input.StartsWith("#r ", StringComparison.Ordinal))
             {
-                // TODO: handle references
-                // await AddReference(input[3..]);
-                // scriptOptions = scriptOptions.WithReferences(references);
-                ConsoleHelper.WriteLineWithColor("Not supported now", ConsoleColor.DarkYellow);
+                try
+                {
+                    var reference = input[3..];
+                    options.References.Add(Helper.ReferenceNormalize(reference));
+                    options.DisableCache = true;
+                    references = await referenceResolver.ResolveMetadataReferences(options, false);
+                    scriptOptions = scriptOptions.WithReferences(references);
+                    state = await CSharpScript.RunAsync(script.Code, scriptOptions);
+                    script = state.Script;
+                    ConsoleHelper.WriteLineWithColor("Reference added", ConsoleColor.DarkGreen);
+                }
+                catch (Exception ex)
+                {
+                    ConsoleHelper.WriteLineWithColor($"Exception when add reference", ConsoleColor.DarkRed);
+                    ConsoleHelper.WriteLineWithColor(CSharpObjectFormatter.Instance.FormatException(ex), ConsoleColor.DarkRed);
+                }
                 continue;
             }
 
