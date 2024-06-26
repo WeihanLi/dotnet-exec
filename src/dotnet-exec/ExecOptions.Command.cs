@@ -26,7 +26,7 @@ public sealed partial class ExecOptions
 #endif
         ;
 
-    private static readonly Argument<string[]> ScriptArgument = new("script", "CSharp script to execute")
+    private static readonly Argument<string[]> ScriptArgument = new("script", "CSharp script to execute, start repl when no script provided")
     {
         Arity = ArgumentArity.ZeroOrMore
     };

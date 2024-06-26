@@ -63,7 +63,7 @@
     "repl-test": {
       "commandName": "Project",
       "targetFramework": "net8.0",
-      "commandLineArgs": "repl"
+      "commandLineArgs": ""
     }
   }
 }
