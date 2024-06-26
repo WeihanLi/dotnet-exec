@@ -2,6 +2,7 @@
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting.Hosting;
@@ -47,7 +48,7 @@ internal sealed class Repl
                 }
             }
         }
-        Console.WriteLine("REPL started");
+        Console.WriteLine("REPL started, Enter #exit to exit, #help for help text");
         while (true)
         {
             Console.Write("> ");
@@ -56,8 +57,14 @@ internal sealed class Repl
             if (string.IsNullOrEmpty(input))
                 continue;
 
-            if (input.Equals("#exit", StringComparison.OrdinalIgnoreCase))
+            if ("#exit".EqualsIgnoreCase(input))
                 break;
+
+            if ("#help".EqualsIgnoreCase(input))
+            {
+                // print detailed help text
+                continue;
+            }
 
             if (input.StartsWith("#r ", StringComparison.Ordinal))
             {
@@ -78,6 +85,11 @@ internal sealed class Repl
                     ConsoleHelper.WriteLineWithColor(CSharpObjectFormatter.Instance.FormatException(ex), ConsoleColor.DarkRed);
                 }
                 continue;
+            }
+
+            if (input.EndsWith('.'))
+            {
+                var completions = await GetCompletions(state, scriptOptions, input);
             }
 
             try
@@ -126,18 +138,19 @@ internal sealed class Repl
         }
     }
 
-    //private static async Task<IReadOnlyList<CompletionItem>> GetCompletions(string code, string input)
-    //{
-    //    using var workspace = new AdhocWorkspace();
-    //    var project = workspace.AddProject("Script", LanguageNames.CSharp)
-    //        .WithMetadataReferences(AppDomain.CurrentDomain.GetAssemblies()
-    //            .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location))
-    //            .Select(a => MetadataReference.CreateFromFile(a.Location)));
+    private static async Task<IReadOnlyList<CompletionItem>> GetCompletions(
+        ScriptState scriptState, ScriptOptions scriptOptions, string input)
+    {
+        using var workspace = new AdhocWorkspace();
+        var project = workspace.AddProject("Script", LanguageNames.CSharp)
+            .WithMetadataReferences(scriptOptions.MetadataReferences);
 
-    //    var document = project.AddDocument("Script.csx", SourceText.From(input));
-    //    var completionService = CompletionService.GetService(document);
-    //    ArgumentNullException.ThrowIfNull(completionService);
-    //    var completionList = await completionService.GetCompletionsAsync(document, code.Length - 1);
-    //    return completionList?.ItemsList ?? [];
-    //}
+        var combinedCode = scriptState.Script.Code + input;
+        var document = project.AddDocument("Script.csx", combinedCode);
+        var completionService = CompletionService.GetService(document);
+        ArgumentNullException.ThrowIfNull(completionService);
+
+        var completionList = await completionService.GetCompletionsAsync(document, combinedCode.Length - 1);
+        return completionList?.ItemsList ?? [];
+    }
 }
