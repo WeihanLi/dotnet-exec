@@ -8,11 +8,8 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting.Hosting;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.CodeAnalysis.Text;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using WeihanLi.Common.Models;
 
 namespace Exec.Services;
 
@@ -24,35 +21,24 @@ public interface IRepl
 [ExcludeFromCodeCoverage]
 internal sealed class Repl
     (
-        IRefResolver referenceResolver,
-        IAdditionalScriptContentFetcher scriptContentFetcher
+        IRefResolver referenceResolver
     ) : IRepl
 {
     public async Task RunAsync(ExecOptions options)
     {
+        options.DisableCache = true;
+
         var references = await referenceResolver.ResolveMetadataReferences(options, false);
         var globalUsings = Helper.GetGlobalUsingList(options);
         var scriptOptions = ScriptOptions.Default
-                .WithReferences(references)
                 .WithOptimizationLevel(options.Configuration)
                 .WithAllowUnsafe(true)
                 .WithLanguageVersion(options.GetLanguageVersion())
+                .WithReferences(references)
                 .AddImports(globalUsings.Select(g => g.TrimStart("global::")))
             ;
 
         ScriptState state = await CSharpScript.RunAsync("""Console.WriteLine("REPL started, Enter #exit to exit, #help for help text");""", scriptOptions);
-        if (options.AdditionalScripts.HasValue())
-        {
-            foreach (var additionalScript in options.AdditionalScripts)
-            {
-                var additionalScriptCode = await scriptContentFetcher.FetchContent(additionalScript, options.CancellationToken);
-                if (additionalScriptCode.IsSuccess())
-                {
-                    state = await state.ContinueWithAsync(additionalScriptCode.Data, scriptOptions);
-                }
-            }
-        }
-
         while (true)
         {
             Console.Write("> ");
@@ -92,7 +78,7 @@ internal sealed class Repl
 
             if (input.EndsWith('.'))
             {
-                var completions = await GetCompletions(state, scriptOptions, input, options);
+                var completions = await GetCompletions(scriptOptions, input);
                 if (completions is { Count: > 0 })
                 {
                     foreach (var completion in completions)
@@ -145,39 +131,40 @@ internal sealed class Repl
     }
 
     private static async Task<IReadOnlyList<CompletionItem>> GetCompletions(
-        ScriptState scriptState, ScriptOptions scriptOptions, string input, ExecOptions options)
+        ScriptOptions scriptOptions, string input
+        )
     {
         // https://www.strathweb.com/2018/12/using-roslyn-c-completion-service-programmatically/
         // https://github.com/filipw/Strathweb.Samples.Roslyn.Completion
         using var workspace = new AdhocWorkspace(MefHostServices.DefaultHost);
         var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
-    optimizationLevel: options.Configuration, nullableContextOptions: NullableContextOptions.Annotations);
+                nullableContextOptions: NullableContextOptions.Annotations)
+            .WithUsings(scriptOptions.Imports)
+            ;
 
         var projectInfo = ProjectInfo.Create(
-            ProjectId.CreateNewId(),
-            VersionStamp.Create(),
-            "dotnet-exec-repl",
-            "dotnet-exec-repl",
-            LanguageNames.CSharp,
-            isSubmission: true)
+                ProjectId.CreateNewId(),
+                VersionStamp.Create(),
+                "dotnet-exec-repl",
+                "dotnet-exec-repl",
+                LanguageNames.CSharp,
+                isSubmission: true
+            )
             .WithMetadataReferences(scriptOptions.MetadataReferences)
             .WithCompilationOptions(compilationOptions)
             ;
         var project = workspace.AddProject(projectInfo);
-
-        var combinedCode = scriptState.Script.Code + Environment.NewLine + input;
-        Debug.WriteLine(scriptState.Script.Code);
-
         var documentInfo = DocumentInfo.Create(
             DocumentId.CreateNewId(project.Id), "__Script.cs",
             sourceCodeKind: SourceCodeKind.Script,
-            loader: TextLoader.From(TextAndVersion.Create(SourceText.From(combinedCode), VersionStamp.Default)));
+            loader: new PlainTextLoader(input)
+        );
         var document = workspace.AddDocument(documentInfo);
 
         var completionService = CompletionService.GetService(document);
         if (completionService is null) return [];
 
-        var completionList = await completionService.GetCompletionsAsync(document, combinedCode.Length);
+        var completionList = await completionService.GetCompletionsAsync(document, input.Length);
         return completionList.ItemsList;
     }
 }
