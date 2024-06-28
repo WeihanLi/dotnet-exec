@@ -292,6 +292,13 @@ public static class Helper
         return usings;
     }
 
+    public static HashSet<string> GetGlobalUsingList(ExecOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        var usings = GetGlobalUsings(options);
+        return UsingManager.GetUsings(usings);
+    }
+
     public static string GetGlobalUsingsCodeText(ExecOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
