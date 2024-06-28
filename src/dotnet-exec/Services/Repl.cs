@@ -38,7 +38,8 @@ internal sealed class Repl
                 .AddImports(globalUsings.Select(g => g.TrimStart("global::")))
             ;
 
-        ScriptState state = await CSharpScript.RunAsync("""Console.WriteLine("REPL started, Enter #exit to exit, #help for help text");""", scriptOptions);
+        Console.WriteLine("REPL started, Enter #exit to exit, #help for help text");
+        ScriptState state = await CSharpScript.RunAsync("", scriptOptions);
         while (true)
         {
             Console.Write("> ");
@@ -78,7 +79,7 @@ internal sealed class Repl
 
             if (input.EndsWith('.'))
             {
-                var completions = await GetCompletions(scriptOptions, input);
+                var completions = await GetCompletions(scriptOptions, input, options);
                 if (completions is { Count: > 0 })
                 {
                     foreach (var completion in completions)
@@ -130,18 +131,20 @@ internal sealed class Repl
         }
     }
 
-    private static async Task<IReadOnlyList<CompletionItem>> GetCompletions(
-        ScriptOptions scriptOptions, string input
+    private async Task<IReadOnlyList<CompletionItem>> GetCompletions(
+        ScriptOptions scriptOptions, string input, ExecOptions options
         )
     {
         // https://www.strathweb.com/2018/12/using-roslyn-c-completion-service-programmatically/
         // https://github.com/filipw/Strathweb.Samples.Roslyn.Completion
         using var workspace = new AdhocWorkspace(MefHostServices.DefaultHost);
         var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
-                nullableContextOptions: NullableContextOptions.Annotations)
-            .WithUsings(scriptOptions.Imports)
+                nullableContextOptions: NullableContextOptions.Annotations
+                )
+                .WithUsings(scriptOptions.Imports)
             ;
 
+        var references = await referenceResolver.ResolveMetadataReferences(options, true);
         var projectInfo = ProjectInfo.Create(
                 ProjectId.CreateNewId(),
                 VersionStamp.Create(),
@@ -150,12 +153,12 @@ internal sealed class Repl
                 LanguageNames.CSharp,
                 isSubmission: true
             )
-            .WithMetadataReferences(scriptOptions.MetadataReferences)
+            .WithMetadataReferences(references)
             .WithCompilationOptions(compilationOptions)
             ;
         var project = workspace.AddProject(projectInfo);
         var documentInfo = DocumentInfo.Create(
-            DocumentId.CreateNewId(project.Id), "__Script.cs",
+            DocumentId.CreateNewId(project.Id), "Script.cs",
             sourceCodeKind: SourceCodeKind.Script,
             loader: new PlainTextLoader(input)
         );
