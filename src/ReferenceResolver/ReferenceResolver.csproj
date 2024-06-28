@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <PackageId>ReferenceResolver</PackageId>
     <PackageTags>reference;references;nuget;package;framework;dependency;dependencies</PackageTags>
     <Description>Aims to simplify the references for the Roslyn compilation during runtime</Description>
