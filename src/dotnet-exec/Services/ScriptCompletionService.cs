@@ -15,17 +15,12 @@ public interface IScriptCompletionService
 }
 
 /// <summary>
-/// 
-/// </summary>
-/// <remarks>
-/// Thanks to
+/// completion service for script
 /// https://www.strathweb.com/2018/12/using-roslyn-c-completion-service-programmatically/
 /// https://github.com/filipw/Strathweb.Samples.Roslyn.Completion
-/// </remarks>
-public class ScriptCompletionService : IScriptCompletionService
+/// </summary>
+public sealed class ScriptCompletionService : IScriptCompletionService
 {
-    private const string ScriptName = "dotnet-exec-repl";
-
     public async Task<IReadOnlyList<CompletionItem>> GetCompletions(ScriptOptions scriptOptions, string code)
     {
         using var workspace = new AdhocWorkspace(MefHostServices.DefaultHost);
@@ -40,42 +35,6 @@ public class ScriptCompletionService : IScriptCompletionService
                     VersionStamp.Create(),
                     "dotnet-exec-repl",
                     "dotnet-exec-repl",
-                    LanguageNames.CSharp,
-                    isSubmission: true
-                )
-                .WithMetadataReferences(scriptOptions.MetadataReferences)
-                .WithCompilationOptions(compilationOptions)
-            ;
-        var project = workspace.AddProject(projectInfo);
-        var documentInfo = DocumentInfo.Create(
-            DocumentId.CreateNewId(project.Id), "Script.cs",
-            sourceCodeKind: SourceCodeKind.Script,
-            loader: new PlainTextLoader(code)
-        );
-        var document = workspace.AddDocument(documentInfo);
-
-        var completionService = CompletionService.GetService(document);
-        if (completionService is null) return [];
-
-        var completionList = await completionService.GetCompletionsAsync(document, code.Length);
-        return completionList.ItemsList;
-    }
-
-    public static async Task<IReadOnlyList<CompletionItem>> GetCompletions2(ScriptOptions scriptOptions, string code)
-    {
-        var host = MefHostServices.Create(MefHostServices.DefaultAssemblies);
-        using var workspace = new AdhocWorkspace(host);
-        var compilationOptions = new CSharpCompilationOptions(
-                    OutputKind.DynamicallyLinkedLibrary,
-                    nullableContextOptions: NullableContextOptions.Annotations
-                )
-                .WithUsings(scriptOptions.Imports)
-            ;
-        var projectInfo = ProjectInfo.Create(
-                    ProjectId.CreateNewId(),
-                    VersionStamp.Create(),
-                    ScriptName,
-                    ScriptName,
                     LanguageNames.CSharp,
                     isSubmission: true
                 )

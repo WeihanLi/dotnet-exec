@@ -31,23 +31,6 @@ public class ScriptCompletionServiceTest
         Assert.Contains(completions, s => s.DisplayText.Contains(expectedCompletion));
     }
 
-
-    [Theory]
-    [InlineData("Guid.", "NewGuid")]
-    public async Task CompletionTest2(string code, string expectedCompletion)
-    {
-        var usings = FrameworkReferenceResolver
-            .GetImplicitUsingsWithoutGlobalSpecified(FrameworkReferenceResolver.FrameworkNames.Default);
-        var references = await FrameworkReferenceResolver.ResolveDefaultReferences(ExecOptions.DefaultTargetFramework);
-        var scriptOptions = ScriptOptions.Default
-            .WithImports(usings)
-            .WithReferences(references.ToArray())
-            ;
-        var completions = await ScriptCompletionService.GetCompletions2(scriptOptions, code);
-        Assert.NotEmpty(completions);
-        Assert.Contains(completions, s => s.DisplayText.Contains(expectedCompletion));
-    }
-
     [Fact]
     public async Task ExpectedTest()
     {
