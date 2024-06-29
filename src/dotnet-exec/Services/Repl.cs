@@ -2,11 +2,9 @@
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting.Hosting;
-using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.Scripting;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -21,7 +19,8 @@ public interface IRepl
 [ExcludeFromCodeCoverage]
 internal sealed class Repl
     (
-        IRefResolver referenceResolver
+        IRefResolver referenceResolver,
+        IScriptCompletionService scriptCompletionService
     ) : IRepl
 {
     public async Task RunAsync(ExecOptions options)
@@ -79,7 +78,7 @@ internal sealed class Repl
 
             if (input.EndsWith('.'))
             {
-                var completions = await GetCompletions(scriptOptions, input, options);
+                var completions = await scriptCompletionService.GetCompletions(scriptOptions, input);
                 if (completions is { Count: > 0 })
                 {
                     foreach (var completion in completions)
@@ -129,45 +128,5 @@ internal sealed class Repl
                 }
             }
         }
-    }
-
-    private async Task<IReadOnlyList<CompletionItem>> GetCompletions(
-        ScriptOptions scriptOptions, string input, ExecOptions options
-        )
-    {
-        // https://www.strathweb.com/2018/12/using-roslyn-c-completion-service-programmatically/
-        // https://github.com/filipw/Strathweb.Samples.Roslyn.Completion
-        using var workspace = new AdhocWorkspace(MefHostServices.DefaultHost);
-        var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
-                nullableContextOptions: NullableContextOptions.Annotations
-                )
-                .WithUsings(scriptOptions.Imports)
-            ;
-
-        var references = await referenceResolver.ResolveMetadataReferences(options, true);
-        var projectInfo = ProjectInfo.Create(
-                ProjectId.CreateNewId(),
-                VersionStamp.Create(),
-                "dotnet-exec-repl",
-                "dotnet-exec-repl",
-                LanguageNames.CSharp,
-                isSubmission: true
-            )
-            .WithMetadataReferences(references)
-            .WithCompilationOptions(compilationOptions)
-            ;
-        var project = workspace.AddProject(projectInfo);
-        var documentInfo = DocumentInfo.Create(
-            DocumentId.CreateNewId(project.Id), "Script.cs",
-            sourceCodeKind: SourceCodeKind.Script,
-            loader: new PlainTextLoader(input)
-        );
-        var document = workspace.AddDocument(documentInfo);
-
-        var completionService = CompletionService.GetService(document);
-        if (completionService is null) return [];
-
-        var completionList = await completionService.GetCompletionsAsync(document, input.Length);
-        return completionList.ItemsList;
     }
 }

@@ -86,6 +86,13 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
 
     public static string[] GetImplicitUsings(string frameworkName)
     {
+        return GetImplicitUsingsWithoutGlobalSpecified(frameworkName)
+            .Select(x => $"global::{x}")
+            .ToArray();
+    }
+
+    public static string[] GetImplicitUsingsWithoutGlobalSpecified(string frameworkName)
+    {
         if (string.IsNullOrEmpty(frameworkName)) return [];
 
         FrameworkAliases.TryGetValue(frameworkName, out var framework);
@@ -95,32 +102,32 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         {
             FrameworkNames.Default =>
             [
-                "global::System",
-                "global::System.Collections.Generic",
-                "global::System.IO",
-                "global::System.Linq",
-                "global::System.Net.Http",
-                "global::System.Net.Http.Json", // add this to simplify the http request
-                "global::System.Text",
-                "global::System.Threading",
-                "global::System.Threading.Tasks"
+                "System",
+                "System.Collections.Generic",
+                "System.IO",
+                "System.Linq",
+                "System.Net.Http",
+                "System.Net.Http.Json", // add this to simplify the http request
+                "System.Text",
+                "System.Threading",
+                "System.Threading.Tasks"
             ],
             FrameworkNames.Web =>
             [
-                "global::System.Net.Http.Json",
-                "global::Microsoft.AspNetCore.Builder",
-                "global::Microsoft.AspNetCore.Hosting",
-                "global::Microsoft.AspNetCore.Http",
-                "global::Microsoft.AspNetCore.Routing",
-                "global::Microsoft.Extensions.Configuration",
-                "global::Microsoft.Extensions.DependencyInjection",
-                "global::Microsoft.Extensions.Hosting",
-                "global::Microsoft.Extensions.Logging"
+                "System.Net.Http.Json",
+                "Microsoft.AspNetCore.Builder",
+                "Microsoft.AspNetCore.Hosting",
+                "Microsoft.AspNetCore.Http",
+                "Microsoft.AspNetCore.Routing",
+                "Microsoft.Extensions.Configuration",
+                "Microsoft.Extensions.DependencyInjection",
+                "Microsoft.Extensions.Hosting",
+                "Microsoft.Extensions.Logging"
             ],
             FrameworkNames.WindowsDesktop =>
             [
-                "global::System.Drawing",
-                "global::System.Windows.Forms"
+                "System.Drawing",
+                "System.Windows.Forms"
             ],
             _ => []
         };
