@@ -73,6 +73,7 @@ public static class Helper
         services.AddReferenceResolvers();
         services.AddSingleton<IRefResolver, RefResolver>();
         services.AddSingleton<IConfigProfileManager, ConfigProfileManager>();
+        services.AddSingleton<IScriptCompletionService, ScriptCompletionService>();
         services.AddSingleton<IRepl, Repl>();
 
         services.RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
