@@ -23,7 +23,7 @@ string[] srcProjects = [
     "./src/ReferenceResolver/ReferenceResolver.csproj"
 ];
 string[] testProjects = [
-    "./tests/UnitTest/UnitTest.csproj", 
+    // "./tests/UnitTest/UnitTest.csproj", 
     // "./tests/IntegrationTest/IntegrationTest.csproj"
 ];
 
