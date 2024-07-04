@@ -20,10 +20,22 @@ public class ScriptCompletionServiceTest
     {
         var usings = FrameworkReferenceResolver
             .GetImplicitUsingsWithoutGlobalSpecified(FrameworkReferenceResolver.FrameworkNames.Default);
-        var references = await FrameworkReferenceResolver.ResolveDefaultReferences(ExecOptions.DefaultTargetFramework);
+        var defaultReferences = await FrameworkReferenceResolver.ResolveDefaultReferences(ExecOptions.DefaultTargetFramework);
+        var metadataReferences = defaultReferences.Select(r =>
+        {
+            try
+            {
+                _ = AssemblyName.GetAssemblyName(r);
+                return MetadataReference.CreateFromFile(r);
+            }
+            catch
+            {
+                return null;
+            }
+        }).WhereNotNull().ToArray();
         var scriptOptions = ScriptOptions.Default
             .WithImports(usings)
-            .WithReferences(references.ToArray())
+            .WithReferences(metadataReferences)
             ;
         var completionService = new ScriptCompletionService();
         var completions = await completionService.GetCompletions(scriptOptions, code);
