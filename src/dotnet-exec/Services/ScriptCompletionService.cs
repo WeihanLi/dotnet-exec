@@ -48,10 +48,9 @@ public sealed class ScriptCompletionService : IScriptCompletionService
             loader: new PlainTextLoader(code)
         );
         var document = workspace.AddDocument(documentInfo);
-
         var completionService = CompletionService.GetService(document);
         ArgumentNullException.ThrowIfNull(completionService);
         var completionList = await completionService.GetCompletionsAsync(document, code.Length);
-        return completionList.ItemsList;
+        return completionList.ItemsList ?? [];
     }
 }

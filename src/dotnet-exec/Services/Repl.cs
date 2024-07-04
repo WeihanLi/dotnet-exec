@@ -37,17 +37,17 @@ internal sealed class Repl
                 .AddImports(globalUsings.Select(g => g.TrimStart("global::")))
             ;
 
-        Console.WriteLine("REPL started, Enter #exit to exit, #help for help text");
+        Console.WriteLine("REPL started, Enter #q or #exit to exit");
         ScriptState state = await CSharpScript.RunAsync("", scriptOptions);
         while (true)
         {
             Console.Write("> ");
             var input = Console.ReadLine();
 
-            if (string.IsNullOrEmpty(input))
+            if (string.IsNullOrWhiteSpace(input))
                 continue;
 
-            if ("#exit".EqualsIgnoreCase(input))
+            if ("#q".EqualsIgnoreCase(input) || "#exit".EqualsIgnoreCase(input))
                 break;
 
             if ("#help".EqualsIgnoreCase(input))
@@ -76,11 +76,19 @@ internal sealed class Repl
                 continue;
             }
 
-            if (input.EndsWith('.'))
+            if (input.EndsWith('.') && input.Length > 1)
             {
                 var completions = await scriptCompletionService.GetCompletions(scriptOptions, input);
                 if (completions is { Count: > 0 })
                 {
+                    foreach (var completion in completions)
+                    {
+                        Console.WriteLine(completion.DisplayText);
+                    }
+                }
+                else
+                {
+                    completions = await scriptCompletionService.GetCompletions(scriptOptions, input[..^1]);
                     foreach (var completion in completions)
                     {
                         Console.WriteLine(completion.DisplayText);
