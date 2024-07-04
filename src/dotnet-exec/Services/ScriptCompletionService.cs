@@ -50,8 +50,7 @@ public sealed class ScriptCompletionService : IScriptCompletionService
         var document = workspace.AddDocument(documentInfo);
 
         var completionService = CompletionService.GetService(document);
-        if (completionService is null) return [];
-
+        ArgumentNullException.ThrowIfNull(completionService);
         var completionList = await completionService.GetCompletionsAsync(document, code.Length);
         return completionList.ItemsList;
     }
