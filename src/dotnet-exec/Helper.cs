@@ -20,6 +20,7 @@ using WeihanLi.Common.Models;
 
 namespace Exec;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public static class Helper
 {
     private static readonly ImmutableHashSet<string> SpecialConsoleDiagnosticIds = new[]

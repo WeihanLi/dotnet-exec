@@ -9,6 +9,7 @@ using WeihanLi.Common.Models;
 
 namespace Exec;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public sealed class CommandHandler(ILogger logger,
         ICompilerFactory compilerFactory,
         IExecutorFactory executorFactory,

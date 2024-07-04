@@ -19,6 +19,7 @@ public interface IScriptCompletionService
 /// https://www.strathweb.com/2018/12/using-roslyn-c-completion-service-programmatically/
 /// https://github.com/filipw/Strathweb.Samples.Roslyn.Completion
 /// </summary>
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public sealed class ScriptCompletionService : IScriptCompletionService
 {
     public async Task<IReadOnlyList<CompletionItem>> GetCompletions(ScriptOptions scriptOptions, string code)
