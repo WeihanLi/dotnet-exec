@@ -1,5 +1,10 @@
 # Release Notes
 
+## 0.22.0
+
+- [x] implement repl, start repl when there's no arguments provided
+- [ ] upgrade for .NET 9 preview 6 release
+
 ## 0.21.0
 
 - upgrade for .NET 9 preview 5 release
