@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting.Hosting;
 using Microsoft.CodeAnalysis.Scripting;
+using ReferenceResolver;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
@@ -37,8 +38,8 @@ internal sealed class Repl
                 .AddImports(globalUsings.Select(g => g.TrimStart("global::")))
             ;
 
-        Console.WriteLine("REPL started, Enter #q or #exit to exit");
-        ScriptState state = await CSharpScript.RunAsync("", scriptOptions);
+        Console.WriteLine("REPL started, Enter #q or #exit to exit, #cls or #clear to clear screen");
+        ScriptState? state = null;
         while (true)
         {
             Console.Write("> ");
@@ -50,9 +51,16 @@ internal sealed class Repl
             if ("#q".EqualsIgnoreCase(input) || "#exit".EqualsIgnoreCase(input))
                 break;
 
+            if ("#cls".EqualsIgnoreCase(input) || "#clear".EqualsIgnoreCase(input))
+            {
+                Console.Clear();
+                continue;
+            }
+
             if ("#help".EqualsIgnoreCase(input))
             {
                 // print detailed help text
+                Console.WriteLine("Enter #q or #exit to exit, #cls or #clear to clear screen");
                 continue;
             }
 
@@ -60,12 +68,22 @@ internal sealed class Repl
             {
                 try
                 {
-                    var reference = input[3..];
-                    options.References.Add(Helper.ReferenceNormalize(reference));
+                    var reference = Helper.ReferenceNormalize(input[3..]);
+                    options.References.Add(reference);
                     options.DisableCache = true;
+                    if (ReferenceResolverFactory.ParseReference(reference) is FrameworkReference frameworkReference)
+                    {
+                        var frameworkImplicitUsings = FrameworkReferenceResolver.GetImplicitUsings(frameworkReference.Reference);
+                        foreach (var u in frameworkImplicitUsings)
+                        {
+                            if (options.Usings.Add(u))
+                            {
+                                scriptOptions = scriptOptions.AddImports(u.TrimStart("global::").Trim());
+                            }
+                        }
+                    }
                     references = await referenceResolver.ResolveMetadataReferences(options, false);
                     scriptOptions = scriptOptions.WithReferences(references);
-                    state = await CSharpScript.RunAsync(state.Script.Code, scriptOptions);
                     ConsoleHelper.WriteLineWithColor("Reference added", ConsoleColor.DarkGreen);
                 }
                 catch (Exception ex)
@@ -99,31 +117,18 @@ internal sealed class Repl
 
             try
             {
-                var anotherScriptState = await state.ContinueWithAsync(input, scriptOptions);
-                var diagnostics = anotherScriptState.Script.Compile();
-                if (diagnostics.Any(x => x.Severity == DiagnosticSeverity.Error))
+                if (state is null)
                 {
-                    // error
-                    foreach (var diagnostic in diagnostics.Where(x => x.Severity >= DiagnosticSeverity.Error))
-                    {
-                        ConsoleHelper.WriteLineWithColor(CSharpDiagnosticFormatter.Instance.Format(diagnostic, CultureInfo.CurrentCulture), ConsoleColor.DarkRed);
-                    }
-                    continue;
+                    state = await CSharpScript.RunAsync(input, scriptOptions);
                 }
-
-                try
+                else
                 {
-                    var anotherState = await anotherScriptState.Script.RunFromAsync(state);
-                    if (anotherState.ReturnValue is not null)
+                    var anotherScriptState = await state.ContinueWithAsync(input, scriptOptions);
+                    if (anotherScriptState.ReturnValue is not null)
                     {
-                        Console.WriteLine(CSharpObjectFormatter.Instance.FormatObject(anotherState.ReturnValue));
+                        Console.WriteLine(CSharpObjectFormatter.Instance.FormatObject(anotherScriptState.ReturnValue));
                     }
-                    state = anotherState;
-                }
-                catch (Exception ex)
-                {
-                    ConsoleHelper.WriteLineWithColor($"Exception when execute script", ConsoleColor.DarkRed);
-                    ConsoleHelper.WriteLineWithColor(CSharpObjectFormatter.Instance.FormatException(ex), ConsoleColor.DarkRed);
+                    state = anotherScriptState;
                 }
             }
             catch (CompilationErrorException e)
@@ -134,6 +139,11 @@ internal sealed class Repl
                 {
                     ConsoleHelper.WriteLineWithColor(CSharpDiagnosticFormatter.Instance.Format(diagnostic, CultureInfo.CurrentCulture), ConsoleColor.DarkRed);
                 }
+            }
+            catch (Exception ex)
+            {
+                ConsoleHelper.WriteLineWithColor($"Exception when execute script", ConsoleColor.DarkRed);
+                ConsoleHelper.WriteLineWithColor(CSharpObjectFormatter.Instance.FormatException(ex), ConsoleColor.DarkRed);
             }
         }
     }
