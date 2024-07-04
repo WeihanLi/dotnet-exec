@@ -6,9 +6,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(RoslynVersion)" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslynVersion)" />
     <PackageVersion Condition="'$(TargetFramework)'!='net9.0'" Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
     <PackageVersion Condition="'$(TargetFramework)'=='net9.0'" Include="Microsoft.Extensions.Logging.Console" Version="9.0.0-preview.5.24306.7" />
     <PackageVersion Include="NuGet.Protocol" Version="6.10.1" />
