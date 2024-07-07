@@ -54,7 +54,7 @@ public static class Helper
 
         services.AddLogging(builder =>
         {
-            builder.AddConsole();
+            builder.AddDefaultDelegateLogger();
             builder.SetMinimumLevel(isDebugMode ? LogLevel.Debug : LogLevel.Error);
         });
         services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>()
