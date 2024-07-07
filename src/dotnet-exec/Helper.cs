@@ -78,16 +78,16 @@ public static class Helper
         services.AddSingleton<IRepl, Repl>();
 
         services
-            .RegisterOptionsConfigureMiddleware<LinqpadOptionsConfigureMiddleware>()
+            .RegisterOptionsPreConfigureMiddleware<LinqpadOptionsConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<CleanupOptionsConfigureMiddleware>()
             ;
-
         services
             .RegisterParseOptionsMiddleware<PreprocessorSymbolNamesParserOptionsMiddleware>()
             .RegisterParseOptionsMiddleware<FeaturesParserOptionsMiddleware>()
             ;
         // register options configure pipeline
+        services.AddSingleton<IOptionsPreConfigurePipeline, OptionsPreConfigurePipeline>();
         services.AddSingleton<IOptionsConfigurePipeline, OptionsConfigurePipeline>();
         // register parse options configure pipeline
         services.AddSingleton<IParseOptionsPipeline, ParseOptionsPipeline>();
@@ -97,6 +97,13 @@ public static class Helper
     }
 
     public static string[] CommandArguments { get; set; } = [];
+
+    private static IServiceCollection RegisterOptionsPreConfigureMiddleware<TMiddleware>
+     (this IServiceCollection services) where TMiddleware : class, IOptionsPreConfigureMiddleware
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsPreConfigureMiddleware, TMiddleware>());
+        return services;
+    }
 
     private static IServiceCollection RegisterOptionsConfigureMiddleware<TMiddleware>
         (this IServiceCollection services) where TMiddleware : class, IOptionsConfigureMiddleware

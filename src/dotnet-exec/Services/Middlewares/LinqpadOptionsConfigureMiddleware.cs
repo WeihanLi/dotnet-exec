@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace Exec.Services.Middlewares;
 
-internal sealed class LinqpadOptionsConfigureMiddleware : IOptionsConfigureMiddleware
+internal sealed class LinqpadOptionsConfigureMiddleware : IOptionsPreConfigureMiddleware
 {
     private const string LinqpadExtension = ".linq";
     public async Task InvokeAsync(ExecOptions context, Func<ExecOptions, Task> next)

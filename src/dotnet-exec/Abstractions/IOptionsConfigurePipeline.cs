@@ -8,6 +8,15 @@ public interface IOptionsConfigurePipeline
     Task Execute(ExecOptions options);
 }
 
+public interface IOptionsPreConfigurePipeline
+{
+    Task Execute(ExecOptions options);
+}
+
 public interface IOptionsConfigureMiddleware : IAsyncPipelineMiddleware<ExecOptions>
+{
+}
+
+public interface IOptionsPreConfigureMiddleware : IAsyncPipelineMiddleware<ExecOptions>
 {
 }

@@ -21,3 +21,22 @@ public sealed class OptionsConfigurePipeline : IOptionsConfigurePipeline
         return _pipeline.Invoke(options);
     }
 }
+
+public sealed class OptionsPreConfigurePipeline : IOptionsPreConfigurePipeline
+{
+    private readonly Func<ExecOptions, Task> _pipeline;
+    public OptionsPreConfigurePipeline(IEnumerable<IOptionsPreConfigureMiddleware> middlewares)
+    {
+        var pipelineBuilder = PipelineBuilder.CreateAsync<ExecOptions>();
+        foreach (var middleware in middlewares)
+        {
+            pipelineBuilder.UseMiddleware(middleware);
+        }
+        _pipeline = pipelineBuilder.Build();
+    }
+
+    public Task Execute(ExecOptions options)
+    {
+        return _pipeline.Invoke(options);
+    }
+}
