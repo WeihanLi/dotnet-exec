@@ -7,8 +7,13 @@ public interface IReference
 {
     string Reference { get; }
 
-    string ReferenceWithSchema =>
-        $"{ReferenceResolverFactory.ReferenceTypeSchemaCache.Value[ReferenceType]}: {Reference}";
-
     ReferenceType ReferenceType { get; }
+}
+
+public static class ReferenceExtensions
+{
+    public static string ReferenceWithSchema(this IReference reference)
+    {
+        return $"{ReferenceResolverFactory.ReferenceTypeSchemaCache.Value[reference.ReferenceType]}: {reference.Reference}";
+    }
 }

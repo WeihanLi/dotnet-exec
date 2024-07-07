@@ -55,6 +55,10 @@ public sealed class CommandHandler(ILogger logger,
             await repl.RunAsync(options);
             return 0;
         }
+
+        // execute options configure pipeline
+        await optionsConfigurePipeline.Execute(options);
+
         // fetch script
         var fetchResult = await scriptContentFetcher.FetchContent(options);
         if (!fetchResult.IsSuccess())
@@ -62,9 +66,6 @@ public sealed class CommandHandler(ILogger logger,
             logger.LogError(fetchResult.Msg);
             return ExitCodes.FetchError;
         }
-
-        // execute options configure pipeline
-        await optionsConfigurePipeline.Execute(options);
 
         logger.LogDebug("CompilerType: {CompilerType} \nExecutorType: {ExecutorType} \nReferences: {References} \nUsings: {Usings}",
             options.CompilerType,

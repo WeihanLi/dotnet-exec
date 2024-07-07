@@ -77,11 +77,14 @@ public static class Helper
         services.AddSingleton<IScriptCompletionService, ScriptCompletionService>();
         services.AddSingleton<IRepl, Repl>();
 
-        services.RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
+        services
+            .RegisterOptionsConfigureMiddleware<LinqpadOptionsConfigureMiddleware>()
+            .RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<CleanupOptionsConfigureMiddleware>()
             ;
 
-        services.RegisterParseOptionsMiddleware<PreprocessorSymbolNamesParserOptionsMiddleware>()
+        services
+            .RegisterParseOptionsMiddleware<PreprocessorSymbolNamesParserOptionsMiddleware>()
             .RegisterParseOptionsMiddleware<FeaturesParserOptionsMiddleware>()
             ;
         // register options configure pipeline
@@ -371,11 +374,11 @@ public static class Helper
         if (reference.StartsWith('-'))
         {
             typedReference = ReferenceResolverFactory.ParseReference(reference[1..]);
-            return $"- {typedReference.ReferenceWithSchema}";
+            return $"- {typedReference.ReferenceWithSchema()}";
         }
 
         typedReference = ReferenceResolverFactory.ParseReference(reference);
-        return typedReference.ReferenceWithSchema;
+        return typedReference.ReferenceWithSchema();
     }
 }
 

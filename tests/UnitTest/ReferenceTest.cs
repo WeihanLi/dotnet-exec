@@ -11,21 +11,17 @@ public class ReferenceTest
     [Fact]
     public void FileReferenceTypeTest()
     {
-#pragma warning disable CA1859 // Use concrete types when possible for improved performance
-        IReference reference = new FileReference("ReferenceResolver.dll");
+        var reference = new FileReference("ReferenceResolver.dll");
         Assert.Equal(ReferenceType.LocalFile, reference.ReferenceType);
-        Assert.Equal($"file: {reference.Reference}", reference.ReferenceWithSchema);
-#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+        Assert.Equal($"file: {reference.Reference}", reference.ReferenceWithSchema());
     }
 
     [Fact]
     public void NuGetReferenceTypeTest()
     {
-#pragma warning disable CA1859 // Use concrete types when possible for improved performance
-        IReference reference = new NuGetReference("ReferenceResolver", "1.0.0");
+        var reference = new NuGetReference("ReferenceResolver", "1.0.0");
         Assert.Equal(ReferenceType.NuGetPackage, reference.ReferenceType);
-        Assert.Equal($"nuget: {reference.Reference}", reference.ReferenceWithSchema);
-#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+        Assert.Equal($"nuget: {reference.Reference}", reference.ReferenceWithSchema());
     }
 
     [Fact]
