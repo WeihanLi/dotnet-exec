@@ -3,12 +3,14 @@
 
 
 using ReferenceResolver;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Xml.Linq;
 
 namespace Exec.Services.Middlewares;
 
-internal sealed class LinqpadOptionsConfigureMiddleware : IOptionsPreConfigureMiddleware
+[ExcludeFromCodeCoverage]
+internal sealed class LinqpadOptionsPreConfigureMiddleware : IOptionsPreConfigureMiddleware
 {
     private const string LinqpadExtension = ".linq";
     public async Task InvokeAsync(ExecOptions context, Func<ExecOptions, Task> next)

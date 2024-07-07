@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2022-2024 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Exec.Services;
 
+[ExcludeFromCodeCoverage]
 public sealed class OptionsConfigurePipeline : IOptionsConfigurePipeline
 {
     private readonly Func<ExecOptions, Task> _pipeline;
@@ -22,6 +25,7 @@ public sealed class OptionsConfigurePipeline : IOptionsConfigurePipeline
     }
 }
 
+[ExcludeFromCodeCoverage]
 public sealed class OptionsPreConfigurePipeline : IOptionsPreConfigurePipeline
 {
     private readonly Func<ExecOptions, Task> _pipeline;

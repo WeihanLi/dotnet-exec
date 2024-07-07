@@ -78,7 +78,7 @@ public static class Helper
         services.AddSingleton<IRepl, Repl>();
 
         services
-            .RegisterOptionsPreConfigureMiddleware<LinqpadOptionsConfigureMiddleware>()
+            .RegisterOptionsPreConfigureMiddleware<LinqpadOptionsPreConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<CleanupOptionsConfigureMiddleware>()
             ;
