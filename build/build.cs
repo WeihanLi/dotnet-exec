@@ -2,9 +2,9 @@
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 var target = CommandLineParser.Val("target", "Default", args);
-var apiKey = CommandLineParser.Val("apiKey", null, args);
-var stable = CommandLineParser.Val("stable", null, args).ToBoolean();
-var noPush = CommandLineParser.Val("noPush", null, args).ToBoolean();
+var apiKey = CommandLineParser.Val("apiKey", args: args);
+var stable = CommandLineParser.BooleanVal("stable", args: args);
+var noPush = CommandLineParser.BooleanVal("noPush", args: args);
 
 Console.WriteLine($$"""
 Arguments:
