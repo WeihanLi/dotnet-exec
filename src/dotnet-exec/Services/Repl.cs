@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.Scripting;
 using ReferenceResolver;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using WeihanLi.Extensions.Dump;
 
 namespace Exec.Services;
 
@@ -129,6 +130,10 @@ internal sealed class Repl
                         Console.WriteLine(CSharpObjectFormatter.Instance.FormatObject(anotherScriptState.ReturnValue));
                     }
                     state = anotherScriptState;
+                }
+                if (state.ReturnValue is not null)
+                {
+                    state.ReturnValue.Dump();
                 }
             }
             catch (CompilationErrorException e)
