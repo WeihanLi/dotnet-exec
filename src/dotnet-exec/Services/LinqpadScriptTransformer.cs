@@ -2,10 +2,13 @@
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 using ReferenceResolver;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Xml.Linq;
 
 namespace Exec.Services;
+
+[ExcludeFromCodeCoverage]
 internal sealed class LinqpadScriptTransformer : IScriptTransformer
 {
     public HashSet<string> SupportedExtensions { get; } =

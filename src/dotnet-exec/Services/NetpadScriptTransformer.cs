@@ -53,11 +53,13 @@ internal sealed class NetpadScriptTransformer : IScriptTransformer
     }
 }
 
+[ExcludeFromCodeCoverage]
 file sealed class ScriptData(ScriptConfigData config)
 {
     public ScriptConfigData Config { get; } = config;
 }
 
+[ExcludeFromCodeCoverage]
 file sealed class ScriptConfigData
 {
     public string? Kind { get; set; }
@@ -68,6 +70,7 @@ file sealed class ScriptConfigData
     public List<PackageReference>? References { get; set; }
 }
 
+[ExcludeFromCodeCoverage]
 file sealed class PackageReference(string packageId, string version)
 {
     public string PackageId { get; } = packageId;
