@@ -78,7 +78,8 @@ public static class Helper
         services.AddSingleton<IRepl, Repl>();
 
         services
-            .RegisterOptionsPreConfigureMiddleware<LinqpadOptionsPreConfigureMiddleware>()
+            .RegisterThiryPartyScriptTransformer<LinqpadScriptTransformer>()
+            .RegisterOptionsPreConfigureMiddleware<ThirdPartyScriptOptionsPreConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<CleanupOptionsConfigureMiddleware>()
             ;
@@ -116,6 +117,13 @@ public static class Helper
         (this IServiceCollection services) where TMiddleware : class, IParseOptionsMiddleware
     {
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IParseOptionsMiddleware, TMiddleware>());
+        return services;
+    }
+
+    private static IServiceCollection RegisterThiryPartyScriptTransformer<TTransformer>(this IServiceCollection services)
+        where TTransformer : class, IThirdPartyScriptTransformer
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IThirdPartyScriptTransformer, TTransformer>());
         return services;
     }
 
