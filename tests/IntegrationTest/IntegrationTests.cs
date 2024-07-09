@@ -552,12 +552,34 @@ public class IntegrationTests
     }
 
     [Theory]
-    [InlineData("LinqPadExecSample")]
+    [InlineData("LinqpadExecSample")]
     [InlineData("LinqpadExecExpressionSample")]
     [InlineData("LinqpadExecProgramSample")]
     public async Task LinqpadExecTest(string sampleName)
     {
         var filePath = $"{sampleName}.linq";
+        var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", filePath);
+        Assert.True(File.Exists(fullPath));
+
+        var execOptions = new ExecOptions()
+        {
+            Script = fullPath,
+            Arguments = ["--hello", "world"],
+            CompilerType = Helper.Default
+        };
+
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(execOptions);
+        Assert.Equal(0, result);
+
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
+
+    [Theory]
+    [InlineData("NetpadExecSample")]
+    public async Task NetpadExecTest(string sampleName)
+    {
+        var filePath = $"{sampleName}.netpad";
         var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", filePath);
         Assert.True(File.Exists(fullPath));
 

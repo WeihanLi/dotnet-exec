@@ -1,0 +1,6 @@
+1fbfda72-351f-4dfe-b163-657e3e05f9bc
+{"config":{"kind":"Program","targetFrameworkVersion":"DotNet8","optimizationLevel":"Debug","useAspNet":false,"namespaces":["System","System.Collections","System.Collections.Generic","System.Data","System.Diagnostics","System.IO","System.Linq","System.Linq.Expressions","System.Net.Http","System.Reflection","System.Text","System.Text.RegularExpressions","System.Threading","System.Threading.Tasks","System.Xml","System.Xml.Linq","System.Xml.XPath","System.Text.Json","System.Text.Json.Nodes"],"references":[{"discriminator":"PackageReference","packageId":"WeihanLi.Common","version":"1.0.66","title":"WeihanLi.Common"}]},"dataConnection":null}
+#Code
+
+var json = """[{"articleId": 1}]""";
+Console.WriteLine(json);

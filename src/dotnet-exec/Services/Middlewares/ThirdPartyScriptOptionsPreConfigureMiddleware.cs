@@ -8,7 +8,7 @@ namespace Exec.Services.Middlewares;
 
 [ExcludeFromCodeCoverage]
 internal sealed class ThirdPartyScriptOptionsPreConfigureMiddleware
-    (IEnumerable<IThirdPartyScriptTransformer> transformers)
+    (IEnumerable<IScriptTransformer> transformers)
     : IOptionsPreConfigureMiddleware
 {
     public async Task InvokeAsync(ExecOptions context, Func<ExecOptions, Task> next)

@@ -6,7 +6,7 @@ using System.Text;
 using System.Xml.Linq;
 
 namespace Exec.Services;
-internal sealed class LinqpadScriptTransformer : IThirdPartyScriptTransformer
+internal sealed class LinqpadScriptTransformer : IScriptTransformer
 {
     public HashSet<string> SupportedExtensions { get; } =
     [
