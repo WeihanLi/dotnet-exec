@@ -553,6 +553,8 @@ public class IntegrationTests
 
     [Theory]
     [InlineData("LinqPadExecSample")]
+    [InlineData("LinqpadExecExpressionSample")]
+    [InlineData("LinqpadExecProgramSample")]
     public async Task LinqpadExecTest(string sampleName)
     {
         var filePath = $"{sampleName}.linq";

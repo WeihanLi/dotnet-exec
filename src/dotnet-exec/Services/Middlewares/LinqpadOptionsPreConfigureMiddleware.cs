@@ -44,9 +44,21 @@ internal sealed class LinqpadOptionsPreConfigureMiddleware : IOptionsPreConfigur
             var rootElement = doc.Root;
             ArgumentNullException.ThrowIfNull(rootElement);
             var kind = rootElement.Attribute("Kind")?.Value;
-            if (kind is not "Statements" or null)
+            switch (kind)
             {
-                throw new NotSupportedException($"Kind `{kind}` is not supported");
+                case null:
+                case "Statements":
+                case "Program":
+                    context.CompilerType = Helper.Default;
+                    break;
+
+                case "Expression":
+                    context.CompilerType = Helper.Script;
+                    context.ExecutorType = Helper.Script;
+                    break;
+
+                default:
+                    throw new NotSupportedException($"Kind `{kind}` is not supported");
             }
             var nugetReferences = rootElement.Elements("NuGetReference")
                 .Select(e => e.Value)
