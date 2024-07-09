@@ -2,7 +2,8 @@
 
 ## 0.22.0
 
-- [x] implement repl, start repl when there's no arguments provided
+- [x] feature: implement repl, start repl when there's no arguments provided
+- [x] feature: support linqpad script execution
 - [ ] upgrade for .NET 9 preview 6 release
 
 ## 0.21.0
