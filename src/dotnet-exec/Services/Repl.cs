@@ -94,9 +94,10 @@ internal sealed class Repl
                 continue;
             }
 
-            if (input.EndsWith('?') && input.Length > 1)
+            if (input.Length > 1 && input[^1] is '?' or '.')
             {
-                var completions = await scriptCompletionService.GetCompletions(scriptOptions, input[..^1]);
+                var inputScript = input[^1] is '.' ? input : input[..^1];
+                var completions = await scriptCompletionService.GetCompletions(scriptOptions, inputScript);
                 foreach (var completion in completions)
                 {
                     Console.WriteLine(completion.DisplayText);
