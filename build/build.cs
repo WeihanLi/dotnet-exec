@@ -98,7 +98,7 @@ await new BuildProcessBuilder()
             // push nuget packages
             foreach (var file in Directory.GetFiles("./artifacts/packages/", "*.nupkg"))
             {
-                await ExecuteCommandAsync($"dotnet nuget push {file} -k {apiKey} --skip-duplicate", cancellationToken);
+                await RetryHelper.TryInvokeAsync(() => ExecuteCommandAsync($"dotnet nuget push {file} -k {apiKey} --skip-duplicate", cancellationToken), cancellationToken: cancellationToken);
             }
         }))
     .WithTask("Default", b => b.WithDependency("hello").WithDependency("pack"))
