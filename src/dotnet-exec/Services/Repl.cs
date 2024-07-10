@@ -9,7 +9,6 @@ using Microsoft.CodeAnalysis.Scripting;
 using ReferenceResolver;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using WeihanLi.Extensions.Dump;
 
 namespace Exec.Services;
 
@@ -39,7 +38,7 @@ internal sealed class Repl
                 .AddImports(globalUsings.Select(g => g.TrimStart("global::")))
             ;
 
-        Console.WriteLine("REPL started, Enter #q or #exit to exit, #cls or #clear to clear screen");
+        Console.WriteLine("REPL started, Enter #q or #exit to exit, #r to reference dll or package, #cls or #clear to clear screen");
         ScriptState? state = null;
         while (true)
         {
@@ -95,23 +94,12 @@ internal sealed class Repl
                 continue;
             }
 
-            if (input.EndsWith('.') && input.Length > 1)
+            if (input.EndsWith('?') && input.Length > 1)
             {
-                var completions = await scriptCompletionService.GetCompletions(scriptOptions, input);
-                if (completions is { Count: > 0 })
+                var completions = await scriptCompletionService.GetCompletions(scriptOptions, input[..^1]);
+                foreach (var completion in completions)
                 {
-                    foreach (var completion in completions)
-                    {
-                        Console.WriteLine(completion.DisplayText);
-                    }
-                }
-                else
-                {
-                    completions = await scriptCompletionService.GetCompletions(scriptOptions, input[..^1]);
-                    foreach (var completion in completions)
-                    {
-                        Console.WriteLine(completion.DisplayText);
-                    }
+                    Console.WriteLine(completion.DisplayText);
                 }
                 continue;
             }
@@ -125,15 +113,11 @@ internal sealed class Repl
                 else
                 {
                     var anotherScriptState = await state.ContinueWithAsync(input, scriptOptions);
-                    if (anotherScriptState.ReturnValue is not null)
-                    {
-                        Console.WriteLine(CSharpObjectFormatter.Instance.FormatObject(anotherScriptState.ReturnValue));
-                    }
                     state = anotherScriptState;
                 }
                 if (state.ReturnValue is not null)
                 {
-                    state.ReturnValue.Dump();
+                    Console.WriteLine(CSharpObjectFormatter.Instance.FormatObject(state.ReturnValue));
                 }
             }
             catch (CompilationErrorException e)
