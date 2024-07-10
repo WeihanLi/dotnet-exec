@@ -48,10 +48,27 @@ public sealed class ScriptCompletionService : IScriptCompletionService
             sourceCodeKind: SourceCodeKind.Script,
             loader: new PlainTextLoader(code)
         );
+        var len = code.Length;
+        var filter = string.Empty;
+        var lastDotIndex = code.LastIndexOf('.') + 1;
+        if (lastDotIndex < 1)
+        {
+            filter = code;
+        }
+        else if (lastDotIndex < code.Length)
+        {
+            filter = code[lastDotIndex..];
+        }
+
         var document = workspace.AddDocument(documentInfo);
         var completionService = CompletionService.GetService(document);
         ArgumentNullException.ThrowIfNull(completionService);
         var completionList = await completionService.GetCompletionsAsync(document, code.Length);
-        return completionList.ItemsList ?? [];
+        var list = completionList.ItemsList ?? [];
+
+        if (string.IsNullOrEmpty(filter))
+            return list;
+
+        return list.Where(c => c.DisplayText.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToArray();
     }
 }

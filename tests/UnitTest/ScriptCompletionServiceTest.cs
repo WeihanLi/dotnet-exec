@@ -43,6 +43,36 @@ public class ScriptCompletionServiceTest
         Assert.Contains(completions, s => s.DisplayText.Contains(expectedCompletion));
     }
 
+    [Theory]
+    [InlineData("Guid.New", "NewGuid")]
+    public async Task CompletionTest2(string code, string expectedCompletion)
+    {
+        var usings = FrameworkReferenceResolver
+            .GetImplicitUsingsWithoutGlobalSpecified(FrameworkReferenceResolver.FrameworkNames.Default);
+        var defaultReferences = await FrameworkReferenceResolver.ResolveDefaultReferences(ExecOptions.DefaultTargetFramework);
+        var metadataReferences = defaultReferences.Select(r =>
+        {
+            try
+            {
+                _ = AssemblyName.GetAssemblyName(r);
+                return MetadataReference.CreateFromFile(r);
+            }
+            catch
+            {
+                return null;
+            }
+        }).WhereNotNull().ToArray();
+        var scriptOptions = ScriptOptions.Default
+            .WithImports(usings)
+            .WithReferences(metadataReferences)
+            ;
+        var completionService = new ScriptCompletionService();
+        var completions = await completionService.GetCompletions(scriptOptions, code);
+        Assert.NotEmpty(completions);
+        Assert.Contains(completions, s => s.DisplayText.Contains(expectedCompletion));
+        Assert.DoesNotContain(completions, s => s.DisplayText.Contains("ToString"));
+    }
+
     [Fact]
     public async Task ExpectedTest()
     {
