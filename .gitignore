@@ -351,4 +351,6 @@ MigrationBackup/
 .ionide/
 
 # custom files
-out
+out/
+_site/
+api/
