@@ -1,4 +1,6 @@
-- name: Getting Started
-  href: getting-started.md
+- name: Docs
+  href: articles/
+- name: API
+  href: api/
 - name: Release Notes
   href: ReleaseNotes.md
