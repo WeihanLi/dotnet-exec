@@ -1,5 +1,9 @@
 - name: Docs
-  href: articles/
+  items:
+  - name: English
+    href: articles/en/
+  - name: 中文
+    href: articles/zh/
 - name: API
   href: api/
 - name: Release Notes
