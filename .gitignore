@@ -354,3 +354,5 @@ MigrationBackup/
 out/
 _site/
 api/
+
+.DS_Store
