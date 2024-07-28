@@ -3,6 +3,6 @@
 
 var app = WebApplication.Create();
 app.Map("/", () => "Hello world");
-await Task.WhenAny(app.RunAsync(), Task.Delay(5000));
+await Task.WhenAny(app.RunAsync(), Task.Delay(500));
 await app.StopAsync();
 Console.WriteLine("WebServer Stopped");
