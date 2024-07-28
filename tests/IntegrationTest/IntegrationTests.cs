@@ -4,6 +4,8 @@
 using WeihanLi.Common.Models;
 using Xunit.Abstractions;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace IntegrationTest;
 
 public class IntegrationTests
