@@ -2,7 +2,7 @@
   <PropertyGroup>
     <!-- Enable central package management -->
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <RoslynVersion>4.11.0-2.final</RoslynVersion>
+    <RoslynVersion>4.11.0-3.final</RoslynVersion>
     <!-- https://learn.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1901-nu1904 -->
     <NuGetAudit>false</NuGetAudit>
   </PropertyGroup>
