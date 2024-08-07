@@ -3,7 +3,7 @@
 
 using Microsoft.AspNetCore.Http.Extensions;
 
-Environment.SetEnvironmentVariable("ASPNETCORE_USEFORWARDEDHEADHERS_ENABLED", "true");
+Environment.SetEnvironmentVariable("ASPNETCORE_FORWARDEDHEADERS_ENABLED", "true");
 Environment.SetEnvironmentVariable("ASPNETCORE_HTTP_PORTS", "8500");
 
 var builder = WebApplication.CreateBuilder(args);
