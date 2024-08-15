@@ -1,10 +1,10 @@
 // Copyright (c) 2022-2024 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
-var target = CommandLineParser.Val("target", "Default", args);
-var apiKey = CommandLineParser.Val("apiKey", args: args);
-var stable = CommandLineParser.BooleanVal("stable", args: args);
-var noPush = CommandLineParser.BooleanVal("noPush", args: args);
+var target = CommandLineParser.Val("target", args, "Default");
+var apiKey = CommandLineParser.Val("apiKey", args);
+var stable = CommandLineParser.BooleanVal("stable", args);
+var noPush = CommandLineParser.BooleanVal("noPush", args);
 
 Console.WriteLine($$"""
 Arguments:

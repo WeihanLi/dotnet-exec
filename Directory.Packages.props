@@ -2,7 +2,7 @@
   <PropertyGroup>
     <!-- Enable central package management -->
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <RoslynVersion>4.11.0-3.final</RoslynVersion>
+    <RoslynVersion>4.12.0-1.final</RoslynVersion>
     <!-- https://learn.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1901-nu1904 -->
     <NuGetAudit>false</NuGetAudit>
   </PropertyGroup>
@@ -11,10 +11,10 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
-    <PackageVersion Include="NuGet.Protocol" Version="6.10.1" />
+    <PackageVersion Include="NuGet.Protocol" Version="6.11.0" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.67" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.68-preview-20240814-010540" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
