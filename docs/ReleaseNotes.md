@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.23.0(In Progress)
+
+- upgrade for .NET 9 Preview 7 release
+
 ## 0.22.0
 
 - feature: repl, start repl when there's no arguments provided
