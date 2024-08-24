@@ -337,6 +337,9 @@ public static class Helper
     private static void LoadSupportedFrameworks()
     {
         var frameworkDir = Path.Combine(FrameworkReferenceResolver.DotnetDirectory, "shared", FrameworkReferenceResolver.FrameworkNames.Default);
+        if (!Directory.Exists(frameworkDir))
+            return;
+
         foreach (var framework in Directory
                      .GetDirectories(frameworkDir)
                      .Select(Path.GetFileName)
