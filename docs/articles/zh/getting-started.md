@@ -132,4 +132,4 @@ dotnet-exec 'WebApplication.Create().Run();' --reference 'framework:web'
 
 ### Profile command
 
-Profile commands could configure custom config profile to simplify options configuration when executing
+Profile 命令可以用来配置一些自定义的 profile 来简化执行时要指定的选项
