@@ -2,7 +2,6 @@
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 
 namespace Exec.Contracts;
 
@@ -13,6 +12,9 @@ namespace Exec.Contracts;
 [ExcludeFromCodeCoverage]
 public sealed class InfoModel
 {
+    public string? DotnetRoot { get; init; } = EnvHelper.Val("DOTNET_ROOT");
+    public string DotnetPath { get; init; } = ApplicationHelper.GetDotnetPath() ?? string.Empty;
+
     public string ToolVersion { get; init; }
         = ApplicationHelper.GetLibraryInfo(typeof(Helper)).LibraryVersion;
 
@@ -25,11 +27,5 @@ public sealed class InfoModel
     public string RoslynVersion { get; init; }
         = ApplicationHelper.GetLibraryInfo(typeof(Microsoft.CodeAnalysis.CSharp.CSharpCompilation)).LibraryVersion;
 
-    public string EnvironmentVersion { get; init; } = Environment.Version.ToString();
-    public string FrameworkDescription { get; init; } = RuntimeInformation.FrameworkDescription;
-    public string RuntimeIdentifier { get; init; } = RuntimeInformation.RuntimeIdentifier;
-    public int ProcessorCount { get; set; } = Environment.ProcessorCount;
-    public string OSArchitecture { get; set; } = RuntimeInformation.OSArchitecture.ToString();
-    public string OSDescription { get; set; } = RuntimeInformation.OSDescription;
-    public string OSVersion { get; set; } = Environment.OSVersion.VersionString;
+    public RuntimeInfo RuntimeInfo { get; init; } = ApplicationHelper.RuntimeInfo;
 }
