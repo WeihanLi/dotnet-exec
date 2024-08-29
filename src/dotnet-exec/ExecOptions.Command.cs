@@ -37,6 +37,11 @@ public sealed partial class ExecOptions
     private static readonly Option<string> StartupTypeOption = new("--startup-type", "The startup type to use for finding the correct entry");
     internal static readonly Option<string> EntryPointOption = new(["-e", "--entry"], "Custom entry point('MainTest' by default)");
 
+    internal static readonly Option<string[]> DefaultEntryMethodsOption = new("--default-entry", "Default entry methods")
+    {
+        Arity = ArgumentArity.ZeroOrMore
+    };
+
     private static readonly Option<string> CompilerTypeOption =
         new(["--compiler-type", "--compiler"], () => "workspace", "The compiler to use");
 
@@ -165,6 +170,10 @@ public sealed partial class ExecOptions
             if (!parseResult.HasOption(EntryPointOption) && !string.IsNullOrEmpty(configProfile.EntryPoint))
             {
                 EntryPoint = configProfile.EntryPoint;
+            }
+            if (configProfile.DefaultEntryMethods is { Length: > 0 })
+            {
+                DefaultEntryMethods = configProfile.DefaultEntryMethods;
             }
             if (!parseResult.HasOption(PreviewOption))
             {

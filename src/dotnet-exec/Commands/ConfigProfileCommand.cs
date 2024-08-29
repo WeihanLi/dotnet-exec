@@ -26,6 +26,7 @@ public sealed class ConfigProfileCommand : Command
             AddOption(ExecOptions.WideReferencesOption);
             AddOption(ExecOptions.EntryPointOption);
             AddOption(ExecOptions.PreviewOption);
+            AddOption(ExecOptions.DefaultEntryMethodsOption);
         }
     }
 

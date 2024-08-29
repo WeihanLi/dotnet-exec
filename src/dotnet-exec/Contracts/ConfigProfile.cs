@@ -27,5 +27,7 @@ public sealed class ConfigProfile
 
     public string? EntryPoint { get; set; }
 
+    public string[]? DefaultEntryMethods { get; set; }
+
     public bool EnablePreviewFeatures { get; set; }
 }

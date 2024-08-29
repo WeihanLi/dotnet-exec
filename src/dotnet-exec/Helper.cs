@@ -157,6 +157,7 @@ public static class Helper
                                     IncludeWideReferences = context.ParseResult.GetValueForOption(ExecOptions.WideReferencesOption),
                                     IncludeWebReferences = context.ParseResult.HasOption(ExecOptions.WebReferencesOption),
                                     EntryPoint = context.ParseResult.GetValueForOption(ExecOptions.EntryPointOption),
+                                    DefaultEntryMethods = context.ParseResult.GetValueForOption(ExecOptions.DefaultEntryMethodsOption),
                                     EnablePreviewFeatures = context.ParseResult.HasOption(ExecOptions.PreviewOption)
                                 };
                                 await profileManager.ConfigureProfile(profileName, profile).ConfigureAwait(false);
