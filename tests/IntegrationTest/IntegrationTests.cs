@@ -236,7 +236,7 @@ public class IntegrationTests
     {
         var options = new ExecOptions()
         {
-            References = ["nuget:WeihanLi.Npoi,2.4.2"],
+            References = ["nuget:WeihanLi.Npoi,2.5.0"],
             Usings = ["WeihanLi.Npoi"],
             Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump();"
         };

@@ -108,7 +108,7 @@ dotnet-exec 'Guid.NewGuid()'
 NuGet 包引用:
 
 ``` sh
-dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,2.4.2" -u "WeihanLi.Npoi"
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,2.5.0" -u "WeihanLi.Npoi"
 ```
 
 本地 dll 引用:
@@ -152,7 +152,7 @@ dotnet-exec 'WriteLine(1+1);' --using "static System.Console"
 执行原始脚本并且自定义命名空间引用:
 
 ``` sh
-dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump()' -r "nuget:WeihanLi.Npoi,2.4.2" -u WeihanLi.Npoi
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump()' -r "nuget:WeihanLi.Npoi,2.5.0" -u WeihanLi.Npoi
 ```
 
 ### More
