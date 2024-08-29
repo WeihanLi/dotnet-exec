@@ -43,6 +43,9 @@ public class IntegrationTests
     [InlineData("FileLocalTypeSample")]
     [InlineData("SourceGeneratorSample")]
     [InlineData("ForwardedHeadersSample")]
+    [InlineData("EntryMethodExecuteSample")]
+    [InlineData("EntryMethodRunSample")]
+    [InlineData("EntryMethodRunAsyncSample")]
     public async Task SamplesTestWithSimpleCompiler(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
@@ -81,6 +84,9 @@ public class IntegrationTests
     [InlineData("FileLocalTypeSample")]
     [InlineData("SourceGeneratorSample")]
     [InlineData("ForwardedHeadersSample")]
+    [InlineData("EntryMethodExecuteSample")]
+    [InlineData("EntryMethodRunSample")]
+    [InlineData("EntryMethodRunAsyncSample")]
     public async Task SamplesTestWithWorkspaceCompiler(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";

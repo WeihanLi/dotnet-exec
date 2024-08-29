@@ -20,20 +20,42 @@ public abstract class CodeExecutor(ILogger logger) : ICodeExecutor
             Logger.LogDebug("ReferencedAssemblies: {assemblies}", assembliesString);
         }
         var entryMethod = assembly.EntryPoint;
-        if (entryMethod is null && options.EntryPoint.IsNotNullOrEmpty())
+        if (entryMethod is null)
         {
             var types = assembly.GetTypes();
             var staticMethods = types.Select(x =>
                     x.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
-                .SelectMany(x => x)
-                .Where(x => x.Name.Equals(options.EntryPoint, StringComparison.Ordinal));
+                .SelectMany(x => x);
             if (options.StartupType.IsNotNullOrEmpty())
             {
                 staticMethods = staticMethods.Where(x => x.DeclaringType?.FullName == options.StartupType);
             }
-            entryMethod = staticMethods.MinBy(m => m.GetParameters().Length);
-        }
+            if (options.EntryPoint.IsNotNullOrEmpty())
+            {
+                entryMethod = staticMethods.Where(x => x.Name.Equals(options.EntryPoint, StringComparison.Ordinal))
+                    .MinBy(m => m.GetParameters().Length)
+                    ;
+            }
+            else
+            {
+                foreach (var method in options.DefaultEntryMethods)
+                {
+                    entryMethod = staticMethods.Where(x => x.Name.Equals(method, StringComparison.Ordinal))
+                        .MinBy(m => m.GetParameters().Length);
+                    if (entryMethod is not null)
+                    {
+                        break;
+                    }
 
+                    entryMethod = staticMethods.Where(x => x.Name.Equals($"{method}Async", StringComparison.Ordinal))
+                        .MinBy(m => m.GetParameters().Length);
+                    if (entryMethod is not null)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
 
         if (entryMethod is null)
             return Result.Fail("No valid EntryPoint found", ResultStatus.BadRequest, (int)ResultStatus.BadRequest);

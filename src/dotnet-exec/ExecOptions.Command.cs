@@ -112,7 +112,7 @@ public sealed partial class ExecOptions
         var scripts = parseResult.GetValueForArgument(ScriptArgument);
         Script = scripts.FirstOrDefault() ?? string.Empty;
         StartupType = parseResult.GetValueForOption(StartupTypeOption);
-        EntryPoint = parseResult.GetValueForOption(EntryPointOption).GetValueOrDefault("MainTest");
+        EntryPoint = parseResult.GetValueForOption(EntryPointOption);
         TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption)
             .GetValueOrDefault(DefaultTargetFramework);
         Configuration = parseResult.GetValueForOption(ConfigurationOption);

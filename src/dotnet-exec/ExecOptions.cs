@@ -13,7 +13,7 @@ public sealed partial class ExecOptions
     public string TargetFramework { get; set; } = DefaultTargetFramework;
 
     public string? StartupType { get; set; } = string.Empty;
-    public string EntryPoint { get; set; } = "MainTest";
+    public string? EntryPoint { get; set; }
 
     public string[] Arguments { get; set; } = [];
 
@@ -55,4 +55,6 @@ public sealed partial class ExecOptions
     public string? CompileOutput { get; set; }
 
     [JsonIgnore] public CancellationToken CancellationToken { get; set; }
+
+    internal string[] DefaultEntryMethods { get; set; } = ["MainTest", "Execute", "Run"];
 }
