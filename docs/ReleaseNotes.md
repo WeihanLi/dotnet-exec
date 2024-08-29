@@ -1,7 +1,8 @@
 # Release Notes
 
-## 0.23.0(In Progress)
+## 0.23.0
 
+- feature: support default entry methods and could be configured in config profile
 - upgrade for .NET 9 Preview 7 release
 
 ## 0.22.0
