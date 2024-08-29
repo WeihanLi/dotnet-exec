@@ -46,6 +46,90 @@ script 支持三种：
 
 #### Options
 
+**Using**
+
+`dotnet-exec` 会包含默认的隐式命名空间引用
+
+使用 `-u`/`--using` 来新增一个 `namespace` 引用, 支持普通的命名空间引用，静态引用以及引用别名，并且可以通过以 `-` 开头来移除命名空间引用
+
+示例如下:
+
+> 默认隐式命名空间引用
+
+```sh
+dotnet-exec 'Console.WriteLine("Hello World");'
+```
+
+> 静态引用
+
+```sh
+dotnet-exec 'WriteLine("Hello World");' -u 'static System.Console'
+```
+
+> 引用别名
+
+```sh
+dotnet-exec 'MyConsole.WriteLine("Hello World");' -u 'MyConsole = System.Console'
+```
+
+> 移除某一个命名空间引用
+
+```sh
+dotnet-exec 'System.Console.WriteLine("Hello World");' -u '-System'
+```
+
+**References**
+
+`dotnet-exec` 会包含默认的框架引用, 包括 `System.Private.CoreLib`/`System.Console`/`System.Text.Json` 等等...
+
+除此之外，你也可以像下面的例子一样添加其他的引用：
+
+**NuGet Package Reference**
+
+> 不指定版本的 nuget 包引用:
+
+```sh
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi" -u "WeihanLi.Npoi"
+```
+
+如果你只指定了 nuget 包，会自动使用最新的稳定版版本，你也可以指定要使用的版本
+
+> 指定某个版本的 nuget 包引用:
+
+```sh
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,2.5.0" -u "WeihanLi.Npoi"
+```
+
+**local file reference**
+
+引用本地 dll
+
+```sh
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "./out/WeihanLi.Npoi.dll" -u "WeihanLi.Npoi"
+```
+
+**local folder reference**
+
+引用本地某个目录下的所有 dll
+
+```sh
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "folder: ./out" -u "WeihanLi.Npoi"
+```
+
+**SDK framework reference**
+
+添加 Web SDK 框架引用
+
+```sh
+dotnet-exec 'WebApplication.Create().Run();' --reference 'framework:web'
+```
+
+`web` 是 `Microsoft.AspNetCore.App` 的一个别名, 你也可以使用 `--web` 来添加 ASP.NET Core web 框架引用
+
+**preview option**
+
+默认会使用 `latest` 语言版本，如果需要使用到一些 `preview` 才支持的特性，可以指定 `--preview` 选项，如果有一些功能声明了 `RequiresPreviewFeaturesAttribute` 也可以使用这一选项来尝试
 
 ### Profile command
 
+Profile 命令可以用来配置一些自定义的 profile 来简化执行时要指定的选项
