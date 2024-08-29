@@ -4,7 +4,7 @@
 using Exec.Contracts;
 using System.Text.Json;
 
-if (args is ["--info"])
+if (args is ["--info"] or ["info"])
 {
     var info = new InfoModel();
     Console.WriteLine(JsonSerializer.Serialize(info, JsonHelper.WriteIntendedUnsafeEncoderOptions));
