@@ -1,5 +1,9 @@
 # Release Notes
 
+## To Be Released
+
+- update for .NET 9 RC 1 release
+
 ## 0.23.0
 
 - feature: support default entry methods and could be configured in config profile
