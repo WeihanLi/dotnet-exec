@@ -46,6 +46,7 @@ public class IntegrationTests
     [InlineData("EntryMethodExecuteSample")]
     [InlineData("EntryMethodRunSample")]
     [InlineData("EntryMethodRunAsyncSample")]
+    // [InlineData("FieldKeywordSample")]
     public async Task SamplesTestWithSimpleCompiler(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
@@ -87,6 +88,7 @@ public class IntegrationTests
     [InlineData("EntryMethodExecuteSample")]
     [InlineData("EntryMethodRunSample")]
     [InlineData("EntryMethodRunAsyncSample")]
+    // [InlineData("FieldKeywordSample")]
     public async Task SamplesTestWithWorkspaceCompiler(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
