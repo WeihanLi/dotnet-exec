@@ -21,8 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\nuget.config">
-      <Link>Assets\nuget.config</Link>
+    <None Include="nuget.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
