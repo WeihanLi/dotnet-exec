@@ -84,7 +84,7 @@ public sealed class SimpleCodeCompiler(
         {
             return await compilation.GetCompilationAssemblyResult(options.CancellationToken).ConfigureAwait(false);
         }
-        var generatorDriver = CSharpGeneratorDriver.Create(generators);
+        var generatorDriver = CSharpGeneratorDriver.Create(generators, parseOptions: parseOptions);
         generatorDriver.RunGeneratorsAndUpdateCompilation(compilation, out var updatedCompilation, out _, options.CancellationToken);
         return await updatedCompilation.GetCompilationAssemblyResult(options.CancellationToken).ConfigureAwait(false);
     }
