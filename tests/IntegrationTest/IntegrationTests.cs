@@ -46,7 +46,7 @@ public class IntegrationTests
     [InlineData("EntryMethodExecuteSample")]
     [InlineData("EntryMethodRunSample")]
     [InlineData("EntryMethodRunAsyncSample")]
-    // [InlineData("FieldKeywordSample")]
+    [InlineData("FieldKeywordSample")]
     public async Task SamplesTestWithSimpleCompiler(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
@@ -60,7 +60,8 @@ public class IntegrationTests
             IncludeWebReferences = true,
             IncludeWideReferences = true,
             CompilerType = "simple",
-            EnableSourceGeneratorSupport = sampleFileName.Contains("SourceGenerator")
+            EnableSourceGeneratorSupport = sampleFileName.Contains("SourceGenerator"),
+            EnablePreviewFeatures = true
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
@@ -88,7 +89,7 @@ public class IntegrationTests
     [InlineData("EntryMethodExecuteSample")]
     [InlineData("EntryMethodRunSample")]
     [InlineData("EntryMethodRunAsyncSample")]
-    // [InlineData("FieldKeywordSample")]
+    [InlineData("FieldKeywordSample")]
     public async Task SamplesTestWithWorkspaceCompiler(string sampleFileName)
     {
         var filePath = $"{sampleFileName}.cs";
@@ -102,7 +103,8 @@ public class IntegrationTests
             IncludeWebReferences = true,
             IncludeWideReferences = true,
             CompilerType = "workspace",
-            EnableSourceGeneratorSupport = sampleFileName.Contains("SourceGenerator")
+            EnableSourceGeneratorSupport = sampleFileName.Contains("SourceGenerator"),
+            EnablePreviewFeatures = true
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
