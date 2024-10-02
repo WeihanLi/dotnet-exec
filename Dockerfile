@@ -3,12 +3,15 @@ ARG RuntimeImageRepo=runtime
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build-env
 ARG TARGETARCH
 WORKDIR /app
+
 COPY ./.editorconfig ./
 COPY ./src/ ./src/
 COPY ./build/ ./build/
 COPY ./Directory.Build.props ./
 COPY ./Directory.Build.targets ./
 COPY ./Directory.Packages.props ./
+COPY ./nuget.config ./
+
 WORKDIR /app/src/dotnet-exec/
 ENV HUSKY=0
 RUN dotnet publish -f net9.0 -a $TARGETARCH -o /app/out/
