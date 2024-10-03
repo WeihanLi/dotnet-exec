@@ -12,11 +12,11 @@ namespace Exec.Contracts;
 [ExcludeFromCodeCoverage]
 public sealed class InfoModel
 {
-    public string? DotnetRoot { get; init; } = EnvHelper.Val("DOTNET_ROOT");
+    public string? DotnetRoot { get; init; } = ApplicationHelper.GetDotnetDirectory();
     public string DotnetPath { get; init; } = ApplicationHelper.GetDotnetPath() ?? string.Empty;
 
     public string ToolVersion { get; init; }
-        = ApplicationHelper.GetLibraryInfo(typeof(Helper)).LibraryVersion;
+        = ApplicationHelper.GetLibraryInfo(typeof(InfoModel)).LibraryVersion;
 
     public string CommonVersion { get; init; }
         = ApplicationHelper.GetLibraryInfo(typeof(Guard)).LibraryVersion;
