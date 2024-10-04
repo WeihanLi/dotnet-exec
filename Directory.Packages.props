@@ -2,7 +2,7 @@
   <PropertyGroup>
     <!-- Enable central package management -->
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <RoslynVersion>4.13.0-1.24502.1</RoslynVersion>
+    <RoslynVersion>4.13.0-1.24503.11</RoslynVersion>
     <!-- https://learn.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1901-nu1904 -->
     <NuGetAudit>false</NuGetAudit>
   </PropertyGroup>
@@ -14,7 +14,7 @@
     <PackageVersion Include="NuGet.Protocol" Version="6.11.1" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.70-preview-20241002-154704" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.70" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
