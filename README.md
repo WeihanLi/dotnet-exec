@@ -49,6 +49,12 @@ Install failed? try the command below:
 dotnet tool update -g dotnet-execute --prerelease --add-source https://api.nuget.org/v3/index.json --ignore-failed-sources
 ```
 
+Uninstall or failed to update? Try uninstall and install again
+
+```sh
+dotnet tool uninstall -g dotnet-execute
+```
+
 ### Container support
 
 Execute with docker
