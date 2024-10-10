@@ -2,7 +2,7 @@
 
 ## To Be Released
 
-- update for .NET 9 RC 1 release
+- update for .NET 9 RC 2 release
 
 ## 0.23.0
 
