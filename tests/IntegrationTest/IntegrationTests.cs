@@ -524,6 +524,7 @@ public class IntegrationTests
         {
             Script = code,
             DryRun = true,
+            IncludeWideReferences = false,
         };
         await _handler.Execute(options);
         Assert.Single(options.References);
@@ -541,6 +542,7 @@ public class IntegrationTests
         {
             Script = code,
             DryRun = true,
+            IncludeWideReferences = false,
             References = ["-nuget: WeihanLi.Common, 1.0.64"]
         };
         await _handler.Execute(options);
@@ -559,6 +561,7 @@ public class IntegrationTests
         {
             Script = code,
             DryRun = true,
+            IncludeWideReferences = false,
             References = ["- nuget: WeihanLi.Common"]
         };
         await _handler.Execute(options);
