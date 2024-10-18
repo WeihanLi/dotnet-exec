@@ -13,14 +13,16 @@ using NuGet.Versioning;
 using ReferenceResolver;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using WeihanLi.Common.Models;
 
 namespace Exec;
 
-[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage]
 public static class Helper
 {
     private static readonly ImmutableHashSet<string> SpecialConsoleDiagnosticIds = new[]
@@ -100,29 +102,29 @@ public static class Helper
 
     public static string[] CommandArguments { get; set; } = [];
 
-    private static IServiceCollection RegisterOptionsPreConfigureMiddleware<TMiddleware>
+    private static IServiceCollection RegisterOptionsPreConfigureMiddleware<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TMiddleware>
      (this IServiceCollection services) where TMiddleware : class, IOptionsPreConfigureMiddleware
     {
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsPreConfigureMiddleware, TMiddleware>());
         return services;
     }
 
-    private static IServiceCollection RegisterOptionsConfigureMiddleware<TMiddleware>
+    private static IServiceCollection RegisterOptionsConfigureMiddleware<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TMiddleware>
         (this IServiceCollection services) where TMiddleware : class, IOptionsConfigureMiddleware
     {
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsConfigureMiddleware, TMiddleware>());
         return services;
     }
 
-    private static IServiceCollection RegisterParseOptionsMiddleware<TMiddleware>
+    private static IServiceCollection RegisterParseOptionsMiddleware<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TMiddleware>
         (this IServiceCollection services) where TMiddleware : class, IParseOptionsMiddleware
     {
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IParseOptionsMiddleware, TMiddleware>());
         return services;
     }
 
-    private static IServiceCollection RegisterScriptTransformer<TTransformer>(this IServiceCollection services)
-        where TTransformer : class, IScriptTransformer
+    private static IServiceCollection RegisterScriptTransformer<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TTransformer>
+        (this IServiceCollection services) where TTransformer : class, IScriptTransformer
     {
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IScriptTransformer, TTransformer>());
         return services;
@@ -203,7 +205,7 @@ public static class Helper
                                     return;
                                 }
 
-                                var output = JsonSerializer.Serialize(profile, JsonHelper.WriteIntendedUnsafeEncoderOptions);
+                                var output = JsonSerializer.Serialize(profile, AppSerializationContext.Default.ConfigProfile);
                                 context.Console.WriteLine(output);
                             }
                         };
@@ -402,3 +404,8 @@ public static class Helper
     }
 }
 
+[JsonSerializable(typeof(InfoModel), GenerationMode = JsonSourceGenerationMode.Serialization)]
+[JsonSerializable(typeof(ExecOptions), GenerationMode = JsonSourceGenerationMode.Serialization)]
+[JsonSerializable(typeof(ConfigProfile))]
+[JsonSourceGenerationOptions(WriteIndented = true, PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, PropertyNameCaseInsensitive = true)]
+public sealed partial class AppSerializationContext : JsonSerializerContext;

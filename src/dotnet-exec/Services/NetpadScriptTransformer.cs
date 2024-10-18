@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using ReferenceResolver;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Exec.Services;
 
@@ -25,7 +26,7 @@ internal sealed class NetpadScriptTransformer : IScriptTransformer
             throw new InvalidOperationException("The script is missing #Code identifier.");
 
         var scriptOptions = string.Join("", scriptLines[1..codeIndex]);
-        var scriptData = JsonSerializer.Deserialize<ScriptData>(scriptOptions, JsonHelper.WebOptions);
+        var scriptData = JsonSerializer.Deserialize<ScriptData>(scriptOptions, NetPadScriptSerializationContext.Default.ScriptData);
         ArgumentNullException.ThrowIfNull(scriptData?.Config);
 
         context.IncludeWebReferences = scriptData.Config.UseAspNet;
@@ -54,13 +55,13 @@ internal sealed class NetpadScriptTransformer : IScriptTransformer
 }
 
 [ExcludeFromCodeCoverage]
-file sealed class ScriptData(ScriptConfigData config)
+internal sealed class ScriptData(ScriptConfigData config)
 {
     public ScriptConfigData Config { get; } = config;
 }
 
 [ExcludeFromCodeCoverage]
-file sealed class ScriptConfigData
+internal sealed class ScriptConfigData
 {
     public string? Kind { get; set; }
     public string? TargetFrameworkVersion { get; set; }
@@ -71,8 +72,14 @@ file sealed class ScriptConfigData
 }
 
 [ExcludeFromCodeCoverage]
-file sealed class PackageReference(string packageId, string version)
+internal sealed class PackageReference(string packageId, string version)
 {
     public string PackageId { get; } = packageId;
     public string Version { get; } = version;
 }
+
+[JsonSerializable(typeof(ScriptData))]
+[JsonSerializable(typeof(ScriptConfigData))]
+[JsonSerializable(typeof(PackageReference))]
+[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+internal sealed partial class NetPadScriptSerializationContext : JsonSerializerContext;

@@ -14,18 +14,25 @@ public abstract class CodeExecutor(ILogger logger) : ICodeExecutor
     {
         if (options.DebugEnabled)
         {
+#pragma warning disable IL2026
             var assembliesString = assembly.GetReferencedAssemblies()
-              .Select(x => x.FullName)
+#pragma warning restore IL2026
+                .Select(x => x.FullName)
               .StringJoin("; ");
             Logger.LogDebug("ReferencedAssemblies: {assemblies}", assembliesString);
         }
         var entryMethod = assembly.EntryPoint;
         if (entryMethod is null)
         {
+#pragma warning disable IL2026
             var types = assembly.GetTypes();
+#pragma warning restore IL2026
             var staticMethods = types.Select(x =>
+#pragma warning disable IL2070
                     x.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
-                .SelectMany(x => x);
+#pragma warning restore IL2070
+                .SelectMany(x => x)
+                ;
             if (options.StartupType.IsNotNullOrEmpty())
             {
                 staticMethods = staticMethods.Where(x => x.DeclaringType?.FullName == options.StartupType);
@@ -98,7 +105,9 @@ public sealed class DefaultCodeExecutor(IRefResolver referenceResolver, ILogger 
         var references = await referenceResolver.ResolveReferences(options, false);
         using var context = new CustomLoadContext(references);
         using var scope = context.EnterContextualReflection();
+#pragma warning disable IL2026
         var assembly = context.LoadFromStream(compileResult.Stream);
+#pragma warning restore IL2026
         var result = await ExecuteAssembly(assembly, options);
         return result;
     }

@@ -36,7 +36,7 @@ public sealed class ConfigProfileManager : IConfigProfileManager
 
         var profilePath = Path.Combine(ProfileFolder, $"{profileName}.json");
         await using var fs = File.OpenWrite(profilePath);
-        await JsonSerializer.SerializeAsync(fs, profile, JsonHelper.WriteIntendedUnsafeEncoderOptions);
+        await JsonSerializer.SerializeAsync(fs, profile, AppSerializationContext.Default.ConfigProfile);
     }
 
     public Task DeleteProfile(string profileName)
@@ -59,7 +59,7 @@ public sealed class ConfigProfileManager : IConfigProfileManager
         if (!File.Exists(profilePath)) return null;
 
         await using var fs = File.OpenRead(profilePath);
-        return await JsonSerializer.DeserializeAsync<ConfigProfile>(fs);
+        return await JsonSerializer.DeserializeAsync<ConfigProfile>(fs, AppSerializationContext.Default.ConfigProfile);
     }
 
     public Task<string[]> ListProfiles()

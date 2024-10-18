@@ -43,7 +43,7 @@ public sealed class CommandHandler(ILogger logger,
         options.CancellationToken = context.GetCancellationToken();
         if (options.DebugEnabled)
         {
-            logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, JsonHelper.WriteIntendedUnsafeEncoderOptions));
+            logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, AppSerializationContext.Default.ExecOptions));
         }
 
         return await Execute(options);

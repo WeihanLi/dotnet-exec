@@ -7,7 +7,7 @@ using System.Text.Json;
 if (args is ["--info"] or ["info"])
 {
     var info = new InfoModel();
-    Console.WriteLine(JsonSerializer.Serialize(info, JsonHelper.WriteIntendedUnsafeEncoderOptions));
+    Console.WriteLine(JsonSerializer.Serialize(info, AppSerializationContext.Default.InfoModel));
     return 0;
 }
 

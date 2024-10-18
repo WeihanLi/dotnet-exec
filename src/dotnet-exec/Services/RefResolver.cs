@@ -31,6 +31,10 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
         async Task<string[]> ResolveReferencesInternal()
         {
             var frameworkReferencesTask = ResolveFrameworkReferences(options, compilation);
+            if (options.IncludeWideReferences)
+            {
+                options.References.Add(new NuGetReference("WeihanLi.Common").ReferenceWithSchema());
+            }
             var additionalReferencesTask =
                 ResolveAdditionalReferences(options.TargetFramework, options.References, options.CancellationToken);
             var references = await Task.WhenAll(frameworkReferencesTask, additionalReferencesTask);
@@ -124,25 +128,6 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
                 return runtimeReferences;
             })
             .WhenAll();
-        if (options.IncludeWideReferences)
-        {
-            return frameworkReferences.Append(
-                [
-                    typeof(Microsoft.Extensions.Configuration.IConfiguration).Assembly.Location,
-                    typeof(Microsoft.Extensions.Configuration.ConfigurationManager).Assembly.Location,
-                    typeof(ServiceCollection).Assembly.Location,
-                    typeof(ServiceProvider).Assembly.Location,
-                    typeof(ILoggerFactory).Assembly.Location,
-                    typeof(LoggerFactory).Assembly.Location,
-                    typeof(Microsoft.Extensions.Options.Options).Assembly.Location,
-                    typeof(Microsoft.Extensions.Primitives.ChangeToken).Assembly.Location,
-                    typeof(Newtonsoft.Json.JsonConvert).Assembly.Location,
-                    typeof(DependencyResolver).Assembly.Location,
-                ])
-                .SelectMany(x => x)
-                .Distinct()
-                .ToArray();
-        }
         return frameworkReferences.Flatten().Distinct().ToArray();
     }
 

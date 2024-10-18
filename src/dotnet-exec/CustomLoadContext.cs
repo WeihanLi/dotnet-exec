@@ -37,14 +37,16 @@ public sealed class CustomLoadContext : AssemblyLoadContext, IAnalyzerAssemblyLo
             && _assemblyPaths.TryGetValue(assemblyName.Name, out var assemblyPath)
             )
         {
-            return LoadFromAssemblyPath(assemblyPath);
+            return LoadFromPath(assemblyPath);
         }
         return null;
     }
 
     public Assembly LoadFromPath(string fullPath)
     {
+#pragma warning disable IL2026
         return LoadFromAssemblyPath(fullPath);
+#pragma warning restore IL2026
     }
 
     public void AddDependencyLocation(string fullPath)
