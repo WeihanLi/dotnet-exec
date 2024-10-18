@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ReferenceResolver;
 
@@ -25,7 +26,8 @@ public static class DependencyInjectionExtensions
         return serviceCollection;
     }
 
-    public static IServiceCollection TryAddReferenceResolver<TResolver>(this IServiceCollection serviceCollection)
+    public static IServiceCollection TryAddReferenceResolver<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TResolver>
+        (this IServiceCollection serviceCollection)
         where TResolver : class, IReferenceResolver
     {
         ArgumentNullException.ThrowIfNull(serviceCollection);

@@ -9,16 +9,11 @@ using System.Reflection;
 
 namespace ReferenceResolver;
 
-public sealed class ReferenceResolverFactory : IReferenceResolverFactory
+public sealed class ReferenceResolverFactory(IServiceProvider? serviceProvider) : IReferenceResolverFactory
 {
     private static readonly char[] ReferenceSchemaSeparator = [':'];
 
-    private readonly IServiceProvider _serviceProvider;
-
-    public ReferenceResolverFactory(IServiceProvider? serviceProvider)
-    {
-        _serviceProvider = serviceProvider ?? DependencyResolver.Current;
-    }
+    private readonly IServiceProvider _serviceProvider = serviceProvider ?? DependencyResolver.Current;
 
     public static IReference ParseReference(string referenceWithSchema)
     {
@@ -38,12 +33,12 @@ public sealed class ReferenceResolverFactory : IReferenceResolverFactory
     {
         return referenceType switch
         {
-            ReferenceType.LocalFile => _serviceProvider.GetServiceOrCreateInstance<FileReferenceResolver>(),
-            ReferenceType.LocalFolder => _serviceProvider.GetServiceOrCreateInstance<FolderReferenceResolver>(),
+            ReferenceType.LocalFile => ActivatorUtilities.GetServiceOrCreateInstance<FileReferenceResolver>(_serviceProvider),
+            ReferenceType.LocalFolder => ActivatorUtilities.GetServiceOrCreateInstance<FolderReferenceResolver>(_serviceProvider),
             ReferenceType.NuGetPackage => _serviceProvider.GetService<NuGetReferenceResolver>() ?? new NuGetReferenceResolver(new NuGetHelper(NullLoggerFactory.Instance)),
             ReferenceType.FrameworkReference =>
-                _serviceProvider.GetServiceOrCreateInstance<FrameworkReferenceResolver>(),
-            ReferenceType.ProjectReference => _serviceProvider.GetServiceOrCreateInstance<ProjectReferenceResolver>(),
+                ActivatorUtilities.GetServiceOrCreateInstance<FrameworkReferenceResolver>(_serviceProvider),
+            ReferenceType.ProjectReference => ActivatorUtilities.GetServiceOrCreateInstance<ProjectReferenceResolver>(_serviceProvider),
             _ => throw new ArgumentOutOfRangeException(nameof(referenceType))
         };
     }
