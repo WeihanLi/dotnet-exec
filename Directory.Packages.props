@@ -2,7 +2,7 @@
   <PropertyGroup>
     <!-- Enable central package management -->
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <RoslynVersion>4.13.0-1.24505.1</RoslynVersion>
+    <RoslynVersion>4.13.0-1.24524.1</RoslynVersion>
     <!-- https://learn.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1901-nu1904 -->
     <NuGetAudit>true</NuGetAudit>
     <!-- https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages -->
@@ -24,7 +24,7 @@
     <PackageVersion Include="FluentAssertions" Version="6.6.0" />
     <PackageVersion Include="xunit" Version="2.9.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="9.4.0" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="9.5.0" />
     <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="9.0.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
   </ItemGroup>
