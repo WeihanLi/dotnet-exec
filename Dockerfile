@@ -18,8 +18,12 @@ RUN dotnet publish -f net9.0 -a $TARGETARCH -o /app/out/
 
 FROM mcr.microsoft.com/dotnet/${RuntimeImageRepo}:9.0-alpine AS final
 ARG WebReferenceEnabled=false
-LABEL Maintainer="WeihanLi"
-LABEL Repository="https://github.com/WeihanLi/dotnet-exec"
+# https://github.com/opencontainers/image-spec/blob/main/annotations.md
+LABEL org.opencontainers.image.authors="WeihanLi"
+LABEL org.opencontainers.image.source="https://github.com/WeihanLi/dotnet-exec"
+LABEL org.opencontainers.image.title="dotnet-exec"
+LABEL org.opencontainers.image.description="dotnet-exec, dotnet run without project file"
+
 ENV DOTNET_EXEC_WEB_REF_ENABLED=${WebReferenceEnabled}
 WORKDIR /app
 COPY --from=build-env /app/out/ ./
