@@ -10,6 +10,7 @@
     <Description>`dotnet-exec` is a command-line tool for excuting C# program with custom entry point</Description>
     <PackageProjectUrl>https://github.com/WeihanLi/dotnet-exec</PackageProjectUrl>
     <IncludeSymbols>false</IncludeSymbols>
+    <RoslynVersion>4.13.0-2.24566.1</RoslynVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
@@ -24,9 +25,9 @@
     <Using Include="System.CommandLine.Parsing" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" VersionOverride="$(RoslynVersion)" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" VersionOverride="$(RoslynVersion)" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" VersionOverride="$(RoslynVersion)" />
     <PackageReference Include="System.CommandLine" />
     <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="WeihanLi.Common" />
