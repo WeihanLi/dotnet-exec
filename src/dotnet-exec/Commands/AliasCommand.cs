@@ -10,6 +10,8 @@ internal sealed class AliasCommand : Command
     public AliasCommand() : base("alias", "Alias management")
     {
         AddCommand(new AliasListCommand());
+        AddCommand(new AliasSetCommand());
+        AddCommand(new AliasUnsetCommand());
     }
 }
 
@@ -17,7 +19,6 @@ file sealed class AliasListCommand : Command
 {
     public AliasListCommand() : base("list", "List all alias config")
     {
-        AddArgument(AliasCommand.AliasNameArg);
     }
 }
 

@@ -234,15 +234,14 @@ public static class Helper
                             "set" => async (InvocationContext context) =>
                             {
                                 var aliasName = context.ParseResult.GetValueForArgument(AliasCommand.AliasNameArg);
-
-                                if (IsValidAliasName(aliasName))
+                                if (!IsValidAliasName(aliasName))
                                 {
-                                    Console.WriteLine("Invalid alias name, alias name max length is  64 and only allow characters,numbers and `-`/`_`/`:`/`.` ");
+                                    Console.WriteLine("Invalid alias name, alias name max length is 64 and only allow characters,numbers and `-`/`_`/`:`/`.` ");
                                     return;
                                 }
 
                                 var aliasValue = context.ParseResult.GetValueForArgument(AliasCommand.AliasValueArg);
-                                if (!appConfiguration.Aliases.TryGetValue(aliasName, out var currentValue) || currentValue == aliasValue)
+                                if (appConfiguration.Aliases.TryGetValue(aliasName, out var currentValue) && currentValue == aliasValue)
                                 {
                                     return;
                                 }
@@ -268,6 +267,7 @@ public static class Helper
                                 return Task.CompletedTask;
                             }
                         };
+                        aliasSubCommand.SetHandler(aliasCommandHandler);
                     }
                     break;
             }

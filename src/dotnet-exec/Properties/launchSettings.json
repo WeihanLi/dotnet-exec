@@ -68,7 +68,22 @@
     "alias-test": {
       "commandName": "Project",
       "targetFramework": "net8.0",
-      "commandLineArgs": "new-guid"
+      "commandLineArgs": "date"
+    },
+    "alias-list": {
+      "commandName": "Project",
+      "targetFramework": "net8.0",
+      "commandLineArgs": "alias list"
+    },
+    "alias-set": {
+      "commandName": "Project",
+      "targetFramework": "net8.0",
+      "commandLineArgs": "alias set guid \"Guid.NewGuid()\""
+    },
+    "alias-unset": {
+      "commandName": "Project",
+      "targetFramework": "net8.0",
+      "commandLineArgs": "alias unset guid"
     }
   }
 }

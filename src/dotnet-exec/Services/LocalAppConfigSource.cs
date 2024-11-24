@@ -40,8 +40,9 @@ internal sealed class LocalAppConfigSource : IAppConfigSource
             Helper.EnsureFolderCreated(folder);
         }
 
-        using var fs = File.OpenWrite(DefaultConfigPath);
-        await JsonSerializer.SerializeAsync(fs, appConfig, JsonHelper.UnsafeEncoderOptions);
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(appConfig, JsonHelper.UnsafeEncoderOptions);
+        await File.WriteAllBytesAsync(DefaultConfigPath, bytes);
+
         return true;
     }
 }

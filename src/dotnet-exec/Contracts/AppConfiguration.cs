@@ -9,7 +9,7 @@ public sealed class AppConfiguration
     // theme settings ...
     public Dictionary<string, string> Aliases { get; set; } = new()
     {
-        { "new-guid", "System.Guid.NewGuid()" },
+        { "guid", "System.Guid.NewGuid()" },
         { "now", "System.DateTimeOffset.Now" },
         { "date", "System.DateTimeOffset.Now" },
     };
