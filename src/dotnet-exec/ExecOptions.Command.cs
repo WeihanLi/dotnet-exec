@@ -19,10 +19,6 @@ public sealed partial class ExecOptions
       "net9.0"
 #elif NET8_0
       "net8.0"
-#elif NET7_0
-      "net7.0"
-#else
-      "net6.0"
 #endif
         ;
 
