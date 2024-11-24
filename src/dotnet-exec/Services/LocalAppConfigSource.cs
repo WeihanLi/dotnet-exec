@@ -10,7 +10,7 @@ namespace Exec.Services;
 [ExcludeFromCodeCoverage]
 internal sealed class LocalAppConfigSource : IAppConfigSource
 {
-    private static readonly string DefaultConfigPath = Path.Combine(
+    private static readonly string LegacyConfigPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         ".dotnet",
         "tools",
@@ -18,17 +18,28 @@ internal sealed class LocalAppConfigSource : IAppConfigSource
         $"{Helper.ApplicationName}.json"
     );
 
+    private static readonly string DefaultConfigPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+        ".dotnet",
+        "tools",
+        ".config",
+        Helper.ApplicationName,
+        "config.json"
+    );
+
     public async Task<AppConfiguration> GetConfigAsync()
     {
         if (!File.Exists(DefaultConfigPath))
         {
+            if (File.Exists(LegacyConfigPath))
+            {
+                return await GetAppConfigurationFromFile(LegacyConfigPath);
+            }
+
             return AppConfiguration.Default;
         }
 
-        using var fs = File.OpenRead(DefaultConfigPath);
-        var appConfig = await JsonSerializer.DeserializeAsync<AppConfiguration>(fs, JsonHelper.UnsafeEncoderOptions);
-        ArgumentNullException.ThrowIfNull(appConfig);
-        return appConfig;
+        return await GetAppConfigurationFromFile(DefaultConfigPath);
     }
 
     public async Task<bool> SaveConfigAsync(AppConfiguration appConfig)
@@ -44,5 +55,13 @@ internal sealed class LocalAppConfigSource : IAppConfigSource
         await File.WriteAllBytesAsync(DefaultConfigPath, bytes);
 
         return true;
+    }
+
+    private static async Task<AppConfiguration> GetAppConfigurationFromFile(string filePath)
+    {
+        using var fs = File.OpenRead(filePath);
+        var appConfig = await JsonSerializer.DeserializeAsync<AppConfiguration>(fs, JsonHelper.UnsafeEncoderOptions);
+        ArgumentNullException.ThrowIfNull(appConfig);
+        return appConfig;
     }
 }
