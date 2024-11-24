@@ -3,14 +3,9 @@
 
 namespace ReferenceResolver;
 
-public sealed class NuGetReferenceResolver : IReferenceResolver
+public sealed class NuGetReferenceResolver(INuGetHelper nugetHelper) : IReferenceResolver
 {
-    private readonly INuGetHelper _nugetHelper;
-
-    public NuGetReferenceResolver(INuGetHelper nugetHelper)
-    {
-        _nugetHelper = nugetHelper;
-    }
+    private readonly INuGetHelper _nugetHelper = nugetHelper;
 
     public ReferenceType ReferenceType => ReferenceType.NuGetPackage;
 

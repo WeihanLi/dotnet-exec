@@ -8,15 +8,10 @@ using Xunit.Abstractions;
 
 namespace UnitTest;
 
-public sealed class CodeExecutorTest
+public sealed class CodeExecutorTest(ITestOutputHelper outputHelper)
 {
-    private readonly ITestOutputHelper _outputHelper;
+    private readonly ITestOutputHelper _outputHelper = outputHelper;
     private readonly SimpleCodeCompiler _compiler = SimpleCodeCompilerTest.GetSimpleCodeCompiler();
-
-    public CodeExecutorTest(ITestOutputHelper outputHelper)
-    {
-        _outputHelper = outputHelper;
-    }
 
     [Theory]
     [InlineData("Console.WriteLine(123);")]

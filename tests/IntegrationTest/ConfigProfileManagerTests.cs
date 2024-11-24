@@ -5,14 +5,9 @@ using Exec.Contracts;
 
 namespace IntegrationTest;
 
-public class ConfigProfileManagerTests
+public class ConfigProfileManagerTests(IConfigProfileManager configProfileManager)
 {
-    private readonly IConfigProfileManager _configProfileManager;
-
-    public ConfigProfileManagerTests(IConfigProfileManager configProfileManager)
-    {
-        _configProfileManager = configProfileManager;
-    }
+    private readonly IConfigProfileManager _configProfileManager = configProfileManager;
 
     [Fact]
     public async Task ProfileOperation()

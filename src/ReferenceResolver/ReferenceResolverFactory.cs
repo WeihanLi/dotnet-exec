@@ -9,16 +9,11 @@ using System.Reflection;
 
 namespace ReferenceResolver;
 
-public sealed class ReferenceResolverFactory : IReferenceResolverFactory
+public sealed class ReferenceResolverFactory(IServiceProvider? serviceProvider) : IReferenceResolverFactory
 {
     private static readonly char[] ReferenceSchemaSeparator = [':'];
 
-    private readonly IServiceProvider _serviceProvider;
-
-    public ReferenceResolverFactory(IServiceProvider? serviceProvider)
-    {
-        _serviceProvider = serviceProvider ?? DependencyResolver.Current;
-    }
+    private readonly IServiceProvider _serviceProvider = serviceProvider ?? DependencyResolver.Current;
 
     public static IReference ParseReference(string referenceWithSchema)
     {

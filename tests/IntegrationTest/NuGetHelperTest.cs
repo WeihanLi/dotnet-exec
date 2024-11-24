@@ -67,7 +67,7 @@ public class NuGetHelperTest
         var packageId = "WeihanLi.Common";
         var result = await NuGetHelper.GetLatestPackageVersion(packageId);
         Assert.NotNull(result);
-        Assert.True(result >= new NuGetVersion("1.0.61"));
+        Assert.True(result >= new NuGetVersion("1.0.72"));
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class NuGetHelperTest
         var result = await NuGetHelper.GetPackageVersions(packageId).ToArrayAsync();
         Assert.NotNull(result);
         Assert.NotEmpty(result);
-        Assert.Contains(result, v => v.Version is { Major: 1, Minor: 0, Patch: 61 });
+        Assert.Contains(result, v => v.Version is { Major: 1, Minor: 0, Patch: 72 });
     }
 
     [Fact]

@@ -4,12 +4,7 @@
 namespace ReferenceResolver;
 
 [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-internal sealed class ReferenceSchemaAttribute : Attribute
+internal sealed class ReferenceSchemaAttribute(string schema) : Attribute
 {
-    public string Schema { get; }
-
-    public ReferenceSchemaAttribute(string schema)
-    {
-        Schema = schema;
-    }
+    public string Schema { get; } = schema;
 }

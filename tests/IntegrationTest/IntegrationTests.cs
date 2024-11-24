@@ -8,25 +8,17 @@ using Xunit.Abstractions;
 
 namespace IntegrationTest;
 
-public class IntegrationTests
-{
-    private readonly CommandHandler _handler;
-    private readonly ICompilerFactory _compilerFactory;
-    private readonly IExecutorFactory _executorFactory;
-    private readonly ITestOutputHelper _outputHelper;
-
-    public IntegrationTests(
-        CommandHandler handler,
-        ICompilerFactory compilerFactory,
-        IExecutorFactory executorFactory,
-        ITestOutputHelper outputHelper
+public class IntegrationTests(
+    CommandHandler handler,
+    ICompilerFactory compilerFactory,
+    IExecutorFactory executorFactory,
+    ITestOutputHelper outputHelper
         )
-    {
-        _handler = handler;
-        _compilerFactory = compilerFactory;
-        _executorFactory = executorFactory;
-        _outputHelper = outputHelper;
-    }
+{
+    private readonly CommandHandler _handler = handler;
+    private readonly ICompilerFactory _compilerFactory = compilerFactory;
+    private readonly IExecutorFactory _executorFactory = executorFactory;
+    private readonly ITestOutputHelper _outputHelper = outputHelper;
 
     [Theory]
     [InlineData("ConfigurationManagerSample")]

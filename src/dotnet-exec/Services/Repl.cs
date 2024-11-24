@@ -41,7 +41,7 @@ internal sealed class Repl
         Console.WriteLine("""
             REPL started, Enter #q or #exit to exit
                 #cls or #clear to clear screen
-                #r to reference dll or package, for example: "#r nuget:CsvHelper", "#r nuget: CsvHelper, 30.0.0"
+                #r to reference dll or package, for example: "#r nuget:CsvHelper", "#r nuget: CsvHelper, 30.0.0", "#r /a/b/c.dll"
             """);
         ScriptState? state = null;
         while (true)

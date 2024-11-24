@@ -10,9 +10,7 @@ public sealed class AppConfiguration
     public Dictionary<string, string> Aliases { get; set; } = new()
     {
         { "new-guid", "System.Guid.NewGuid()" },
-#if NET8_0_OR_GREATER
-        { "now", "System.TimeProvider.System.GetLocalNow()" },
-        { "date", "System.TimeProvider.System.GetLocalNow()" },
-#endif
+        { "now", "System.DateTimeOffset.Now" },
+        { "date", "System.DateTimeOffset.Now" },
     };
 }
