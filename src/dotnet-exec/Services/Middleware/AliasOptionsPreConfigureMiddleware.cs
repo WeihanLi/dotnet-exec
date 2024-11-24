@@ -15,6 +15,6 @@ internal sealed class AliasOptionsPreConfigureMiddleware
             context.Script = aliasValue;
             logger.LogDebug("Script replaced to alias value : {AliasValue}", aliasValue);
         }
-        return Task.CompletedTask;
+        return next(context);
     }
 }
