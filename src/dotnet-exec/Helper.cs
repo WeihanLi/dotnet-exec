@@ -4,7 +4,7 @@
 using Exec.Commands;
 using Exec.Contracts;
 using Exec.Services;
-using Exec.Services.Middlewares;
+using Exec.Services.Middleware;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -80,6 +80,7 @@ public static class Helper
         services
             .RegisterScriptTransformer<LinqpadScriptTransformer>()
             .RegisterScriptTransformer<NetpadScriptTransformer>()
+            .RegisterOptionsPreConfigureMiddleware<AliasOptionsPreConfigureMiddleware>()
             .RegisterOptionsPreConfigureMiddleware<ThirdPartyScriptOptionsPreConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<CleanupOptionsConfigureMiddleware>()
@@ -95,6 +96,10 @@ public static class Helper
         services.AddSingleton<IParseOptionsPipeline, ParseOptionsPipeline>();
         // register compilation options configure pipeline
         services.AddSingleton<ICompilationOptionsPipeline, CompilationOptionsPipeline>();
+        // register app configuration
+        services.AddSingleton<IAppConfigSource, LocalAppConfigSource>();
+        services.AddSingleton(sp => sp.GetRequiredService<IAppConfigSource>().GetConfigAsync().ConfigureAwait(false).GetAwaiter().GetResult());
+
         return services;
     }
 
@@ -133,6 +138,8 @@ public static class Helper
         ArgumentNullException.ThrowIfNull(command);
         command.Handler = serviceProvider.GetRequiredService<ICommandHandler>();
         var profileManager = serviceProvider.GetRequiredService<IConfigProfileManager>();
+        var appConfiguration = serviceProvider.GetRequiredService<AppConfiguration>();
+        var appConfigSource = serviceProvider.GetRequiredService<IAppConfigSource>();
 
         foreach (var subcommand in command.Subcommands)
         {
@@ -152,8 +159,8 @@ public static class Helper
 
                                 var profile = new ConfigProfile()
                                 {
-                                    Usings = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.UsingsOption) ?? Enumerable.Empty<string>()),
-                                    References = new HashSet<string>(context.ParseResult.GetValueForOption(ExecOptions.ReferencesOption) ?? Enumerable.Empty<string>()),
+                                    Usings = [.. context.ParseResult.GetValueForOption(ExecOptions.UsingsOption) ?? Enumerable.Empty<string>()],
+                                    References = [.. context.ParseResult.GetValueForOption(ExecOptions.ReferencesOption) ?? Enumerable.Empty<string>()],
                                     IncludeWideReferences = context.ParseResult.GetValueForOption(ExecOptions.WideReferencesOption),
                                     IncludeWebReferences = context.ParseResult.HasOption(ExecOptions.WebReferencesOption),
                                     EntryPoint = context.ParseResult.GetValueForOption(ExecOptions.EntryPointOption),
@@ -208,6 +215,44 @@ public static class Helper
                             }
                         };
                         configSubcommand.SetHandler(profileCommandHandler);
+                    }
+                    break;
+
+                case AliasCommand aliasCommand:
+                    foreach (var aliasSubCommand in aliasCommand.Subcommands)
+                    {
+                        Func<InvocationContext, Task> aliasCommandHandler = aliasSubCommand.Name switch
+                        {
+                            "set" => async (InvocationContext context) =>
+                            {
+                                var aliasName = context.ParseResult.GetValueForArgument(AliasCommand.AliasNameArg);
+                                var aliasValue = context.ParseResult.GetValueForArgument(AliasCommand.AliasValueArg);
+                                if (!appConfiguration.Aliases.TryGetValue(aliasName, out var currentValue) || currentValue == aliasValue)
+                                {
+                                    return;
+                                }
+
+                                appConfiguration.Aliases[aliasName] = aliasValue;
+                                await appConfigSource.SaveConfigAsync(appConfiguration);
+                            }
+                            ,
+                            "unset" => async (InvocationContext context) =>
+                            {
+                                var aliasName = context.ParseResult.GetValueForArgument(AliasCommand.AliasNameArg);
+                                if (!appConfiguration.Aliases.Remove(aliasName))
+                                {
+                                    return;
+                                }
+
+                                await appConfigSource.SaveConfigAsync(appConfiguration);
+                            }
+                            ,
+                            _ => _ =>
+                            {
+                                Console.WriteLine(JsonSerializer.Serialize(appConfiguration.Aliases, JsonHelper.WriteIntendedUnsafeEncoderOptions));
+                                return Task.CompletedTask;
+                            }
+                        };
                     }
                     break;
             }
@@ -399,6 +444,24 @@ public static class Helper
 
         typedReference = ReferenceResolverFactory.ParseReference(reference);
         return typedReference.ReferenceWithSchema();
+    }
+
+    public static void EnsureFolderCreated(string folderPath)
+    {
+        if (Directory.Exists(folderPath)) return;
+
+        var parent = Directory.GetParent(folderPath);
+        if (parent is null || parent.Exists) return;
+
+        // ensure path created
+        EnsureFolderCreated(parent.FullName);
+
+        // create parent folder if necessary
+        if (!Directory.Exists(parent.FullName))
+            Directory.CreateDirectory(parent.FullName);
+
+        // create folder
+        Directory.CreateDirectory(folderPath);
     }
 }
 

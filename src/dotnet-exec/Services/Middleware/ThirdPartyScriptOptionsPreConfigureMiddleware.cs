@@ -4,7 +4,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace Exec.Services.Middlewares;
+namespace Exec.Services.Middleware;
 
 [ExcludeFromCodeCoverage]
 internal sealed class ThirdPartyScriptOptionsPreConfigureMiddleware

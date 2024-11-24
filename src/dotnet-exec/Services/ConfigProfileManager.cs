@@ -21,7 +21,7 @@ public sealed class ConfigProfileManager : IConfigProfileManager
     {
         try
         {
-            EnsureFolderCreated(ProfileFolder);
+            Helper.EnsureFolderCreated(ProfileFolder);
         }
         catch (Exception e)
         {
@@ -71,23 +71,5 @@ public sealed class ConfigProfileManager : IConfigProfileManager
             .WhereNotNull()
             .ToArray();
         return profileNames.WrapTask();
-    }
-
-    private static void EnsureFolderCreated(string folderPath)
-    {
-        if (Directory.Exists(folderPath)) return;
-
-        var parent = Directory.GetParent(folderPath);
-        if (parent is null || parent.Exists) return;
-
-        // ensure path created
-        EnsureFolderCreated(parent.FullName);
-
-        // create parent folder if necessary
-        if (!Directory.Exists(parent.FullName))
-            Directory.CreateDirectory(parent.FullName);
-
-        // create folder
-        Directory.CreateDirectory(folderPath);
     }
 }

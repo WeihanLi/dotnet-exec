@@ -3,15 +3,15 @@
 
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Exec.Services.Middlewares;
+namespace Exec.Services.Middleware;
 
-public sealed class FeaturesParserOptionsMiddleware : IParseOptionsMiddleware
+public sealed class PreprocessorSymbolNamesParserOptionsMiddleware : IParseOptionsMiddleware
 {
     public CSharpParseOptions Configure(CSharpParseOptions parseOptions, ExecOptions options)
     {
-        return options.ParserFeatures.IsNullOrEmpty()
-                ? parseOptions
-                : parseOptions.WithFeatures(options.ParserFeatures)
+        return options.ParserPreprocessorSymbolNames.IsNullOrEmpty()
+            ? parseOptions
+            : parseOptions.WithPreprocessorSymbols(options.ParserPreprocessorSymbolNames)
             ;
     }
 }

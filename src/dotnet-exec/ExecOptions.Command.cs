@@ -210,7 +210,8 @@ public sealed partial class ExecOptions
 
     public static Command GetCommand()
     {
-        var command = new Command(Helper.ApplicationName, "dotnet-exec, execute C# script/program from command line");
+        var command = new Command(Helper.ApplicationName, "dotnet-exec, execute raw C# script/program from the command line");
+
         // arguments
         foreach (var argument in GetArguments())
         {
@@ -221,8 +222,11 @@ public sealed partial class ExecOptions
         {
             command.AddOption(option);
         }
+
         // add sub commands
         command.AddCommand(new ConfigProfileCommand());
+        command.AddCommand(new AliasCommand());
+
         return command;
     }
 

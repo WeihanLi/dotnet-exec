@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace Exec.Services.Middlewares;
+namespace Exec.Services.Middleware;
 
 internal sealed class ProjectFileOptionsConfigureMiddleware
     (IUriTransformer uriTransformer, ILogger logger) : IOptionsConfigureMiddleware

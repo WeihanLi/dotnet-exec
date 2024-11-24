@@ -64,6 +64,11 @@
       "commandName": "Project",
       "targetFramework": "net8.0",
       "commandLineArgs": ""
+    },
+    "alias-test": {
+      "commandName": "Project",
+      "targetFramework": "net8.0",
+      "commandLineArgs": "new-guid"
     }
   }
 }
