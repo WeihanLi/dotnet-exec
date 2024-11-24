@@ -19,6 +19,7 @@ file sealed class AliasListCommand : Command
 {
     public AliasListCommand() : base("list", "List all alias config")
     {
+        AddAlias("ls");
     }
 }
 
