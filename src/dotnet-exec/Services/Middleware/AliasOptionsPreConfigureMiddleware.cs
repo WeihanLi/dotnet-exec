@@ -10,7 +10,9 @@ internal sealed class AliasOptionsPreConfigureMiddleware
 {
     public Task InvokeAsync(ExecOptions context, Func<ExecOptions, Task> next)
     {
-        if (appConfiguration.Aliases.TryGetValue(context.Script, out var aliasValue))
+        if (Helper.IsValidAliasName(context.Script)
+            && appConfiguration.Aliases.TryGetValue(context.Script, out var aliasValue)
+            )
         {
             context.Script = aliasValue;
             logger.LogDebug("Script replaced to alias value : {AliasValue}", aliasValue);

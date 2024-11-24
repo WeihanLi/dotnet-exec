@@ -6,6 +6,7 @@ internal sealed class AliasCommand : Command
 {
     internal static readonly Argument<string> AliasNameArg = new("aliasName", "Alias Name");
     internal static readonly Argument<string> AliasValueArg = new("aliasValue", "Alias Value");
+
     public AliasCommand() : base("alias", "Alias management")
     {
         AddCommand(new AliasListCommand());

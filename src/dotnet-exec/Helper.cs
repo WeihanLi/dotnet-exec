@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using WeihanLi.Common.Models;
 
 namespace Exec;
@@ -39,6 +40,13 @@ public static class Helper
 
     private const string EnableDebugEnvName = "DOTNET_EXEC_DEBUG_ENABLED";
     public const string EnableWebReferenceEnvName = "DOTNET_EXEC_WEB_REF_ENABLED";
+
+    private static readonly Regex AliasNameRegex = new(@"^\w+[\w\-:\.]*$");
+    public static bool IsValidAliasName(string aliasName)
+    {
+        return aliasName is { Length: > 0 and <= 64 } && AliasNameRegex.IsMatch(aliasName);
+    }
+
     public static bool DebugModelEnabled(string[] args)
     {
         if (args.Contains("--debug"))
@@ -226,6 +234,13 @@ public static class Helper
                             "set" => async (InvocationContext context) =>
                             {
                                 var aliasName = context.ParseResult.GetValueForArgument(AliasCommand.AliasNameArg);
+
+                                if (IsValidAliasName(aliasName))
+                                {
+                                    Console.WriteLine("Invalid alias name, alias name max length is  64 and only allow characters,numbers and `-`/`_`/`:`/`.` ");
+                                    return;
+                                }
+
                                 var aliasValue = context.ParseResult.GetValueForArgument(AliasCommand.AliasValueArg);
                                 if (!appConfiguration.Aliases.TryGetValue(aliasName, out var currentValue) || currentValue == aliasValue)
                                 {
