@@ -1,8 +1,9 @@
 # Release Notes
 
-## To Be Released
+## 0.24.0
 
-- update for .NET 9 RC 2 release
+- feat: alias support [#27](https://github.com/WeihanLi/dotnet-exec/issues/27)
+- feat: update for .NET 9 release
 
 ## 0.23.0
 
@@ -24,7 +25,7 @@
 
 - feature: respect `Environment.ExitCode`
 - feature: container image add back arm32 support, arm32 container issue fixed in .NET 9 preview 4
-- feature: support `GetSourceRepositories` on `INuGetHelper`, public `NuGetLoggerLoggingAdapter` 
+- feature: support `GetSourceRepositories` on `INuGetHelper`, public `NuGetLoggerLoggingAdapter`
 
 ## 0.19.0
 
