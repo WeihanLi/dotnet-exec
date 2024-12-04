@@ -10,7 +10,6 @@
     <Description>`dotnet-exec` is a command-line tool for excuting C# program with custom entry point</Description>
     <PackageProjectUrl>https://github.com/WeihanLi/dotnet-exec</PackageProjectUrl>
     <IncludeSymbols>false</IncludeSymbols>
-    <RoslynVersion>4.13.0-2.24573.1</RoslynVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
