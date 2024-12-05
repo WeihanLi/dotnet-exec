@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.Scripting;
 using ReferenceResolver;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Text;
 
 namespace Exec.Services;
 
@@ -113,7 +114,7 @@ internal sealed class Repl
 
             inputBuilder.AppendLine(input);
 
-            if (input.EndsWith(" \"))
+            if (input.EndsWith(" \\", StringComparison.Ordinal))
             {
                 continue;
             }
