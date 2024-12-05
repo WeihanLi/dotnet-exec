@@ -9,7 +9,7 @@
     <NuGetAudit>true</NuGetAudit>
     <!-- https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages -->
     <NuGetAuditMode>direct</NuGetAuditMode>
-    <NuGetAuditLevel>high</NuGetAuditLevel>
+    <!-- <NuGetAuditLevel>high</NuGetAuditLevel> -->
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
