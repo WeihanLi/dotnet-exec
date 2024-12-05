@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2022-2024 Weihan Li. All rights reserved.
+// Copyright (c) 2022-2024 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 using Microsoft.CodeAnalysis;
@@ -44,6 +44,7 @@ internal sealed class Repl
                 #r to reference dll or package, for example: "#r nuget:CsvHelper", "#r nuget: CsvHelper, 30.0.0", "#r /a/b/c.dll"
             """);
         ScriptState? state = null;
+        var inputBuilder = new StringBuilder();
         while (true)
         {
             Console.Write("> ");
@@ -110,15 +111,25 @@ internal sealed class Repl
                 continue;
             }
 
+            inputBuilder.AppendLine(input);
+
+            if (input.EndsWith(" \"))
+            {
+                continue;
+            }
+
+            var finalInput = inputBuilder.ToString();
+            inputBuilder.Clear();
+
             try
             {
                 if (state is null)
                 {
-                    state = await CSharpScript.RunAsync(input, scriptOptions);
+                    state = await CSharpScript.RunAsync(finalInput, scriptOptions);
                 }
                 else
                 {
-                    var anotherScriptState = await state.ContinueWithAsync(input, scriptOptions);
+                    var anotherScriptState = await state.ContinueWithAsync(finalInput, scriptOptions);
                     state = anotherScriptState;
                 }
                 if (state.ReturnValue is not null)
