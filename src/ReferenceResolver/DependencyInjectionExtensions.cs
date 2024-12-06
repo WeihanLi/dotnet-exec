@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ReferenceResolver;
 
@@ -13,24 +14,23 @@ public static class DependencyInjectionExtensions
         ArgumentNullException.ThrowIfNull(serviceCollection);
         serviceCollection.AddLogging();
         serviceCollection.TryAddSingleton<INuGetHelper, NuGetHelper>();
-        // reference resolver
+        // reference resolvers
         serviceCollection.TryAddSingleton<IReferenceResolverFactory, ReferenceResolverFactory>();
-        serviceCollection
-            .TryAddReferenceResolver<FileReferenceResolver>()
-            .TryAddReferenceResolver<FolderReferenceResolver>()
-            .TryAddReferenceResolver<FrameworkReferenceResolver>()
-            .TryAddReferenceResolver<NuGetReferenceResolver>()
-            .TryAddReferenceResolver<ProjectReferenceResolver>()
-            ;
+        serviceCollection.TryAddReferenceResolver<FileReferenceResolver>(ReferenceType.LocalFile);
+        serviceCollection.TryAddReferenceResolver<FolderReferenceResolver>(ReferenceType.LocalFolder);
+        serviceCollection.TryAddReferenceResolver<FrameworkReferenceResolver>(ReferenceType.FrameworkReference);
+        serviceCollection.TryAddReferenceResolver<ProjectReferenceResolver>(ReferenceType.ProjectReference);
+        serviceCollection.TryAddReferenceResolver<NuGetReferenceResolver>(ReferenceType.NuGetPackage);
         return serviceCollection;
     }
 
-    public static IServiceCollection TryAddReferenceResolver<TResolver>(this IServiceCollection serviceCollection)
+    private static IServiceCollection TryAddReferenceResolver
+        <[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TResolver>
+        (this IServiceCollection serviceCollection, ReferenceType referenceType)
         where TResolver : class, IReferenceResolver
     {
-        ArgumentNullException.ThrowIfNull(serviceCollection);
         serviceCollection.TryAddSingleton<TResolver>();
-        serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<IReferenceResolver, TResolver>());
+        serviceCollection.AddKeyedSingleton<IReferenceResolver, TResolver>(referenceType.ToString());
         return serviceCollection;
     }
 }

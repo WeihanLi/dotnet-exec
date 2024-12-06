@@ -31,14 +31,23 @@ public sealed class ReferenceResolverFactory(IServiceProvider? serviceProvider) 
 
     public IReferenceResolver GetResolver(ReferenceType referenceType)
     {
+        if (_serviceProvider is IKeyedServiceProvider keyedServiceProvider)
+        {
+            var referenceResolver = keyedServiceProvider.GetKeyedService<IReferenceResolver>(referenceType.ToString());
+            if (referenceResolver is not null)
+            {
+                return referenceResolver;
+            }
+        }
+
         return referenceType switch
         {
-            ReferenceType.LocalFile => _serviceProvider.GetServiceOrCreateInstance<FileReferenceResolver>(),
-            ReferenceType.LocalFolder => _serviceProvider.GetServiceOrCreateInstance<FolderReferenceResolver>(),
+            ReferenceType.LocalFile => ActivatorUtilities.GetServiceOrCreateInstance<FileReferenceResolver>(_serviceProvider),
+            ReferenceType.LocalFolder => ActivatorUtilities.GetServiceOrCreateInstance<FolderReferenceResolver>(_serviceProvider),
             ReferenceType.NuGetPackage => _serviceProvider.GetService<NuGetReferenceResolver>() ?? new NuGetReferenceResolver(new NuGetHelper(NullLoggerFactory.Instance)),
             ReferenceType.FrameworkReference =>
-                _serviceProvider.GetServiceOrCreateInstance<FrameworkReferenceResolver>(),
-            ReferenceType.ProjectReference => _serviceProvider.GetServiceOrCreateInstance<ProjectReferenceResolver>(),
+                ActivatorUtilities.GetServiceOrCreateInstance<FrameworkReferenceResolver>(_serviceProvider),
+            ReferenceType.ProjectReference => ActivatorUtilities.GetServiceOrCreateInstance<ProjectReferenceResolver>(_serviceProvider),
             _ => throw new ArgumentOutOfRangeException(nameof(referenceType))
         };
     }

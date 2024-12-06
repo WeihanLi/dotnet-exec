@@ -16,7 +16,9 @@ public sealed class AnalyzerAssemblyLoader : IAnalyzerAssemblyLoader
 
     public Assembly LoadFromPath(string fullPath)
     {
+#pragma warning disable IL2026
         return Assembly.LoadFrom(fullPath);
+#pragma warning restore IL2026
     }
 
     public void AddDependencyLocation(string fullPath)

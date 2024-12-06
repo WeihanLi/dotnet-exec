@@ -8,11 +8,16 @@ namespace IntegrationTest;
 
 public class ReferenceResolverExtensionsTests(IServiceProvider serviceProvider)
 {
-    [Fact]
-    public void ResolversRegisterTest()
+    [Theory]
+    [InlineData(ReferenceType.LocalFile)]
+    [InlineData(ReferenceType.LocalFolder)]
+    [InlineData(ReferenceType.ProjectReference)]
+    [InlineData(ReferenceType.FrameworkReference)]
+    [InlineData(ReferenceType.NuGetPackage)]
+    public void ResolversResolveTest(ReferenceType referenceType)
     {
-        var resolvers = serviceProvider.GetServices<IReferenceResolver>().ToArray();
-        Assert.Equal(5, resolvers.Length);
+        var resolver = serviceProvider.GetKeyedService<IReferenceResolver>(referenceType.ToString());
+        Assert.NotNull(resolver);
     }
 
     [Fact]
