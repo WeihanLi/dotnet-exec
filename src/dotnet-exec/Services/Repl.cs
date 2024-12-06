@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.Scripting;
 using ReferenceResolver;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Text;
 
 namespace Exec.Services;
 
@@ -44,9 +45,17 @@ internal sealed class Repl
                 #r to reference dll or package, for example: "#r nuget:CsvHelper", "#r nuget: CsvHelper, 30.0.0", "#r /a/b/c.dll"
             """);
         ScriptState? state = null;
-        while (true)
+        var inputBuilder = new StringBuilder();
+        while (!ApplicationHelper.ExitToken.IsCancellationRequested)
         {
-            Console.Write("> ");
+            if (inputBuilder.Length > 0)
+            {
+                Console.Write("* ");
+            }
+            else
+            {
+                Console.Write("> ");
+            }
             var input = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(input))
@@ -110,15 +119,25 @@ internal sealed class Repl
                 continue;
             }
 
+            if (input.EndsWith(" \\", StringComparison.Ordinal))
+            {
+                inputBuilder.Append(input[..^2]);
+                continue;
+            }
+
+            inputBuilder.Append(input);
+            var finalInput = inputBuilder.ToString();
+            inputBuilder.Clear();
+
             try
             {
                 if (state is null)
                 {
-                    state = await CSharpScript.RunAsync(input, scriptOptions);
+                    state = await CSharpScript.RunAsync(finalInput, scriptOptions);
                 }
                 else
                 {
-                    var anotherScriptState = await state.ContinueWithAsync(input, scriptOptions);
+                    var anotherScriptState = await state.ContinueWithAsync(finalInput, scriptOptions);
                     state = anotherScriptState;
                 }
                 if (state.ReturnValue is not null)
