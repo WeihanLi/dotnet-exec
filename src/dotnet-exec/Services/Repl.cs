@@ -46,9 +46,16 @@ internal sealed class Repl
             """);
         ScriptState? state = null;
         var inputBuilder = new StringBuilder();
-        while (true)
+        while (!ApplicationHelper.ExitToken.IsCancellationRequested)
         {
-            Console.Write("> ");
+            if (inputBuilder.Length > 0)
+            {
+                Console.Write("* ");
+            }
+            else
+            {
+                Console.Write("> ");
+            }
             var input = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(input))
@@ -112,13 +119,13 @@ internal sealed class Repl
                 continue;
             }
 
-            inputBuilder.AppendLine(input);
-
             if (input.EndsWith(" \\", StringComparison.Ordinal))
             {
+                inputBuilder.Append(input[..^2]);
                 continue;
             }
 
+            inputBuilder.Append(input);
             var finalInput = inputBuilder.ToString();
             inputBuilder.Clear();
 
