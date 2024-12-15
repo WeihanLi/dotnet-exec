@@ -1,5 +1,12 @@
 # Release Notes
 
+## 0.25.0
+
+- feat: remove `net6.0`/`net7.0` support
+- feat: update default config file path
+- feat: REPL support multi-lines input
+- feat: ReferenceResolver dependency injection support keyed service
+
 ## 0.24.0
 
 - feat: alias support [#27](https://github.com/WeihanLi/dotnet-exec/issues/27)
