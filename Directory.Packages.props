@@ -12,7 +12,7 @@
     <WarningsAsErrors>NU1901;NU1902;NU1903;NU1904</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="System.Text.Json" Version="8.0.5" />
+    <PackageVersion Include="System.Text.Json" Version="9.0.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
@@ -24,13 +24,16 @@
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-    <PackageVersion Include="xunit" Version="2.9.2" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="9.7.1" />
-    <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="9.0.0" />
-    <PackageVersion Include="coverlet.collector" Version="6.0.3" />
+    <PackageVersion Include="xunit.v3" Version="1.0.1" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.1" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="10.0.0" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
   </ItemGroup>
   <ItemGroup>
     <GlobalPackageReference Include="PolySharp" Version="1.15.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="System.Net.Http" Version="4.3.4" />
+    <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
   </ItemGroup>
 </Project>

@@ -17,7 +17,7 @@ public class FrameworkReferenceResolverTest
     [InlineData("Web")]
     public async Task Resolve(string frameworkName)
     {
-        var references = await _frameworkReferenceResolver.Resolve(frameworkName, ExecOptions.DefaultTargetFramework);
+        var references = await _frameworkReferenceResolver.Resolve(frameworkName, ExecOptions.DefaultTargetFramework, TestContext.Current.CancellationToken);
         Assert.NotNull(references);
         Assert.NotEmpty(references);
     }
@@ -63,7 +63,7 @@ public class FrameworkReferenceResolverTest
     [InlineData(FrameworkReferenceResolver.FrameworkNames.Default)]
     public async Task ResolveAnalyzers(string frameworkName)
     {
-        var analyzers = await _frameworkReferenceResolver.ResolveAnalyzers(frameworkName, ExecOptions.DefaultTargetFramework);
+        var analyzers = await _frameworkReferenceResolver.ResolveAnalyzers(frameworkName, ExecOptions.DefaultTargetFramework, TestContext.Current.CancellationToken);
         Assert.NotNull(analyzers);
         Assert.NotEmpty(analyzers);
     }

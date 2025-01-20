@@ -3,7 +3,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace IntegrationTest;
 
@@ -14,7 +13,6 @@ public static class Startup
     public static void ConfigureServices(IServiceCollection services)
     {
         services.RegisterApplicationServices(DebugArgs);
-        services.AddLogging(lb => lb.AddXunitOutput(_ => { }));
     }
 
     public static void Configure(ITestOutputHelperAccessor outputHelperAccessor, IRefResolver refResolver)

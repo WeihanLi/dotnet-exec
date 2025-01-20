@@ -120,7 +120,7 @@ public class ScriptCompletionServiceTest
         var completionService = CompletionService.GetService(document);
         Assert.NotNull(completionService);
 
-        var completions = await completionService.GetCompletionsAsync(document, code.Length);
+        var completions = await completionService.GetCompletionsAsync(document, code.Length, cancellationToken: TestContext.Current.CancellationToken);
         Assert.NotEmpty(completions.ItemsList);
         Assert.Contains(completions.ItemsList, i => i.DisplayText.Contains("NewGuid"));
     }

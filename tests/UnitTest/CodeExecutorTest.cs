@@ -4,7 +4,6 @@
 using Exec.Services;
 using Microsoft.Extensions.Logging.Abstractions;
 using WeihanLi.Common.Models;
-using Xunit.Abstractions;
 
 namespace UnitTest;
 
@@ -114,6 +113,7 @@ class B
         using var output = await ConsoleOutput.CaptureAsync();
         var executor = new DefaultCodeExecutor(RefResolver.InstanceForTest, NullLogger.Instance);
         var executeResult = await executor.Execute(result.Data, options);
+        Assert.NotNull(executeResult.Msg);
         _outputHelper.WriteLine(executeResult.Msg);
         Assert.False(executeResult.IsSuccess());
     }

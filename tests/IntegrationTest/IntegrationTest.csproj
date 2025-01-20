@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <PackageReference Include="Xunit.DependencyInjection" />
-    <PackageReference Include="Xunit.DependencyInjection.Logging" />
   </ItemGroup>
 
   <ItemGroup>

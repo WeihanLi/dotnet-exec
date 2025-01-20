@@ -3,7 +3,6 @@
 
 using Exec.Services;
 using WeihanLi.Common.Models;
-using Xunit.Abstractions;
 
 namespace UnitTest;
 
@@ -19,6 +18,7 @@ public sealed class SimpleCodeCompilerTest(ITestOutputHelper outputHelper)
         var compiler = GetSimpleCodeCompiler();
         var result = await compiler.Compile(new ExecOptions(), code);
         Assert.Equal(ResultStatus.InternalError, result.Status);
+        Assert.NotNull(result.Msg);
         _outputHelper.WriteLine(result.Msg);
     }
 

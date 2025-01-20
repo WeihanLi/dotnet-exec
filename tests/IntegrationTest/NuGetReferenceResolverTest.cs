@@ -13,7 +13,7 @@ public class NuGetReferenceResolverTest
     [Fact]
     public async Task Resolve()
     {
-        var references = await _resolver.Resolve("WeihanLi.Common,1.0.72", ExecOptions.DefaultTargetFramework);
+        var references = await _resolver.Resolve("WeihanLi.Common,1.0.72", ExecOptions.DefaultTargetFramework, TestContext.Current.CancellationToken);
         Assert.NotNull(references);
         Assert.NotEmpty(references);
     }
@@ -24,7 +24,7 @@ public class NuGetReferenceResolverTest
         var reference = new NuGetReference("WeihanLi.Common", "1.0.72");
         Assert.Equal($"nuget: {reference.Reference}", reference.ReferenceWithSchema());
 
-        var references = await _resolver.Resolve(reference.Reference, ExecOptions.DefaultTargetFramework);
+        var references = await _resolver.Resolve(reference.Reference, ExecOptions.DefaultTargetFramework, TestContext.Current.CancellationToken);
         Assert.NotNull(references);
         Assert.NotEmpty(references);
     }

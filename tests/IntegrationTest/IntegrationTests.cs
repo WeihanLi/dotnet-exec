@@ -2,7 +2,6 @@
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 using WeihanLi.Common.Models;
-using Xunit.Abstractions;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
 
@@ -383,7 +382,7 @@ public class IntegrationTests(
         var exePath = typeof(CommandHandler).Assembly.Location
             .Replace(".dll", OperatingSystem.IsWindows() ? ".exe" : "");
         var result = await CommandExecutor.ExecuteAndCaptureAsync(
-            exePath, $"\"Environment.ExitCode = {exitCode};\""
+            exePath, $"\"Environment.ExitCode = {exitCode};\"", cancellationToken: TestContext.Current.CancellationToken
             );
         _outputHelper.WriteLine(result.StandardOut);
         _outputHelper.WriteLine(result.StandardError);

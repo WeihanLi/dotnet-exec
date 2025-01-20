@@ -14,7 +14,7 @@ public class NuGetHelperTest
     [InlineData("Microsoft.NETCore.App.Ref")]
     public async Task GetPackageVersions(string packageId)
     {
-        var versions = await NuGetHelper.GetPackageVersions(packageId).ToArrayAsync();
+        var versions = await NuGetHelper.GetPackageVersions(packageId, cancellationToken: TestContext.Current.CancellationToken).ToArrayAsync(TestContext.Current.CancellationToken);
         Assert.NotNull(versions);
         Assert.DoesNotContain(versions, v => v.Version.OriginalVersion?.Contains("preview") == true);
     }
@@ -23,7 +23,7 @@ public class NuGetHelperTest
     [InlineData("Microsoft.NETCore.App.Ref")]
     public async Task GetPackageVersionsIncludePreview(string packageId)
     {
-        var versions = await NuGetHelper.GetPackageVersions(packageId, true).ToArrayAsync();
+        var versions = await NuGetHelper.GetPackageVersions(packageId, true, cancellationToken: TestContext.Current.CancellationToken).ToArrayAsync(TestContext.Current.CancellationToken);
         Assert.NotNull(versions);
         Assert.NotEmpty(versions);
         Assert.Contains(versions, v => v.Version.OriginalVersion?.Contains("preview") == true);
@@ -36,7 +36,7 @@ public class NuGetHelperTest
     public async Task ResolvePackageReference(string packageId)
     {
         var references = await NuGetHelper.ResolvePackageReferences(
-            ExecOptions.DefaultTargetFramework, packageId, null, true
+            ExecOptions.DefaultTargetFramework, packageId, null, true, cancellationToken: TestContext.Current.CancellationToken
             );
         Assert.NotEmpty(references);
         Assert.True(references.Length > 3);
@@ -46,7 +46,8 @@ public class NuGetHelperTest
     public async Task GetPackages()
     {
         var prefix = "WeihanLi";
-        var packages = await NuGetHelper.GetPackages(prefix).ToArrayAsync();
+        var packages = await NuGetHelper.GetPackages(prefix, cancellationToken: TestContext.Current.CancellationToken)
+            .ToArrayAsync(TestContext.Current.CancellationToken);
         Assert.NotEmpty(packages);
         Assert.Contains("WeihanLi.Common", packages.SelectMany(p => p.Packages));
     }
@@ -55,7 +56,8 @@ public class NuGetHelperTest
     public async Task SearchPackages()
     {
         var prefix = "WeihanLi";
-        var result = await NuGetHelper.SearchPackages(prefix).ToArrayAsync();
+        var result = await NuGetHelper.SearchPackages(prefix, cancellationToken: TestContext.Current.CancellationToken)
+           .ToArrayAsync(TestContext.Current.CancellationToken);
         Assert.NotEmpty(result);
         var packages = result.SelectMany(x => x.SearchResult).ToArray();
         Assert.Contains("WeihanLi.Common", packages.Select(x => x.Identity.Id), StringComparer.OrdinalIgnoreCase);
@@ -65,7 +67,7 @@ public class NuGetHelperTest
     public async Task GetLatestVersion()
     {
         var packageId = "WeihanLi.Common";
-        var result = await NuGetHelper.GetLatestPackageVersion(packageId);
+        var result = await NuGetHelper.GetLatestPackageVersion(packageId, cancellationToken: TestContext.Current.CancellationToken);
         Assert.NotNull(result);
         Assert.True(result >= new NuGetVersion("1.0.72"));
     }
@@ -74,7 +76,8 @@ public class NuGetHelperTest
     public async Task GetVersions()
     {
         var packageId = "WeihanLi.Common";
-        var result = await NuGetHelper.GetPackageVersions(packageId).ToArrayAsync();
+        var result = await NuGetHelper.GetPackageVersions(packageId, cancellationToken: TestContext.Current.CancellationToken)
+            .ToArrayAsync(TestContext.Current.CancellationToken);
         Assert.NotNull(result);
         Assert.NotEmpty(result);
         Assert.Contains(result, v => v.Version is { Major: 1, Minor: 0, Patch: 72 });
