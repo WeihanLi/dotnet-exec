@@ -63,6 +63,7 @@ public abstract class CodeExecutor(ILogger logger) : ICodeExecutor
         var parameters = entryMethod.GetParameters();
         Logger.LogDebug("Entry is found, {entryName}, returnType: {returnType}",
             $"{entryMethod.DeclaringType!.FullName}.{entryMethod.Name}", entryMethod.ReturnType.FullName);
+
         try
         {
             object? returnValue = null;

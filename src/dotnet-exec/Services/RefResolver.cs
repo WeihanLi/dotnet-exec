@@ -15,7 +15,7 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
     : IRefResolver
 {
     // for unit test only
-    internal static IRefResolver InstanceForTest { get; } =
+    internal static IRefResolver InstanceForTest =>
         new RefResolver(new NuGetHelper(NullLoggerFactory.Instance), new ReferenceResolverFactory(null));
     // for unit test only
     public bool DisableCache { get; set; }
