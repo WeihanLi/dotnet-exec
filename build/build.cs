@@ -40,6 +40,7 @@ await new BuildProcessBuilder()
     .WithTask("build", b =>
     {
         b.WithDescription("dotnet build")
+            .WithDependency("hello")
             .WithExecution(cancellationToken => ExecuteCommandAsync($"dotnet build {solutionPath}", cancellationToken))
             ;
     })
