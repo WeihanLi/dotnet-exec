@@ -14,67 +14,45 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: |
-          6.x
-          7.x
           8.x
           9.x
-    - uses: actions/cache@v3
-      with:
-        path: ~/.nuget/packages
-        # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.*', '**/*.csproj') }}
-        restore-keys: |
-          ${{ matrix.os }}-nuget
+    # - uses: actions/cache@v3
+    #   with:
+    #     path: ~/.nuget/packages
+    #     # Look to see if there is a cache hit for the corresponding requirements file
+    #     key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.*', '**/*.csproj') }}
+    #     restore-keys: |
+    #       ${{ matrix.os }}-nuget
     - name: dotnet info
       run: dotnet --info
-    - name: build
-      run: bash build.sh --target=test
-  
-      
-  windows-build:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: |
-          6.x
-          7.x
-          8.x
-          9.x
-
-    - uses: actions/cache@v3
-      with:
-        path: ~/.nuget/packages
-        # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.*', '**/*.csproj') }}
-        restore-keys: |
-          windows-nuget
     - name: Setup dotnet-sonar
+      if: matrix.os == 'windows-latest'
       run: |
-        dotnet tool install --global dotnet-sonarscanner --version 6.0.0
+        dotnet tool install --global dotnet-sonarscanner --version 9.1.0
         dotnet-sonarscanner begin /k:"WeihanLi_dotnet-exec" /o:"weihanli" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
-    - name: dotnet info
-      run: dotnet --info
-    - name: build
+    - name: build-${{ matrix.os }}
+      if: matrix.os == 'windows-latest'
       shell: pwsh
       run: .\build.ps1
+    - name: build-${{ matrix.os }}
+      if: matrix.os != 'windows-latest'
+      run: bash build.sh --target=test
     # https://github.com/marketplace/actions/setup-java-jdk#usage
     - name: Setup Java
+      if: matrix.os == 'windows-latest'
       uses: actions/setup-java@v4.0.0
       with:
         # The Java version to set up. Takes a whole or semver Java version. See examples of supported syntax in README file
         distribution: 'zulu' # See 'Supported distributions' for available options
         java-version: '21'
         java-package: jre
-          
     - name: post build
+      if: matrix.os == 'windows-latest'
       run: dotnet-sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
