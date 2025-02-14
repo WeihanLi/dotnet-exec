@@ -17,7 +17,7 @@ args:
 
 """);
 
-var solutionPath = "./dotnet-exec.sln";
+var solutionPath = "./dotnet-exec.slnx";
 string[] srcProjects = [
     "./src/dotnet-exec/dotnet-exec.csproj",
     "./src/ReferenceResolver/ReferenceResolver.csproj"
