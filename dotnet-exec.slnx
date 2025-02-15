@@ -1,7 +1,4 @@
 <Solution>
-  <Configurations>
-    <Platform Name="Any CPU" />
-  </Configurations>
   <Folder Name="/src/">
     <Project Path="src/dotnet-exec/dotnet-exec.csproj" />
     <Project Path="src/ReferenceResolver/ReferenceResolver.csproj" />
