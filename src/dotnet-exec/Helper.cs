@@ -36,6 +36,7 @@ public static class Helper
 
     public const string ApplicationName = "dotnet-exec";
     public const string Default = "default";
+    public const string Project = "project";
     public const string Script = "script";
 
     private const string EnableDebugEnvName = "DOTNET_EXEC_DEBUG_ENABLED";
@@ -69,6 +70,7 @@ public static class Helper
             .CreateLogger(ApplicationName));
         services.AddSingleton<SimpleCodeCompiler>();
         services.AddSingleton<WorkspaceCodeCompiler>();
+        services.AddSingleton<ProjectCodeCompilerExecutor>();
         services.AddSingleton<CSharpScriptCompilerExecutor>();
         services.AddSingleton<ICompilerFactory, CompilerFactory>();
         services.AddSingleton<DefaultCodeExecutor>();

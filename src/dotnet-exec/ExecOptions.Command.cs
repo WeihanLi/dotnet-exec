@@ -103,7 +103,7 @@ public sealed partial class ExecOptions
 
     static ExecOptions()
     {
-        CompilerTypeOption.FromAmong("simple", "workspace");
+        CompilerTypeOption.FromAmong("simple", "workspace", Helper.Project);
         ExecutorTypeOption.FromAmong(Helper.Default);
         TargetFrameworkOption.FromAmong([.. Helper.SupportedFrameworks]);
     }
@@ -126,13 +126,15 @@ public sealed partial class ExecOptions
         ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
         IncludeWideReferences = parseResult.GetValueForOption(WideReferencesOption);
         IncludeWebReferences = parseResult.GetValueForOption(WebReferencesOption) || EnvHelper.Val(Helper.EnableWebReferenceEnvName).ToBoolean();
-        CompilerType = parseResult.GetValueForOption(CompilerTypeOption) ?? Helper.Default;
+        CompilerType = parseResult.GetValueForOption(CompilerTypeOption)?.ToLowerInvariant() ?? Helper.Default;
         var executorTypeValue = parseResult.GetValueForOption(ExecutorTypeOption);
-        ExecutorType = string.IsNullOrEmpty(executorTypeValue)
-            ? Helper.Script.EqualsIgnoreCase(CompilerType)
-                ? Helper.Script
-                : Helper.Default
-            : executorTypeValue;
+        ExecutorType = string.IsNullOrEmpty(executorTypeValue) ? Helper.Default : executorTypeValue;
+        if (Helper.Script.Equals(CompilerType, StringComparison.Ordinal) 
+            || Helper.Project.Equals(CompilerType, StringComparison.Ordinal))
+        {
+            ExecutorType = CompilerType;
+        }
+        
         foreach (var reference in parseResult.GetValueForOption(ReferencesOption) ?? [])
         {
             References.Add(Helper.ReferenceNormalize(reference));

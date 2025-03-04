@@ -12,6 +12,7 @@ public sealed class CompilerFactory(IServiceProvider serviceProvider) : ICompile
         return compilerType.ToLower(CultureInfo.InvariantCulture) switch
         {
             "workspace" => serviceProvider.GetRequiredService<WorkspaceCodeCompiler>(),
+            "project" => serviceProvider.GetRequiredService<ProjectCodeCompilerExecutor>(),
             Helper.Script => serviceProvider.GetRequiredService<CSharpScriptCompilerExecutor>(),
             _ => serviceProvider.GetRequiredService<SimpleCodeCompiler>()
         };
