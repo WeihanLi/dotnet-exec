@@ -4,7 +4,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <!-- Enable Transitive Package Pinning -->
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    <RoslynVersion>4.12.0</RoslynVersion>
+    <RoslynVersion>4.13.0</RoslynVersion>
     <!-- https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages -->    
     <NuGetAudit>true</NuGetAudit>    
     <NuGetAuditMode>all</NuGetAuditMode>
@@ -17,7 +17,7 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
-    <PackageVersion Include="NuGet.Protocol" Version="6.13.1" />
+    <PackageVersion Include="NuGet.Protocol" Version="6.13.2" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="WeihanLi.Common" Version="1.0.74" />
