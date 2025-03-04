@@ -48,7 +48,7 @@ Script type：
 
 #### REPL
 
-It would start a REPL(`Read Evaluate Print Loop`) if no arguments provided, it would work like C# Interactive in Visual Studio or dotnet-script, and you can use `#r nuget:CsvHelper` or `#r nuget:WeihanLi.Npoi,2.5.0` to reference a nuget package, and you can pass some options to configure the default references and options etc
+It would start a REPL(`Read Evaluate Print Loop`) if no arguments provided, it would work like C# Interactive in Visual Studio or dotnet-script, and you can use `#r nuget:CsvHelper` or `#r nuget:WeihanLi.Npoi,3.0.0` to reference a nuget package, and you can pass some options to configure the default references and options etc
 
 For those API not so familar, you could end with a `?` to get code completions
 
@@ -105,7 +105,7 @@ By default, it you specific the nuget package only, if would try to use the late
 > nuget package reference with specific version:
 
 ```sh
-dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,2.5.0" -u "WeihanLi.Npoi"
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,3.0.0" -u "WeihanLi.Npoi"
 ```
 
 **local file reference**

@@ -40,7 +40,7 @@ script 支持三种：
 
 #### REPL
 
-不提供 script 参数的时候，默认会开启一个 REPL(`Read Evaluate Print Loop`)，大体和在 Visual Studio 中的 C# Interative 一样，并且额外支持 nuget reference，可以通过 `#r nuget:CsvHelper` 或者 `#r nuget:WeihanLi.Npoi,2.5.0` 等
+不提供 script 参数的时候，默认会开启一个 REPL(`Read Evaluate Print Loop`)，大体和在 Visual Studio 中的 C# Interative 一样，并且额外支持 nuget reference，可以通过 `#r nuget:CsvHelper` 或者 `#r nuget:WeihanLi.Npoi,3.0.0` 等
 
 对于某些 API 不太熟悉，忘记了应该怎么输入，也可以通过在最后输入一个 `?` 来获取代码提示
 
@@ -97,7 +97,7 @@ dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npo
 > 指定某个版本的 nuget 包引用:
 
 ```sh
-dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,2.5.0" -u "WeihanLi.Npoi"
+dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,3.0.0" -u "WeihanLi.Npoi"
 ```
 
 **local file reference**

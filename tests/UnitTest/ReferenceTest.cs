@@ -44,7 +44,7 @@ public class ReferenceTest
     public async Task NuGetReferenceResolveTest()
     {
         var resolver = new NuGetReferenceResolver(new NuGetHelper(NullLoggerFactory.Instance));
-        var result = await resolver.Resolve("WeihanLi.Npoi, 2.5.0", "net6.0", TestContext.Current.CancellationToken)
+        var result = await resolver.Resolve("WeihanLi.Npoi, 3.0.0", "net6.0", TestContext.Current.CancellationToken)
             .ContinueWith(r => r.Result.ToArray());
         Assert.NotNull(result);
         Assert.NotEmpty(result);
