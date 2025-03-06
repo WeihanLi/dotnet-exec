@@ -41,7 +41,7 @@ jobs:
     - name: build-on-windows
       if: matrix.os == 'windows-latest'
       shell: pwsh
-      run: .\build.ps1
+      run: .\build.ps1 --target=test
     - name: build-on-non-windows
       if: matrix.os != 'windows-latest'
       run: bash build.sh --target=test
