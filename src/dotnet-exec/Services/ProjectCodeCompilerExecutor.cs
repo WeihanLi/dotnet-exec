@@ -96,10 +96,22 @@ internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetche
                                                           <Nullable>annotations</Nullable>
                                                           <EnableDefaultItems>false</EnableDefaultItems>
                                                           <OutputType>Exe</OutputType>
-                                                        </PropertyGroup>
-                                                        <ItemGroup>
                                                       
                                                       """);
+        // build properties
+        if (options.EnablePreviewFeatures)
+        {
+            projectFileBuilder.Append("    <LangVersion>preview</LangVersion>");
+        }
+
+        // build PropertyGroup end
+        projectFileBuilder.AppendLine("""
+                                        </PropertyGroup>
+                                        <ItemGroup>
+                                      """
+            );
+        
+        // build items
         foreach (var scriptPath in scriptPathList)
         {
             var item = $"    <Compile Include=\"{scriptPath}\" />";
@@ -111,6 +123,7 @@ internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetche
             projectFileBuilder.AppendLine("    <PackageReference Include=\"WeihanLi.Common\" Version=\"*-*\" />");
         }
         
+        // build ItemGroup end
         projectFileBuilder.Append("""
                                     </ItemGroup>
                                   </Project>

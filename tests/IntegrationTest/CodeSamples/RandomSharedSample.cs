@@ -5,7 +5,7 @@ namespace IntegrationTest.CodeSamples;
 
 public class RandomSharedSample
 {
-    public static void MainTest()
+    public static void Main()
     {
         Console.WriteLine(Random.Shared.Next(10, 100));
     }

@@ -5,7 +5,7 @@ namespace IntegrationTest.CodeSamples;
 
 public class HostApplicationBuilderSample
 {
-    public static async Task MainTest()
+    public static async Task Main()
     {
         var cts = new CancellationTokenSource(5000);
         

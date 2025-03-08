@@ -104,6 +104,45 @@ public class IntegrationTests(
 
         _outputHelper.WriteLine(output.StandardOutput);
     }
+    
+    [Theory]
+    [InlineData("ConfigurationManagerSample")]
+    [InlineData("JsonNodeSample")]
+    [InlineData("LinqSample")]
+    [InlineData("RandomSharedSample")]
+    [InlineData("TopLevelSample")]
+    [InlineData("HostApplicationBuilderSample")]
+    [InlineData("DumpAssemblyInfoSample")]
+    [InlineData("WebApiSample")]
+    // [InlineData("EmbeddedReferenceSample")]
+    [InlineData("UsingSample")]
+    [InlineData("FileLocalTypeSample")]
+    [InlineData("SourceGeneratorSample")]
+    [InlineData("ForwardedHeadersSample")]
+    [InlineData("FieldKeywordSample")]
+    public async Task SamplesTestWithProjectCompiler(string sampleFileName)
+    {
+        var filePath = $"{sampleFileName}.cs";
+        var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", filePath);
+        Assert.True(File.Exists(fullPath));
+
+        var execOptions = new ExecOptions()
+        {
+            Script = fullPath,
+            Arguments = ["--hello", "world"],
+            IncludeWebReferences = true,
+            IncludeWideReferences = true,
+            CompilerType = "project",
+            ExecutorType = "project",
+            EnablePreviewFeatures = true
+        };
+
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(execOptions);
+        Assert.Equal(0, result);
+
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
 
     [Theory]
     [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs")]
