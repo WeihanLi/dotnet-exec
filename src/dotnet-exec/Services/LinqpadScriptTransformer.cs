@@ -51,7 +51,6 @@ internal sealed class LinqpadScriptTransformer : IScriptTransformer
 
             case "Expression":
                 context.CompilerType = Helper.Script;
-                context.ExecutorType = Helper.Script;
                 break;
 
             default:

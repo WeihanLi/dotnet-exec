@@ -22,7 +22,7 @@ internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetche
         string projectFileContent;
         if (options.ProjectPath.IsNullOrEmpty())
         {
-            projectFileContent = GetImplicitProjectFile(options, tempFolderPath);
+            projectFileContent = await GetImplicitProjectFile(options, tempFolderPath);
         }
         else
         {
@@ -40,6 +40,11 @@ internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetche
                 
                 projectFileContent = projectContent;
             }
+
+            await foreach (var script in GetScriptPathList(options, tempFolderPath))
+            {
+                logger.LogDebug("Script info: {ScriptPath}", script);
+            }
         }
 
         await File.WriteAllTextAsync(projectFilePath, projectFileContent);
@@ -52,12 +57,12 @@ internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetche
         Guard.NotNull(dotnetPath);
         var buildResult = await CommandExecutor.ExecuteAndCaptureAsync(dotnetPath,
             $"build {projectFilePath} -c {options.Configuration} -o {outputDir}");
-        var result = new CompileResult(null!, null!, null!);
         if (buildResult.ExitCode != 0)
         {
             return Result.Fail<CompileResult>($"Build failed with exit code {buildResult.ExitCode},{buildResult.StandardOut}\n{buildResult.StandardError}", ResultStatus.InternalError);
         }
         
+        var result = new CompileResult(null!, null!, null!);
         result.SetProperty(nameof(execId), execId);
         result.SetProperty(nameof(outputDir), outputDir);
         logger.LogDebug("Project code compile succeeded. ExecId: {ExecId}, output: {OutputDir}", execId, outputDir);
@@ -82,12 +87,10 @@ internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetche
         return Result.Success(0);
     }
 
-    private static string GetImplicitProjectFile(ExecOptions options, string tempFolderPath)
+    private async Task<string> GetImplicitProjectFile(ExecOptions options, string tempFolderPath)
     {
         var sdk = options.IncludeWebReferences ? "Microsoft.NET.Sdk.Web" : "Microsoft.NET.Sdk";
         var targetFramework = options.TargetFramework;
-
-        var scriptPathList = GetScriptPathList(options, tempFolderPath).ToArray();
 
         var projectFileBuilder = new StringBuilder($"""
                                                       <Project Sdk="{sdk}">
@@ -112,7 +115,7 @@ internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetche
             );
         
         // build items
-        foreach (var scriptPath in scriptPathList)
+        await foreach (var scriptPath in GetScriptPathList(options, tempFolderPath))
         {
             var item = $"    <Compile Include=\"{scriptPath}\" />";
             projectFileBuilder.AppendLine(item);
@@ -131,7 +134,7 @@ internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetche
         return projectFileBuilder.ToString();
     }
 
-    private static IEnumerable<string> GetScriptPathList(ExecOptions options, string tempFolderPath)
+    private async IAsyncEnumerable<string> GetScriptPathList(ExecOptions options, string tempFolderPath)
     {
         yield return GetPath(tempFolderPath, options.Script);
 
@@ -142,7 +145,7 @@ internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetche
         
         foreach (var script in options.AdditionalScripts)
         {
-            yield return GetPath(tempFolderPath, script);
+            yield return GetPath(tempFolderPath, (await contentFetcher.FetchContent(script, options.CancellationToken)).Data ?? script);
         }
     }
 

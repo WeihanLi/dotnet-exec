@@ -145,6 +145,31 @@ public class IntegrationTests(
     }
 
     [Theory]
+    [InlineData(
+        "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/CorrelationIdSample.cs", 
+        "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/BalabalaSample.csproj"
+        )]
+    public async Task Issue06SampleTest(string sampleFileName, string sampleProjectFile)
+    {
+        var execOptions = new ExecOptions()
+        {
+            Script = "await CorrelationIdSample.MainTest();",
+            ProjectPath = sampleProjectFile,
+            AdditionalScripts = [sampleFileName],
+            IncludeWebReferences = false,
+            IncludeWideReferences = false,
+            CompilerType = "project",
+            ExecutorType = "project"
+        };
+
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(execOptions);
+        Assert.Equal(0, result);
+
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
+    
+    [Theory]
     [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs")]
     [InlineData("https://raw.githubusercontent.com/WeihanLi/SamplesInPractice/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs")]
     [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/9e3b5074f4565660f4d45adcc3dca662a9d8be00/net7Sample/Net7Sample/HttpClientJsonSample.cs")]
@@ -375,7 +400,6 @@ public class IntegrationTests(
         {
             ProjectPath = fullProjectPath,
             IncludeWideReferences = false,
-            // Script = "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/CorrelationIdSample.cs"
             Script = fullPath,
             CompilerType = "simple"
         };

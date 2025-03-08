@@ -82,7 +82,7 @@ public sealed class CommandHandler(ILogger logger,
         var compiler = compilerFactory.GetCompiler(options.CompilerType);
         var compileStartTime = Stopwatch.GetTimestamp();
         var compileResult = await compiler.Compile(options, sourceText);
-        var compileElapsed = ProfilerHelper.GetElapsedTime(compileStartTime);
+        var compileElapsed = Stopwatch.GetElapsedTime(compileStartTime);
         logger.LogDebug("Compile elapsed: {elapsed}", compileElapsed);
 
         if (!compileResult.IsSuccess())
@@ -130,7 +130,7 @@ public sealed class CommandHandler(ILogger logger,
                 return ExitCodes.ExecuteError;
             }
 
-            var elapsed = ProfilerHelper.GetElapsedTime(executeStartTime);
+            var elapsed = Stopwatch.GetElapsedTime(executeStartTime);
             logger.LogDebug("Execute elapsed: {elapsed}", elapsed);
 
             return Environment.ExitCode is not 0 ? Environment.ExitCode : executeResult.Data;

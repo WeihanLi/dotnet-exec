@@ -130,13 +130,10 @@ public sealed partial class ExecOptions
         IncludeWebReferences = parseResult.GetValueForOption(WebReferencesOption) || EnvHelper.Val(Helper.EnableWebReferenceEnvName).ToBoolean();
         CompilerType = parseResult.GetValueForOption(CompilerTypeOption)?.ToLowerInvariant() ?? Helper.Default;
         var executorTypeValue = parseResult.GetValueForOption(ExecutorTypeOption);
-        ExecutorType = string.IsNullOrEmpty(executorTypeValue) ? Helper.Default : executorTypeValue;
-        if (Helper.Script.Equals(CompilerType, StringComparison.Ordinal) 
-            || Helper.Project.Equals(CompilerType, StringComparison.Ordinal))
+        if (!string.IsNullOrEmpty(executorTypeValue))
         {
-            ExecutorType = CompilerType;
+            ExecutorType = executorTypeValue.ToLowerInvariant();
         }
-        
         foreach (var reference in parseResult.GetValueForOption(ReferencesOption) ?? [])
         {
             References.Add(Helper.ReferenceNormalize(reference));
