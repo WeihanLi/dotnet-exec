@@ -59,6 +59,7 @@ internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetche
             $"build {projectFilePath} -c {options.Configuration} -o {outputDir}");
         if (buildResult.ExitCode != 0)
         {
+            Directory.Delete(tempFolderPath, true);
             return Result.Fail<CompileResult>($"Build failed with exit code {buildResult.ExitCode},{buildResult.StandardOut}\n{buildResult.StandardError}", ResultStatus.InternalError);
         }
         
@@ -66,6 +67,11 @@ internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetche
         result.SetProperty(nameof(execId), execId);
         result.SetProperty(nameof(outputDir), outputDir);
         logger.LogDebug("Project code compile succeeded. ExecId: {ExecId}, output: {OutputDir}", execId, outputDir);
+
+        if (options.DryRun)
+        {
+            Directory.Delete(tempFolderPath, true);
+        }
         return Result.Success(result);
     }
 
@@ -77,6 +83,7 @@ internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetche
         var dotnetPath = ApplicationHelper.GetDotnetPath();
         Guard.NotNull(dotnetPath);
         var exitCode = await CommandExecutor.ExecuteAndOutputAsync(dotnetPath, $"{outputDllPath}", workingDirectory: outputDir);
+        Directory.GetParent(outputDir)?.Delete(true);
         if (exitCode != 0)
         {
             return Result.Fail(
