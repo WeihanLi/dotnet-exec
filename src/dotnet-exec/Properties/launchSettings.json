@@ -88,7 +88,7 @@
     "project-compile-test": {
       "commandName": "Project",
       "targetFramework": "net10.0",
-      "commandLineArgs": "'Console.WriteLine(1 + 1);' --compiler project"
+      "commandLineArgs": "\"Console.WriteLine(1 + 1);\" --compiler project --debug"
     }
   }
 }

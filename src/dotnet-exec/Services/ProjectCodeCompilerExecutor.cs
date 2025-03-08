@@ -67,7 +67,8 @@ internal sealed class ProjectCodeCompilerExecutor : ICodeCompiler, ICodeExecutor
                                                         <PropertyGroup>
                                                           <TargetFramework>{targetFramework}</TargetFramework>
                                                           <Nullable>annotations</Nullable>
-                                                          <EnabledDefaultItems>false</EnabledDefaultItems>
+                                                          <EnableDefaultItems>false</EnableDefaultItems>
+                                                          <OutputType>Exe</OutputType>
                                                         </PropertyGroup>
                                                         <ItemGroup>
                                                         
@@ -77,6 +78,12 @@ internal sealed class ProjectCodeCompilerExecutor : ICodeCompiler, ICodeExecutor
             var item = $"    <Compile Include=\"{scriptPath}\" />";
             projectFileBuilder.AppendLine(item);
         }
+
+        if (options.IncludeWideReferences)
+        {
+            projectFileBuilder.AppendLine("    <PackageReference Include=\"WeihanLi.Common\" Version=\"*-*\" />");
+        }
+        
         projectFileBuilder.Append("""
                                     </ItemGroup>
                                   </Project>
@@ -87,6 +94,10 @@ internal sealed class ProjectCodeCompilerExecutor : ICodeCompiler, ICodeExecutor
     private static IEnumerable<string> GetScriptPathList(ExecOptions options, string tempFolderPath)
     {
         yield return GetPath(tempFolderPath, options.Script);
+
+        var usingText = Helper.GetGlobalUsingsCodeText(options);
+        yield return GetPath(tempFolderPath, usingText, "_GlobalUsings");
+        
         if (options.AdditionalScripts is not { Count: > 0 }) yield break;
         
         foreach (var script in options.AdditionalScripts)
@@ -95,15 +106,16 @@ internal sealed class ProjectCodeCompilerExecutor : ICodeCompiler, ICodeExecutor
         }
     }
 
-    private static string GetPath(string tempFolderPath, string script)
+    private static string GetPath(string tempFolderPath, string script, string? fileName = null)
     {
         if (File.Exists(script))
         {
             return Path.GetRelativePath(tempFolderPath,script);
         }
 
-        var scriptPath = $"{Path.GetRandomFileName()}.cs";
+        var scriptFileName = fileName ?? Path.GetRandomFileName();
+        var scriptPath = Path.Combine(tempFolderPath, $"{scriptFileName}.cs");
         File.WriteAllText(scriptPath, script);
-        return scriptPath;
+        return Path.GetRelativePath(tempFolderPath, scriptPath);
     }
 }
