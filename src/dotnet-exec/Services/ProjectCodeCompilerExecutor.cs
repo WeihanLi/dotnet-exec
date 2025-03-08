@@ -7,7 +7,7 @@ using WeihanLi.Common.Models;
 
 namespace Exec.Services;
 
-internal sealed class ProjectCodeCompilerExecutor : ICodeCompiler, ICodeExecutor
+internal sealed class ProjectCodeCompilerExecutor(ILogger logger) : ICodeCompiler, ICodeExecutor
 {
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
@@ -20,6 +20,9 @@ internal sealed class ProjectCodeCompilerExecutor : ICodeCompiler, ICodeExecutor
         var projectFilePath = Path.Combine(tempFolderPath, "exec.csproj");
         var projectFileContent = GetImplicitProjectFile(options, tempFolderPath);
         await File.WriteAllTextAsync(projectFilePath, projectFileContent);
+        logger.LogDebug("Project file created. Path: {ProjectPath}, {Content}",
+            projectFilePath, projectFileContent);
+        
         var outputDir = Path.Combine(tempFolderPath, "output");
         // dotnet build
         var dotnetPath = ApplicationHelper.GetDotnetPath();
@@ -34,6 +37,7 @@ internal sealed class ProjectCodeCompilerExecutor : ICodeCompiler, ICodeExecutor
         
         result.SetProperty(nameof(execId), execId);
         result.SetProperty(nameof(outputDir), outputDir);
+        logger.LogDebug("Project code compile succeeded. ExecId: {ExecId}, output: {OutputDir}", execId, outputDir);
         return Result.Success(result);
     }
 
@@ -44,15 +48,15 @@ internal sealed class ProjectCodeCompilerExecutor : ICodeCompiler, ICodeExecutor
         var outputDllPath = Path.Combine(outputDir, "exec.dll");
         var dotnetPath = ApplicationHelper.GetDotnetPath();
         Guard.NotNull(dotnetPath);
-        var result = await CommandExecutor.ExecuteAndCaptureAsync(dotnetPath, $"{outputDllPath}", outputDir);
-        if (result.ExitCode != 0)
+        var exitCode = await CommandExecutor.ExecuteAndOutputAsync(dotnetPath, $"{outputDllPath}", workingDirectory: outputDir);
+        if (exitCode != 0)
         {
             return Result.Fail(
-                $"Execute failed with exit code {result.ExitCode} \n{result.StandardOut} \n{result.StandardError} ",
-                ResultStatus.InternalError, result.ExitCode);
+                $"Execute failed with exit code {exitCode} ",
+                ResultStatus.InternalError, exitCode);
         }
         
-        return Result.Success(result.ExitCode);
+        return Result.Success(0);
     }
 
     private static string GetImplicitProjectFile(ExecOptions options, string tempFolderPath)
@@ -71,7 +75,7 @@ internal sealed class ProjectCodeCompilerExecutor : ICodeCompiler, ICodeExecutor
                                                           <OutputType>Exe</OutputType>
                                                         </PropertyGroup>
                                                         <ItemGroup>
-                                                        
+                                                      
                                                       """);
         foreach (var scriptPath in scriptPathList)
         {
