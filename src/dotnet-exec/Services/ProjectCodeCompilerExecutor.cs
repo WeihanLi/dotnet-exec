@@ -7,7 +7,7 @@ using WeihanLi.Common.Models;
 
 namespace Exec.Services;
 
-internal sealed class ProjectCodeCompilerExecutor(ILogger logger) : ICodeCompiler, ICodeExecutor
+internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetcher contentFetcher, ILogger logger) : ICodeCompiler, ICodeExecutor
 {
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
@@ -17,8 +17,31 @@ internal sealed class ProjectCodeCompilerExecutor(ILogger logger) : ICodeCompile
         {
             Directory.CreateDirectory(tempFolderPath);
         }
+
         var projectFilePath = Path.Combine(tempFolderPath, "exec.csproj");
-        var projectFileContent = GetImplicitProjectFile(options, tempFolderPath);
+        string projectFileContent;
+        if (options.ProjectPath.IsNullOrEmpty())
+        {
+            projectFileContent = GetImplicitProjectFile(options, tempFolderPath);
+        }
+        else
+        {
+            if (File.Exists(options.ProjectPath))
+            {
+                projectFileContent = await File.ReadAllTextAsync(options.ProjectPath, options.CancellationToken);
+            }
+            else
+            {
+                var projectContent = (await contentFetcher.FetchContent(options.ProjectPath)).Data;
+                if (projectContent.IsNullOrEmpty())
+                {
+                    return Result.Fail<CompileResult>("Invalid project file provided");
+                }
+                
+                projectFileContent = projectContent;
+            }
+        }
+
         await File.WriteAllTextAsync(projectFilePath, projectFileContent);
         logger.LogDebug("Project file created. Path: {ProjectPath}, {Content}",
             projectFilePath, projectFileContent);
