@@ -79,7 +79,7 @@ internal sealed class ProjectCodeCompilerExecutor : ICodeCompiler, ICodeExecutor
         }
         projectFileBuilder.Append("""
                                     </ItemGroup>
-                                  </Project>)
+                                  </Project>
                                   """);
         return projectFileBuilder.ToString();
     }
@@ -99,10 +99,10 @@ internal sealed class ProjectCodeCompilerExecutor : ICodeCompiler, ICodeExecutor
     {
         if (File.Exists(script))
         {
-            return Path.GetFullPath(script);
+            return Path.GetRelativePath(tempFolderPath,script);
         }
 
-        var scriptPath = Path.GetFullPath(Path.Combine(tempFolderPath, $"{Path.GetRandomFileName()}.cs"));
+        var scriptPath = $"{Path.GetRandomFileName()}.cs";
         File.WriteAllText(scriptPath, script);
         return scriptPath;
     }
