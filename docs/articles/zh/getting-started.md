@@ -133,3 +133,13 @@ dotnet-exec 'WebApplication.Create().Run();' --reference 'framework:web'
 ### Profile command
 
 Profile 命令可以用来配置一些自定义的 profile 来简化执行时要指定的选项
+
+### Test command
+
+`test` 命令允许你执行 xunit 测试用例。
+
+```sh
+dotnet-exec test XxTest.cs
+```
+
+此命令集成了 xunit v3 以执行指定的 xunit 测试文件。
