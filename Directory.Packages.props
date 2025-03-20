@@ -12,15 +12,15 @@
     <WarningsAsErrors>NU1901;NU1902;NU1903;NU1904</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="System.Text.Json" Version="9.0.0" />
+    <PackageVersion Include="System.Text.Json" Version="9.0.3" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
     <PackageVersion Include="NuGet.Protocol" Version="6.13.2" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.0-preview.1.25080.5" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.75" />
+    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.0-preview.2.25163.2" />
+    <PackageVersion Include="WeihanLi.Common" Version="76-preview-20250319-014315" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
