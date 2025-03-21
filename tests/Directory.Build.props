@@ -6,7 +6,7 @@
     <IsTestProject>true</IsTestProject>
     <!-- https://xunit.net/docs/getting-started/v3/microsoft-testing-platform -->
     <!-- <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner> -->
-    <!-- <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport> -->
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
   <ItemGroup>
     <Using Include="Exec"/>
