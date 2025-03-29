@@ -11,6 +11,7 @@ using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -497,6 +498,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     public void Dispose() => _sourceCacheContext.Dispose();
 }
 
+[DebuggerDisplay("{Name,nq} - {Source,nq}")]
 [ExcludeFromCodeCoverage]
 public sealed class NuGetSourceInfo(string name, string source)
 {
