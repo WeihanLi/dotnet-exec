@@ -22,7 +22,7 @@ ARG WebReferenceEnabled=false
 LABEL org.opencontainers.image.authors="WeihanLi"
 LABEL org.opencontainers.image.source="https://github.com/WeihanLi/dotnet-exec"
 LABEL org.opencontainers.image.title="dotnet-exec"
-LABEL org.opencontainers.image.description="dotnet-exec, dotnet run without project file"
+LABEL org.opencontainers.image.description="dotnet-exec, a command-line tool for executing C# program without a project file, and you can have your custom entry point other than the Main method"
 
 ENV DOTNET_EXEC_WEB_REF_ENABLED=${WebReferenceEnabled}
 WORKDIR /app
