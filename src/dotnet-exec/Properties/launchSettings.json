@@ -89,6 +89,11 @@
       "commandName": "Project",
       "targetFramework": "net10.0",
       "commandLineArgs": "\"Console.WriteLine(1 + 1);\" --compiler project --debug"
+    },
+    "xunit-test": {
+      "commandName": "Project",
+      "targetFramework": "net10.0",
+      "commandLineArgs": "test \"public class Tests{ [Fact] public void Test1(){ Assert.Equal(3, 1 + 2); } }\""
     }
   }
 }

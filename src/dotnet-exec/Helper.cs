@@ -146,14 +146,14 @@ public static class Helper
     public static void Initialize(this Command command, IServiceProvider serviceProvider)
     {
         ArgumentNullException.ThrowIfNull(command);
-        command.Handler = serviceProvider.GetRequiredService<ICommandHandler>();
+        var commandHandler = serviceProvider.GetRequiredService<CommandHandler>();
+        command.Handler = commandHandler;
         var profileManager = serviceProvider.GetRequiredService<IConfigProfileManager>();
         var appConfiguration = serviceProvider.GetRequiredService<AppConfiguration>();
         var appConfigSource = serviceProvider.GetRequiredService<IAppConfigSource>();
 
         foreach (var subcommand in command.Subcommands)
         {
-
             switch (subcommand)
             {
                 case ConfigProfileCommand configProfileCommand:
@@ -272,8 +272,11 @@ public static class Helper
                         aliasSubCommand.SetHandler(aliasCommandHandler);
                     }
                     break;
+                
+                case TestCommand testCommand:
+                    testCommand.SetHandler(context => testCommand.InvokeAsync(context, commandHandler));
+                    break;
             }
-
         }
     }
 

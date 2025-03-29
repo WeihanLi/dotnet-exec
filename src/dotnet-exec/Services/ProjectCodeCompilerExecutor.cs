@@ -1,13 +1,18 @@
 ﻿// Copyright (c) 2022-2024 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
+using ReferenceResolver;
 using System.Text;
 using WeihanLi.Common.Extensions;
 using WeihanLi.Common.Models;
 
 namespace Exec.Services;
 
-internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetcher contentFetcher, ILogger logger) : ICodeCompiler, ICodeExecutor
+internal sealed class ProjectCodeCompilerExecutor(
+    IAdditionalScriptContentFetcher contentFetcher, 
+    IReferenceResolverFactory referenceResolverFactory,
+    ILogger logger
+    ) : ICodeCompiler, ICodeExecutor
 {
     public async Task<Result<CompileResult>> Compile(ExecOptions options, string? code = null)
     {
@@ -131,6 +136,41 @@ internal sealed class ProjectCodeCompilerExecutor(IAdditionalScriptContentFetche
         if (options.IncludeWideReferences)
         {
             projectFileBuilder.AppendLine("    <PackageReference Include=\"WeihanLi.Common\" Version=\"*-*\" />");
+        }
+
+        foreach (var reference in options.References)
+        {
+            var parsedReference = ReferenceResolverFactory.ParseReference(reference);
+            switch (parsedReference)
+            {
+                case FileReference fileReference:
+                    var fileReferenceX = $"""    <Reference Include="{fileReference.FilePath}" />""";
+                    projectFileBuilder.AppendLine(fileReferenceX);
+                    break;
+                case FolderReference folderReference:
+                    var folderResolver = referenceResolverFactory.GetResolver(folderReference.ReferenceType);
+                    foreach (var folderResolvedReference in await folderResolver.Resolve(folderReference.FolderPath, targetFramework, options.CancellationToken))
+                    {
+                        var folderFileReferenceX = $"""    <Reference Include="{folderResolvedReference}" />""";
+                        projectFileBuilder.AppendLine(folderFileReferenceX);
+                    }
+                    break;
+                case NuGetReference nugetReference:
+                    var packageReferenceX = $"""    <PackageReference Include="{nugetReference.PackageId}" Version="{nugetReference.PackageVersion?.ToString()}" />""";
+                    projectFileBuilder.AppendLine(packageReferenceX);
+                    break;
+                case ProjectReference projectReference:
+                    var projectReferenceX = $"""    <ProjectReference Include="{projectReference.ProjectPath}" />""";
+                    projectFileBuilder.AppendLine(projectReferenceX);
+                    break;
+                
+                case FrameworkReference:
+                    break;
+                
+                default:
+                    throw new InvalidOperationException("Unsupported reference type");
+            }
+            
         }
         
         // build ItemGroup end
