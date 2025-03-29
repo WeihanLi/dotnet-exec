@@ -152,3 +152,45 @@ dotnet-exec test XxTest.cs
 ```
 
 This command integrates with the xunit v3 to execute the specified xunit test file.
+
+### Alias command
+
+The `alias` command allows you to manage aliases for frequently used commands.
+
+#### List aliases
+
+To list all configured aliases, use the `list` subcommand:
+
+```sh
+dotnet-exec alias list
+```
+
+You can also use `dotnet-exec alias ls` to list aliases.
+
+#### Set alias
+
+To set a new alias, use the `set` subcommand followed by the alias name and value:
+
+```sh
+dotnet-exec alias set <aliasName> <aliasValue>
+```
+
+For example, to set an alias for generating a new GUID:
+
+```sh
+dotnet-exec alias set guid "Guid.NewGuid()"
+```
+
+#### Unset alias
+
+To remove an existing alias, use the `unset` subcommand followed by the alias name:
+
+```sh
+dotnet-exec alias unset <aliasName>
+```
+
+For example, to remove the `guid` alias:
+
+```sh
+dotnet-exec alias unset guid
+```
