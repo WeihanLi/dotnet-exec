@@ -221,6 +221,48 @@ dotnet-exec 'WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run();' --prof
 dotnet-exec 'WebApplication.Create().Run();' --profile web --using '-WeihanLi.Extensions'
 ```
 
+### Alias command
+
+`alias` 命令允许你管理常用命令的别名。
+
+#### 列出别名
+
+要列出所有配置的别名，请使用 `list` 子命令：
+
+```sh
+dotnet-exec alias list
+```
+
+你也可以使用 `dotnet-exec alias ls` 来列出别名。
+
+#### 设置别名
+
+要设置新别名，请使用 `set` 子命令，后跟别名和值：
+
+```sh
+dotnet-exec alias set <aliasName> <aliasValue>
+```
+
+例如，要设置生成新 GUID 的别名：
+
+```sh
+dotnet-exec alias set guid "Guid.NewGuid()"
+```
+
+#### 取消别名
+
+要删除现有别名，请使用 `unset` 子命令，后跟别名：
+
+```sh
+dotnet-exec alias unset <aliasName>
+```
+
+例如，要删除 `guid` 别名：
+
+```sh
+dotnet-exec alias unset guid
+```
+
 ## Acknowledgements
 
 - [Roslyn](https://github.com/dotnet/roslyn)
