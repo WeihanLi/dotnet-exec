@@ -142,3 +142,13 @@ and some preview features annotated with `RequiresPreviewFeaturesAttribute` coul
 ### Profile command
 
 Profile commands could configure custom config profile to simplify options configuration when executing
+
+### Test command
+
+The `test` command allows you to execute xunit test cases.
+
+```sh
+dotnet-exec test XxTest.cs
+```
+
+This command integrates with the xunit v3 to execute the specified xunit test file.

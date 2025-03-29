@@ -223,6 +223,7 @@ public sealed partial class ExecOptions
         // add sub commands
         command.AddCommand(new ConfigProfileCommand());
         command.AddCommand(new AliasCommand());
+        command.AddCommand(new TestCommand());
 
         return command;
     }

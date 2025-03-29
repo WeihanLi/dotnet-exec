@@ -8,8 +8,6 @@ namespace UnitTest;
 
 public sealed class SimpleCodeCompilerTest(ITestOutputHelper outputHelper)
 {
-    private readonly ITestOutputHelper _outputHelper = outputHelper;
-
     [Theory]
     [InlineData(@"public static void Main(int num){}")]
     [InlineData(@"public class Program{ public static int Main(){} }")]
@@ -19,7 +17,7 @@ public sealed class SimpleCodeCompilerTest(ITestOutputHelper outputHelper)
         var result = await compiler.Compile(new ExecOptions(), code);
         Assert.Equal(ResultStatus.InternalError, result.Status);
         Assert.NotNull(result.Msg);
-        _outputHelper.WriteLine(result.Msg);
+        outputHelper.WriteLine(result.Msg);
     }
 
     [Theory]
@@ -36,7 +34,7 @@ Console.WriteLine(args.StringJoin(Environment.NewLine));
     {
         var compiler = GetSimpleCodeCompiler();
         var result = await compiler.Compile(new ExecOptions(), code);
-        _outputHelper.WriteLine($"{result.Msg}");
+        outputHelper.WriteLine($"{result.Msg}");
         Assert.Equal(ResultStatus.Success, result.Status);
     }
 
@@ -68,7 +66,7 @@ Console.WriteLine("""
         {
             EnablePreviewFeatures = true
         }, code);
-        _outputHelper.WriteLine($"{result.Msg}");
+        outputHelper.WriteLine($"{result.Msg}");
         Assert.Equal(ResultStatus.Success, result.Status);
     }
 

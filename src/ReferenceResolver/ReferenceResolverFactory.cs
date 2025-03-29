@@ -9,25 +9,12 @@ using System.Reflection;
 
 namespace ReferenceResolver;
 
-public sealed class ReferenceResolverFactory(IServiceProvider? serviceProvider) : IReferenceResolverFactory
+public sealed class ReferenceResolverFactory(IServiceProvider? serviceProvider) 
+    : IReferenceResolverFactory
 {
     private static readonly char[] ReferenceSchemaSeparator = [':'];
 
     private readonly IServiceProvider _serviceProvider = serviceProvider ?? DependencyResolver.Current;
-
-    public static IReference ParseReference(string referenceWithSchema)
-    {
-        var (referenceType, reference) = GetReferenceType(referenceWithSchema);
-        return referenceType switch
-        {
-            ReferenceType.LocalFile => new FileReference(reference),
-            ReferenceType.LocalFolder => new FolderReference(reference),
-            ReferenceType.NuGetPackage => NuGetReference.Parse(reference),
-            ReferenceType.FrameworkReference => new FrameworkReference(reference),
-            ReferenceType.ProjectReference => new ProjectReference(reference),
-            _ => throw new InvalidOperationException($"Not supported reference {referenceWithSchema}")
-        };
-    }
 
     public IReferenceResolver GetResolver(ReferenceType referenceType)
     {
@@ -54,21 +41,21 @@ public sealed class ReferenceResolverFactory(IServiceProvider? serviceProvider) 
 
     public async Task<IEnumerable<string>> ResolveReferences(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
     {
-        var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
+        var (referenceWithoutSchema, resolver) = GetReferenceAndResolverInternal(referenceWithSchema);
         return await resolver.Resolve(referenceWithoutSchema, targetFramework, cancellationToken)
             .ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<string>> ResolveAnalyzers(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
     {
-        var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
+        var (referenceWithoutSchema, resolver) = GetReferenceAndResolverInternal(referenceWithSchema);
         return await resolver.ResolveAnalyzers(referenceWithoutSchema, targetFramework, cancellationToken)
             .ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<MetadataReference>> ResolveMetadataReferences(string referenceWithSchema, string targetFramework, CancellationToken cancellationToken = default)
     {
-        var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
+        var (referenceWithoutSchema, resolver) = GetReferenceAndResolverInternal(referenceWithSchema);
         return await resolver.ResolveMetadataReferences(referenceWithoutSchema, targetFramework, cancellationToken)
             .ConfigureAwait(false);
     }
@@ -76,15 +63,29 @@ public sealed class ReferenceResolverFactory(IServiceProvider? serviceProvider) 
     public async Task<IEnumerable<AnalyzerReference>> ResolveAnalyzerReferences(string referenceWithSchema, string targetFramework,
         IAnalyzerAssemblyLoader? analyzerAssemblyLoader = null, CancellationToken cancellationToken = default)
     {
-        var (referenceWithoutSchema, resolver) = GetReferenceAndResolver(referenceWithSchema);
+        var (referenceWithoutSchema, resolver) = GetReferenceAndResolverInternal(referenceWithSchema);
         return await resolver.ResolveAnalyzerReferences(referenceWithoutSchema, targetFramework, analyzerAssemblyLoader, cancellationToken)
             .ConfigureAwait(false);
     }
-
-    private (string reference, IReferenceResolver referenceResolver) GetReferenceAndResolver(string fullReference)
+    
+    public static IReference ParseReference(string referenceWithSchema)
     {
-        ArgumentNullException.ThrowIfNull(fullReference);
-        var (referenceType, reference) = GetReferenceType(fullReference);
+        var (referenceType, reference) = GetReferenceType(referenceWithSchema);
+        return referenceType switch
+        {
+            ReferenceType.LocalFile => new FileReference(reference),
+            ReferenceType.LocalFolder => new FolderReference(reference),
+            ReferenceType.NuGetPackage => NuGetReference.Parse(reference),
+            ReferenceType.FrameworkReference => new FrameworkReference(reference),
+            ReferenceType.ProjectReference => new ProjectReference(reference),
+            _ => throw new InvalidOperationException($"Not supported reference {referenceWithSchema}")
+        };
+    }
+    
+    private (string reference, IReferenceResolver referenceResolver) GetReferenceAndResolverInternal(string referenceWithSchema)
+    {
+        ArgumentNullException.ThrowIfNull(referenceWithSchema);
+        var (referenceType, reference) = GetReferenceType(referenceWithSchema);
         return (reference, GetResolver(referenceType));
     }
 
