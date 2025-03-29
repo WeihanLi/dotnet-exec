@@ -33,11 +33,11 @@ jobs:
           ${{ matrix.os }}-nuget
     - name: dotnet info
       run: dotnet --info
-    - name: pre-build setup
-      if: matrix.os == 'windows-latest'
-      run: |
-        dotnet tool install --global dotnet-sonarscanner --version 9.1.0
-        dotnet-sonarscanner begin /k:"WeihanLi_dotnet-exec" /o:"weihanli" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+    # - name: pre-build setup
+    #   if: matrix.os == 'windows-latest'
+    #   run: |
+    #     dotnet tool install --global dotnet-sonarscanner --version 9.1.0
+    #     dotnet-sonarscanner begin /k:"WeihanLi_dotnet-exec" /o:"weihanli" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
     - name: build-on-windows
       if: matrix.os == 'windows-latest'
       shell: pwsh
@@ -45,16 +45,16 @@ jobs:
     - name: build-on-non-windows
       if: matrix.os != 'windows-latest'
       run: bash build.sh --target=build
-    # setup Java Runtime for SonarScanner
-    # https://github.com/marketplace/actions/setup-java-jdk#usage
-    - name: Setup Java
-      if: matrix.os == 'windows-latest'
-      uses: actions/setup-java@v4.0.0
-      with:
-        # The Java version to set up. Takes a whole or semver Java version. See examples of supported syntax in README file
-        distribution: 'zulu' # See 'Supported distributions' for available options
-        java-version: '21'
-        java-package: jre
-    - name: post build
-      if: matrix.os == 'windows-latest'
-      run: dotnet-sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+    # # setup Java Runtime for SonarScanner
+    # # https://github.com/marketplace/actions/setup-java-jdk#usage
+    # - name: Setup Java
+    #   if: matrix.os == 'windows-latest'
+    #   uses: actions/setup-java@v4.0.0
+    #   with:
+    #     # The Java version to set up. Takes a whole or semver Java version. See examples of supported syntax in README file
+    #     distribution: 'zulu' # See 'Supported distributions' for available options
+    #     java-version: '21'
+    #     java-package: jre
+    # - name: post build
+    #   if: matrix.os == 'windows-latest'
+    #   run: dotnet-sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
