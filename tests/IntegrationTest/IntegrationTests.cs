@@ -94,7 +94,7 @@ public class IntegrationTests(
         var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
     }
-    
+
     [Theory]
     [InlineData("ConfigurationManagerSample")]
     [InlineData("JsonNodeSample")]
@@ -272,14 +272,18 @@ public class IntegrationTests(
         outputHelper.WriteLine(output.StandardOutput);
     }
 
-    [Fact]
-    public async Task NuGetPackageTest()
+    [Theory]
+    [InlineData("simple")]
+    [InlineData("workspace")]
+    [InlineData(Helper.Project)]
+    public async Task NuGetPackageTest(string compilerType)
     {
         var options = new ExecOptions()
         {
             References = ["nuget:WeihanLi.Npoi,3.0.0"],
             Usings = ["WeihanLi.Npoi"],
-            Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump();"
+            Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump();",
+            CompilerType = compilerType
         };
         var result = await handler.Execute(options);
         Assert.Equal(0, result);
