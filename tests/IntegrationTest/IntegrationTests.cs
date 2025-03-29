@@ -12,7 +12,7 @@ public class IntegrationTests(
     ICompilerFactory compilerFactory,
     IExecutorFactory executorFactory,
     ITestOutputHelper outputHelper
-        )
+    )
 {
     [Theory]
     [InlineData("ConfigurationManagerSample")]
@@ -50,11 +50,8 @@ public class IntegrationTests(
             EnablePreviewFeatures = true
         };
 
-        using var output = await ConsoleOutput.CaptureAsync();
         var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
-
-        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
@@ -93,11 +90,8 @@ public class IntegrationTests(
             EnablePreviewFeatures = true
         };
 
-        using var output = await ConsoleOutput.CaptureAsync();
         var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
-
-        outputHelper.WriteLine(output.StandardOutput);
     }
     
     [Theory]
@@ -132,11 +126,8 @@ public class IntegrationTests(
             EnablePreviewFeatures = true
         };
 
-        using var output = await ConsoleOutput.CaptureAsync();
         var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
-
-        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
@@ -157,11 +148,8 @@ public class IntegrationTests(
             ExecutorType = "project"
         };
 
-        using var output = await ConsoleOutput.CaptureAsync();
         var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
-
-        outputHelper.WriteLine(output.StandardOutput);
     }
     
     [Theory]
@@ -172,10 +160,8 @@ public class IntegrationTests(
     [InlineData("https://gist.githubusercontent.com/WeihanLi/7b4032a32f1a25c5f2d84b6955fa83f3/raw/3e10a606b4121e0b7babcdf68a8fb1203c93c81c/print-date.cs")]
     public async Task RemoteScriptExecute(string fileUrl)
     {
-        using var output = await ConsoleOutput.CaptureAsync();
-        var result = await handler.Execute(new ExecOptions() { Script = fileUrl });
+        var result = await handler.Execute(new ExecOptions { Script = fileUrl });
         Assert.Equal(0, result);
-        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
