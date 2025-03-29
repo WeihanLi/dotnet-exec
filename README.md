@@ -195,6 +195,12 @@ dotnet-exec 'typeof(LocalType).FullName.Dump();' --ad FileLocalType2.cs
 dotnet-exec 'typeof(LocalType).FullName.Dump();' --addition FileLocalType2.cs
 ```
 
+or
+
+```sh
+dotnet-exec 'typeof(LocalType).FullName.Dump();' FileLocalType2.cs
+```
+
 Execute with exacting references and usings from the project file
 
 ``` sh
