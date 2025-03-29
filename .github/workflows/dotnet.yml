@@ -23,6 +23,7 @@ jobs:
         dotnet-version: |
           8.x
           9.x
+          10.x
     - uses: actions/cache@v4
       with:
         path: ~/.nuget/packages
@@ -40,10 +41,10 @@ jobs:
     - name: build-on-windows
       if: matrix.os == 'windows-latest'
       shell: pwsh
-      run: .\build.ps1
+      run: .\build.ps1 --target=test
     - name: build-on-non-windows
       if: matrix.os != 'windows-latest'
-      run: bash build.sh --target=test
+      run: bash build.sh --target=build
     # setup Java Runtime for SonarScanner
     # https://github.com/marketplace/actions/setup-java-jdk#usage
     - name: Setup Java

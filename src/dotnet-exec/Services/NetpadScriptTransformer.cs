@@ -43,7 +43,7 @@ internal sealed class NetpadScriptTransformer : IScriptTransformer
         }
         if ("Expression".EqualsIgnoreCase(scriptData.Config.Kind))
         {
-            context.CompilerType = context.ExecutorType = Helper.Script;
+            context.CompilerType = Helper.Script;
         }
 
         var code = string.Join("\n", scriptLines[(codeIndex + 1)..]);

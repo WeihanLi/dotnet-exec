@@ -12,6 +12,7 @@ public sealed class ExecutorFactory(IServiceProvider serviceProvider) : IExecuto
         return executorType.ToLower(CultureInfo.InvariantCulture) switch
         {
             Helper.Script => serviceProvider.GetRequiredService<CSharpScriptCompilerExecutor>(),
+            "project" => serviceProvider.GetRequiredService<ProjectCodeCompilerExecutor>(),
             _ => serviceProvider.GetRequiredService<DefaultCodeExecutor>()
         };
     }

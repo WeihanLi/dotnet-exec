@@ -18,7 +18,7 @@
     "reference-test": {
       "commandName": "Project",
       "targetFramework": "net8.0",
-      "commandLineArgs": "code:typeof(CsvHelper).Assembly.Location.Dump() -r nuget:WeihanLi.Npoi,2.5.0 -u WeihanLi.Npoi --debug"
+      "commandLineArgs": "code:typeof(CsvHelper).Assembly.Location.Dump() -r nuget:WeihanLi.Npoi,3.0.0 -u WeihanLi.Npoi --debug"
     },
     "script-test": {
       "commandName": "Project",
@@ -84,6 +84,11 @@
       "commandName": "Project",
       "targetFramework": "net8.0",
       "commandLineArgs": "alias unset guid"
+    },
+    "project-compile-test": {
+      "commandName": "Project",
+      "targetFramework": "net10.0",
+      "commandLineArgs": "\"Console.WriteLine(1 + 1);\" --compiler project --debug"
     }
   }
 }

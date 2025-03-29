@@ -4,7 +4,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <!-- Enable Transitive Package Pinning -->
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    <RoslynVersion>4.12.0</RoslynVersion>
+    <RoslynVersion>4.13.0</RoslynVersion>
     <!-- https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages -->    
     <NuGetAudit>true</NuGetAudit>    
     <NuGetAuditMode>all</NuGetAuditMode>
@@ -12,21 +12,20 @@
     <WarningsAsErrors>NU1901;NU1902;NU1903;NU1904</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="System.Text.Json" Version="9.0.0" />
+    <PackageVersion Include="System.Text.Json" Version="9.0.3" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
-    <PackageVersion Include="NuGet.Protocol" Version="6.13.1" />
+    <PackageVersion Include="NuGet.Protocol" Version="6.13.2" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-    <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.74" />
+    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.0-preview.2.25163.2" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.76" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-    <PackageVersion Include="xunit.v3" Version="1.0.1" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="10.2.0" />
+    <PackageVersion Include="xunit.v3" Version="2.0.0" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="10.3.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
   </ItemGroup>
   <ItemGroup>

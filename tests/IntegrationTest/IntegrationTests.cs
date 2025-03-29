@@ -104,7 +104,71 @@ public class IntegrationTests(
 
         _outputHelper.WriteLine(output.StandardOutput);
     }
+    
+    [Theory]
+    [InlineData("ConfigurationManagerSample")]
+    [InlineData("JsonNodeSample")]
+    [InlineData("LinqSample")]
+    [InlineData("RandomSharedSample")]
+    [InlineData("TopLevelSample")]
+    [InlineData("HostApplicationBuilderSample")]
+    [InlineData("DumpAssemblyInfoSample")]
+    [InlineData("WebApiSample")]
+    // [InlineData("EmbeddedReferenceSample")]
+    [InlineData("UsingSample")]
+    [InlineData("FileLocalTypeSample")]
+    [InlineData("SourceGeneratorSample")]
+    [InlineData("ForwardedHeadersSample")]
+    [InlineData("FieldKeywordSample")]
+    public async Task SamplesTestWithProjectCompiler(string sampleFileName)
+    {
+        var filePath = $"{sampleFileName}.cs";
+        var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", filePath);
+        Assert.True(File.Exists(fullPath));
 
+        var execOptions = new ExecOptions()
+        {
+            Script = fullPath,
+            Arguments = ["--hello", "world"],
+            IncludeWebReferences = true,
+            IncludeWideReferences = true,
+            CompilerType = "project",
+            ExecutorType = "project",
+            EnablePreviewFeatures = true
+        };
+
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(execOptions);
+        Assert.Equal(0, result);
+
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
+
+    [Theory]
+    [InlineData(
+        "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/CorrelationIdSample.cs", 
+        "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/BalabalaSample.csproj"
+        )]
+    public async Task Issue06SampleTest(string sampleFileName, string sampleProjectFile)
+    {
+        var execOptions = new ExecOptions()
+        {
+            Script = "await CorrelationIdSample.MainTest();",
+            ProjectPath = sampleProjectFile,
+            AdditionalScripts = [sampleFileName],
+            IncludeWebReferences = false,
+            IncludeWideReferences = false,
+            CompilerType = "project",
+            ExecutorType = "project"
+        };
+
+        using var output = await ConsoleOutput.CaptureAsync();
+        var result = await _handler.Execute(execOptions);
+        Assert.Equal(0, result);
+
+        _outputHelper.WriteLine(output.StandardOutput);
+    }
+    
     [Theory]
     [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs")]
     [InlineData("https://raw.githubusercontent.com/WeihanLi/SamplesInPractice/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs")]
@@ -231,7 +295,7 @@ public class IntegrationTests(
     {
         var options = new ExecOptions()
         {
-            References = ["nuget:WeihanLi.Npoi,2.5.0"],
+            References = ["nuget:WeihanLi.Npoi,3.0.0"],
             Usings = ["WeihanLi.Npoi"],
             Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump();"
         };
@@ -336,7 +400,6 @@ public class IntegrationTests(
         {
             ProjectPath = fullProjectPath,
             IncludeWideReferences = false,
-            // Script = "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/CorrelationIdSample.cs"
             Script = fullPath,
             CompilerType = "simple"
         };

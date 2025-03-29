@@ -1,5 +1,10 @@
 # Release Notes
 
+## 0.26.0
+
+- feat: `net10.0` support
+- feat: project code compiler/executor
+
 ## 0.25.0
 
 - feat: remove `net6.0`/`net7.0` support

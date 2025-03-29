@@ -130,7 +130,7 @@ internal sealed class ProjectFileOptionsConfigureMiddleware
 
                 }
             }
-            var duration = ProfilerHelper.GetElapsedTime(startTime);
+            var duration = Stopwatch.GetElapsedTime(startTime);
             logger.LogDebug("Exact info from project file elapsed time: {duration}", duration);
         }
         await next(options);

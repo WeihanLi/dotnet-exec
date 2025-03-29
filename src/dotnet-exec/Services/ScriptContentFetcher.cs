@@ -59,7 +59,7 @@ public sealed class ScriptContentFetcher(HttpClient httpClient, IUriTransformer 
         if (scriptFile.StartsWith(scriptPrefix, StringComparison.Ordinal))
         {
             var code = scriptFile[scriptPrefix.Length..];
-            options.ExecutorType = options.CompilerType = Helper.Script;
+            options.CompilerType = Helper.Script;
             return Result.Success<string>(code);
         }
 
@@ -70,7 +70,7 @@ public sealed class ScriptContentFetcher(HttpClient httpClient, IUriTransformer 
         }
         if (options.Script == sourceTextResult.Data && !sourceTextResult.Data.EndsWith(';'))
         {
-            options.ExecutorType = options.CompilerType = Helper.Script;
+            options.CompilerType = Helper.Script;
         }
         var sourceText = sourceTextResult.Data;
         Guard.NotNull(sourceText);
