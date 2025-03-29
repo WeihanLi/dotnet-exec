@@ -3,7 +3,7 @@
 
 namespace Exec.Commands;
 
-public sealed class ConfigProfileCommand : Command
+internal sealed class ConfigProfileCommand : Command
 {
     public ConfigProfileCommand() : base("profile", "Configure user config profile")
     {

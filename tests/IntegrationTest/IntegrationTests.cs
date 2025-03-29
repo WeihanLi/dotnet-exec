@@ -645,7 +645,7 @@ public class IntegrationTests(
 
     [Theory]
     [InlineData("NetpadExecSample")]
-    public async Task NetpadExecTest(string sampleName)
+    public async Task NetPadExecTest(string sampleName)
     {
         var filePath = $"{sampleName}.netpad";
         var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", filePath);
@@ -665,17 +665,17 @@ public class IntegrationTests(
         _outputHelper.WriteLine(output.StandardOutput);
     }
 
-    public static IEnumerable<object[]> EntryMethodWithExitCodeTestData()
+    public static IEnumerable<TheoryDataRow<int, string>> EntryMethodWithExitCodeTestData()
     {
-        yield return [0, @"Console.WriteLine(""Amazing dotnet"");"];
+        yield return new TheoryDataRow<int, string>(0, """Console.WriteLine("Amazing dotnet");""");
 
-        yield return [0, "return 0;"];
-        yield return [1, "return 1;"];
+        yield return new TheoryDataRow<int, string>(0, "return 0;");
+        yield return new TheoryDataRow<int, string>(1, "return 1;");
 
-        yield return [0, "return await Task.FromResult(0);"];
-        yield return [1, "return await Task.FromResult(1);"];
+        yield return new TheoryDataRow<int, string>(0, "return await Task.FromResult(0);");
+        yield return new TheoryDataRow<int, string>(1, "return await Task.FromResult(1);");
 
-        yield return [0, "return await ValueTask.FromResult(0);"];
-        yield return [1, "return await ValueTask.FromResult(1);"];
+        yield return new TheoryDataRow<int, string>(0, "return await ValueTask.FromResult(0);");
+        yield return new TheoryDataRow<int, string>(1, "return await ValueTask.FromResult(1);");
     }
 }

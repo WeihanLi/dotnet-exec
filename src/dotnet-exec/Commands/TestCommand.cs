@@ -10,7 +10,7 @@ internal sealed class TestCommand : Command
     private readonly Argument<string[]> _testFileArgument = new
     (
         "testFiles",
-        "The xunit test file to execute"
+        "The xunit test files to test"
     )
     {
         Arity = ArgumentArity.OneOrMore
