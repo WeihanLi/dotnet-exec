@@ -15,6 +15,10 @@ internal sealed class TestCommand : Command
     {
         Arity = ArgumentArity.OneOrMore
     };
+
+    private const string XunitPackageReference = "nuget: xunit.v3,2.0.0";
+    private const string XunitNamespace = "global::Xunit";
+    private const string XunitV3Namespace = "global::Xunit.v3";
     
     public TestCommand() : base("test", "Execute xunit test cases")
     {
@@ -29,16 +33,8 @@ internal sealed class TestCommand : Command
 
     public async Task<int> InvokeAsync(InvocationContext context, CommandHandler commandHandler)
     {
-        var testFiles = context.ParseResult.GetValueForArgument(_testFileArgument);
-        
         var options = new ExecOptions
         {
-            Script = XunitTestEntryCode,
-            AdditionalScripts = [..testFiles],
-            References = ["nuget: xunit.v3,2.0.0"],
-            Usings = ["global::Xunit", "global::Xunit.v3"],
-            CompilerType = Helper.Project,
-            ExecutorType = Helper.Project,
             CancellationToken = context.GetCancellationToken()
         };
         
@@ -57,6 +53,19 @@ internal sealed class TestCommand : Command
         options.EnablePreviewFeatures = context.ParseResult.GetValueForOption(ExecOptions.PreviewOption);
         options.IncludeWideReferences = false;
 
-        return await commandHandler.Execute(options);
+        var testFiles = context.ParseResult.GetValueForArgument(_testFileArgument);
+
+        return await ExecuteAsync(commandHandler, options, testFiles);
+    }
+
+    public static Task<int> ExecuteAsync(CommandHandler commandHandler,ExecOptions options, params IEnumerable<string> testFiles)
+    {
+        options.Script = XunitTestEntryCode;
+        options.AdditionalScripts = [..testFiles];
+        options.References.Add(XunitPackageReference);
+        options.Usings.Add(XunitNamespace);
+        options.Usings.Add(XunitV3Namespace);
+        options.ExecutorType = options.CompilerType = Helper.Project;
+        return commandHandler.Execute(options);
     }
 }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2022-2024 Weihan Li. All rights reserved.
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
+using Exec.Commands;
 using WeihanLi.Common.Models;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
@@ -644,6 +645,24 @@ public class IntegrationTests(
         Assert.Equal(0, result);
 
         outputHelper.WriteLine(output.StandardOutput);
+    }
+    
+    [Theory]
+    [InlineData("XunitSample")]
+    public async Task TestCommandExecuteTest(string sampleName)
+    {
+        var filePath = $"{sampleName}.cs";
+        var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", filePath);
+        Assert.True(File.Exists(fullPath));
+
+        var execOptions = new ExecOptions()
+        {
+            IncludeWebReferences = false,
+            IncludeWideReferences = false,
+        };
+
+        var result = await TestCommand.ExecuteAsync(handler, execOptions, fullPath);
+        Assert.Equal(0, result);
     }
 
     public static IEnumerable<TheoryDataRow<int, string>> EntryMethodWithExitCodeTestData()
