@@ -1,9 +1,14 @@
 # Release Notes
 
+## 0.27.0
+
+- feat: .NET 10 Preview 2 upgrade
+- feat: test command support, support execute xunit test cases
+
 ## 0.26.0
 
 - feat: `net10.0` support
-- feat: project code compiler/executor
+- feat: initial project code compiler/executor
 
 ## 0.25.0
 
