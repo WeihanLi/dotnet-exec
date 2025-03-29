@@ -14,11 +14,6 @@ public class IntegrationTests(
     ITestOutputHelper outputHelper
         )
 {
-    private readonly CommandHandler _handler = handler;
-    private readonly ICompilerFactory _compilerFactory = compilerFactory;
-    private readonly IExecutorFactory _executorFactory = executorFactory;
-    private readonly ITestOutputHelper _outputHelper = outputHelper;
-
     [Theory]
     [InlineData("ConfigurationManagerSample")]
     [InlineData("JsonNodeSample")]
@@ -56,10 +51,10 @@ public class IntegrationTests(
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(execOptions);
+        var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
 
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
@@ -99,10 +94,10 @@ public class IntegrationTests(
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(execOptions);
+        var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
 
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
     
     [Theory]
@@ -138,10 +133,10 @@ public class IntegrationTests(
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(execOptions);
+        var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
 
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
@@ -163,10 +158,10 @@ public class IntegrationTests(
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(execOptions);
+        var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
 
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
     
     [Theory]
@@ -178,9 +173,9 @@ public class IntegrationTests(
     public async Task RemoteScriptExecute(string fileUrl)
     {
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(new ExecOptions() { Script = fileUrl });
+        var result = await handler.Execute(new ExecOptions() { Script = fileUrl });
         Assert.Equal(0, result);
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
@@ -203,10 +198,10 @@ public class IntegrationTests(
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(execOptions);
+        var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
 
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
@@ -216,9 +211,9 @@ public class IntegrationTests(
     public async Task CodeTextExecute(string code)
     {
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(new ExecOptions() { Script = code });
+        var result = await handler.Execute(new ExecOptions() { Script = code });
         Assert.Equal(0, result);
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
@@ -226,9 +221,9 @@ public class IntegrationTests(
     public async Task ImplicitScriptTextExecute(string code)
     {
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(new ExecOptions() { Script = code });
+        var result = await handler.Execute(new ExecOptions() { Script = code });
         Assert.Equal(0, result);
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
@@ -238,35 +233,35 @@ public class IntegrationTests(
     public async Task ScriptTextExecute(string code)
     {
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(new ExecOptions() { Script = code });
+        var result = await handler.Execute(new ExecOptions() { Script = code });
         Assert.Equal(0, result);
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Fact]
     public async Task ScriptStaticUsingTest()
     {
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(new ExecOptions()
+        var result = await handler.Execute(new ExecOptions()
         {
             Script = "WriteLine(Math.PI)",
             Usings = ["static System.Console"]
         });
         Assert.Equal(0, result);
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Fact]
     public async Task ScriptUsingAliasTest()
     {
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(new ExecOptions()
+        var result = await handler.Execute(new ExecOptions()
         {
             Script = "MyConsole.WriteLine(Math.PI)",
             Usings = ["MyConsole = System.Console"]
         });
         Assert.Equal(0, result);
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
@@ -275,19 +270,19 @@ public class IntegrationTests(
     public async Task AssemblyLoadContextExecutorTest(string code)
     {
         var options = new ExecOptions();
-        var compiler = _compilerFactory.GetCompiler(options.CompilerType);
+        var compiler = compilerFactory.GetCompiler(options.CompilerType);
         var result = await compiler.Compile(options, code);
         if (result.Msg.IsNotNullOrEmpty())
-            _outputHelper.WriteLine(result.Msg);
+            outputHelper.WriteLine(result.Msg);
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
         using var output = await ConsoleOutput.CaptureAsync();
-        var executor = _executorFactory.GetExecutor(options.ExecutorType);
+        var executor = executorFactory.GetExecutor(options.ExecutorType);
         var executeResult = await executor.Execute(Guard.NotNull(result.Data), options);
         if (executeResult.Msg.IsNotNullOrEmpty())
-            _outputHelper.WriteLine(executeResult.Msg);
+            outputHelper.WriteLine(executeResult.Msg);
         Assert.True(executeResult.IsSuccess());
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Fact]
@@ -299,7 +294,7 @@ public class IntegrationTests(
             Usings = ["WeihanLi.Npoi"],
             Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump();"
         };
-        var result = await _handler.Execute(options);
+        var result = await handler.Execute(options);
         Assert.Equal(0, result);
     }
 
@@ -317,11 +312,11 @@ public class IntegrationTests(
             Usings = ["WeihanLi.Npoi"],
             Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump()"
         };
-        var result = await _handler.Execute(options);
+        var result = await handler.Execute(options);
         Assert.Equal(0, result);
         Assert.NotNull(output.StandardOutput);
         Assert.NotEmpty(output.StandardOutput);
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory(
@@ -338,11 +333,11 @@ public class IntegrationTests(
             Usings = ["WeihanLi.Npoi"],
             Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump()"
         };
-        var result = await _handler.Execute(options);
+        var result = await handler.Execute(options);
         Assert.Equal(0, result);
         Assert.NotNull(output.StandardOutput);
         Assert.NotEmpty(output.StandardOutput);
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
 
@@ -360,11 +355,11 @@ public class IntegrationTests(
             Usings = ["WeihanLi.Npoi"],
             Script = "CsvHelper.GetCsvText(new[]{1,2,3}).Dump()"
         };
-        var result = await _handler.Execute(options);
+        var result = await handler.Execute(options);
         Assert.Equal(0, result);
         Assert.NotNull(output.StandardOutput);
         Assert.NotEmpty(output.StandardOutput);
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
@@ -377,7 +372,7 @@ public class IntegrationTests(
             ProjectPath = projectPath,
             Script = "System.Console.WriteLine(MyFile.Exists(\"appsettings.json\"));"
         };
-        var result = await _handler.Execute(options);
+        var result = await handler.Execute(options);
         Assert.Equal(0, result);
     }
 
@@ -403,7 +398,7 @@ public class IntegrationTests(
             Script = fullPath,
             CompilerType = "simple"
         };
-        var result = await _handler.Execute(options);
+        var result = await handler.Execute(options);
         Assert.Equal(0, result);
     }
 
@@ -419,8 +414,8 @@ public class IntegrationTests(
             Script = "Console.Write(typeof(System.Text.Json.JsonSerializer).Assembly.GetName().Version.ToString(2));"
         };
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(options);
-        _outputHelper.WriteLine(output.StandardOutput);
+        var result = await handler.Execute(options);
+        outputHelper.WriteLine(output.StandardOutput);
         Assert.Equal(0, result);
         // Assert.Equal(version, output.StandardOutput);
     }
@@ -433,7 +428,7 @@ public class IntegrationTests(
         {
             Script = code
         };
-        var result = await _handler.Execute(options);
+        var result = await handler.Execute(options);
         Assert.Equal(expectedExitCode, result);
     }
 
@@ -447,8 +442,8 @@ public class IntegrationTests(
         var result = await CommandExecutor.ExecuteAndCaptureAsync(
             exePath, $"\"Environment.ExitCode = {exitCode};\"", cancellationToken: TestContext.Current.CancellationToken
             );
-        _outputHelper.WriteLine(result.StandardOut);
-        _outputHelper.WriteLine(result.StandardError);
+        outputHelper.WriteLine(result.StandardOut);
+        outputHelper.WriteLine(result.StandardError);
         Assert.Equal(exitCode, result.ExitCode);
     }
 
@@ -477,10 +472,10 @@ public class IntegrationTests(
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(execOptions);
+        var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
 
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory(
@@ -508,10 +503,10 @@ public class IntegrationTests(
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(execOptions);
+        var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
 
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
@@ -534,10 +529,10 @@ public class IntegrationTests(
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(execOptions);
+        var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
 
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
@@ -558,10 +553,10 @@ public class IntegrationTests(
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(execOptions);
+        var result = await handler.Execute(execOptions);
         Assert.NotEqual(0, result);
 
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Fact]
@@ -579,7 +574,7 @@ public class IntegrationTests(
             Script = code,
             DryRun = true,
         };
-        await _handler.Execute(options);
+        await handler.Execute(options);
         Assert.Single(options.References);
     }
 
@@ -597,7 +592,7 @@ public class IntegrationTests(
             DryRun = true,
             References = ["-nuget: WeihanLi.Common, 1.0.64"]
         };
-        await _handler.Execute(options);
+        await handler.Execute(options);
         Assert.Empty(options.References);
     }
 
@@ -615,7 +610,7 @@ public class IntegrationTests(
             DryRun = true,
             References = ["- nuget: WeihanLi.Common"]
         };
-        await _handler.Execute(options);
+        await handler.Execute(options);
         Assert.Empty(options.References);
     }
 
@@ -637,10 +632,10 @@ public class IntegrationTests(
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(execOptions);
+        var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
 
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     [Theory]
@@ -659,10 +654,10 @@ public class IntegrationTests(
         };
 
         using var output = await ConsoleOutput.CaptureAsync();
-        var result = await _handler.Execute(execOptions);
+        var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
 
-        _outputHelper.WriteLine(output.StandardOutput);
+        outputHelper.WriteLine(output.StandardOutput);
     }
 
     public static IEnumerable<TheoryDataRow<int, string>> EntryMethodWithExitCodeTestData()

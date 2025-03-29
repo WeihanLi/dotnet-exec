@@ -7,8 +7,6 @@ namespace IntegrationTest;
 
 public class ConfigProfileManagerTests(IConfigProfileManager configProfileManager)
 {
-    private readonly IConfigProfileManager _configProfileManager = configProfileManager;
-
     [Fact]
     public async Task ProfileOperation()
     {
@@ -18,22 +16,22 @@ public class ConfigProfileManagerTests(IConfigProfileManager configProfileManage
             EntryPoint = "Execute"
         };
         var name = Guid.NewGuid().ToString();
-        var getProfile = await _configProfileManager.GetProfile(name);
+        var getProfile = await configProfileManager.GetProfile(name);
         Assert.Null(getProfile);
         try
         {
-            await _configProfileManager.ConfigureProfile(name, profile);
-            getProfile = await _configProfileManager.GetProfile(name);
+            await configProfileManager.ConfigureProfile(name, profile);
+            getProfile = await configProfileManager.GetProfile(name);
             Assert.NotNull(getProfile);
             Assert.Equal(profile.IncludeWideReferences, getProfile.IncludeWideReferences);
             Assert.Equal(profile.EntryPoint, getProfile.EntryPoint);
 
-            var profiles = await _configProfileManager.ListProfiles();
+            var profiles = await configProfileManager.ListProfiles();
             Assert.NotEmpty(profiles);
         }
         finally
         {
-            await _configProfileManager.DeleteProfile(name);
+            await configProfileManager.DeleteProfile(name);
         }
     }
 }

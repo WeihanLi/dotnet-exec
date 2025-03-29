@@ -9,7 +9,6 @@ namespace UnitTest;
 
 public sealed class CodeExecutorTest(ITestOutputHelper outputHelper)
 {
-    private readonly ITestOutputHelper _outputHelper = outputHelper;
     private readonly SimpleCodeCompiler _compiler = SimpleCodeCompilerTest.GetSimpleCodeCompiler();
 
     [Theory]
@@ -22,13 +21,13 @@ public sealed class CodeExecutorTest(ITestOutputHelper outputHelper)
             Arguments = ["--hello", "world"]
         };
         var result = await _compiler.Compile(execOptions, code);
-        _outputHelper.WriteLine($"{result.Msg}");
+        outputHelper.WriteLine($"{result.Msg}");
         Assert.True(result.IsSuccess());
         Assert.NotNull(result.Data);
         Guard.NotNull(result.Data);
         var executor = new DefaultCodeExecutor(RefResolver.InstanceForTest, NullLogger.Instance);
         var executeResult = await executor.Execute(result.Data, execOptions);
-        _outputHelper.WriteLine($"{executeResult.Msg}");
+        outputHelper.WriteLine($"{executeResult.Msg}");
         Assert.True(executeResult.IsSuccess());
     }
 
@@ -62,7 +61,7 @@ internal class SomeTest
         Guard.NotNull(result.Data);
         var executor = new DefaultCodeExecutor(RefResolver.InstanceForTest, NullLogger.Instance);
         var executeResult = await executor.Execute(result.Data, execOptions);
-        _outputHelper.WriteLine($"{executeResult.Msg}");
+        outputHelper.WriteLine($"{executeResult.Msg}");
         Assert.True(executeResult.IsSuccess());
     }
 
@@ -114,7 +113,7 @@ class B
         var executor = new DefaultCodeExecutor(RefResolver.InstanceForTest, NullLogger.Instance);
         var executeResult = await executor.Execute(result.Data, options);
         Assert.NotNull(executeResult.Msg);
-        _outputHelper.WriteLine(executeResult.Msg);
+        outputHelper.WriteLine(executeResult.Msg);
         Assert.False(executeResult.IsSuccess());
     }
 }
