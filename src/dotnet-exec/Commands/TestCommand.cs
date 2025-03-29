@@ -27,7 +27,6 @@ internal sealed class TestCommand : Command
         AddOption(ExecOptions.UsingsOption);
         AddOption(ExecOptions.ReferencesOption);
         AddOption(ExecOptions.WebReferencesOption);
-        AddOption(ExecOptions.WideReferencesOption);
         AddOption(ExecOptions.PreviewOption);
     }
 
