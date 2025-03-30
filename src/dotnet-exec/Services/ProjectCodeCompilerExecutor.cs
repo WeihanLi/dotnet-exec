@@ -2,6 +2,7 @@
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 using ReferenceResolver;
+using System.Diagnostics;
 using System.Text;
 using WeihanLi.Common.Extensions;
 using WeihanLi.Common.Models;
@@ -53,7 +54,7 @@ internal sealed class ProjectCodeCompilerExecutor(
         }
 
         await File.WriteAllTextAsync(projectFilePath, projectFileContent);
-        logger.LogDebug("Project file created. Path: {ProjectPath}, {Content}",
+        logger.LogDebug("Project file created. Path: {ProjectFilePath} \n{ProjectFileContent}",
             projectFilePath, projectFileContent);
         
         var outputDir = Path.Combine(tempFolderPath, "output");
@@ -70,8 +71,9 @@ internal sealed class ProjectCodeCompilerExecutor(
         
         var result = new CompileResult(null!, null!, null!);
         result.SetProperty(nameof(execId), execId);
+        result.SetProperty(nameof(tempFolderPath), tempFolderPath);
         result.SetProperty(nameof(outputDir), outputDir);
-        logger.LogDebug("Project code compile succeeded. ExecId: {ExecId}, output: {OutputDir}", execId, outputDir);
+        logger.LogDebug("Project code compile succeeded. ExecId: {ExecId}, temp folder: {TempFolder}, output: {OutputDir}", execId, tempFolderPath, outputDir);
 
         if (options.DryRun)
         {
@@ -82,13 +84,24 @@ internal sealed class ProjectCodeCompilerExecutor(
 
     public async Task<Result<int>> Execute(CompileResult compileResult, ExecOptions options)
     {
+        const string dllFileName = "exec.dll";
         var outputDir = compileResult.GetProperty<string>("outputDir");
         Guard.NotNull(outputDir);
-        var outputDllPath = Path.Combine(outputDir, "exec.dll");
         var dotnetPath = ApplicationHelper.GetDotnetPath();
         Guard.NotNull(dotnetPath);
-        var exitCode = await CommandExecutor.ExecuteAndOutputAsync(dotnetPath, $"{outputDllPath}", workingDirectory: outputDir);
-        Directory.GetParent(outputDir)?.Delete(true);
+        var exitCode = await CommandExecutor.ExecuteAndOutputAsync(dotnetPath, dllFileName, workingDirectory: outputDir);
+        
+        var tempFolderPath = compileResult.GetProperty<string>("tempFolderPath");
+        try
+        {
+            Debug.Assert(tempFolderPath is not null);
+            Directory.Delete(tempFolderPath, true);
+        }
+        catch (Exception e)
+        {
+            logger.LogDebug(e, "Failed to delete temp folder {TempFolderPath}", tempFolderPath);
+        }
+        
         if (exitCode != 0)
         {
             return Result.Fail(
@@ -196,7 +209,7 @@ internal sealed class ProjectCodeCompilerExecutor(
         }
     }
 
-    private static string GetPath(string tempFolderPath, string script, string? fileName = null)
+    private string GetPath(string tempFolderPath, string script, string? fileName = null)
     {
         if (File.Exists(script))
         {
@@ -206,6 +219,8 @@ internal sealed class ProjectCodeCompilerExecutor(
         var scriptFileName = fileName ?? Path.GetRandomFileName();
         var scriptPath = Path.Combine(tempFolderPath, $"{scriptFileName}.cs");
         File.WriteAllText(scriptPath, script);
+        
+        logger.LogDebug("script file created at {ScriptPath}, script content: \n{ScriptContent}", scriptPath, script);
         return Path.GetRelativePath(tempFolderPath, scriptPath);
     }
 }

@@ -28,6 +28,7 @@ internal sealed class TestCommand : Command
         AddOption(ExecOptions.ReferencesOption);
         AddOption(ExecOptions.WebReferencesOption);
         AddOption(ExecOptions.PreviewOption);
+        AddOption(ExecOptions.DebugOption);
     }
 
     public async Task<int> InvokeAsync(InvocationContext context, CommandHandler commandHandler)

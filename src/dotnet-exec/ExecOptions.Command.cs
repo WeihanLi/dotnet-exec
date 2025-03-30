@@ -98,8 +98,8 @@ public sealed partial class ExecOptions
 
     private static readonly Option<string?> CompileOutputOption = new(["--compile-out"], "Compiled dll output path");
 
+    internal static readonly Option<bool> DebugOption = new("--debug", "Enable debug logs for debug");
 #pragma warning disable IDE0052
-    private static readonly Option<bool> DebugOption = new("--debug", "Enable debug logs for debug");
     private static readonly Option<bool> InfoOption = new(["--info"], "Tool version and runtime info");
 #pragma warning restore IDE0052
 
