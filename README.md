@@ -9,6 +9,10 @@ ReferenceResolver | [![ReferenceResolver](https://img.shields.io/nuget/v/Referen
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/weihanli/dotnet-exec)](https://hub.docker.com/r/weihanli/dotnet-exec)
 
+[![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/WeihanLi/dotnet-exec)](https://github.com/WeihanLi/dotnet-exec/commits/main)
+
+![GitHub Release](https://img.shields.io/github/v/release/WeihanLi/dotnet-exec)
+
 [![BuiltWithDot.Net shield](https://builtwithdot.net/project/5741/dotnet-exec/badge)](https://builtwithdot.net/project/5741/dotnet-exec)
 
 [中文介绍](./README.zh-CN.md)
