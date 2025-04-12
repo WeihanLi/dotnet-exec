@@ -9,6 +9,12 @@ ReferenceResolver | [![ReferenceResolver](https://img.shields.io/nuget/v/Referen
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/weihanli/dotnet-exec)](https://hub.docker.com/r/weihanli/dotnet-exec)
 
+[![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/WeihanLi/dotnet-exec)](https://github.com/WeihanLi/dotnet-exec/commits/main)
+
+![GitHub Release](https://img.shields.io/github/v/release/WeihanLi/dotnet-exec)
+
+[![BuiltWithDot.Net shield](https://builtwithdot.net/project/5741/dotnet-exec/badge)](https://builtwithdot.net/project/5741/dotnet-exec)
+
 [For English](./README.md)
 
 ## Intro
@@ -29,6 +35,18 @@ dotnet tool update -g dotnet-execute
 
 ```sh
 dotnet tool update -g dotnet-execute --prerelease
+```
+
+安装失败？尝试下面的命令
+
+```sh
+dotnet tool update -g dotnet-execute --source https://api.nuget.org/v3/index.json
+```
+
+或者
+
+```sh
+dotnet tool update -g dotnet-execute --prerelease --add-source https://api.nuget.org/v3/index.json --ignore-failed-sources
 ```
 
 ### 容器支持

@@ -53,6 +53,8 @@ Install failed? try the command below:
 dotnet tool update -g dotnet-execute --source https://api.nuget.org/v3/index.json
 ```
 
+or
+
 ```sh
 dotnet tool update -g dotnet-execute --prerelease --add-source https://api.nuget.org/v3/index.json --ignore-failed-sources
 ```
