@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "dotnet-exec Docs": {
+      "type": "sse",
+      "url": "https://gitmcp.io/WeihanLi/dotnet-exec"
+    }
+  }
+}
