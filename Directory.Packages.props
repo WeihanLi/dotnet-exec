@@ -16,10 +16,10 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
-    <PackageVersion Include="NuGet.Protocol" Version="6.13.2" />
+    <PackageVersion Include="NuGet.Protocol" Version="6.14.0" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.0-preview.3.25171.5" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.77" />
+    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.0-preview.4.25258.110" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.78-preview-20250514-140950" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="xunit.v3" Version="2.0.2" />
