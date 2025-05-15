@@ -20,17 +20,11 @@ jobs:
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v4
       with:
+        cache: true
         dotnet-version: |
           8.x
           9.x
           10.x
-    - uses: actions/cache@v4
-      with:
-        path: ~/.nuget/packages
-        # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.*', '**/*.csproj') }}
-        restore-keys: |
-          ${{ matrix.os }}-nuget
     - name: dotnet info
       run: dotnet --info
     # - name: pre-build setup
