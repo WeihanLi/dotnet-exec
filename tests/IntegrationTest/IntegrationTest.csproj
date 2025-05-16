@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Xunit.DependencyInjection" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\src\dotnet-exec\dotnet-exec.csproj" />
   </ItemGroup>
 

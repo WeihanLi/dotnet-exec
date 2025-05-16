@@ -5,6 +5,7 @@ var target = CommandLineParser.Val(args, "target", "Default");
 var apiKey = CommandLineParser.Val(args, "apiKey");
 var stable = CommandLineParser.BooleanVal(args, "stable");
 var noPush = CommandLineParser.BooleanVal(args, "noPush");
+var runningOnGithubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
 
 Console.WriteLine($$"""
 Arguments:
@@ -52,7 +53,11 @@ await new BuildProcessBuilder()
             {
                 foreach (var project in testProjects)
                 {
-                    await ExecuteCommandAsync($"dotnet test --blame --collect:\"XPlat Code Coverage;Format=cobertura,opencover;ExcludeByAttribute=ExcludeFromCodeCoverage,Obsolete,GeneratedCode,CompilerGenerated\" -v=d {project}", cancellationToken);
+                    var loggerOptions = runningOnGithubActions
+                        ? "--logger GitHubActions"
+                        : "--logger \"console;verbosity=d\"";
+                    var command = $"dotnet test --blame --collect:\"XPlat Code Coverage;Format=cobertura,opencover;ExcludeByAttribute=ExcludeFromCodeCoverage,Obsolete,GeneratedCode,CompilerGenerated\" {loggerOptions} -v=d {project}";
+                    await ExecuteCommandAsync(command, cancellationToken);
                 }
             })
             ;
