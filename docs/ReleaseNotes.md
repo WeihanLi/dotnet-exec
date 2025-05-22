@@ -1,5 +1,10 @@
 # Release Notes
 
+## 0.28.0
+
+- feat: .NET 10 Preview 4 upgrade
+- feat: project compiler support
+
 ## 0.27.0
 
 - feat: .NET 10 Preview 2 upgrade
