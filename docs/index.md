@@ -8,6 +8,8 @@ _layout: landing
 
 `dotnet-exec` is a command-line tool for executing C# program without a project file, and you can have your custom entry point other than the `Main` method
 
+[![DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/WeihanLi/dotnet-exec)
+
 Slides:
 
 - [Makes C# more simple -- .NET Conf China 2022](https://github.com/WeihanLi/dotnet-exec/blob/main/docs/slides/dotnet-conf-china-2022-dotnet-exec_makes_csharp_more_simple.pdf)
