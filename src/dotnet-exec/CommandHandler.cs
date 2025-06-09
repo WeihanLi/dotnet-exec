@@ -53,14 +53,33 @@ public sealed class CommandHandler(ILogger logger,
     {
         if (options.Script.IsNullOrWhiteSpace())
         {
-            await repl.RunAsync(options);
-            return 0;
+            // try to read script content from stdin
+            var inputText = await Console.In.ReadToEndAsync();
+            if (string.IsNullOrEmpty(inputText))
+            {
+                // start REPL when no input here
+                await repl.RunAsync(options);
+                return 0;
+            }
+            
+            logger.LogDebug("Script read from stdin {Script}", inputText);
+            if (string.IsNullOrEmpty(options.Script))
+            {
+                options.Script = inputText;
+            }
+            else
+            {
+                var script = options.Script;
+                options.AdditionalScripts ??= [];
+                options.AdditionalScripts.Add(script);
+                options.Script = inputText;
+            }
         }
 
         // pre-configure pipeline before fetch script content
         await optionsPreConfigurePipeline.Execute(options);
 
-        // fetch script
+        // fetch the script
         var fetchResult = await scriptContentFetcher.FetchContent(options);
         if (!fetchResult.IsSuccess())
         {
@@ -147,7 +166,7 @@ public sealed class CommandHandler(ILogger logger,
         }
         finally
         {
-            // wait for console flush
+            // wait for the console flush
             await Console.Out.FlushAsync();
         }
     }
