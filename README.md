@@ -11,7 +11,7 @@ ReferenceResolver | [![ReferenceResolver](https://img.shields.io/nuget/v/Referen
 
 [![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/WeihanLi/dotnet-exec)](https://github.com/WeihanLi/dotnet-exec/commits/main)
 
-![GitHub Release](https://img.shields.io/github/v/release/WeihanLi/dotnet-exec)
+[![GitHub Release](https://img.shields.io/github/v/release/WeihanLi/dotnet-exec)](https://github.com/WeihanLi/dotnet-exec/releases)
 
 [![BuiltWithDot.Net shield](https://builtwithdot.net/project/5741/dotnet-exec/badge)](https://builtwithdot.net/project/5741/dotnet-exec)
 
