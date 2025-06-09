@@ -104,3 +104,4 @@ dotnet_diagnostic.IDE0073.severity = warning
 [*.{cs,vb}]
 dotnet_diagnostic.IDE0011.severity = none
 dotnet_diagnostic.IDE0046.severity = none
+dotnet_diagnostic.CA2254.severity = none
