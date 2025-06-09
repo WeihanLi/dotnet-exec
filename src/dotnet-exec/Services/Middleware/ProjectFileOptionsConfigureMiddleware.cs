@@ -13,7 +13,7 @@ internal sealed class ProjectFileOptionsConfigureMiddleware
 {
     public async Task InvokeAsync(ExecOptions options, Func<ExecOptions, Task> next)
     {
-        // exact reference and usings from project file
+        // exact reference and usings from the project file
         if (options.ProjectPath.IsNotNullOrEmpty())
         {
             var startTime = Stopwatch.GetTimestamp();
@@ -131,7 +131,7 @@ internal sealed class ProjectFileOptionsConfigureMiddleware
                 }
             }
             var duration = Stopwatch.GetElapsedTime(startTime);
-            logger.LogDebug("Exact info from project file elapsed time: {duration}", duration);
+            logger.LogDebug("Extract info from project file elapsed time: {duration}", duration);
         }
         await next(options);
     }
