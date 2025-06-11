@@ -51,12 +51,12 @@ await new BuildProcessBuilder()
             .WithDependency("build")
             .WithExecution(async cancellationToken =>
             {
+                var loggerOptions = runningOnGithubActions
+                        ? "--logger GitHubActions"
+                        : "";
                 foreach (var project in testProjects)
                 {
-                    var loggerOptions = runningOnGithubActions
-                        ? "--logger GitHubActions"
-                        : "--logger \"console;verbosity=d\"";
-                    var command = $"dotnet test --blame --collect:\"XPlat Code Coverage;Format=cobertura,opencover;ExcludeByAttribute=ExcludeFromCodeCoverage,Obsolete,GeneratedCode,CompilerGenerated\" {loggerOptions} -v=d {project}";
+                    var command = $"dotnet test --blame --collect:\"XPlat Code Coverage;Format=cobertura,opencover;ExcludeByAttribute=ExcludeFromCodeCoverage,Obsolete,GeneratedCode,CompilerGenerated\" {loggerOptions} {project}";
                     await ExecuteCommandAsync(command, cancellationToken);
                 }
             })
