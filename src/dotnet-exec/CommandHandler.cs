@@ -54,7 +54,12 @@ public sealed class CommandHandler(ILogger logger,
         if (options.Script.IsNullOrWhiteSpace())
         {
             // try to read script content from stdin
-            var inputText = await Console.In.ReadToEndAsync();
+            var inputText = string.Empty;
+            if (Console.IsInputRedirected && Console.In.Peek() != -1)
+            {
+                inputText = await Console.In.ReadToEndAsync();
+            }
+
             if (string.IsNullOrEmpty(inputText))
             {
                 // start REPL when no input here
