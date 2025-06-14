@@ -93,7 +93,7 @@ public static class Helper
             .RegisterOptionsPreConfigureMiddleware<AliasOptionsPreConfigureMiddleware>()
             .RegisterOptionsPreConfigureMiddleware<ThirdPartyScriptOptionsPreConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
-            .RegisterOptionsConfigureMiddleware<NewDirectivesOptionsConfigureMiddleware>()
+            .RegisterOptionsConfigureMiddleware<RunFileOptionsConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<CleanupOptionsConfigureMiddleware>()
             ;
         services

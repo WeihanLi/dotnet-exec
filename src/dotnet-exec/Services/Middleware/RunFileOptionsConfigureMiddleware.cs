@@ -5,7 +5,7 @@ using ReferenceResolver;
 
 namespace Exec.Services.Middleware;
 
-public class NewDirectivesOptionsConfigureMiddleware : IOptionsConfigureMiddleware
+public class RunFileOptionsConfigureMiddleware : IOptionsConfigureMiddleware
 {
     public Task InvokeAsync(ExecOptions context, Func<ExecOptions, Task> next)
     {
