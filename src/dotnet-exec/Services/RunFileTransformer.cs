@@ -25,7 +25,7 @@ public sealed class RunFileTransformer : IScriptTransformer
                 if (trimmedDirective.StartsWith("package ", StringComparison.Ordinal))
                 {
                     var packageReference = trimmedDirective["package ".Length..].Trim('"', ' ');
-                    var packageSplits = packageReference.Split('@');
+                    var packageSplits = packageReference.Split('@', ' ');
                     if (packageSplits.Length == 1)
                     {
                         var reference = new NuGetReference(packageSplits[0]);
