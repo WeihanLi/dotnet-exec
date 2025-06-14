@@ -100,10 +100,15 @@
       "targetFramework": "net10.0",
       "commandLineArgs": "test \"C:\\projects\\source\\WeihanLi.Common\\test\\WeihanLi.Common.Test\\ModelsTest\\ResultTest.cs\" --reference \"project: C:\\projects\\source\\WeihanLi.Common\\src\\WeihanLi.Common\\WeihanLi.Common.csproj\" --debug"
     },
-    "run-file-test": {
+    "run-file-basic-test": {
       "commandName": "Project",
       "targetFramework": "net10.0",
       "commandLineArgs": "\"C:\\projects\\source\\dotnet-exec\\tests\\IntegrationTest\\CodeSamples\\RunFileSample.cs\" --debug"
+    },
+    "run-file-api-test": {
+      "commandName": "Project",
+      "targetFramework": "net10.0",
+      "commandLineArgs": "\"C:\\projects\\source\\dotnet-exec\\tests\\IntegrationTest\\CodeSamples\\RunFileApiSample.cs\" --debug"
     }
   }
 }

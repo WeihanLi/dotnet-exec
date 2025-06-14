@@ -36,6 +36,19 @@ public sealed class RunFileTransformer : IScriptTransformer
                         var reference = new NuGetReference(packageSplits[0], packageSplits[1]);
                         context.References.Add(reference.ReferenceWithSchema());
                     }
+                } else if (trimmedDirective.StartsWith("sdk", StringComparison.OrdinalIgnoreCase))
+                {
+                    var sdkName = trimmedDirective["sdk".Length..].Trim('"', ' ');
+                    var frameworkReference = sdkName switch
+                    {
+                        "Microsoft.NET.Sdk" => null,
+                        "Microsoft.NET.Sdk.Windows" => FrameworkReferenceResolver.FrameworkNames.WindowsDesktop,
+                        _ => FrameworkReferenceResolver.FrameworkNames.Web
+                    };
+                    if (!string.IsNullOrEmpty(frameworkReference))
+                    {
+                        context.References.Add(new FrameworkReference(frameworkReference).ReferenceWithSchema());
+                    }
                 }
             }
             else
