@@ -88,12 +88,12 @@ public static class Helper
         services.AddSingleton<IRepl, Repl>();
 
         services
+            .RegisterScriptTransformer<RunFileTransformer>()
             .RegisterScriptTransformer<LinqpadScriptTransformer>()
             .RegisterScriptTransformer<NetpadScriptTransformer>()
             .RegisterOptionsPreConfigureMiddleware<AliasOptionsPreConfigureMiddleware>()
-            .RegisterOptionsPreConfigureMiddleware<ThirdPartyScriptOptionsPreConfigureMiddleware>()
+            .RegisterOptionsPreConfigureMiddleware<ScriptTransformOptionsPreConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<ProjectFileOptionsConfigureMiddleware>()
-            .RegisterOptionsConfigureMiddleware<RunFileOptionsConfigureMiddleware>()
             .RegisterOptionsConfigureMiddleware<CleanupOptionsConfigureMiddleware>()
             ;
         services
@@ -483,6 +483,29 @@ public static class Helper
 
         // create folder
         Directory.CreateDirectory(folderPath);
+    }
+
+    public static bool MatchesAny(this HashSet<string> set, string type)
+    {
+        return set.Any(t => Match(t, type));
+    }
+    
+    private static bool Match(string typePattern, string type)
+    {
+        if ("*".Equals(typePattern, StringComparison.Ordinal))
+            return true;
+
+        if (typePattern.EndsWith('*'))
+        {
+            return type.StartsWith(typePattern[..^2], StringComparison.Ordinal);
+        }
+        
+        if (typePattern.StartsWith('*'))
+        {
+            return type.EndsWith(typePattern[1..], StringComparison.Ordinal);
+        }
+
+        return typePattern == type;
     }
 }
 

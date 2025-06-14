@@ -7,11 +7,20 @@ namespace Exec.Services.Middleware;
 
 public sealed class FeaturesParserOptionsMiddleware : IParseOptionsMiddleware
 {
+    private const string FileProgramFeatureName = "FileBasedProgram";
     public CSharpParseOptions Configure(CSharpParseOptions parseOptions, ExecOptions options)
     {
-        return options.ParserFeatures.IsNullOrEmpty()
-                ? parseOptions
-                : parseOptions.WithFeatures(options.ParserFeatures)
-            ;
+        if (options.ParserFeatures.IsNullOrEmpty())
+            return parseOptions.WithFeatures([new KeyValuePair<string, string>(FileProgramFeatureName, string.Empty)]);
+        
+        if (options.ParserFeatures.Any(x =>
+                FileProgramFeatureName.Equals(FileProgramFeatureName, StringComparison.Ordinal)))
+        {
+            return parseOptions.WithFeatures(options.ParserFeatures);
+        }
+        
+        return parseOptions.WithFeatures([
+            ..options.ParserFeatures, new KeyValuePair<string, string>(FileProgramFeatureName, string.Empty)
+        ]);
     }
 }

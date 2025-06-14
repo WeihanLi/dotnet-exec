@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Exec.Services.Middleware;
 
 [ExcludeFromCodeCoverage]
-internal sealed class ThirdPartyScriptOptionsPreConfigureMiddleware
+internal sealed class ScriptTransformOptionsPreConfigureMiddleware
     (IEnumerable<IScriptTransformer> transformers)
     : IOptionsPreConfigureMiddleware
 {
@@ -22,10 +22,9 @@ internal sealed class ThirdPartyScriptOptionsPreConfigureMiddleware
             var lines = await File.ReadAllLinesAsync(script);
             foreach (var transformer in transformers)
             {
-                if (transformer.SupportedExtensions.Contains(ext))
+                if (transformer.SupportedExtensions.MatchesAny(ext))
                 {
                     await transformer.InvokeAsync(context, lines);
-                    break;
                 }
             }
         }

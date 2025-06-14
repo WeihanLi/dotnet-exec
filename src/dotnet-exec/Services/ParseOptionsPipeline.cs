@@ -5,10 +5,12 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Exec.Services;
 
-public sealed class ParseOptionsPipeline(IEnumerable<IParseOptionsMiddleware> middlewares) : IParseOptionsPipeline
+public sealed class ParseOptionsPipeline(IEnumerable<IParseOptionsMiddleware> middlewares)
+    : IParseOptionsPipeline
 {
     public CSharpParseOptions Configure(CSharpParseOptions parseOptions, ExecOptions options)
     {
-        return middlewares.Aggregate(parseOptions, (current, middleware) => middleware.Configure(current, options));
+        return middlewares.Aggregate(parseOptions, (current, middleware) => 
+            middleware.Configure(current, options));
     }
 }
