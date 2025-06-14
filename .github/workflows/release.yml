@@ -1,0 +1,25 @@
+# Your GitHub workflow file under .github/workflows/
+# Trigger the action on push to main
+name: release
+on:
+  workflow_dispatch:
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#release
+#   release:
+#     types: [published]
+    
+jobs:
+    nuget-publish:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Dotnet Setup
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.x
+            9.x
+            10.x
+      - run: bash build.sh
+        env:
+          NuGet__ApiKey: ${{ secrets.NUGET_API_KEY }}
