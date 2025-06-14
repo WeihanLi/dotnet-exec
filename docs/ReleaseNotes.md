@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.29.0
+
+- feat: .NET 10 Preview 5 upgrade
+- feat: support read from stdin
+- feat: run file directive support
+
 ## 0.28.0
 
 - feat: .NET 10 Preview 4 upgrade
