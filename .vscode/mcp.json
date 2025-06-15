@@ -1,8 +1,12 @@
 {
   "servers": {
-    "dotnet-exec Docs": {
+    "dotnet-exec docs": {
       "type": "sse",
       "url": "https://gitmcp.io/WeihanLi/dotnet-exec"
+    },
+    "microsoft docs": {
+      "type": "http",
+      "url": "https://learn.microsoft.com/api/mcp"
     }
   }
 }
