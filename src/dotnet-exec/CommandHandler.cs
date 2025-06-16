@@ -51,7 +51,7 @@ public sealed class CommandHandler(ILogger logger,
         var inputText = string.Empty;
         if (Console.IsInputRedirected && Console.In.Peek() != -1)
         {
-            inputText = await Console.In.ReadToEndAsync();
+            inputText = (await Console.In.ReadToEndAsync()).Trim();
         }
 
         if (string.IsNullOrEmpty(inputText) && options.Script.IsNullOrEmpty())
