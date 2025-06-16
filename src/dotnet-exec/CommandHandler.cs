@@ -41,33 +41,31 @@ public sealed class CommandHandler(ILogger logger,
         }
         options.BindCommandLineArguments(parseResult, profile);
         options.CancellationToken = context.GetCancellationToken();
-        if (options.DebugEnabled)
-        {
-            logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, JsonHelper.WriteIntendedUnsafeEncoderOptions));
-        }
 
         return await Execute(options);
     }
 
     public async Task<int> Execute(ExecOptions options)
     {
-        if (options.Script.IsNullOrWhiteSpace())
+        // try to read script content from stdin
+        var inputText = string.Empty;
+        if (Console.IsInputRedirected && Console.In.Peek() != -1)
         {
-            // try to read script content from stdin
-            var inputText = string.Empty;
-            if (Console.IsInputRedirected && Console.In.Peek() != -1)
-            {
-                inputText = await Console.In.ReadToEndAsync();
-            }
+            inputText = await Console.In.ReadToEndAsync();
+        }
 
-            if (string.IsNullOrEmpty(inputText))
-            {
-                // start REPL when no input here
-                await repl.RunAsync(options);
-                return 0;
-            }
-            
-            logger.LogDebug("Script read from stdin {Script}", inputText);
+        if (string.IsNullOrEmpty(inputText) && options.Script.IsNullOrEmpty())
+        {
+            // stdin is empty and no script provided
+            // start REPL
+            await repl.RunAsync(options);
+            return 0;
+        }
+        
+        // stdin is not empty
+        if (!string.IsNullOrEmpty(inputText))
+        {
+            logger.LogDebug("Script read from stdin {Script}.", inputText);
             if (string.IsNullOrEmpty(options.Script))
             {
                 options.Script = inputText;
@@ -76,13 +74,15 @@ public sealed class CommandHandler(ILogger logger,
             {
                 var script = options.Script;
                 options.AdditionalScripts ??= [];
-                options.AdditionalScripts.Add(script);
+                options.AdditionalScripts = [script, ..options.AdditionalScripts];
                 options.Script = inputText;
             }
         }
 
+        logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, JsonHelper.WriteIntendedUnsafeEncoderOptions));
         // pre-configure pipeline before fetch script content
         await optionsPreConfigurePipeline.Execute(options);
+        logger.LogDebug("options after PreConfigure: {options}", JsonSerializer.Serialize(options, JsonHelper.WriteIntendedUnsafeEncoderOptions));
 
         // fetch the script
         var fetchResult = await scriptContentFetcher.FetchContent(options);
