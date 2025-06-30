@@ -196,17 +196,17 @@ dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump()' -r "nuget:WeihanLi.Npoi,
 Execute with additional dependencies
 
 ``` sh
+dotnet-exec 'typeof(LocalType).FullName.Dump();' FileLocalType2.cs
+```
+
+or with explicit addition references
+
+``` sh
 dotnet-exec 'typeof(LocalType).FullName.Dump();' --ad FileLocalType2.cs
 ```
 
 ``` sh
 dotnet-exec 'typeof(LocalType).FullName.Dump();' --addition FileLocalType2.cs
-```
-
-or
-
-```sh
-dotnet-exec 'typeof(LocalType).FullName.Dump();' FileLocalType2.cs
 ```
 
 Execute with exacting references and usings from the project file
@@ -215,7 +215,7 @@ Execute with exacting references and usings from the project file
 dotnet-exec 'typeof(LocalType).FullName.Dump();' --project ./Sample.csproj
 ```
 
-Execute file with preview features:
+Execute file with preview features(features requires enable preview feature flag):
 
 ``` sh
 dotnet-exec RawStringLiteral.cs --preview
@@ -289,6 +289,12 @@ For example, to set an alias for generating a new GUID:
 
 ```sh
 dotnet-exec alias set guid "Guid.NewGuid()"
+```
+
+use example:
+
+```sh
+dotnet-exec guid
 ```
 
 #### Unset alias

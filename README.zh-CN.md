@@ -269,6 +269,12 @@ dotnet-exec alias set <aliasName> <aliasValue>
 dotnet-exec alias set guid "Guid.NewGuid()"
 ```
 
+使用示例：
+
+```sh
+dotnet-exec guid
+```
+
 #### 取消别名
 
 要删除现有别名，请使用 `unset` 子命令，后跟别名：
