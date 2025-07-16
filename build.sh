@@ -1,10 +1,10 @@
 #!/bin/sh
 
-dotnet publish ./src/dotnet-exec/dotnet-exec.csproj -p VersionSuffix=dev -f net10.0 -o ./artifacts/out/build -p UseAppHost=true
+dotnet publish ./src/dotnet-exec/dotnet-exec.csproj -p VersionSuffix=dev -f net10.0 -o ./artifacts/dist -p UseAppHost=true
 
-ls ./artifacts/out/build
+ls ./artifacts/dist
 
-dotnet_exec="./artifacts/out/build/dotnet-exec"
+dotnet_exec="./artifacts/dist/dotnet-exec"
 
 $dotnet_exec --info
 
