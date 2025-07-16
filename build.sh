@@ -2,6 +2,8 @@
 
 dotnet build -c Release -p VersionSuffix=dev ./src/dotnet-exec/dotnet-exec.csproj -f net10.0 -o ./artifacts/out/build
 
+ls ./artifacts/out/build
+
 dotnet_exec="./artifacts/out/build/dotnet-exec"
 
 $dotnet_exec --info

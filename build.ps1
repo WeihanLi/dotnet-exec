@@ -2,6 +2,9 @@
 [System.Environment]::SetEnvironmentVariable('CI', 'true')
 
 dotnet build -c Release -p VersionSuffix=dev ./src/dotnet-exec/dotnet-exec.csproj -f net10.0 -o ./artifacts/out/build
+
+Get-ChildItem ./artifacts/out/build
+
 Set-Alias -Name dotnet_exec -Value ./artifacts/out/build/dotnet-exec.exe
 
 dotnet_exec info
