@@ -56,7 +56,7 @@ await new BuildProcessBuilder()
                         : "";
                 foreach (var project in testProjects)
                 {
-                    var command = $"dotnet test --blame --collect:\"XPlat Code Coverage;Format=cobertura,opencover;ExcludeByAttribute=ExcludeFromCodeCoverage,Obsolete,GeneratedCode,CompilerGenerated\" {loggerOptions} {project}";
+                    var command = $"dotnet test --collect:\"XPlat Code Coverage;Format=cobertura,opencover;ExcludeByAttribute=ExcludeFromCodeCoverage,Obsolete,GeneratedCode,CompilerGenerated\" {loggerOptions} {project}";
                     await ExecuteCommandAsync(command, cancellationToken);
                 }
             })
