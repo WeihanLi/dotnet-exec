@@ -102,6 +102,7 @@ public sealed partial class ExecOptions
 #pragma warning disable IDE0052
     private static readonly Option<bool> InfoOption = new(["--info"], "Tool version and runtime info");
 #pragma warning restore IDE0052
+    private static readonly Option<double?> TimeoutOption = new("--timeout", "Timeout in seconds for the execution");
 
     static ExecOptions()
     {
@@ -156,6 +157,7 @@ public sealed partial class ExecOptions
         CompileOutput = parseResult.GetValueForOption(CompileOutputOption);
         DryRun = parseResult.HasOption(DryRunOption);
         DebugEnabled = Helper.DebugModelEnabled(Environment.GetCommandLineArgs());
+        Timeout = parseResult.GetValueForOption(TimeoutOption);
         var nugetConfigFile = parseResult.GetValueForOption(NuGetConfigFileOption);
         if (!string.IsNullOrEmpty(nugetConfigFile))
         {

@@ -147,7 +147,13 @@ public sealed class CommandHandler(ILogger logger,
         try
         {
             var executeStartTime = Stopwatch.GetTimestamp();
-            var executeResult = await executor.Execute(compileResult.Data, options);
+            var executeTask = executor.Execute(compileResult.Data, options);
+            var executeResult =
+                    options.Timeout > 0
+                        ? await executeTask.WaitAsync(TimeSpan.FromSeconds(options.Timeout.Value),
+                            options.CancellationToken)
+                        : await executeTask
+                ;
             if (!executeResult.IsSuccess())
             {
                 logger.LogError($"Execute error:{Environment.NewLine}{executeResult.Msg}");
@@ -158,6 +164,11 @@ public sealed class CommandHandler(ILogger logger,
             logger.LogDebug("Execute elapsed: {elapsed}", elapsed);
 
             return Environment.ExitCode is not 0 ? Environment.ExitCode : executeResult.Data;
+        }
+        catch (TimeoutException timeoutException)
+        {
+            logger.LogError(timeoutException, "Timeout({TimeoutSeconds}) when executing script", options.Timeout);
+            return ExitCodes.ExecuteTimeout;
         }
         catch (OperationCanceledException) when (options.CancellationToken.IsCancellationRequested)
         {

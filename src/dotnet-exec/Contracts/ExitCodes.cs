@@ -5,7 +5,8 @@ namespace Exec.Contracts;
 
 public static class ExitCodes
 {
-    public const int OperationCancelled = -1;
+    public const int OperationCancelled = -99;
+    public const int ExecuteTimeout = -98;
     public const int Success = 0;
 
     public const int InvalidScript = -1;
