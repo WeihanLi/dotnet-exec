@@ -34,7 +34,9 @@ jobs:
     - name: build-on-windows
       if: matrix.os == 'windows-latest'
       shell: pwsh
-      run: .\build.ps1 --target=test
+      run: |
+        .\build.ps1 --target=build
+        dotnet test --logger "GitHubActions;summary.includeSkippedTests=true"
     - name: build-on-non-windows
       if: matrix.os != 'windows-latest'
       run: bash build.sh --target=build
