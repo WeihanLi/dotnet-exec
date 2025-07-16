@@ -1,6 +1,6 @@
 #!/bin/sh
 
-dotnet publish -c Release -p VersionSuffix=dev ./src/dotnet-exec/dotnet-exec.csproj -f net10.0 -o ./artifacts/out/build
+dotnet publish ./src/dotnet-exec/dotnet-exec.csproj -p VersionSuffix=dev -f net10.0 -o ./artifacts/out/build -p UseAppHost=true
 
 ls ./artifacts/out/build
 
