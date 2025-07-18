@@ -428,10 +428,11 @@ public class IntegrationTests(
     [InlineData(1)]
     public async Task EnvironmentExitCode(int exitCode)
     {
-        var exePath = typeof(CommandHandler).Assembly.Location
-            .Replace(".dll", OperatingSystem.IsWindows() ? ".exe" : "");
+        var dllPath = typeof(CommandHandler).Assembly.Location;
+        var dotnetPath = ApplicationHelper.GetDotnetPath();
+        Assert.NotNull(dotnetPath);
         var result = await CommandExecutor.ExecuteAndCaptureAsync(
-            exePath, $"\"Environment.ExitCode = {exitCode};\"", cancellationToken: TestContext.Current.CancellationToken
+            dotnetPath, $"\"{dllPath}\" \"Environment.ExitCode = {exitCode};\"", cancellationToken: TestContext.Current.CancellationToken
             );
         outputHelper.WriteLine(result.StandardOut);
         outputHelper.WriteLine(result.StandardError);
