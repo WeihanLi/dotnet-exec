@@ -35,11 +35,10 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: |
-        .\build.ps1 --target=build
-        dotnet test --logger "GitHubActions;summary.includeSkippedTests=true"
+        .\build.ps1 --target=test
     - name: build-on-non-windows
       if: matrix.os != 'windows-latest'
-      run: bash build.sh --target=build
+      run: bash build.sh --target=test
     # # setup Java Runtime for SonarScanner
     # # https://github.com/marketplace/actions/setup-java-jdk#usage
     # - name: Setup Java
