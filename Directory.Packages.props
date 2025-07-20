@@ -26,8 +26,8 @@
     <PackageVersion Include="WeihanLi.Common" Version="1.0.80" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="xunit.v3" Version="2.0.3" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="10.5.0" />
+    <PackageVersion Include="xunit.v3" Version="3.0.0" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="10.6.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
   </ItemGroup>
 </Project>
