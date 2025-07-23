@@ -49,9 +49,9 @@ public sealed class CommandHandler(ILogger logger,
     {
         // try to read script content from stdin
         var inputText = string.Empty;
-        if (Console.IsInputRedirected)
+        if (Console.IsInputRedirected && Console.In.Peek() != -1)
         {
-            inputText = (await Console.In.ReadToEndAsync()).Trim();
+            inputText = (await Console.In.ReadToEndAsync(options.CancellationToken)).Trim();
         }
 
         if (string.IsNullOrEmpty(inputText) && options.Script.IsNullOrEmpty())
@@ -66,17 +66,12 @@ public sealed class CommandHandler(ILogger logger,
         if (!string.IsNullOrEmpty(inputText))
         {
             logger.LogDebug("Script read from stdin {Script}.", inputText);
-            if (string.IsNullOrEmpty(options.Script))
-            {
-                options.Script = inputText;
-            }
-            else
+            if (!string.IsNullOrWhiteSpace(options.Script))
             {
                 var script = options.Script;
-                options.AdditionalScripts ??= [];
-                options.AdditionalScripts = [script, ..options.AdditionalScripts];
-                options.Script = inputText;
+                options.AdditionalScripts = [script, ..options.AdditionalScripts ?? []];
             }
+            options.Script = inputText;
         }
 
         logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, JsonHelper.WriteIntendedUnsafeEncoderOptions));
