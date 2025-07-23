@@ -49,7 +49,7 @@ public sealed class CommandHandler(ILogger logger,
     {
         // try to read script content from stdin
         var inputText = string.Empty;
-        if (ConsoleHelper.HasStandardInput())
+        if (Console.IsInputRedirected)
         {
             inputText = (await Console.In.ReadToEndAsync()).Trim();
         }
