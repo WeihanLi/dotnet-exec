@@ -24,7 +24,7 @@ public sealed class RunFileTransformer : IScriptTransformer
                 var trimmedDirective = line[2..].Trim();
                 if (trimmedDirective.StartsWith("package ", StringComparison.Ordinal))
                 {
-                    var packageReference = trimmedDirective["package ".Length..].Trim('"', ' ');
+                    var packageReference = trimmedDirective["package ".Length..].Trim('"', ' ', '=');
                     var packageSplits = packageReference.Split('@', ' ');
                     if (packageSplits.Length == 1)
                     {
@@ -36,7 +36,13 @@ public sealed class RunFileTransformer : IScriptTransformer
                         var reference = new NuGetReference(packageSplits[0], packageSplits[1]);
                         context.References.Add(reference.ReferenceWithSchema());
                     }
-                } else if (trimmedDirective.StartsWith("sdk", StringComparison.OrdinalIgnoreCase))
+                }
+                else if (trimmedDirective.StartsWith("project", StringComparison.OrdinalIgnoreCase))
+                {
+                    var projectReference = trimmedDirective["project".Length..].Trim('"', ' ', '=');
+                    context.References.Add(new ProjectReference(projectReference).ReferenceWithSchema());
+                }
+                else if (trimmedDirective.StartsWith("sdk", StringComparison.OrdinalIgnoreCase))
                 {
                     var sdkName = trimmedDirective["sdk".Length..].Trim('"', ' ');
                     var frameworkReference = sdkName switch
