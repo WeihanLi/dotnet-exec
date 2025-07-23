@@ -47,17 +47,22 @@ public sealed class CommandHandler(ILogger logger,
 
     public async Task<int> Execute(ExecOptions options)
     {
+        logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, JsonHelper.WriteIntendedUnsafeEncoderOptions));
+
         // try to read script content from stdin
         var inputText = string.Empty;
-        if (Console.IsInputRedirected && Console.In.Peek() != -1)
+        if (ConsoleHelper.HasStandardInput())
         {
+            logger.LogDebug("Try to read stdin");
             inputText = (await Console.In.ReadToEndAsync(options.CancellationToken)).Trim();
+            logger.LogDebug("Content ({StdinContent}) read from stdin", inputText);
         }
 
         if (string.IsNullOrEmpty(inputText) && options.Script.IsNullOrEmpty())
         {
             // stdin is empty and no script provided
             // start REPL
+            logger.LogDebug("No script provided and no redirected input found, start REPL");
             await repl.RunAsync(options);
             return 0;
         }
@@ -65,7 +70,7 @@ public sealed class CommandHandler(ILogger logger,
         // stdin is not empty
         if (!string.IsNullOrEmpty(inputText))
         {
-            logger.LogDebug("Script read from stdin {Script}.", inputText);
+            logger.LogDebug("Script( {Script} ) read from stdin.", inputText);
             if (!string.IsNullOrWhiteSpace(options.Script))
             {
                 var script = options.Script;
@@ -74,7 +79,6 @@ public sealed class CommandHandler(ILogger logger,
             options.Script = inputText;
         }
 
-        logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, JsonHelper.WriteIntendedUnsafeEncoderOptions));
         // pre-configure pipeline before fetch script content
         await optionsPreConfigurePipeline.Execute(options);
         logger.LogDebug("options after PreConfigure: {options}", JsonSerializer.Serialize(options, JsonHelper.WriteIntendedUnsafeEncoderOptions));
