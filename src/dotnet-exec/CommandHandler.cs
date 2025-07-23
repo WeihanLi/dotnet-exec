@@ -51,10 +51,12 @@ public sealed class CommandHandler(ILogger logger,
 
         // try to read script content from stdin
         var inputText = string.Empty;
-        if (ConsoleHelper.HasStandardInput())
+        if (Console.IsInputRedirected)
         {
             logger.LogDebug("Try to read stdin");
-            inputText = (await Console.In.ReadToEndAsync(options.CancellationToken)).Trim();
+            inputText = (await Console.In.ReadToEndAsync(options.CancellationToken)
+                .WaitAsync(TimeSpan.FromSeconds(options.Timeout.GetValueOrDefault(60)))
+                ).Trim();
             logger.LogDebug("Content ({StdinContent}) read from stdin", inputText);
         }
 
