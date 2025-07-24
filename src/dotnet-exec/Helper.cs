@@ -43,7 +43,7 @@ public static class Helper
     public const string EnableWebReferenceEnvName = "DOTNET_EXEC_WEB_REF_ENABLED";
 
     private static readonly Regex AliasNameRegex = new(@"^\w+[\w\-:\.]*$");
-    public static bool IsValidAliasName(string aliasName)
+    public static bool IsValidAliasName(string? aliasName)
     {
         return aliasName is { Length: > 0 and <= 64 } && AliasNameRegex.IsMatch(aliasName);
     }
@@ -55,6 +55,16 @@ public static class Helper
 
         return EnvHelper.Val(EnableDebugEnvName).ToBoolean();
     }
+    
+    /// <summary>
+    /// Checks if the option is present and not implicit (i.e. not set by default).
+    /// This is useful for checking if the user has explicitly set an option, as opposed to it being set by default.
+    /// </summary>
+    public static bool HasOption(this ParseResult parseResult, Option option)
+        => parseResult.GetResult(option) is
+        {
+            Implicit: false
+        };
 
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services, string[] args)
     {
@@ -76,7 +86,6 @@ public static class Helper
         services.AddSingleton<DefaultCodeExecutor>();
         services.AddSingleton<IExecutorFactory, ExecutorFactory>();
         services.AddSingleton<CommandHandler>();
-        services.AddSingleton<ICommandHandler>(sp => sp.GetRequiredService<CommandHandler>());
         services.AddSingleton<IUriTransformer, UriTransformer>();
         services.AddSingleton<IScriptContentFetcher, ScriptContentFetcher>();
         services.AddSingleton<IAdditionalScriptContentFetcher, AdditionalScriptContentFetcher>();
@@ -148,7 +157,7 @@ public static class Helper
     {
         ArgumentNullException.ThrowIfNull(command);
         var commandHandler = serviceProvider.GetRequiredService<CommandHandler>();
-        command.Handler = commandHandler;
+        command.SetAction(commandHandler.InvokeAsync);
         var profileManager = serviceProvider.GetRequiredService<IConfigProfileManager>();
         var appConfiguration = serviceProvider.GetRequiredService<AppConfiguration>();
         var appConfigSource = serviceProvider.GetRequiredService<IAppConfigSource>();
@@ -160,30 +169,30 @@ public static class Helper
                 case ConfigProfileCommand configProfileCommand:
                     foreach (var configSubcommand in configProfileCommand.Subcommands)
                     {
-                        Func<InvocationContext, Task> profileCommandHandler = configSubcommand.Name switch
+                        Func<ParseResult, CancellationToken, Task> profileCommandHandler = configSubcommand.Name switch
                         {
-                            "set" => async context =>
+                            "set" => async (parseResult, _) =>
                             {
-                                var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
+                                var profileName = parseResult.GetValue(ConfigProfileCommand.ProfileNameArgument);
                                 if (string.IsNullOrEmpty(profileName))
                                     return;
 
                                 var profile = new ConfigProfile()
                                 {
-                                    Usings = [.. context.ParseResult.GetValueForOption(ExecOptions.UsingsOption) ?? Enumerable.Empty<string>()],
-                                    References = [.. context.ParseResult.GetValueForOption(ExecOptions.ReferencesOption) ?? Enumerable.Empty<string>()],
-                                    IncludeWideReferences = context.ParseResult.GetValueForOption(ExecOptions.WideReferencesOption),
-                                    IncludeWebReferences = context.ParseResult.HasOption(ExecOptions.WebReferencesOption),
-                                    EntryPoint = context.ParseResult.GetValueForOption(ExecOptions.EntryPointOption),
-                                    DefaultEntryMethods = context.ParseResult.GetValueForOption(ExecOptions.DefaultEntryMethodsOption),
-                                    EnablePreviewFeatures = context.ParseResult.HasOption(ExecOptions.PreviewOption)
+                                    Usings = [.. parseResult.GetValue(ExecOptions.UsingsOption) ?? Enumerable.Empty<string>()],
+                                    References = [.. parseResult.GetValue(ExecOptions.ReferencesOption) ?? Enumerable.Empty<string>()],
+                                    IncludeWideReferences = parseResult.GetValue(ExecOptions.WideReferencesOption),
+                                    IncludeWebReferences = parseResult.HasOption(ExecOptions.WebReferencesOption),
+                                    EntryPoint = parseResult.GetValue(ExecOptions.EntryPointOption),
+                                    DefaultEntryMethods = parseResult.GetValue(ExecOptions.DefaultEntryMethodsOption),
+                                    EnablePreviewFeatures = parseResult.HasOption(ExecOptions.PreviewOption)
                                 };
                                 await profileManager.ConfigureProfile(profileName, profile).ConfigureAwait(false);
                             }
                             ,
-                            "rm" => async context =>
+                            "rm" => async (parseResult, _) =>
                             {
-                                var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
+                                var profileName = parseResult.GetValue(ConfigProfileCommand.ProfileNameArgument);
                                 if (string.IsNullOrEmpty(profileName))
                                 {
                                     return;
@@ -191,24 +200,24 @@ public static class Helper
                                 await profileManager.DeleteProfile(profileName).ConfigureAwait(false);
                             }
                             ,
-                            "ls" => async context =>
+                            "ls" => async (_, _) =>
                             {
                                 var profiles = await profileManager.ListProfiles().ConfigureAwait(false);
                                 if (profiles.IsNullOrEmpty())
                                 {
-                                    context.Console.WriteLine("No profiles found");
+                                    Console.WriteLine("No profiles found");
                                     return;
                                 }
-                                context.Console.WriteLine("Profiles:");
+                                Console.WriteLine("Profiles:");
                                 foreach (var profile in profiles)
                                 {
-                                    context.Console.WriteLine($"- {profile}");
+                                    Console.WriteLine($"- {profile}");
                                 }
                             }
                             ,
-                            _ => async context =>
+                            _ => async (parseResult, _) =>
                             {
-                                var profileName = context.ParseResult.GetValueForArgument(ConfigProfileCommand.ProfileNameArgument);
+                                var profileName = parseResult.GetValue(ConfigProfileCommand.ProfileNameArgument);
                                 if (string.IsNullOrEmpty(profileName))
                                 {
                                     return;
@@ -217,33 +226,34 @@ public static class Helper
                                 var profile = await profileManager.GetProfile(profileName).ConfigureAwait(false);
                                 if (profile is null)
                                 {
-                                    context.Console.WriteLine($"The profile [{profileName}] does not exists");
+                                    Console.WriteLine($"The profile [{profileName}] does not exists");
                                     return;
                                 }
 
                                 var output = JsonSerializer.Serialize(profile, JsonHelper.WriteIntendedUnsafeEncoderOptions);
-                                context.Console.WriteLine(output);
+                                Console.WriteLine(output);
                             }
                         };
-                        configSubcommand.SetHandler(profileCommandHandler);
+                        configSubcommand.SetAction(profileCommandHandler);
                     }
                     break;
 
                 case AliasCommand aliasCommand:
                     foreach (var aliasSubCommand in aliasCommand.Subcommands)
                     {
-                        Func<InvocationContext, Task> aliasCommandHandler = aliasSubCommand.Name switch
+                        Func<ParseResult, CancellationToken, Task> aliasCommandHandler = aliasSubCommand.Name switch
                         {
-                            "set" => async (InvocationContext context) =>
+                            "set" => async (parseResult, _) =>
                             {
-                                var aliasName = context.ParseResult.GetValueForArgument(AliasCommand.AliasNameArg);
+                                var aliasName = parseResult.GetValue(AliasCommand.AliasNameArg);
                                 if (!IsValidAliasName(aliasName))
                                 {
                                     Console.WriteLine("Invalid alias name, alias name max length is 64 and only allow characters,numbers and `-`/`_`/`:`/`.` ");
                                     return;
                                 }
+                                Debug.Assert(aliasName is not null);
 
-                                var aliasValue = context.ParseResult.GetValueForArgument(AliasCommand.AliasValueArg);
+                                var aliasValue = parseResult.GetValue(AliasCommand.AliasValueArg) ?? string.Empty;
                                 if (appConfiguration.Aliases.TryGetValue(aliasName, out var currentValue) && currentValue == aliasValue)
                                 {
                                     return;
@@ -253,9 +263,16 @@ public static class Helper
                                 await appConfigSource.SaveConfigAsync(appConfiguration);
                             }
                             ,
-                            "unset" => async (InvocationContext context) =>
+                            "unset" => async (parseResult, _) =>
                             {
-                                var aliasName = context.ParseResult.GetValueForArgument(AliasCommand.AliasNameArg);
+                                var aliasName = parseResult.GetValue(AliasCommand.AliasNameArg);
+                                if (!IsValidAliasName(aliasName))
+                                {
+                                    return;
+                                }
+                                
+                                Debug.Assert(aliasName is not null);
+                                
                                 if (!appConfiguration.Aliases.Remove(aliasName))
                                 {
                                     return;
@@ -264,18 +281,18 @@ public static class Helper
                                 await appConfigSource.SaveConfigAsync(appConfiguration);
                             }
                             ,
-                            _ => _ =>
+                            _ => (_, _) =>
                             {
                                 Console.WriteLine(JsonSerializer.Serialize(appConfiguration.Aliases, JsonHelper.WriteIntendedUnsafeEncoderOptions));
                                 return Task.CompletedTask;
                             }
                         };
-                        aliasSubCommand.SetHandler(aliasCommandHandler);
+                        aliasSubCommand.SetAction(aliasCommandHandler);
                     }
                     break;
                 
                 case TestCommand testCommand:
-                    testCommand.SetHandler(context => testCommand.InvokeAsync(context, commandHandler));
+                    testCommand.SetAction((parseResult, cancellationToken) => testCommand.InvokeAsync(parseResult, commandHandler, cancellationToken));
                     break;
             }
         }

@@ -19,17 +19,12 @@ public sealed class CommandHandler(ILogger logger,
         IOptionsConfigurePipeline optionsConfigurePipeline,
         IRepl repl
         )
-    : ICommandHandler
 {
-    public int Invoke(InvocationContext context) => InvokeAsync(context).GetAwaiter().GetResult();
-
-    public async Task<int> InvokeAsync(InvocationContext context)
+    public async Task<int> InvokeAsync(ParseResult parseResult, CancellationToken cancellationToken)
     {
-        var parseResult = context.ParseResult;
-
         // 1. options binding
         var options = new ExecOptions();
-        var profileName = parseResult.GetValueForOption(ExecOptions.ConfigProfileOption);
+        var profileName = parseResult.GetValue(ExecOptions.ConfigProfileOption);
         ConfigProfile? profile = null;
         if (profileName.IsNotNullOrEmpty())
         {
@@ -40,7 +35,7 @@ public sealed class CommandHandler(ILogger logger,
             }
         }
         options.BindCommandLineArguments(parseResult, profile);
-        options.CancellationToken = context.GetCancellationToken();
+        options.CancellationToken = cancellationToken;
 
         return await Execute(options);
     }

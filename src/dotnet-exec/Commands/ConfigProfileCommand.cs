@@ -7,26 +7,29 @@ internal sealed class ConfigProfileCommand : Command
 {
     public ConfigProfileCommand() : base("profile", "Configure user config profile")
     {
-        AddCommand(new SetCommand());
-        AddCommand(new GetCommand());
-        AddCommand(new RemoveCommand());
-        AddCommand(new ListCommand());
+        Add(new SetCommand());
+        Add(new GetCommand());
+        Add(new RemoveCommand());
+        Add(new ListCommand());
     }
 
-    public static readonly Argument<string> ProfileNameArgument = new("profile-name", "The config profile name to operate");
+    public static readonly Argument<string> ProfileNameArgument = new("profile-name")
+    {
+        Description = "The config profile name to operate"
+    };
 
     private sealed class SetCommand : Command
     {
         public SetCommand() : base("set", "Configure config profile")
         {
-            AddArgument(ProfileNameArgument);
-            AddOption(ExecOptions.UsingsOption);
-            AddOption(ExecOptions.ReferencesOption);
-            AddOption(ExecOptions.WebReferencesOption);
-            AddOption(ExecOptions.WideReferencesOption);
-            AddOption(ExecOptions.EntryPointOption);
-            AddOption(ExecOptions.PreviewOption);
-            AddOption(ExecOptions.DefaultEntryMethodsOption);
+            Add(ProfileNameArgument);
+            Add(ExecOptions.UsingsOption);
+            Add(ExecOptions.ReferencesOption);
+            Add(ExecOptions.WebReferencesOption);
+            Add(ExecOptions.WideReferencesOption);
+            Add(ExecOptions.EntryPointOption);
+            Add(ExecOptions.PreviewOption);
+            Add(ExecOptions.DefaultEntryMethodsOption);
         }
     }
 
@@ -34,7 +37,7 @@ internal sealed class ConfigProfileCommand : Command
     {
         public GetCommand() : base("get", "Get config profile")
         {
-            AddArgument(ProfileNameArgument);
+            Add(ProfileNameArgument);
         }
     }
 
@@ -42,14 +45,9 @@ internal sealed class ConfigProfileCommand : Command
     {
         public RemoveCommand() : base("rm", "Remove config profile")
         {
-            AddArgument(ProfileNameArgument);
+            Add(ProfileNameArgument);
         }
     }
 
-    private sealed class ListCommand : Command
-    {
-        public ListCommand() : base("ls", "List the config profiles configured")
-        {
-        }
-    }
+    private sealed class ListCommand() : Command("ls", "List the config profiles configured");
 }

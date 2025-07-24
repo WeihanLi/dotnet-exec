@@ -9,11 +9,11 @@ internal sealed class TestCommand : Command
     
     private readonly Argument<string[]> _testFileArgument = new
     (
-        "testFiles",
-        "The xunit test files to test"
+        "testFiles"
     )
     {
-        Arity = ArgumentArity.OneOrMore
+        Arity = ArgumentArity.OneOrMore,
+        Description = "The xunit test files to test"
     };
 
     private const string XunitPackageReference = "nuget: xunit.v3,2.0.0";
@@ -22,40 +22,40 @@ internal sealed class TestCommand : Command
     
     public TestCommand() : base("test", "Execute xunit test cases")
     {
-        AddArgument(_testFileArgument);
+        Add(_testFileArgument);
         
-        AddOption(ExecOptions.UsingsOption);
-        AddOption(ExecOptions.ReferencesOption);
-        AddOption(ExecOptions.WebReferencesOption);
-        AddOption(ExecOptions.PreviewOption);
-        AddOption(ExecOptions.DebugOption);
+        Add(ExecOptions.UsingsOption);
+        Add(ExecOptions.ReferencesOption);
+        Add(ExecOptions.WebReferencesOption);
+        Add(ExecOptions.PreviewOption);
+        Add(ExecOptions.DebugOption);
     }
 
-    public async Task<int> InvokeAsync(InvocationContext context, CommandHandler commandHandler)
+    public async Task<int> InvokeAsync(ParseResult parseResult, CommandHandler commandHandler, CancellationToken cancellationToken)
     {
         var options = new ExecOptions
         {
-            CancellationToken = context.GetCancellationToken()
+            CancellationToken = cancellationToken
         };
         
-        var references = context.ParseResult.GetValueForOption(ExecOptions.ReferencesOption);
+        var references = parseResult.GetValue(ExecOptions.ReferencesOption);
         foreach (var reference in references ?? [])
         {
             options.References.Add(reference);
         }
-        var usings = context.ParseResult.GetValueForOption(ExecOptions.UsingsOption);
+        var usings = parseResult.GetValue(ExecOptions.UsingsOption);
         foreach (var @using in usings ?? [])
         {
             options.Usings.Add(@using);
         }
         
-        options.IncludeWebReferences = context.ParseResult.GetValueForOption(ExecOptions.WebReferencesOption);
-        options.EnablePreviewFeatures = context.ParseResult.GetValueForOption(ExecOptions.PreviewOption);
+        options.IncludeWebReferences = parseResult.GetValue(ExecOptions.WebReferencesOption);
+        options.EnablePreviewFeatures = parseResult.GetValue(ExecOptions.PreviewOption);
         options.IncludeWideReferences = false;
 
-        var testFiles = context.ParseResult.GetValueForArgument(_testFileArgument);
+        var testFiles = parseResult.GetValue(_testFileArgument);
 
-        return await ExecuteAsync(commandHandler, options, testFiles);
+        return await ExecuteAsync(commandHandler, options, testFiles ?? []);
     }
 
     public static Task<int> ExecuteAsync(CommandHandler commandHandler,ExecOptions options, params IEnumerable<string> testFiles)

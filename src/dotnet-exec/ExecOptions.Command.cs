@@ -24,141 +24,221 @@ public sealed partial class ExecOptions
 #endif
         ;
 
-    private static readonly Argument<string[]> ScriptArgument = new("script", "CSharp script to execute, start repl when no script provided")
+    private static readonly Argument<string[]> ScriptArgument = new("script")
     {
+        Description = "CSharp script to execute, start repl when no script provided",
         Arity = ArgumentArity.ZeroOrMore
     };
-
-    private static readonly Option<string> TargetFrameworkOption = new(["-f", "--framework"],
-        () => DefaultTargetFramework, "Target framework");
-
-    private static readonly Option<string> StartupTypeOption = new("--startup-type", "The startup type to use for finding the correct entry");
-    internal static readonly Option<string> EntryPointOption = new(["-e", "--entry"], "Custom entry point('MainTest' by default)");
-
-    internal static readonly Option<string[]> DefaultEntryMethodsOption = new("--default-entry", "Default entry methods")
+    private static readonly Option<string> TargetFrameworkOption = new("-f", "--framework")
     {
+        Description = "Target framework",
+        DefaultValueFactory = _ => DefaultTargetFramework
+    };
+
+    private static readonly Option<string> StartupTypeOption = new("--startup-type")
+    {
+        Description = "The startup type to use for finding the correct entry"
+    };
+    internal static readonly Option<string> EntryPointOption = new("-e", "--entry")
+    {
+        Description = "Custom entry point('MainTest' by default)"
+    };
+
+    internal static readonly Option<string[]> DefaultEntryMethodsOption = new("--default-entry")
+    {
+        Description = "Default entry method names",
         Arity = ArgumentArity.ZeroOrMore
     };
 
     private static readonly Option<string> CompilerTypeOption =
-        new(["--compiler-type", "--compiler"], () => "workspace", "The compiler to use");
+        new("--compiler-type", "--compiler")
+        {
+            Description = "The compiler to use",
+            DefaultValueFactory = _ => "workspace"
+        };
 
     private static readonly Option<string> ExecutorTypeOption =
-        new(["--executor-type", "--executor"], () => Helper.Default, "The executor to use");
+        new("--executor-type", "--executor")
+        {
+            DefaultValueFactory = _ => Helper.Default, 
+            Description = "The executor to use"
+        };
 
     internal static readonly Option<bool> PreviewOption =
-        new("--preview", "Use preview language feature and enable preview features");
+        new("--preview")
+        {
+            Description = "Use preview language feature and enable preview features"
+        };
 
     private static readonly Option<OptimizationLevel> ConfigurationOption =
-        new(["-c", "--configuration"], "Compile configuration/OptimizationLevel");
+        new("-c", "--configuration")
+        {
+            Description = "Compile Configuration/OptimizationLevel"
+        };
 
     private static readonly Option<string?> ArgumentsOption =
-        new(["--args", "--arguments"], "Input arguments, please use `-- <args[0]> <args[1]>` instead")
+        new("--args", "--arguments")
         {
+            Description = "Input arguments, this is obsolete, please use ` -- <args[0]> <args[1]>` instead",
             Arity = ArgumentArity.ZeroOrOne
         };
 
-    private static readonly Option<bool> UseRefAssembliesForCompileOption = new("--ref-compile",
-        "Use Ref assemblies for compile, when not found from local download from nuget");
+    private static readonly Option<bool> UseRefAssembliesForCompileOption = new("--ref-compile")
+    {
+        Description = "Use Ref assemblies for compile, when not found from local download from nuget"
+    };
 
     private static readonly Option<string> ProjectOption =
-        new("--project", "The project file path to exact references and usings");
+        new("--project")
+        {
+            Description = "The project file path to exact references and usings"
+        };
 
     internal static readonly Option<bool> WideReferencesOption =
-        new(["--wide"], () => true, "Includes widely-used references(Microsoft.Extensions.Configuration/DependencyInjection/Logging,Newtonsoft.Json,WeihanLi.Common)");
+        new("--wide")
+        {
+            Description = "Includes widely-used references(Microsoft.Extensions.Configuration/DependencyInjection/Logging,Newtonsoft.Json,WeihanLi.Common)",
+            DefaultValueFactory = _ => true
+        };
 
     internal static readonly Option<bool> WebReferencesOption =
-        new(["-w", "--web"], "Includes Web SDK references");
+        new("-w", "--web")
+        {
+            Description = "Includes the ASP.NET Core Web SDK references"
+        };
 
     internal static readonly Option<string[]> ReferencesOption =
-        new(["-r", "--reference"], "Additional references") { Arity = ArgumentArity.ZeroOrMore };
+        new("-r", "--reference")
+        {
+            Arity = ArgumentArity.ZeroOrMore,
+            Description = "Additional references"
+        };
 
     internal static readonly Option<string[]> UsingsOption =
-        new(["-u", "--using"], "Namespace usings") { Arity = ArgumentArity.ZeroOrMore };
+        new("-u", "--using")
+        {
+            Description = "Configure the global namespace usings",
+            Arity = ArgumentArity.ZeroOrMore
+        };
 
     private static readonly Option<string[]> AdditionalScriptsOption =
-        new(["--ad", "--addition"], "Additional script path");
+        new("--ad", "--addition")
+        { 
+            Description = "Additional script path"
+        };
 
     private static readonly Option<bool> EnableSourceGeneratorOption =
-        new(["--generator"], "Enable the source generator support");
+        new("--generator")
+        {
+            Description = "Enable the source generator support"
+        };
 
     internal static readonly Option<string> ConfigProfileOption =
-        new(["--profile"], "The config profile to use");
+        new("--profile")
+        {
+            Description = "The config profile to use"
+        };
 
     private static readonly Option<string[]> ParserSymbolNamesOption =
-        new(["--compile-symbol"], "Preprocessor symbol names for parsing and compiling");
+        new("--compile-symbol")
+        {
+            Description = "Preprocessor symbol names for parsing and compiling"
+        };
 
     private static readonly Option<string[]> ParserFeaturesOption =
-        new(["--compile-feature"], "Features for parsing and compiling");
+        new("--compile-feature")
+        {
+            Description = "Features for parsing and compiling"
+        };
 
-    private static readonly Option<bool> DryRunOption = new(["--dry-run"], "Dry-run, would not execute script and output debug info");
-    private static readonly Option<string> NuGetConfigFileOption = new(["--nuget-config"], "NuGet config file path to use");
+    private static readonly Option<bool> DryRunOption = new("--dry-run")
+    {
+        Description = "Dry-run, would not execute script and output debug info"
+    };
+    private static readonly Option<string> NuGetConfigFileOption = new("--nuget-config")
+    {
+        Description = "NuGet config file path to use"
+    };
     private static readonly Option<string[]> EnvOption =
-        new(["--env"], "Set environment variable for process, usage example: --env name=test --env value=123");
+        new("--env")
+        {
+            Description = "Set environment variable for process, usage example: --env name=test --env value=123"
+        };
 
-    private static readonly Option<string?> CompileOutputOption = new(["--compile-out"], "Compiled dll output path");
+    private static readonly Option<string?> CompileOutputOption = new("--compile-out")
+    {
+        Description = "Compiled dll output path"
+    };
 
-    internal static readonly Option<bool> DebugOption = new("--debug", "Enable debug logs for debug");
+    internal static readonly Option<bool> DebugOption = new("--debug")
+    {
+        Description = "Enable debug logs for debug"
+    };
 #pragma warning disable IDE0052
-    private static readonly Option<bool> InfoOption = new(["--info"], "Tool version and runtime info");
+    private static readonly Option<bool> InfoOption = new("--info")
+    {
+        Description = "Inspect tool version and runtime info"
+    };
 #pragma warning restore IDE0052
-    private static readonly Option<double?> TimeoutOption = new("--timeout", "Timeout in seconds for the execution");
+    private static readonly Option<double?> TimeoutOption = new("--timeout")
+    {
+        Description = "Timeout in seconds for the execution"
+    };
 
     static ExecOptions()
     {
-        CompilerTypeOption.FromAmong("simple", "workspace", Helper.Project);
-        ExecutorTypeOption.FromAmong(Helper.Default);
-        TargetFrameworkOption.FromAmong([.. Helper.SupportedFrameworks]);
+        CompilerTypeOption.CompletionSources.Add("simple", "workspace", Helper.Project);
+        ExecutorTypeOption.CompletionSources.Add(Helper.Default);
+        TargetFrameworkOption.CompletionSources.Add([.. Helper.SupportedFrameworks]);
     }
 
     public void BindCommandLineArguments(ParseResult parseResult, ConfigProfile? configProfile)
     {
-        var scripts = parseResult.GetValueForArgument(ScriptArgument);
+        var scripts = parseResult.GetValue(ScriptArgument) ?? [];
         Script = scripts.FirstOrDefault() ?? string.Empty;
-        StartupType = parseResult.GetValueForOption(StartupTypeOption);
-        EntryPoint = parseResult.GetValueForOption(EntryPointOption);
-        TargetFramework = parseResult.GetValueForOption(TargetFrameworkOption)
+        StartupType = parseResult.GetValue(StartupTypeOption);
+        EntryPoint = parseResult.GetValue(EntryPointOption);
+        TargetFramework = parseResult.GetValue(TargetFrameworkOption)
             .GetValueOrDefault(DefaultTargetFramework);
-        Configuration = parseResult.GetValueForOption(ConfigurationOption);
+        Configuration = parseResult.GetValue(ConfigurationOption);
 
         Arguments = Helper.CommandArguments.HasValue()
             ? Helper.CommandArguments
-            : CommandLineStringSplitter.Instance
-                .Split(parseResult.GetValueForOption(ArgumentsOption) ?? string.Empty).ToArray();
+            : [.. WeihanLi.Common.Helpers.CommandLineParser.ParseLine(parseResult.GetValue(ArgumentsOption) ?? string.Empty)];
 
-        ProjectPath = parseResult.GetValueForOption(ProjectOption) ?? string.Empty;
-        IncludeWideReferences = parseResult.GetValueForOption(WideReferencesOption);
-        IncludeWebReferences = parseResult.GetValueForOption(WebReferencesOption) || EnvHelper.Val(Helper.EnableWebReferenceEnvName).ToBoolean();
-        var executorTypeValue = parseResult.GetValueForOption(ExecutorTypeOption);
+        ProjectPath = parseResult.GetValue(ProjectOption) ?? string.Empty;
+        IncludeWideReferences = parseResult.GetValue(WideReferencesOption);
+        IncludeWebReferences = parseResult.GetValue(WebReferencesOption) || EnvHelper.Val(Helper.EnableWebReferenceEnvName).ToBoolean();
+        var executorTypeValue = parseResult.GetValue(ExecutorTypeOption);
         if (!string.IsNullOrEmpty(executorTypeValue))
         {
             ExecutorType = executorTypeValue.ToLowerInvariant();
         }
-        CompilerType = parseResult.GetValueForOption(CompilerTypeOption)?.ToLowerInvariant() ?? Helper.Default;
-        foreach (var reference in parseResult.GetValueForOption(ReferencesOption) ?? [])
+        CompilerType = parseResult.GetValue(CompilerTypeOption)?.ToLowerInvariant() ?? Helper.Default;
+        foreach (var reference in parseResult.GetValue(ReferencesOption) ?? [])
         {
             References.Add(Helper.ReferenceNormalize(reference));
         }
-        Usings = [.. parseResult.GetValueForOption(UsingsOption) ?? []];
-        AdditionalScripts = new(scripts.Skip(1).Union(parseResult.GetValueForOption(AdditionalScriptsOption) ?? []), StringComparer.Ordinal);
-        UseRefAssembliesForCompile = parseResult.GetValueForOption(UseRefAssembliesForCompileOption);
-        ConfigProfile = parseResult.GetValueForOption(ConfigProfileOption);
+        Usings = [.. parseResult.GetValue(UsingsOption) ?? []];
+        AdditionalScripts = new(scripts.Skip(1).Union(parseResult.GetValue(AdditionalScriptsOption) ?? []), StringComparer.Ordinal);
+        UseRefAssembliesForCompile = parseResult.GetValue(UseRefAssembliesForCompileOption);
+        ConfigProfile = parseResult.GetValue(ConfigProfileOption);
         EnablePreviewFeatures = parseResult.HasOption(PreviewOption);
         EnableSourceGeneratorSupport = parseResult.HasOption(EnableSourceGeneratorOption);
-        ParserPreprocessorSymbolNames = new(parseResult.GetValueForOption(ParserSymbolNamesOption) ?? [], StringComparer.Ordinal);
-        ParserFeatures = parseResult.GetValueForOption(ParserFeaturesOption)?
+        ParserPreprocessorSymbolNames = new(parseResult.GetValue(ParserSymbolNamesOption) ?? [], StringComparer.Ordinal);
+        ParserFeatures = parseResult.GetValue(ParserFeaturesOption)?
             .Select(x => x.Split('='))
             .Select(x => new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))
             .ToArray();
-        EnvVariables = parseResult.GetValueForOption(EnvOption)?
+        EnvVariables = parseResult.GetValue(EnvOption)?
             .Select(x => x.Split('='))
             .Select(x => new KeyValuePair<string, string>(x[0], x.Length > 1 ? x[1] : string.Empty))
             .ToArray();
-        CompileOutput = parseResult.GetValueForOption(CompileOutputOption);
+        CompileOutput = parseResult.GetValue(CompileOutputOption);
         DryRun = parseResult.HasOption(DryRunOption);
         DebugEnabled = Helper.DebugModelEnabled(Environment.GetCommandLineArgs());
-        Timeout = parseResult.GetValueForOption(TimeoutOption);
-        var nugetConfigFile = parseResult.GetValueForOption(NuGetConfigFileOption);
+        Timeout = parseResult.GetValue(TimeoutOption);
+        var nugetConfigFile = parseResult.GetValue(NuGetConfigFileOption);
         if (!string.IsNullOrEmpty(nugetConfigFile))
         {
             Environment.SetEnvironmentVariable(NuGetHelper.NuGetConfigEnvName, nugetConfigFile);
@@ -182,7 +262,7 @@ public sealed partial class ExecOptions
             {
                 IncludeWebReferences = configProfile.IncludeWebReferences;
             }
-            if (parseResult.FindResultFor(WideReferencesOption)?.IsImplicit == true)
+            if (parseResult.GetResult(WideReferencesOption)?.Implicit == true)
             {
                 IncludeWideReferences = configProfile.IncludeWideReferences;
             }
@@ -214,18 +294,18 @@ public sealed partial class ExecOptions
         // arguments
         foreach (var argument in GetArguments())
         {
-            command.AddArgument(argument);
+            command.Add(argument);
         }
         // options
         foreach (var option in GetOptions())
         {
-            command.AddOption(option);
+            command.Add(option);
         }
 
         // add sub commands
-        command.AddCommand(new ConfigProfileCommand());
-        command.AddCommand(new AliasCommand());
-        command.AddCommand(new TestCommand());
+        command.Add(new ConfigProfileCommand());
+        command.Add(new AliasCommand());
+        command.Add(new TestCommand());
 
         return command;
     }
