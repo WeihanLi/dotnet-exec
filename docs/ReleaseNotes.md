@@ -1,5 +1,12 @@
 # Release Notes
 
+## 0.30.0
+
+- feat: .NET 10 Preview 6 upgrade
+- feat: Improve stdin support to better support alias and support stdin + scripts
+- feat: support new `project` run file directive
+- feat: upgrade `System.CommandLine` and etc dependencies
+
 ## 0.29.0
 
 - feat: .NET 10 Preview 5 upgrade
