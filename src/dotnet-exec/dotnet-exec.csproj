@@ -11,7 +11,7 @@
     <PackageProjectUrl>https://github.com/WeihanLi/dotnet-exec</PackageProjectUrl>
     <IncludeSymbols>false</IncludeSymbols>
     <NuGetAuditMode>all</NuGetAuditMode>
-    <RoslynVersion>5.0.0-2.25369.9</RoslynVersion>
+    <RoslynVersion>5.0.0-2.25373.106</RoslynVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
