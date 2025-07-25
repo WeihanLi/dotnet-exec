@@ -289,7 +289,7 @@ public sealed partial class ExecOptions
 
     public static Command GetCommand()
     {
-        var command = new Command(Helper.ApplicationName, "dotnet-exec, execute raw C# script/program from the command line");
+        var command = new RootCommand("dotnet-exec, execute raw C# script/program from the command line");
 
         // arguments
         foreach (var argument in GetArguments())
