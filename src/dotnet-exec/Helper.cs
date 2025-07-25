@@ -429,6 +429,9 @@ public static class Helper
                      .Select(Path.GetFileName)
                      .WhereNotNull()
                      .Where(x => x.Length > 0 && char.IsDigit(x[0]))
+#if NET10_0_OR_GREATER
+                     .OrderByDescending(x=> x, StringComparer.Create(System.Globalization.CultureInfo.InvariantCulture, System.Globalization.CompareOptions.NumericOrdering))
+#endif
                  )
         {
             if (NuGetVersion.TryParse(framework, out var frameworkVersion)
