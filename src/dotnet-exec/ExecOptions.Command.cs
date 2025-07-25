@@ -175,6 +175,7 @@ public sealed partial class ExecOptions
         Description = "Enable debug logs for debug"
     };
 #pragma warning disable IDE0052
+    // ReSharper disable once UnusedMember.Local
     private static readonly Option<bool> InfoOption = new("--info")
     {
         Description = "Inspect tool version and runtime info"
