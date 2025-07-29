@@ -152,7 +152,7 @@ public sealed class CommandHandler(ILogger logger,
                 ;
             if (!executeResult.IsSuccess())
             {
-                logger.LogError("Execute error:\n{errorMsg}", executeResult.Msg);
+                logger.LogError("Execute error:\n{ErrorMsg}", executeResult.Msg);
                 return ExitCodes.ExecuteError;
             }
 
