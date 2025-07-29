@@ -31,7 +31,7 @@ public sealed class CommandHandler(ILogger logger,
             profile = await profileManager.GetProfile(profileName);
             if (profile is null)
             {
-                logger.LogDebug("The config profile({profileName}) not found, ignore profile", profileName);
+                logger.LogDebug("The config profile({ProfileName}) not found, ignore profile", profileName);
             }
         }
         options.BindCommandLineArguments(parseResult, profile);
@@ -42,7 +42,7 @@ public sealed class CommandHandler(ILogger logger,
 
     public async Task<int> Execute(ExecOptions options)
     {
-        logger.LogDebug("options: {options}", JsonSerializer.Serialize(options, JsonHelper.WriteIntendedUnsafeEncoderOptions));
+        logger.LogDebug("options: {Options}", JsonSerializer.Serialize(options, JsonHelper.WriteIntendedUnsafeEncoderOptions));
 
         // try to read script content from stdin
         var inputText = string.Empty;
@@ -78,7 +78,7 @@ public sealed class CommandHandler(ILogger logger,
 
         // pre-configure pipeline before fetch script content
         await optionsPreConfigurePipeline.Execute(options);
-        logger.LogDebug("options after PreConfigure: {options}", JsonSerializer.Serialize(options, JsonHelper.WriteIntendedUnsafeEncoderOptions));
+        logger.LogDebug("options after PreConfigure: {Options}", JsonSerializer.Serialize(options, JsonHelper.WriteIntendedUnsafeEncoderOptions));
 
         // fetch the script
         var fetchResult = await scriptContentFetcher.FetchContent(options);
@@ -103,11 +103,11 @@ public sealed class CommandHandler(ILogger logger,
         var compileStartTime = Stopwatch.GetTimestamp();
         var compileResult = await compiler.Compile(options, sourceText);
         var compileElapsed = Stopwatch.GetElapsedTime(compileStartTime);
-        logger.LogDebug("Compile elapsed: {elapsed}", compileElapsed);
+        logger.LogDebug("Compile elapsed: {Elapsed}", compileElapsed);
 
         if (!compileResult.IsSuccess())
         {
-            logger.LogError($"Compile error:{Environment.NewLine}{compileResult.Msg}");
+            logger.LogError("Compile error:\n{ErrorMsg}", compileResult.Msg);
             return ExitCodes.CompileError;
         }
 
@@ -152,12 +152,12 @@ public sealed class CommandHandler(ILogger logger,
                 ;
             if (!executeResult.IsSuccess())
             {
-                logger.LogError($"Execute error:{Environment.NewLine}{executeResult.Msg}");
+                logger.LogError("Execute error:\n{errorMsg}", executeResult.Msg);
                 return ExitCodes.ExecuteError;
             }
 
             var elapsed = Stopwatch.GetElapsedTime(executeStartTime);
-            logger.LogDebug("Execute elapsed: {elapsed}", elapsed);
+            logger.LogDebug("Execute elapsed: {Elapsed}", elapsed);
 
             return Environment.ExitCode is not 0 ? Environment.ExitCode : executeResult.Data;
         }
