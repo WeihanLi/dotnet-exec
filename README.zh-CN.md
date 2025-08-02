@@ -17,6 +17,8 @@ ReferenceResolver | [![ReferenceResolver](https://img.shields.io/nuget/v/Referen
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/WeihanLi/dotnet-exec)
 
+[![Ask OpenDeepWiki](https://img.shields.io/badge/Ask-OpenDeepWiki-blue)](https://opendeep.wiki/WeihanLi/dotnet-exec/)
+
 [For English](./README.md)
 
 ## Intro
