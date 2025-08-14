@@ -89,7 +89,10 @@ public static class Helper
         services.AddSingleton<IUriTransformer, UriTransformer>();
         services.AddSingleton<IScriptContentFetcher, ScriptContentFetcher>();
         services.AddSingleton<IAdditionalScriptContentFetcher, AdditionalScriptContentFetcher>();
-        services.AddSingleton<HttpClient>();
+        services.AddSingleton<HttpClient>(_ => new HttpClient(new HttpClientHandler
+        {
+            CheckCertificateRevocationList = false
+        }));
         services.AddReferenceResolvers();
         services.AddSingleton<IRefResolver, RefResolver>();
         services.AddSingleton<IConfigProfileManager, ConfigProfileManager>();
