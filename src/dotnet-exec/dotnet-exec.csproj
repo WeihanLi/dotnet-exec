@@ -12,6 +12,7 @@
     <IncludeSymbols>false</IncludeSymbols>
     <NuGetAuditMode>all</NuGetAuditMode>
     <RoslynVersion>5.0.0-2.25414.101</RoslynVersion>
+    <NoWarn>$(NoWarn);CA5399</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
