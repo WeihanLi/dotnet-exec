@@ -21,10 +21,11 @@ if (index > -1 && index < args.Length)
 {
     var normalizedArgs = args[..index];
     Helper.CommandArguments = args[(index + 1)..];
-    return await command.Parse(normalizedArgs).InvokeAsync(ApplicationHelper.ExitToken);
+    return await command.Parse(normalizedArgs)
+        .InvokeAsync(cancellationToken: ApplicationHelper.ExitToken);
 }
 
-return await command.Parse(args).InvokeAsync(ApplicationHelper.ExitToken);
+return await command.Parse(args).InvokeAsync(cancellationToken: ApplicationHelper.ExitToken);
 
 [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 internal static partial class Program { }
