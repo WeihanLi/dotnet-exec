@@ -26,6 +26,3 @@ if (index > -1 && index < args.Length)
 }
 
 return await command.Parse(args).InvokeAsync(cancellationToken: ApplicationHelper.ExitToken);
-
-[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-internal static partial class Program { }
