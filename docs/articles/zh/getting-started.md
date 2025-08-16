@@ -1,32 +1,425 @@
-# Getting Started
+# 快速开始
 
-## Intro
+欢迎使用 dotnet-exec！本指南将帮助您开始执行 C# 脚本和代码，而无需创建完整的项目设置。
 
-`dotnet-exec` dotnet-exec 是一个可以执行 C# 程序而不需要项目文件的命令行工具，并且你可以指定自定义的入口方法不仅仅是默认的 Main 方法
+## 什么是 dotnet-exec？
 
-，我们可以使用
+`dotnet-exec` 是一个命令行工具，允许您在不创建项目文件的情况下执行 C# 程序。它支持：
+
+- **原始 C# 代码执行**：直接从命令行运行代码
+- **脚本文件执行**：执行本地或来自 URL 的 .cs 文件
+- **自定义入口点**：使用除 `Main` 之外的方法作为入口点
+- **REPL 模式**：交互式 C# 执行环境
+- **丰富的引用支持**：NuGet 包、本地 DLL、框架引用
+- **测试功能**：内置 xUnit 测试执行
+- **配置文件**：保存和重用常用配置
+- **命令别名**：为常用命令创建快捷方式
+
+## 安装
+
+### 安装为 .NET 工具
+
+安装最新稳定版本：
+
+```sh
+dotnet tool install -g dotnet-execute
+```
+
+安装最新预览版本：
+
+```sh
+dotnet tool install -g dotnet-execute --prerelease
+```
+
+更新到最新版本：
 
 ```sh
 dotnet tool update -g dotnet-execute
 ```
 
-来安装或更新到最新的版本，如果想要体验最新的预览版，可以使用 `--prerelease` 
+### 安装故障排除
+
+如果安装失败，请尝试：
 
 ```sh
-dotnet tool update -g dotnet-execute --prerelease
+# 明确添加 NuGet 源
+dotnet tool install -g dotnet-execute --add-source https://api.nuget.org/v3/index.json
+
+# 清除缓存并重试
+dotnet nuget locals all --clear
+dotnet tool install -g dotnet-execute
 ```
 
-如果本地没有 dotnet sdk 也可以通过 docker/podman 等来体验
+### 验证安装
 
 ```sh
-docker/podman run --rm weihanli/dotnet-exec:latest "1+1"
+# 检查版本
+dotnet-exec --version
+
+# 显示帮助
+dotnet-exec --help
 ```
 
-## Commands
+### 使用 Docker
 
-### Default command
+如果您没有本地 .NET SDK，也可以通过 Docker 体验：
 
-`dotnet-exec` 可以直接执行一个脚本 `dotnet-exec <script>` 
+```sh
+# 运行简单表达式
+docker run --rm weihanli/dotnet-exec:latest "1+1"
+
+# 执行脚本文件
+docker run --rm -v $(pwd):/app weihanli/dotnet-exec:latest /app/script.cs
+```
+
+## 快速开始示例
+
+### 简单代码执行
+
+```sh
+# 简单表达式
+dotnet-exec "Console.WriteLine(\"Hello, World!\");"
+
+# 数学计算
+dotnet-exec "Console.WriteLine(Math.Sqrt(16));"
+
+# 日期时间
+dotnet-exec "Console.WriteLine(DateTime.Now.ToString(\"yyyy-MM-dd HH:mm:ss\"));"
+```
+
+### 脚本文件执行
+
+创建一个简单的脚本文件 `hello.cs`：
+
+```csharp
+// hello.cs
+using System;
+
+Console.WriteLine("Hello from script!");
+Console.WriteLine($"Current time: {DateTime.Now}");
+
+if (args.Length > 0)
+{
+    Console.WriteLine($"Arguments: {string.Join(", ", args)}");
+}
+```
+
+执行脚本：
+
+```sh
+# 基本执行
+dotnet-exec hello.cs
+
+# 带参数执行
+dotnet-exec hello.cs arg1 arg2 arg3
+```
+
+### 自定义入口点
+
+```csharp
+// custom-entry.cs
+using System;
+
+public static class Program
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("这是 Main 方法");
+    }
+    
+    public static void AlternativeEntry(string[] args)
+    {
+        Console.WriteLine("这是替代入口点");
+    }
+    
+    public static void Execute()
+    {
+        Console.WriteLine("这是 Execute 方法");
+    }
+}
+```
+
+```sh
+# 使用默认 Main 方法
+dotnet-exec custom-entry.cs
+
+# 使用自定义入口点
+dotnet-exec custom-entry.cs --entry AlternativeEntry
+
+# 尝试多个入口点（按顺序尝试）
+dotnet-exec custom-entry.cs --default-entry Execute AlternativeEntry Main
+```
+
+## REPL 模式
+
+REPL（读取-求值-打印循环）模式提供交互式 C# 环境：
+
+```sh
+# 启动 REPL
+dotnet-exec
+```
+
+在 REPL 中，您可以：
+
+- 执行 C# 表达式和语句
+- 定义变量和方法
+- 动态添加 NuGet 包引用
+- 获取代码补全建议
+
+### REPL 示例会话
+
+```csharp
+> var name = "World";
+> Console.WriteLine($"Hello, {name}!");
+Hello, World!
+
+> var numbers = new[] { 1, 2, 3, 4, 5 };
+> numbers.Where(x => x % 2 == 0).ToArray()
+int[2] { 2, 4 }
+
+> #r nuget:Newtonsoft.Json
+引用已添加
+
+> using Newtonsoft.Json;
+> JsonConvert.SerializeObject(new { Name = "Test", Value = 42 })
+"{"Name":"Test","Value":42}"
+```
+
+### REPL 带自定义配置
+
+```sh
+# 带 Web 引用的 REPL
+dotnet-exec --web
+
+# 带自定义包的 REPL
+dotnet-exec --reference "nuget:Dapper" --reference "nuget:Newtonsoft.Json"
+```
+
+## 处理引用
+
+### NuGet 包
+
+```sh
+# 添加 NuGet 包
+dotnet-exec script.cs --reference "nuget:Newtonsoft.Json"
+
+# 指定版本
+dotnet-exec script.cs --reference "nuget:Newtonsoft.Json,13.0.3"
+
+# 多个包
+dotnet-exec script.cs \
+  --reference "nuget:Dapper" \
+  --reference "nuget:MySql.Data"
+```
+
+### 本地 DLL 文件
+
+```sh
+# 引用本地 DLL
+dotnet-exec script.cs --reference "./lib/MyLibrary.dll"
+
+# 引用多个 DLL
+dotnet-exec script.cs --reference "./lib/*.dll"
+```
+
+### 框架引用
+
+```sh
+# ASP.NET Core 引用
+dotnet-exec script.cs --web
+
+# 等同于
+dotnet-exec script.cs --framework Microsoft.AspNetCore.App
+
+# Windows 桌面应用
+dotnet-exec script.cs --framework Microsoft.WindowsDesktop.App
+```
+
+## 测试支持
+
+dotnet-exec 内置支持 xUnit 测试：
+
+```csharp
+// test-example.cs
+using Xunit;
+
+public class CalculatorTests
+{
+    [Fact]
+    public void Add_TwoNumbers_ReturnsSum()
+    {
+        var result = Add(2, 3);
+        Assert.Equal(5, result);
+    }
+    
+    [Theory]
+    [InlineData(1, 1, 2)]
+    [InlineData(2, 3, 5)]
+    [InlineData(-1, 1, 0)]
+    public void Add_VariousInputs_ReturnsExpectedResults(int a, int b, int expected)
+    {
+        var result = Add(a, b);
+        Assert.Equal(expected, result);
+    }
+    
+    private static int Add(int a, int b) => a + b;
+}
+```
+
+```sh
+# 运行测试
+dotnet-exec test-example.cs --test
+```
+
+## 配置文件和别名
+
+### 创建配置文件
+
+保存常用的配置组合：
+
+```sh
+# 创建 Web 开发配置文件
+dotnet-exec config set-profile web-dev \
+  --web \
+  --reference "nuget:Microsoft.EntityFrameworkCore.SqlServer" \
+  --reference "nuget:Serilog.AspNetCore" \
+  --using "Microsoft.EntityFrameworkCore" \
+  --using "Serilog"
+
+# 使用配置文件
+dotnet-exec script.cs --profile web-dev
+```
+
+### 创建别名
+
+创建命令快捷方式：
+
+```sh
+# 创建 JSON 处理别名
+dotnet-exec alias set json \
+  --reference "nuget:Newtonsoft.Json" \
+  --using "Newtonsoft.Json"
+
+# 使用别名
+dotnet-exec json my-json-script.cs
+```
+
+## 常用工作流程
+
+### 数据处理脚本
+
+```csharp
+// data-processor.cs
+#r "nuget:CsvHelper"
+using CsvHelper;
+using System.Globalization;
+
+if (args.Length < 2)
+{
+    Console.WriteLine("用法: script.cs <输入文件> <输出文件>");
+    return 1;
+}
+
+var inputFile = args[0];
+var outputFile = args[1];
+
+using var reader = new StringReader(File.ReadAllText(inputFile));
+using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+var records = csv.GetRecords<dynamic>().ToList();
+
+Console.WriteLine($"处理了 {records.Count} 条记录");
+
+// 处理数据逻辑...
+var processedData = records.Where(r => /* 某些条件 */ true).ToList();
+
+// 输出结果
+File.WriteAllText(outputFile, JsonSerializer.Serialize(processedData));
+Console.WriteLine($"结果已保存到 {outputFile}");
+```
+
+```sh
+dotnet-exec data-processor.cs input.csv output.json \
+  --reference "nuget:CsvHelper" \
+  --using "CsvHelper" \
+  --using "System.Globalization"
+```
+
+### API 调用脚本
+
+```csharp
+// api-client.cs
+if (args.Length < 1)
+{
+    Console.WriteLine("用法: script.cs <API_URL>");
+    return 1;
+}
+
+var apiUrl = args[0];
+var client = new HttpClient();
+
+try
+{
+    var response = await client.GetStringAsync(apiUrl);
+    Console.WriteLine("API 响应:");
+    Console.WriteLine(response);
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"错误: {ex.Message}");
+    return 1;
+}
+```
+
+```sh
+dotnet-exec api-client.cs "https://api.github.com/users/octocat"
+```
+
+### 系统管理脚本
+
+```csharp
+// system-info.cs
+Console.WriteLine("系统信息:");
+Console.WriteLine($"操作系统: {Environment.OSVersion}");
+Console.WriteLine($"机器名: {Environment.MachineName}");
+Console.WriteLine($"处理器数: {Environment.ProcessorCount}");
+Console.WriteLine($"工作目录: {Environment.CurrentDirectory}");
+
+Console.WriteLine("\n环境变量:");
+foreach (DictionaryEntry env in Environment.GetEnvironmentVariables())
+{
+    Console.WriteLine($"{env.Key}={env.Value}");
+}
+```
+
+```sh
+dotnet-exec system-info.cs
+```
+
+## 远程脚本执行
+
+dotnet-exec 可以直接从 URL 执行脚本：
+
+```sh
+# 从 GitHub 执行脚本
+dotnet-exec https://raw.githubusercontent.com/WeihanLi/dotnet-exec/main/samples/hello.cs
+
+# 使用短链接
+dotnet-exec gh:WeihanLi/dotnet-exec/samples/hello.cs
+```
+
+## 下一步
+
+现在您已经了解了基础知识，可以探索更高级的功能：
+
+- [高级使用指南](advanced-usage.md) - 复杂场景和优化
+- [引用管理指南](references-guide.md) - 深入了解包和引用管理
+- [配置文件和别名](profiles-and-aliases.md) - 工作流程自动化
+- [测试指南](testing-guide.md) - 全面的测试支持
+- [REPL 和架构](repl-and-architecture.md) - 交互模式和内部架构
+- [示例和用例](examples.md) - 50+ 实际示例
+- [故障排除](troubleshooting.md) - 常见问题解决方案
+
+开始使用 dotnet-exec 快速执行 C# 代码，无需项目文件的复杂性！
 
 #### Script
 
