@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.31.0
+
+- feat: upgrade dependencies and .NET 10 Preview 7 update
+- refactor: log enhancement and refactoring
+- build: simplify build script
+
 ## 0.30.0
 
 - feat: .NET 10 Preview 6 upgrade
