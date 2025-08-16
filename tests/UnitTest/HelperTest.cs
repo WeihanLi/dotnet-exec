@@ -2,6 +2,7 @@
 // Licensed under the Apache license version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 namespace UnitTest;
+
 public class HelperTest
 {
     [Theory]

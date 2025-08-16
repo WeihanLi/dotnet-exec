@@ -66,7 +66,7 @@ public sealed partial class ExecOptions
     public string? CompileOutput { get; set; }
 
     public double? Timeout { get; set; }
-    
+
     [JsonIgnore] public CancellationToken CancellationToken { get; set; }
 
     internal string[] DefaultEntryMethods { get; set; } = ["MainTest", "Execute", "Run"];

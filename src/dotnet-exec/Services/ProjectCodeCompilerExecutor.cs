@@ -10,7 +10,7 @@ using WeihanLi.Common.Models;
 namespace Exec.Services;
 
 internal sealed class ProjectCodeCompilerExecutor(
-    IAdditionalScriptContentFetcher contentFetcher, 
+    IAdditionalScriptContentFetcher contentFetcher,
     IReferenceResolverFactory referenceResolverFactory,
     ILogger logger
     ) : ICodeCompiler, ICodeExecutor
@@ -43,7 +43,7 @@ internal sealed class ProjectCodeCompilerExecutor(
                 {
                     return Result.Fail<CompileResult>("Invalid project file provided");
                 }
-                
+
                 projectFileContent = projectContent;
             }
 
@@ -56,7 +56,7 @@ internal sealed class ProjectCodeCompilerExecutor(
         await File.WriteAllTextAsync(projectFilePath, projectFileContent);
         logger.LogDebug("Project file created. Path: {ProjectFilePath} \n{ProjectFileContent}",
             projectFilePath, projectFileContent);
-        
+
         var outputDir = Path.Combine(tempFolderPath, "output");
         // dotnet build
         var dotnetPath = ApplicationHelper.GetDotnetPath();
@@ -68,7 +68,7 @@ internal sealed class ProjectCodeCompilerExecutor(
             Directory.Delete(tempFolderPath, true);
             return Result.Fail<CompileResult>($"Build failed with exit code {buildResult.ExitCode},{buildResult.StandardOut}\n{buildResult.StandardError}", ResultStatus.InternalError);
         }
-        
+
         var result = new CompileResult(null!, null!, null!);
         result.SetProperty(nameof(execId), execId);
         result.SetProperty(nameof(tempFolderPath), tempFolderPath);
@@ -90,7 +90,7 @@ internal sealed class ProjectCodeCompilerExecutor(
         var dotnetPath = ApplicationHelper.GetDotnetPath();
         Guard.NotNull(dotnetPath);
         var exitCode = await CommandExecutor.ExecuteAndOutputAsync(dotnetPath, dllFileName, workingDirectory: outputDir);
-        
+
         var tempFolderPath = compileResult.GetProperty<string>("tempFolderPath");
         try
         {
@@ -101,14 +101,14 @@ internal sealed class ProjectCodeCompilerExecutor(
         {
             logger.LogDebug(e, "Failed to delete temp folder {TempFolderPath}", tempFolderPath);
         }
-        
+
         if (exitCode != 0)
         {
             return Result.Fail(
                 $"Execute failed with exit code {exitCode} ",
                 ResultStatus.InternalError, exitCode);
         }
-        
+
         return Result.Success(0);
     }
 
@@ -138,7 +138,7 @@ internal sealed class ProjectCodeCompilerExecutor(
                                         <ItemGroup>
                                       """
             );
-        
+
         // build items
         await foreach (var scriptPath in GetScriptPathList(options, tempFolderPath))
         {
@@ -176,16 +176,16 @@ internal sealed class ProjectCodeCompilerExecutor(
                     var projectReferenceX = $"""    <ProjectReference Include="{projectReference.ProjectPath}" />""";
                     projectFileBuilder.AppendLine(projectReferenceX);
                     break;
-                
+
                 case FrameworkReference:
                     break;
-                
+
                 default:
                     throw new InvalidOperationException("Unsupported reference type");
             }
-            
+
         }
-        
+
         // build ItemGroup end
         projectFileBuilder.Append("""
                                     </ItemGroup>
@@ -200,9 +200,9 @@ internal sealed class ProjectCodeCompilerExecutor(
 
         var usingText = Helper.GetGlobalUsingsCodeText(options);
         yield return GetPath(tempFolderPath, usingText, "_GlobalUsings");
-        
+
         if (options.AdditionalScripts is not { Count: > 0 }) yield break;
-        
+
         foreach (var script in options.AdditionalScripts)
         {
             yield return GetPath(tempFolderPath, (await contentFetcher.FetchContent(script, options.CancellationToken)).Data ?? script);
@@ -213,13 +213,13 @@ internal sealed class ProjectCodeCompilerExecutor(
     {
         if (File.Exists(script))
         {
-            return Path.GetRelativePath(tempFolderPath,script);
+            return Path.GetRelativePath(tempFolderPath, script);
         }
 
         var scriptFileName = fileName ?? Path.GetRandomFileName();
         var scriptPath = Path.Combine(tempFolderPath, $"{scriptFileName}.cs");
         File.WriteAllText(scriptPath, script);
-        
+
         logger.LogDebug("script file created at {ScriptPath}, script content: \n{ScriptContent}", scriptPath, script);
         return Path.GetRelativePath(tempFolderPath, scriptPath);
     }

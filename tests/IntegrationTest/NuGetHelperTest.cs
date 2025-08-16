@@ -6,6 +6,7 @@ using NuGet.Versioning;
 using ReferenceResolver;
 
 namespace IntegrationTest;
+
 public class NuGetHelperTest
 {
     private static readonly NuGetHelper NuGetHelper = new(NullLoggerFactory.Instance);

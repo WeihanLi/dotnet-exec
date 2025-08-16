@@ -10,7 +10,7 @@ public sealed class ParseOptionsPipeline(IEnumerable<IParseOptionsMiddleware> mi
 {
     public CSharpParseOptions Configure(CSharpParseOptions parseOptions, ExecOptions options)
     {
-        return middlewares.Aggregate(parseOptions, (current, middleware) => 
+        return middlewares.Aggregate(parseOptions, (current, middleware) =>
             middleware.Configure(current, options));
     }
 }

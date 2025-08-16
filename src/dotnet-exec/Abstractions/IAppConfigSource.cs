@@ -4,6 +4,7 @@
 using Exec.Contracts;
 
 namespace Exec.Abstractions;
+
 internal interface IAppConfigSource
 {
     Task<AppConfiguration> GetConfigAsync();

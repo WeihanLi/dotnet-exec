@@ -60,7 +60,7 @@ public sealed partial class ExecOptions
     private static readonly Option<string> ExecutorTypeOption =
         new("--executor-type", "--executor")
         {
-            DefaultValueFactory = _ => Helper.Default, 
+            DefaultValueFactory = _ => Helper.Default,
             Description = "The executor to use"
         };
 
@@ -123,7 +123,7 @@ public sealed partial class ExecOptions
 
     private static readonly Option<string[]> AdditionalScriptsOption =
         new("--ad", "--addition")
-        { 
+        {
             Description = "Additional script path"
         };
 

@@ -4,6 +4,7 @@
 using Exec.Services;
 
 namespace UnitTest;
+
 public class ReferenceResolverTest
 {
     [Theory]

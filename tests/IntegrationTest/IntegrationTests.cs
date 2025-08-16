@@ -133,7 +133,7 @@ public class IntegrationTests(
 
     [Theory(Skip = "NeedWork")]
     [InlineData(
-        "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/CorrelationIdSample.cs", 
+        "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/CorrelationIdSample.cs",
         "https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/BalabalaSample.csproj"
         )]
     public async Task Issue06SampleTest(string sampleFileName, string sampleProjectFile)
@@ -152,7 +152,7 @@ public class IntegrationTests(
         var result = await handler.Execute(execOptions);
         Assert.Equal(0, result);
     }
-    
+
     [Theory]
     [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs")]
     [InlineData("https://raw.githubusercontent.com/WeihanLi/SamplesInPractice/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs")]
@@ -651,7 +651,7 @@ public class IntegrationTests(
 
         outputHelper.WriteLine(output.StandardOutput);
     }
-    
+
     [Theory]
     [InlineData("XunitSample")]
     public async Task TestCommandExecuteTest(string sampleName)

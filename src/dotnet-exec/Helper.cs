@@ -55,7 +55,7 @@ public static class Helper
 
         return EnvHelper.Val(EnableDebugEnvName).ToBoolean();
     }
-    
+
     /// <summary>
     /// Checks if the option is present and not implicit (i.e. not set by default).
     /// This is useful for checking if the user has explicitly set an option, as opposed to it being set by default.
@@ -273,9 +273,9 @@ public static class Helper
                                 {
                                     return;
                                 }
-                                
+
                                 Debug.Assert(aliasName is not null);
-                                
+
                                 if (!appConfiguration.Aliases.Remove(aliasName))
                                 {
                                     return;
@@ -293,7 +293,7 @@ public static class Helper
                         aliasSubCommand.SetAction(aliasCommandHandler);
                     }
                     break;
-                
+
                 case TestCommand testCommand:
                     testCommand.SetAction((parseResult, cancellationToken) => testCommand.InvokeAsync(parseResult, commandHandler, cancellationToken));
                     break;
@@ -512,7 +512,7 @@ public static class Helper
     {
         return set.Any(t => Match(t, type));
     }
-    
+
     private static bool Match(string typePattern, string type)
     {
         if ("*".Equals(typePattern, StringComparison.Ordinal))
@@ -522,7 +522,7 @@ public static class Helper
         {
             return type.StartsWith(typePattern[..^2], StringComparison.Ordinal);
         }
-        
+
         if (typePattern.StartsWith('*'))
         {
             return type.EndsWith(typePattern[1..], StringComparison.Ordinal);

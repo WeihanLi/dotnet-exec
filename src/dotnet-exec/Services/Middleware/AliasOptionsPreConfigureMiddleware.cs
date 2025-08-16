@@ -4,6 +4,7 @@
 using Exec.Contracts;
 
 namespace Exec.Services.Middleware;
+
 internal sealed class AliasOptionsPreConfigureMiddleware
         (AppConfiguration appConfiguration, ILogger logger)
     : IOptionsPreConfigureMiddleware

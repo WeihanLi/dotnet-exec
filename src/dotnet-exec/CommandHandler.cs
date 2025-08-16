@@ -63,7 +63,7 @@ public sealed class CommandHandler(ILogger logger,
             await repl.RunAsync(options);
             return 0;
         }
-        
+
         // stdin is not empty
         if (!string.IsNullOrEmpty(inputText))
         {
@@ -71,7 +71,7 @@ public sealed class CommandHandler(ILogger logger,
             if (!string.IsNullOrWhiteSpace(options.Script))
             {
                 var script = options.Script;
-                options.AdditionalScripts = [script, ..options.AdditionalScripts ?? []];
+                options.AdditionalScripts = [script, .. options.AdditionalScripts ?? []];
             }
             options.Script = inputText;
         }

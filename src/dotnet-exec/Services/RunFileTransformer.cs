@@ -14,10 +14,10 @@ public sealed class RunFileTransformer : IScriptTransformer
         {
             if (string.IsNullOrEmpty(line))
                 continue;
-            
+
             if (line.StartsWith("#!", StringComparison.Ordinal))
                 continue;
-            
+
             if (line.StartsWith("#:", StringComparison.Ordinal))
             {
                 // new directive
@@ -62,7 +62,7 @@ public sealed class RunFileTransformer : IScriptTransformer
                 break;
             }
         }
-        
+
         return Task.CompletedTask;
     }
 }

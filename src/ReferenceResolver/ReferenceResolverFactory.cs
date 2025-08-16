@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace ReferenceResolver;
 
-public sealed class ReferenceResolverFactory(IServiceProvider? serviceProvider) 
+public sealed class ReferenceResolverFactory(IServiceProvider? serviceProvider)
     : IReferenceResolverFactory
 {
     private static readonly char[] ReferenceSchemaSeparator = [':'];
@@ -67,7 +67,7 @@ public sealed class ReferenceResolverFactory(IServiceProvider? serviceProvider)
         return await resolver.ResolveAnalyzerReferences(referenceWithoutSchema, targetFramework, analyzerAssemblyLoader, cancellationToken)
             .ConfigureAwait(false);
     }
-    
+
     public static IReference ParseReference(string referenceWithSchema)
     {
         var (referenceType, reference) = GetReferenceType(referenceWithSchema);
@@ -81,7 +81,7 @@ public sealed class ReferenceResolverFactory(IServiceProvider? serviceProvider)
             _ => throw new InvalidOperationException($"Not supported reference {referenceWithSchema}")
         };
     }
-    
+
     private (string reference, IReferenceResolver referenceResolver) GetReferenceAndResolverInternal(string referenceWithSchema)
     {
         ArgumentNullException.ThrowIfNull(referenceWithSchema);
