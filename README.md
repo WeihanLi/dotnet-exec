@@ -1,320 +1,355 @@
 # dotnet-exec
 
+A powerful command-line tool for executing C# programs without project files, featuring custom entry points, REPL mode, comprehensive reference management, and integrated testing capabilities.
+
+## 🎯 Overview
+
+`dotnet-exec` simplifies C# development by allowing you to:
+
+- **Execute C# code directly** from command line or files
+- **Use custom entry points** beyond the traditional `Main` method
+- **Access REPL mode** for interactive C# development
+- **Reference NuGet packages, local DLLs, and frameworks** seamlessly
+- **Run xUnit tests** without project setup
+- **Save configurations** as reusable profiles
+- **Create aliases** for frequently used commands
+- **Work with remote scripts** via URLs
+
+## 📦 Package Information
+
 Package | Latest | Latest Preview
 ---- | ---- | ----
 dotnet-execute | [![dotnet-execute](https://img.shields.io/nuget/v/dotnet-execute)](https://www.nuget.org/packages/dotnet-execute/) | [![dotnet-execute Latest](https://img.shields.io/nuget/vpre/dotnet-execute)](https://www.nuget.org/packages/dotnet-execute/absoluteLatest)
 ReferenceResolver | [![ReferenceResolver](https://img.shields.io/nuget/v/ReferenceResolver)](https://www.nuget.org/packages/ReferenceResolver/) | [![ReferenceResolver Latest](https://img.shields.io/nuget/vpre/ReferenceResolver)](https://www.nuget.org/packages/ReferenceResolver/absoluteLatest)
 
 [![default](https://github.com/WeihanLi/dotnet-exec/actions/workflows/dotnet.yml/badge.svg)](https://github.com/WeihanLi/dotnet-exec/actions/workflows/dotnet.yml)
-
 [![Docker Pulls](https://img.shields.io/docker/pulls/weihanli/dotnet-exec)](https://hub.docker.com/r/weihanli/dotnet-exec)
-
 [![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/WeihanLi/dotnet-exec)](https://github.com/WeihanLi/dotnet-exec/commits/main)
-
 [![GitHub Release](https://img.shields.io/github/v/release/WeihanLi/dotnet-exec)](https://github.com/WeihanLi/dotnet-exec/releases)
-
 [![BuiltWithDot.Net shield](https://builtwithdot.net/project/5741/dotnet-exec/badge)](https://builtwithdot.net/project/5741/dotnet-exec)
-
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/WeihanLi/dotnet-exec)
 
-[中文介绍](./README.zh-CN.md)
+**📖 Documentation**: [English](./docs/index.md) | [中文介绍](./README.zh-CN.md)
 
-## Intro
+## 🚀 Quick Start
 
-`dotnet-exec` is a command-line tool for executing C# program without a project file, and you can have your custom entry point other than the `Main` method
+### Installation
 
-Slides:
+```sh
+# Install latest stable version
+dotnet tool install -g dotnet-execute
+
+# Install latest preview version
+dotnet tool install -g dotnet-execute --prerelease
+
+# Update to latest version
+dotnet tool update -g dotnet-execute
+```
+
+### Basic Usage
+
+```sh
+# Execute simple expressions
+dotnet-exec "1 + 1"
+dotnet-exec "Guid.NewGuid()"
+dotnet-exec "DateTime.Now"
+
+# Execute C# statements
+dotnet-exec 'Console.WriteLine("Hello, dotnet-exec!");'
+
+# Execute script files
+dotnet-exec MyScript.cs
+
+# Execute remote scripts
+dotnet-exec https://raw.githubusercontent.com/user/repo/main/script.cs
+
+# Start REPL mode
+dotnet-exec
+```
+
+## ✨ Key Features
+
+### 🎯 Multiple Execution Modes
+- **Raw Code**: Execute C# expressions and statements directly
+- **Script Files**: Run local .cs files with custom entry points
+- **Remote Scripts**: Execute scripts from URLs
+- **REPL Mode**: Interactive C# development environment
+
+### 📚 Rich Reference Support
+- **NuGet Packages**: Latest or specific versions
+- **Local Assemblies**: DLL files and folder references
+- **Project References**: Inherit dependencies from .csproj files
+- **Framework References**: Web, desktop, and custom frameworks
+
+### 🧪 Integrated Testing
+- **xUnit Integration**: Run tests without project setup
+- **Test Discovery**: Automatic test method detection
+- **Custom References**: Add packages for testing scenarios
+
+### ⚙️ Configuration Management
+- **Profiles**: Save and reuse common configurations
+- **Aliases**: Create shortcuts for frequent commands
+- **Environment Variables**: Set execution context
+
+### 🛠️ Developer-Friendly
+- **Custom Entry Points**: Use methods beyond `Main`
+- **Preview Features**: Access latest C# language features
+- **Debug Mode**: Detailed compilation and execution information
+- **Container Support**: Docker/Podman execution without .NET SDK
+
+## 📖 Usage Examples
+
+### Basic Execution
+
+```sh
+# Simple calculations
+dotnet-exec "Math.Sqrt(16)"
+dotnet-exec "string.Join(\", \", new[] {\"a\", \"b\", \"c\"})"
+
+# Working with dates
+dotnet-exec "DateTime.Now.AddDays(7).ToString(\"yyyy-MM-dd\")"
+
+# File operations
+dotnet-exec "Directory.GetFiles(\".\", \"*.cs\").Length"
+```
+
+### Script Files with Custom Entry Points
+
+Create `example.cs`:
+```csharp
+public class Example
+{
+    public static void MainTest()
+    {
+        Console.WriteLine("Custom entry point executed!");
+    }
+    
+    public static void Execute()
+    {
+        Console.WriteLine("Alternative entry method");
+    }
+}
+```
+
+```sh
+# Use custom entry point
+dotnet-exec example.cs --entry MainTest
+
+# Use default entry method fallbacks
+dotnet-exec example.cs --default-entry MainTest Execute Run
+```
+
+### References and Using Statements
+
+```sh
+# NuGet package references
+dotnet-exec 'JsonConvert.SerializeObject(new {name="test"})' \
+  -r 'nuget:Newtonsoft.Json' \
+  -u 'Newtonsoft.Json'
+
+# Multiple references
+dotnet-exec MyScript.cs \
+  -r 'nuget:Serilog' \
+  -r 'nuget:AutoMapper' \
+  -u 'Serilog' \
+  -u 'AutoMapper'
+
+# Local DLL references
+dotnet-exec MyScript.cs -r './libs/MyLibrary.dll'
+
+# Framework references
+dotnet-exec 'WebApplication.Create().Run();' --web
+```
+
+### REPL Mode
+
+```sh
+# Start interactive mode
+dotnet-exec
+
+# In REPL:
+> #r "nuget:Newtonsoft.Json"
+> using Newtonsoft.Json;
+> var obj = new { Name = "Test", Value = 42 };
+> JsonConvert.SerializeObject(obj)
+"{"Name":"Test","Value":42}"
+```
+
+### Testing
+
+Execute xUnit tests without project setup:
+
+```sh
+# Run test file
+dotnet-exec test MyTests.cs
+
+# Run multiple test files
+dotnet-exec test Test1.cs Test2.cs Test3.cs
+
+# Run tests with additional references
+dotnet-exec test MyTests.cs \
+  -r 'nuget:Moq' \
+  -r 'nuget:FluentAssertions' \
+  -u 'Moq' \
+  -u 'FluentAssertions'
+```
+
+Example test file:
+```csharp
+public class CalculatorTests
+{
+    [Fact]
+    public void Add_TwoNumbers_ReturnsSum()
+    {
+        var result = 2 + 3;
+        Assert.Equal(5, result);
+    }
+    
+    [Theory]
+    [InlineData(1, 2, 3)]
+    [InlineData(0, 0, 0)]
+    [InlineData(-1, 1, 0)]
+    public void Add_VariousInputs_ReturnsExpected(int a, int b, int expected)
+    {
+        var result = a + b;
+        Assert.Equal(expected, result);
+    }
+}
+```
+
+### Configuration Profiles
+
+Save common configurations for reuse:
+
+```sh
+# Create a web development profile
+dotnet-exec profile set webdev \
+  --web \
+  -r 'nuget:Swashbuckle.AspNetCore' \
+  -r 'nuget:AutoMapper' \
+  -u 'AutoMapper'
+
+# List profiles
+dotnet-exec profile ls
+
+# Use profile
+dotnet-exec MyWebScript.cs --profile webdev
+
+# Get profile details
+dotnet-exec profile get webdev
+
+# Remove profile
+dotnet-exec profile rm webdev
+```
+
+### Command Aliases
+
+Create shortcuts for frequently used commands:
+
+```sh
+# Create aliases
+dotnet-exec alias set guid "Guid.NewGuid()"
+dotnet-exec alias set now "DateTime.Now"
+dotnet-exec alias set hash "Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(args[0])))"
+
+# List aliases
+dotnet-exec alias ls
+
+# Use aliases
+dotnet-exec guid
+dotnet-exec now
+dotnet-exec hash "text to hash"
+
+# Remove alias
+dotnet-exec alias unset guid
+```
+
+### Container Support
+
+Execute with Docker/Podman without .NET SDK:
+
+```sh
+# Docker
+docker run --rm weihanli/dotnet-exec:latest "1+1"
+docker run --rm weihanli/dotnet-exec:latest "Guid.NewGuid()"
+docker run --rm weihanli/dotnet-exec:latest "DateTime.Now"
+
+# Podman
+podman run --rm weihanli/dotnet-exec:latest "1+1"
+
+# Mount local files
+docker run --rm -v $(pwd):/workspace weihanli/dotnet-exec:latest MyScript.cs
+```
+
+For the full image tag list, see <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
+
+## 📚 Documentation
+
+### Comprehensive Guides
+
+- **[Getting Started](docs/articles/en/getting-started.md)**: Installation, basic usage, and core concepts
+- **[Advanced Usage](docs/articles/en/advanced-usage.md)**: Complex scenarios and advanced features
+- **[References Guide](docs/articles/en/references-guide.md)**: Managing assemblies, packages, and dependencies
+- **[Profiles and Aliases](docs/articles/en/profiles-and-aliases.md)**: Configuration management and shortcuts
+- **[Testing Guide](docs/articles/en/testing-guide.md)**: xUnit integration and testing workflows
+- **[Examples and Use Cases](docs/articles/en/examples.md)**: Real-world examples across different domains
+- **[Troubleshooting](docs/articles/en/troubleshooting.md)**: Common issues and solutions
+
+### Quick Reference
+
+```sh
+# Get help
+dotnet-exec --help
+dotnet-exec profile --help
+dotnet-exec alias --help
+dotnet-exec test --help
+
+# System information
+dotnet-exec --info
+```
+
+## 🎤 Presentations
 
 - [Makes C# more simple -- .NET Conf China 2022](https://github.com/WeihanLi/dotnet-exec/blob/main/docs/slides/dotnet-conf-china-2022-dotnet-exec_makes_csharp_more_simple.pdf)
 - [dotnet-exec simpler C# -- .NET Conf China 2023 Watch Party Shanghai](https://github.com/WeihanLi/dotnet-exec/blob/main/docs/slides/dotnet-exec-simpler-csharp.pdf)
 
-Github Action for executing without dotnet environment
+## 🔗 GitHub Actions Integration
 
-- <https://github.com/WeihanLi/dotnet-exec-action>
-- <https://github.com/marketplace/actions/dotnet-exec>
+Execute C# code in CI/CD without .NET SDK setup:
 
-## Install/Update
+- **Repository**: <https://github.com/WeihanLi/dotnet-exec-action>
+- **Marketplace**: <https://github.com/marketplace/actions/dotnet-exec>
 
-### dotnet tool
-
-Latest stable version:
-
-```sh
-dotnet tool update -g dotnet-execute
+Example usage:
+```yaml
+- name: Execute C# Script
+  uses: WeihanLi/dotnet-exec-action@main
+  with:
+    script: 'Console.WriteLine("Hello from GitHub Actions!");'
 ```
 
-Latest preview version:
-
-```sh
-dotnet tool update -g dotnet-execute --prerelease
-```
-
-Install failed? try the command below:
-
-```sh
-dotnet tool update -g dotnet-execute --source https://api.nuget.org/v3/index.json
-```
-
-or
-
-```sh
-dotnet tool update -g dotnet-execute --prerelease --add-source https://api.nuget.org/v3/index.json --ignore-failed-sources
-```
-
-Uninstall or failed to update? Try uninstall and install again
-
-```sh
-dotnet tool uninstall -g dotnet-execute
-```
-
-### Container support
-
-Execute with docker
-
-``` sh
-docker run --rm weihanli/dotnet-exec:latest "1+1"
-```
-
-``` sh
-docker run --rm weihanli/dotnet-exec:latest "Guid.NewGuid()"
-```
-
-``` sh
-docker run --rm --pull=always weihanli/dotnet-exec:latest "ApplicationHelper.RuntimeInfo"
-```
-
-Execute with podman
-
-``` sh
-podman run --rm weihanli/dotnet-exec:latest "1+1"
-```
-
-``` sh
-podman run --rm weihanli/dotnet-exec:latest "Guid.NewGuid()"
-```
-
-``` sh
-podman run --rm --pull=always weihanli/dotnet-exec:latest "ApplicationHelper.RuntimeInfo"
-```
-
-for the full image tag list, see <https://hub.docker.com/r/weihanli/dotnet-exec/tags>
-
-## Examples
-
-### Get started
-
-Execute local file:
-
-``` sh
-dotnet-exec HttpPathJsonSample.cs
-```
-
-Execute a local file with custom entry point:
-
-``` sh
-dotnet-exec 'HttpPathJsonSample.cs' --entry MainTest
-```
-
-Execute remote file:
-
-``` sh
-dotnet-exec https://github.com/WeihanLi/SamplesInPractice/blob/master/net7Sample/Net7Sample/ArgumentExceptionSample.cs
-```
-
-Execute raw code:
-
-``` sh
-dotnet-exec 'Console.WriteLine(1+1);'
-```
-
-Execute the raw script:
-
-```sh
-dotnet-exec '1 + 1'
-```
-
-``` sh
-dotnet-exec 'Guid.NewGuid()'
-```
-
-### References
-
-Execute raw code with custom references:
-
-NuGet package reference:
-
-``` sh
-dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "nuget: WeihanLi.Npoi,3.0.0" -u "WeihanLi.Npoi"
-```
-
-Local dll reference:
-
-``` sh
-dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "./out/WeihanLi.Npoi.dll" -u "WeihanLi.Npoi"
-```
-
-Local dll in a folder references:
-
-``` sh
-dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "folder: ./out" -u "WeihanLi.Npoi"
-```
-
-Local project reference:
-
-``` sh
-dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump();' -r "project: ./WeihanLi.Npoi.csproj" -u "WeihanLi.Npoi"
-```
-
-Framework reference:
-
-``` sh
-dotnet-exec 'WebApplication.Create().Run();' --reference 'framework:web'
-```
-
-Web framework reference in one option:
-
-``` sh
-dotnet-exec 'WebApplication.Create().Run();' --web
-```
-
-### Usings
-
-Execute raw code with custom usings:
-
-``` sh
-dotnet-exec 'WriteLine(1+1);' --using "static System.Console"
-```
-
-Execute script with custom reference:
-
-``` sh
-dotnet-exec 'CsvHelper.GetCsvText(new[]{1,2,3}).Dump()' -r "nuget:WeihanLi.Npoi,3.0.0" -u WeihanLi.Npoi
-```
-
-### More
-
-Execute with additional dependencies
-
-``` sh
-dotnet-exec 'typeof(LocalType).FullName.Dump();' FileLocalType2.cs
-```
-
-or with explicit addition references
-
-``` sh
-dotnet-exec 'typeof(LocalType).FullName.Dump();' --ad FileLocalType2.cs
-```
-
-``` sh
-dotnet-exec 'typeof(LocalType).FullName.Dump();' --addition FileLocalType2.cs
-```
-
-Execute with exacting references and usings from the project file
-
-``` sh
-dotnet-exec 'typeof(LocalType).FullName.Dump();' --project ./Sample.csproj
-```
-
-Execute file with preview features(features requires enable preview feature flag):
-
-``` sh
-dotnet-exec RawStringLiteral.cs --preview
-```
-
-### Config Profile
-
-You can customize the config you used often into a config profile to reuse it for convenience.
-
-List the profiles had configured:
-
-``` sh
-dotnet-exec profile ls
-```
-
-Configure a profile:
-
-``` sh
-dotnet-exec profile set web -r "nuget:WeihanLi.Web.Extensions" -u 'WeihanLi.Web.Extensions' --web --wide false
-```
-
-Get the profile details:
-
-``` sh
-dotnet-exec profile get web
-```
-
-Remove the profile not needed:
-
-``` sh
-dotnet-exec profile rm web
-```
-
-Executing with specific profile config:
-
-``` sh
-dotnet-exec 'WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run();' --profile web --using 'WeihanLi.Extensions'
-```
-
-![image](https://user-images.githubusercontent.com/7604648/205428791-48f0863b-ca9a-4a55-93cd-bb5514845c5d.png)
-
-Executing with specific profile config and remove preset specific using:
-
-``` sh
-dotnet-exec 'WebApplication.Create().Run();' --profile web --using '-WeihanLi.Extensions'
-```
-
-### Alias command
-
-The `alias` command allows you to manage aliases for frequently used commands.
-
-#### List aliases
-
-To list all configured aliases, use the `list` subcommand:
-
-```sh
-dotnet-exec alias list
-```
-
-You can also use `dotnet-exec alias ls` to list aliases.
-
-#### Set alias
-
-To set a new alias, use the `set` subcommand followed by the alias name and value:
-
-```sh
-dotnet-exec alias set <aliasName> <aliasValue>
-```
-
-For example, to set an alias for generating a new GUID:
-
-```sh
-dotnet-exec alias set guid "Guid.NewGuid()"
-```
-
-use example:
-
-```sh
-dotnet-exec guid
-```
-
-#### Unset alias
-
-To remove an existing alias, use the `unset` subcommand followed by the alias name:
-
-```sh
-dotnet-exec alias unset <aliasName>
-```
-
-For example, to remove the `guid` alias:
-
-```sh
-dotnet-exec alias unset guid
-```
-
-## Acknowledgements
-
-- [Roslyn](https://github.com/dotnet/roslyn)
-- [NuGet.Clients](https://github.com/NuGet/NuGet.Client)
-- [System.CommandLine](https://github.com/dotnet/command-line-api)
+## 🙏 Acknowledgements
+
+- [Roslyn](https://github.com/dotnet/roslyn) - C# compiler and analysis APIs
+- [NuGet.Clients](https://github.com/NuGet/NuGet.Client) - Package management
+- [System.CommandLine](https://github.com/dotnet/command-line-api) - Command-line interface
 - [Thanks JetBrains for the open source Rider license](https://jb.gg/OpenSource?from=dotnet-exec)
-- Many thanks to the contributors and users for this project
+- Many thanks to all contributors and users of this project
+
+## 📄 License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+## 🐛 Issues & Support
+
+- **Report bugs**: [GitHub Issues](https://github.com/WeihanLi/dotnet-exec/issues)
+- **Ask questions**: [GitHub Discussions](https://github.com/WeihanLi/dotnet-exec/discussions)
+- **Documentation**: [Comprehensive Guides](docs/articles/en/)
+
+---
+
+⭐ **If you find this project helpful, please consider giving it a star!**

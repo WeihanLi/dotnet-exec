@@ -1,4 +1,16 @@
 - name: Getting Started
   href: getting-started.md
+- name: Advanced Usage
+  href: advanced-usage.md
+- name: References Guide
+  href: references-guide.md
+- name: Profiles and Aliases
+  href: profiles-and-aliases.md
+- name: Testing Guide
+  href: testing-guide.md
+- name: Examples and Use Cases
+  href: examples.md
+- name: Troubleshooting
+  href: troubleshooting.md
 - name: Presentations
   href: presentations.md
