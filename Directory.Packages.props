@@ -22,7 +22,7 @@
     <PackageVersion Include="WeihanLi.Common" Version="1.0.81" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="xunit.v3" Version="3.0.0" />
+    <PackageVersion Include="xunit.v3" Version="3.0.1" />
     <PackageVersion Include="Xunit.DependencyInjection" Version="10.6.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
   </ItemGroup>
