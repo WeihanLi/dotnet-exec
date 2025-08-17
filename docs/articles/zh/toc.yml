@@ -8,8 +8,10 @@
   href: profiles-and-aliases.md
 - name: 测试指南
   href: testing-guide.md
-- name: REPL 和架构
-  href: repl-and-architecture.md
+- name: REPL
+  href: repl.md
+- name: 架构
+  href: architecture.md
 - name: 示例和用例
   href: examples.md
 - name: 故障排除

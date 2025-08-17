@@ -8,8 +8,10 @@
   href: profiles-and-aliases.md
 - name: Testing Guide
   href: testing-guide.md
-- name: REPL and Architecture
-  href: repl-and-architecture.md
+- name: REPL
+  href: repl.md
+- name: Architecture
+  href: architecture.md
 - name: Examples and Use Cases
   href: examples.md
 - name: Troubleshooting

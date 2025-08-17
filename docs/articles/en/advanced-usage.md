@@ -105,15 +105,18 @@ dotnet-exec MyScript.cs \
 ### Using Aliases
 
 ```sh
-# Create type aliases
-dotnet-exec 'Json.SerializeObject(data);' \
-  --using 'Json = Newtonsoft.Json.JsonConvert' \
-  -r 'nuget:Newtonsoft.Json'
-
-# Namespace aliases
+# Static usings
 dotnet-exec MyScript.cs \
-  --using 'Extensions = Microsoft.Extensions.DependencyInjection'
+  --using 'static System.Math' \
+  -r 'System.Runtime'
+
+# Multiple usings
+dotnet-exec MyScript.cs \
+  --using 'System.Collections.Generic' \
+  --using 'System.Linq'
 ```
+
+> **Note**: Namespace and type aliases are supported through script directives (`// using: MyConsole = System.Console`) or project files (`<Using Alias="..." Include="..." />`), but not directly via the `--using` command line option.
 
 ### Removing Default Usings
 
@@ -130,7 +133,7 @@ dotnet-exec MyScript.cs --using '-System' --using '-System.Collections.Generic'
 ### Preview Features
 
 ```sh
-# Enable preview language features
+# Enable preview language features and APIs that require RequiresPreviewFeaturesAttribute
 dotnet-exec PreviewScript.cs --preview
 
 # With specific preview APIs
