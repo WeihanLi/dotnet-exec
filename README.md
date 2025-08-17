@@ -347,7 +347,7 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 ## 🐛 Issues & Support
 
 - **Report bugs**: [GitHub Issues](https://github.com/WeihanLi/dotnet-exec/issues)
-- **Ask questions**: [GitHub Discussions](https://github.com/WeihanLi/dotnet-exec/discussions)
+- **Ask questions**: [GitHub Issues](https://github.com/WeihanLi/dotnet-exec/issues)
 - **Documentation**: [Comprehensive Guides](docs/articles/en/)
 
 ---

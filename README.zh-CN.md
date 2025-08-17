@@ -450,7 +450,7 @@ dotnet-exec perf/benchmark.cs --iterations 1000
 ## 社区和支持
 
 - 🐛 **问题反馈**: [GitHub Issues](https://github.com/WeihanLi/dotnet-exec/issues)
-- 💬 **讨论**: [GitHub Discussions](https://github.com/WeihanLi/dotnet-exec/discussions)
+- 💬 **讨论**: [GitHub Issues](https://github.com/WeihanLi/dotnet-exec/issues)
 - 📖 **Wiki**: [DeepWiki](https://deepwiki.com/WeihanLi/dotnet-exec)
 - 🔄 **更新日志**: [Release Notes](docs/ReleaseNotes.md)
 
