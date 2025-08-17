@@ -7,14 +7,11 @@
 ### 启用测试模式
 
 ```sh
-# 使用测试标志
-dotnet-exec script.cs --test
+# 使用测试
+dotnet-exec test script.cs
 
 # 等同于添加 xUnit 引用
-dotnet-exec script.cs --reference "nuget:xunit" --reference "nuget:xunit.runner.visualstudio"
-
-# 测试模式 REPL
-dotnet-exec --test
+dotnet-exec script.cs --reference "nuget:xunit.v3" --using "xunit"
 ```
 
 ### 简单单元测试
@@ -58,7 +55,7 @@ public class Calculator
 
 ```sh
 # 执行测试
-dotnet-exec simple-test.cs --test
+dotnet-exec test simple-test.cs
 ```
 
 ## 高级测试场景
@@ -67,8 +64,7 @@ dotnet-exec simple-test.cs --test
 
 ```sh
 # 添加 FluentAssertions 进行更好的断言
-dotnet-exec test.cs \
-  --test \
+dotnet-exec test test.cs \
   --reference "nuget:FluentAssertions"
 ```
 
@@ -111,8 +107,7 @@ public class CollectionTests
 
 ```sh
 # 添加 Moq 进行模拟
-dotnet-exec test.cs \
-  --test \
+dotnet-exec test test.cs \
   --reference "nuget:Moq" \
   --reference "nuget:Microsoft.Extensions.DependencyInjection"
 ```
@@ -193,8 +188,7 @@ public class UserServiceTests
 
 ```sh
 # Web API 测试设置
-dotnet-exec api-test.cs \
-  --test \
+dotnet-exec test api-test.cs \
   --web \
   --reference "nuget:Microsoft.AspNetCore.Mvc.Testing"
 ```
@@ -287,8 +281,7 @@ public class WeatherApiTests : IClassFixture<CustomWebApplicationFactory>
 
 ```sh
 # EF Core 测试设置
-dotnet-exec ef-test.cs \
-  --test \
+dotnet-exec test ef-test.cs \
   --reference "nuget:Microsoft.EntityFrameworkCore.InMemory" \
   --reference "nuget:Microsoft.EntityFrameworkCore"
 ```
@@ -471,8 +464,7 @@ public class AsyncHttpServiceTests
 
 ```sh
 # 添加 BenchmarkDotNet 进行性能测试
-dotnet-exec benchmark-test.cs \
-  --test \
+dotnet-exec benchmark-test.cs -c Release \
   --reference "nuget:BenchmarkDotNet"
 ```
 
@@ -539,8 +531,8 @@ public class Program
 
 ```sh
 # 创建测试专用配置
-dotnet-exec config set-profile unit-tests \
-  --test \
+dotnet-exec profile set unit-tests \
+  --reference "xunit.v3" \
   --reference "nuget:FluentAssertions" \
   --reference "nuget:Moq" \
   --using "Xunit" \
@@ -548,15 +540,15 @@ dotnet-exec config set-profile unit-tests \
   --using "Moq"
 
 # 集成测试配置
-dotnet-exec config set-profile integration-tests \
-  --test \
+dotnet-exec profile set integration-tests \
   --web \
+  --reference "xunit.v3" \
   --reference "nuget:Microsoft.AspNetCore.Mvc.Testing" \
   --reference "nuget:Microsoft.EntityFrameworkCore.InMemory" \
   --reference "nuget:Testcontainers"
 
 # 使用配置运行测试
-dotnet-exec test.cs --profile unit-tests
+dotnet-exec test test.cs --profile unit-tests
 ```
 
 ### 测试别名
@@ -564,13 +556,13 @@ dotnet-exec test.cs --profile unit-tests
 ```sh
 # 创建测试别名
 dotnet-exec alias set unit-test \
-  --test \
+  --reference "xunit.v3" \
   --reference "nuget:FluentAssertions" \
   --using "FluentAssertions"
 
 dotnet-exec alias set api-test \
-  --test \
   --web \
+  --reference "xunit.v3" \
   --reference "nuget:Microsoft.AspNetCore.Mvc.Testing"
 
 # 使用别名
@@ -602,10 +594,10 @@ jobs:
       run: dotnet tool install -g dotnet-execute
     
     - name: Run Unit Tests
-      run: dotnet-exec tests/unit-tests.cs --test --reference "nuget:FluentAssertions"
+      run: dotnet-exec test tests/unit-tests.cs --reference "nuget:FluentAssertions"
     
     - name: Run Integration Tests
-      run: dotnet-exec tests/integration-tests.cs --profile integration-tests
+      run: dotnet-exec test tests/integration-tests.cs --profile integration-tests
     
     - name: Generate Test Report
       run: dotnet-exec tests/test-reporter.cs --output ./test-results.xml
@@ -652,26 +644,26 @@ TestReporter.GenerateReport("./test-results.json");
 
 ```sh
 # 测试发现问题
-dotnet-exec test.cs --test --verbose
+dotnet-exec test test.cs --verbose
 
 # 并行测试问题
-dotnet-exec test.cs --test --disable-parallelization
+dotnet-exec test test.cs --disable-parallelization
 
 # 依赖冲突
-dotnet-exec test.cs --test --show-dependency-conflicts
+dotnet-exec test test.cs --show-dependency-conflicts
 ```
 
 ### 调试测试
 
 ```sh
 # 启用详细输出
-dotnet-exec test.cs --test --verbose
+dotnet-exec test test.cs --debug
 
 # 单独运行特定测试
-dotnet-exec test.cs --test --filter "TestClassName.TestMethodName"
+dotnet-exec test test.cs --filter "TestClassName.TestMethodName"
 
 # 调试模式
-dotnet-exec test.cs --test --configuration Debug --wait-for-debugger
+dotnet-exec test test.cs --configuration Debug
 ```
 
 这个全面的测试指南展示了如何使用 dotnet-exec 进行各种测试场景，从简单的单元测试到复杂的集成测试和性能基准测试。

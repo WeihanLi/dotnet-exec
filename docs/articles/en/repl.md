@@ -113,9 +113,6 @@ Reference added
 # REPL with web references
 dotnet-exec --web
 
-# REPL with testing references
-dotnet-exec --test
-
 # REPL with specific framework
 dotnet-exec --framework Microsoft.AspNetCore.App
 

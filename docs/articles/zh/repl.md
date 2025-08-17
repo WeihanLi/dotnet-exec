@@ -113,11 +113,8 @@ DaysInMonth
 # 带 Web 引用的 REPL
 dotnet-exec --web
 
-# 带测试引用的 REPL
-dotnet-exec --test
-
 # 带特定框架的 REPL
-dotnet-exec --framework Microsoft.AspNetCore.App
+dotnet-exec --reference "framework:Microsoft.AspNetCore.App"
 
 # 带多个引用的 REPL
 dotnet-exec --reference "nuget:Dapper" --reference "nuget:MySql.Data"
@@ -129,7 +126,7 @@ dotnet-exec --reference "nuget:Dapper" --reference "nuget:MySql.Data"
 
 ```sh
 # 创建 Web 开发 REPL 配置文件
-dotnet-exec config set-profile web-repl \
+dotnet-exec profile set web-repl \
   --web \
   --reference "nuget:Dapper" \
   --reference "nuget:Microsoft.EntityFrameworkCore.SqlServer" \

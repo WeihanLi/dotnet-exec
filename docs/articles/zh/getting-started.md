@@ -268,7 +268,7 @@ public class CalculatorTests
 
 ```sh
 # 运行测试
-dotnet-exec test-example.cs --test
+dotnet-exec test test-example.cs
 ```
 
 ## 配置文件和别名

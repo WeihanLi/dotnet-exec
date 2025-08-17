@@ -24,7 +24,7 @@ dotnet-exec config set-profile web-dev \
 
 # 创建测试配置文件
 dotnet-exec config set-profile testing \
-  --test \
+  --reference "nuget:xunit" \
   --reference "nuget:Moq" \
   --reference "nuget:FluentAssertions" \
   --using "Moq" \
@@ -88,7 +88,6 @@ dotnet-exec config set-profile prod \
 
 # 测试环境配置
 dotnet-exec config set-profile test \
-  --test \
   --reference "nuget:Microsoft.AspNetCore.Mvc.Testing" \
   --reference "nuget:Testcontainers" \
   --using "Microsoft.AspNetCore.Mvc.Testing" \
@@ -173,7 +172,6 @@ dotnet-exec alias set web-script \
 
 # 测试别名
 dotnet-exec alias set test-script \
-  --test \
   --reference "nuget:FluentAssertions" \
   --using "FluentAssertions"
 ```
@@ -221,8 +219,7 @@ dotnet-exec alias set api-test \
   --reference "nuget:Microsoft.AspNetCore.Mvc.Testing" \
   --using "RestSharp" \
   --using "Xunit" \
-  --using "Microsoft.AspNetCore.Mvc.Testing" \
-  --test
+  --using "Microsoft.AspNetCore.Mvc.Testing"
 
 # 数据库脚本别名
 dotnet-exec alias set db-script \
@@ -289,18 +286,17 @@ dotnet-exec alias import --file .dotnet-exec/project-aliases.json
 
 ```sh
 # 创建配置模板
-dotnet-exec config create-template web-app \
+dotnet-exec profile set web-app \
   --web \
-  --test \
   --reference "nuget:Microsoft.EntityFrameworkCore.SqlServer" \
   --reference "nuget:Microsoft.AspNetCore.Authentication.JwtBearer" \
   --reference "nuget:Serilog.AspNetCore" \
   --reference "nuget:FluentValidation.AspNetCore"
 
 # 基于模板创建配置文件
-dotnet-exec config from-template web-app my-web-project \
-  --override-reference "nuget:Microsoft.EntityFrameworkCore.PostgreSQL" \
-  --add-reference "nuget:Npgsql.EntityFrameworkCore.PostgreSQL"
+dotnet-exec profile set web-app my-web-project \
+  --reference "-nuget:Microsoft.EntityFrameworkCore.PostgreSQL" \
+  --reference "nuget:Npgsql.EntityFrameworkCore.PostgreSQL"
 ```
 
 ## CI/CD 集成
@@ -316,10 +312,10 @@ jobs:
   run-scripts:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
     

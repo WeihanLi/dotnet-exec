@@ -365,7 +365,6 @@ dotnet-exec alias set web-test \
   --reference "nuget:Microsoft.AspNetCore.Mvc.Testing" \
   --reference "nuget:xunit" \
   --web \
-  --test \
   --using "Microsoft.AspNetCore.Mvc.Testing" \
   --using "Xunit"
 
@@ -393,7 +392,7 @@ public class CustomMiddleware : IOptionsConfigureMiddleware
 }
 ```
 
-### 插件系统
+### 插件系统(TBD)
 
 ```sh
 # 加载自定义插件

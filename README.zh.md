@@ -234,7 +234,7 @@ public class CalculatorTests
 
 ```sh
 # 运行测试
-dotnet-exec test.cs --test
+dotnet-exec test test.cs
 ```
 
 ### 配置文件
@@ -358,7 +358,6 @@ dotnet-exec deploy-script.cs --reference "nuget:Docker.DotNet"
 | `--using` | `-u` | 添加 using 语句 | `-u "System.Text.Json"` |
 | `--entry` | | 指定入口方法 | `--entry MainTest` |
 | `--web` | | 添加 Web 框架引用 | `--web` |
-| `--test` | | 启用测试模式 | `--test` |
 | `--profile` | | 使用配置文件 | `--profile web-dev` |
 
 ### 编译选项
