@@ -29,7 +29,7 @@ ReferenceResolver | [![ReferenceResolver](https://img.shields.io/nuget/v/Referen
 [![BuiltWithDot.Net shield](https://builtwithdot.net/project/5741/dotnet-exec/badge)](https://builtwithdot.net/project/5741/dotnet-exec)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/WeihanLi/dotnet-exec)
 
-**📖 Documentation**: [English](./docs/index.md) | [中文介绍](./README.zh-CN.md)
+**📖 Documentation**: [English](./docs/index.md) | [中文介绍](./README.zh.md)
 
 ## 🚀 Quick Start
 
