@@ -5,6 +5,7 @@
 - feat: upgrade dependencies and .NET 10 Preview 7 update
 - refactor: log enhancement and refactoring
 - build: simplify build script
+- docs: refine document
 
 ## 0.30.0
 
