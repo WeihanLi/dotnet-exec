@@ -191,7 +191,7 @@ dotnet-exec script.cs --framework Microsoft.WindowsDesktop.App
 
 ## 高级功能
 
-### 使用语句
+### using 管理
 
 ```sh
 # 添加 using 语句
