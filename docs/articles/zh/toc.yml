@@ -1,4 +1,20 @@
-- name: Getting Started
+- name: 快速开始
   href: getting-started.md
-- name: Presentations
+- name: 高级使用指南
+  href: advanced-usage.md
+- name: 引用管理指南
+  href: references-guide.md
+- name: 配置文件和别名
+  href: profiles-and-aliases.md
+- name: 测试指南
+  href: testing-guide.md
+- name: REPL
+  href: repl.md
+- name: 架构
+  href: architecture.md
+- name: 示例和用例
+  href: examples.md
+- name: 故障排除
+  href: troubleshooting.md
+- name: 演示文稿
   href: presentations.md
