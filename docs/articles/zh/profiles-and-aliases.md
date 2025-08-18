@@ -55,7 +55,7 @@ dotnet-exec config show-profile myprofile
 
 # 更新配置文件
 dotnet-exec config update-profile myprofile \
-  --add-reference "nuget:AdditionalPackage"
+  --reference "nuget:AdditionalPackage"
 
 # 删除配置文件
 dotnet-exec config remove-profile myprofile
@@ -149,7 +149,7 @@ dotnet-exec config set-profile web-extended \
 dotnet-exec config set-profile web-custom \
   --inherit-profile web-extended \
   --override-reference "nuget:Microsoft.Extensions.Logging.Debug" \
-  --add-using "Microsoft.AspNetCore.Authorization"
+  --using "Microsoft.AspNetCore.Authorization"
 ```
 
 ## 命令别名
@@ -200,7 +200,7 @@ dotnet-exec alias show json
 
 # 更新别名
 dotnet-exec alias update json \
-  --add-reference "nuget:System.Text.Json"
+  --reference "nuget:System.Text.Json"
 
 # 删除别名
 dotnet-exec alias remove json

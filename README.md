@@ -134,9 +134,6 @@ public class Example
 ```sh
 # Use custom entry point
 dotnet-exec example.cs --entry MainTest
-
-# Use default entry method fallbacks
-dotnet-exec example.cs --default-entry MainTest Execute Run
 ```
 
 ### References and Using Statements

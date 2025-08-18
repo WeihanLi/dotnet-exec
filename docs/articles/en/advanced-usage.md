@@ -14,9 +14,6 @@ dotnet-exec MyScript.cs
 
 # Custom entry point
 dotnet-exec MyScript.cs --entry MainTest
-
-# Multiple entry methods (fallback)
-dotnet-exec MyScript.cs --default-entry MainTest Execute Run
 ```
 
 ### Remote File Execution

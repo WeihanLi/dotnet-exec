@@ -145,9 +145,6 @@ dotnet-exec custom-entry.cs
 
 # 使用自定义入口点
 dotnet-exec custom-entry.cs --entry AlternativeEntry
-
-# 尝试多个入口点（按顺序尝试）
-dotnet-exec custom-entry.cs --default-entry Execute AlternativeEntry Main
 ```
 
 ## REPL 模式

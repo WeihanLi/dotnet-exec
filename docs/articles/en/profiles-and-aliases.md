@@ -35,7 +35,7 @@ dotnet-exec profile set webdev \
   -r 'nuget:AutoMapper' \
   -u 'AutoMapper' \
   --preview \
-  --default-entry MainTest Execute
+  --default-entry MainTest --default-entry  Execute
 ```
 
 #### View Profile Details
@@ -109,7 +109,7 @@ dotnet-exec profile set testing \
   -u 'Xunit' \
   -u 'Moq' \
   -u 'FluentAssertions' \
-  --default-entry TestMain TestExecute
+  --default-entry TestMain --default-entry  TestExecute
 ```
 
 #### Desktop Development Profile

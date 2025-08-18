@@ -219,16 +219,19 @@ error: No suitable entry point found
 **Solutions:**
 
 1. **Specify custom entry point:**
+
    ```sh
    dotnet-exec MyScript.cs --entry MyCustomMain
    ```
 
 2. **Use default entry methods:**
+
    ```sh
-   dotnet-exec MyScript.cs --default-entry MainTest Execute Run
+   dotnet-exec MyScript.cs
    ```
 
 3. **Check method signature:**
+
    ```csharp
    // Valid entry points
    public static void MainTest() { }
@@ -240,6 +243,7 @@ error: No suitable entry point found
 #### Issue: File not found
 
 **Symptoms:**
+
 ```
 error: Could not find file 'Script.cs'
 ```
@@ -247,11 +251,13 @@ error: Could not find file 'Script.cs'
 **Solutions:**
 
 1. **Use absolute paths:**
+
    ```sh
    dotnet-exec /full/path/to/MyScript.cs
    ```
 
 2. **Check working directory:**
+
    ```sh
    # Change to script directory
    cd /path/to/scripts
@@ -259,6 +265,7 @@ error: Could not find file 'Script.cs'
    ```
 
 3. **Verify file exists:**
+
    ```sh
    ls -la MyScript.cs
    ```
@@ -270,18 +277,21 @@ error: Could not find file 'Script.cs'
 **Solutions:**
 
 1. **Use compilation cache:**
+
    ```sh
    # Default behavior, but ensure cache isn't disabled
    dotnet-exec MyScript.cs  # Uses cache
    ```
 
 2. **Pre-compile for reuse:**
+
    ```sh
    dotnet-exec MyScript.cs --compile-out ./compiled.dll
    # Later executions will be faster
    ```
 
 3. **Optimize references:**
+
    ```sh
    # Use profiles to avoid repeated reference resolution
    dotnet-exec profile set myprofile -r 'nuget:CommonPackage'
@@ -293,16 +303,19 @@ error: Could not find file 'Script.cs'
 **Solutions:**
 
 1. **Use reference assemblies:**
+
    ```sh
    dotnet-exec MyScript.cs --use-ref-assemblies
    ```
 
 2. **Disable wide references if not needed:**
+
    ```sh
    dotnet-exec MyScript.cs --wide false
    ```
 
 3. **Clear cache periodically:**
+
    ```sh
    # Clear compilation cache
    rm -rf ~/.dotnet-exec/cache  # Linux/macOS
@@ -316,6 +329,7 @@ error: Could not find file 'Script.cs'
 #### Issue: Package download fails
 
 **Symptoms:**
+
 ```
 error: Failed to download package 'PackageName'
 ```
@@ -323,11 +337,13 @@ error: Failed to download package 'PackageName'
 **Solutions:**
 
 1. **Check internet connectivity:**
+
    ```sh
    ping nuget.org
    ```
 
 2. **Use alternative package source:**
+
    ```sh
    dotnet-exec MyScript.cs \
      --nuget-config ./custom-nuget.config \
@@ -335,6 +351,7 @@ error: Failed to download package 'PackageName'
    ```
 
 3. **Retry with timeout:**
+
    ```sh
    dotnet-exec MyScript.cs -r 'nuget:PackageName' --timeout 300
    ```
@@ -344,12 +361,14 @@ error: Failed to download package 'PackageName'
 **Solutions:**
 
 1. **Verify package name on NuGet.org:**
+
    ```sh
    # Check exact name and available versions
    dotnet-exec MyScript.cs -r 'nuget:Correct.Package.Name'
    ```
 
 2. **Try different version:**
+
    ```sh
    dotnet-exec MyScript.cs -r 'nuget:PackageName,1.0.0'
    ```
@@ -359,6 +378,7 @@ error: Failed to download package 'PackageName'
 #### Issue: Cannot download remote script
 
 **Symptoms:**
+
 ```
 error: Failed to download script from URL
 ```
@@ -366,17 +386,20 @@ error: Failed to download script from URL
 **Solutions:**
 
 1. **Check URL accessibility:**
+
    ```sh
    curl -I "https://example.com/script.cs"
    ```
 
 2. **Use direct GitHub raw URLs:**
+
    ```sh
    # Use raw.githubusercontent.com URLs
    dotnet-exec https://raw.githubusercontent.com/user/repo/main/script.cs
    ```
 
 3. **Download and run locally:**
+
    ```sh
    curl -o temp-script.cs "https://example.com/script.cs"
    dotnet-exec temp-script.cs
@@ -389,6 +412,7 @@ error: Failed to download script from URL
 #### Issue: PowerShell execution policy
 
 **Symptoms:**
+
 ```
 execution of scripts is disabled on this system
 ```
@@ -396,11 +420,13 @@ execution of scripts is disabled on this system
 **Solutions:**
 
 1. **Change execution policy:**
+
    ```powershell
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
    ```
 
 2. **Run with bypass:**
+
    ```powershell
    PowerShell -ExecutionPolicy Bypass -Command "dotnet-exec MyScript.cs"
    ```
@@ -413,6 +439,7 @@ execution of scripts is disabled on this system
    - Group Policy: Computer Configuration → Administrative Templates → System → Filesystem → Enable Win32 long paths
 
 2. **Use shorter paths:**
+
    ```sh
    # Move closer to root
    copy MyScript.cs C:\temp\
@@ -426,11 +453,13 @@ execution of scripts is disabled on this system
 **Solutions:**
 
 1. **Check file permissions:**
+
    ```sh
    chmod +x ~/.dotnet/tools/dotnet-exec
    ```
 
 2. **Run with sudo if needed:**
+
    ```sh
    sudo dotnet-exec MyScript.cs
    ```
@@ -440,6 +469,7 @@ execution of scripts is disabled on this system
 **Solutions:**
 
 1. **Install required native dependencies:**
+
    ```sh
    # Ubuntu/Debian
    sudo apt-get update
@@ -450,6 +480,7 @@ execution of scripts is disabled on this system
    ```
 
 2. **Check .NET installation:**
+
    ```sh
    dotnet --info
    ```
@@ -461,6 +492,7 @@ execution of scripts is disabled on this system
 #### Issue: Profile not found
 
 **Symptoms:**
+
 ```
 error: Profile 'myprofile' not found
 ```
@@ -468,16 +500,19 @@ error: Profile 'myprofile' not found
 **Solutions:**
 
 1. **List available profiles:**
+
    ```sh
    dotnet-exec profile ls
    ```
 
 2. **Create the profile:**
+
    ```sh
    dotnet-exec profile set myprofile -r 'nuget:SomePackage'
    ```
 
 3. **Check profile name spelling:**
+
    ```sh
    # Profile names are case-sensitive
    dotnet-exec profile get MyProfile  # Different from 'myprofile'
@@ -490,17 +525,20 @@ error: Profile 'myprofile' not found
 **Solutions:**
 
 1. **List aliases to verify:**
+
    ```sh
    dotnet-exec alias ls
    ```
 
 2. **Check alias definition:**
+
    ```sh
    # Aliases should contain valid C# code
    dotnet-exec alias set test "Console.WriteLine(\"Hello\");"
    ```
 
 3. **Test alias syntax:**
+
    ```sh
    # Test the code separately first
    dotnet-exec 'Console.WriteLine("Hello");'
@@ -510,7 +548,7 @@ error: Profile 'myprofile' not found
 
 ### Environment Information
 
-#### Get system information:
+#### Get system information
 
 ```sh
 # Built-in info command
@@ -531,7 +569,7 @@ Environment.GetEnvironmentVariables()
 '
 ```
 
-#### Trace compilation process:
+#### Trace compilation process
 
 ```sh
 # Verbose compilation diagnostics
@@ -544,7 +582,7 @@ dotnet-exec MyScript.cs \
 
 ### Log Analysis
 
-#### Enable detailed logging:
+#### Enable detailed logging
 
 ```sh
 # Set environment variables for detailed logging
@@ -552,7 +590,7 @@ export DOTNET_EXEC_LOG_LEVEL=Debug
 dotnet-exec MyScript.cs --debug
 ```
 
-#### Save debug output:
+#### Save debug output
 
 ```sh
 # Capture debug information
@@ -584,23 +622,27 @@ dotnet-exec alias --help
 When reporting issues:
 
 1. **Create minimal script:**
+
    ```csharp
    // Minimal.cs - simplest code that reproduces the issue
    Console.WriteLine("Hello World");
    ```
 
 2. **Include command used:**
+
    ```sh
    dotnet-exec Minimal.cs --debug
    ```
 
 3. **Provide environment info:**
+
    ```sh
    dotnet --info
    dotnet-exec --info
    ```
 
 4. **Include error output:**
+
    ```sh
    dotnet-exec Minimal.cs --debug > output.txt 2>&1
    ```

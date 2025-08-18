@@ -116,9 +116,6 @@ dotnet-exec example.cs
 
 # 使用自定义入口点
 dotnet-exec example.cs --entry Test
-
-# 多个候选入口点（按顺序尝试）
-dotnet-exec example.cs --default-entry Execute Test Main
 ```
 
 ### REPL 交互模式

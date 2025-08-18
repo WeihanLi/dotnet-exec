@@ -9,14 +9,11 @@
 使用自定义入口点执行 C# 文件：
 
 ```sh
-# 默认入口点（Main 方法）
+# 默认入口点（默认程序入口 Main 方法或者 MainTest）
 dotnet-exec MyScript.cs
 
 # 自定义入口点
 dotnet-exec MyScript.cs --entry MainTest
-
-# 多个入口方法（回退机制）
-dotnet-exec MyScript.cs --default-entry MainTest Execute Run
 ```
 
 ### 远程文件执行

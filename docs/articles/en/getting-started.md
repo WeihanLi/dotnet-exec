@@ -161,10 +161,12 @@ dotnet-exec custom-entry.cs --entry MainTest
 
 ### Multiple Entry Methods
 
-Configure fallback entry methods:
+Configure fallback entry methods with profile:
 
 ```sh
-dotnet-exec script.cs --default-entry CustomMain Execute Test Run
+dotnet-exec profile set my-entries --default-entry CustomMain --default-entry Execute --default-entry Run
+
+dotnet-exec script.cs --profile=my-entries
 ```
 
 ## REPL Mode
