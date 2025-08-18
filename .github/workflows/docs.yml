@@ -36,8 +36,9 @@ jobs:
           10.x
     - name: Setup documentation
       run: |
-        mv README.md docs/index.md
-        mv README.zh.md docs/README.zh.md
+        cp README.md docs/index.md
+        cp README.md docs/README.md
+        cp README.zh.md docs/README.zh.md
         dotnet tool update -g docfx
         docfx docs/docfx.json
     - name: Upload artifact
