@@ -131,13 +131,10 @@ dotnet-exec
 > var name = "dotnet-exec";
 > Console.WriteLine($"Hello from {name}!");
 Hello from dotnet-exec!
-
 > #r nuget:Newtonsoft.Json
-引用已添加
-
 > using Newtonsoft.Json;
 > JsonConvert.SerializeObject(new { message = "Hello", timestamp = DateTime.Now })
-"{"message":"Hello","timestamp":"2024-01-15T10:30:45.123Z"}"
+"{\"message\":\"Hello\",\"timestamp\":\"2025-08-19T11:03:15.095747+08:00\"}"
 ```
 
 ## 引用管理
