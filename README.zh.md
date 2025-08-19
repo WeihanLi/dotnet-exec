@@ -359,7 +359,7 @@ dotnet-exec deploy-script.cs --reference "nuget:Docker.DotNet"
 |------|------|------|------|
 | `--reference` | `-r` | 添加程序集引用 | `-r "nuget:Newtonsoft.Json"` |
 | `--using` | `-u` | 添加 using 语句 | `-u "System.Text.Json"` |
-| `--entry` | | 指定入口方法 | `--entry MainTest` |
+| `--entry` | `-e` | 指定入口方法 | `--entry MainTest` |
 | `--web` | | 添加 Web 框架引用 | `--web` |
 | `--profile` | | 使用配置文件 | `--profile web-dev` |
 
@@ -367,16 +367,15 @@ dotnet-exec deploy-script.cs --reference "nuget:Docker.DotNet"
 
 | 选项 | 描述 | 示例 |
 |------|------|------|
-| `--configuration` | 编译配置 | `--configuration Release` |
+| `--configuration`/`-c` | 编译配置 | `--configuration Release` |
 | `--framework` | 目标框架 | `--framework net8.0` |
 | `--langversion` | C# 语言版本 | `--langversion 11` |
-| `--no-cache` | 禁用编译缓存 | `--no-cache` |
 
 ### 输出选项
 
 | 选项 | 描述 | 示例 |
 |------|------|------|
-| `--verbose` | 详细输出 | `--verbose` |
+| `--debug` | 详细输出 | `--debug` |
 | `--compile-output` | 保存编译结果 | `--compile-output ./output.dll` |
 | `--dry-run` | 仅验证不执行 | `--dry-run` |
 
@@ -394,19 +393,6 @@ dotnet-exec config set-profile development \
 dotnet-exec config set-profile production \
   --reference "nuget:Microsoft.Extensions.Logging.EventLog" \
   --configuration Release
-```
-
-### 团队共享
-
-```sh
-# 导出配置
-dotnet-exec config export --profile team-config --output config.json
-
-# 导入配置
-dotnet-exec config import --file config.json
-
-# 版本控制
-echo "config.json" >> .gitignore  # 如果包含敏感信息
 ```
 
 ## 集成场景
@@ -427,13 +413,13 @@ echo "config.json" >> .gitignore  # 如果包含敏感信息
 
 ```sh
 # 代码生成
-dotnet-exec codegen/generate-models.cs --input schema.json
+dotnet-exec codegen/generate-models.cs -- --input schema.json
 
 # 数据库迁移
-dotnet-exec migrations/migrate.cs --connection-string "$DB_CONN"
+dotnet-exec migrations/migrate.cs -- --connection-string "$DB_CONN"
 
 # 性能测试
-dotnet-exec perf/benchmark.cs --iterations 1000
+dotnet-exec perf/benchmark.cs -- --iterations 1000
 ```
 
 ## 文档
