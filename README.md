@@ -247,7 +247,8 @@ Create shortcuts for frequently used commands:
 # Create aliases
 dotnet-exec alias set guid "Guid.NewGuid()"
 dotnet-exec alias set now "DateTime.Now"
-dotnet-exec alias set hash "Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(args[0])))"
+dotnet-exec alias set sha256 "Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(args[0]))).Dump();"
+dotnet-exec alias set base64 "Convert.ToBase64String(Encoding.UTF8.GetBytes(args[0])).Dump();"
 
 # List aliases
 dotnet-exec alias ls
@@ -255,7 +256,8 @@ dotnet-exec alias ls
 # Use aliases
 dotnet-exec guid
 dotnet-exec now
-dotnet-exec hash "text to hash"
+dotnet-exec sha256 -- "text to hash"
+dotnet-exec base64 -- "text to encode"
 
 # Remove alias
 dotnet-exec alias unset guid
