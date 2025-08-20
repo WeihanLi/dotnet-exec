@@ -303,8 +303,8 @@ dotnet-exec profile --help
 dotnet-exec alias --help
 dotnet-exec test --help
 
-# System information
-dotnet-exec --info
+# Tool/Runtime information
+dotnet-exec info / dotnet-exec --info
 ```
 
 ## 🎤 Presentations
