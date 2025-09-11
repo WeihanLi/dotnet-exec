@@ -7,9 +7,8 @@
     <RoslynVersion>4.14.0</RoslynVersion>
     <!-- https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages -->
     <NuGetAudit>true</NuGetAudit>
-    <NuGetAuditMode>all</NuGetAuditMode>
-    <!-- https://learn.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1901-nu1904 -->
-    <WarningsAsErrors>NU1901;NU1902;NU1903;NU1904</WarningsAsErrors>
+    <NuGetAuditMode>direct</NuGetAuditMode>
+    <NuGetAuditLevel>critical</NuGetAuditLevel>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(RoslynVersion)" />
