@@ -13,5 +13,8 @@ public sealed class AppConfiguration
         { "guid", "System.Guid.NewGuid()" },
         { "now", "System.DateTimeOffset.Now" },
         { "date", "System.DateTimeOffset.Now" },
+        { "base64", "System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0])).Dump();" },
+        { "md5": "System.Convert.ToHexString(System.Security.Cryptography.MD5.HashData(System.Text.Encoding.UTF8.GetBytes(args[0]))).Dump();" },
+        { "sha256": "System.Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(args[0]))).Dump();" }
     };
 }
