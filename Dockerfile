@@ -1,6 +1,6 @@
 ARG RuntimeImageRepo=runtime
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-preview-alpine AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build-env
 ARG TARGETARCH
 WORKDIR /app
 
@@ -16,7 +16,7 @@ WORKDIR /app/src/dotnet-exec/
 ENV HUSKY=0
 RUN dotnet publish -f net10.0 -a $TARGETARCH -o /app/out/
 
-FROM mcr.microsoft.com/dotnet/${RuntimeImageRepo}:10.0-preview-alpine AS final
+FROM mcr.microsoft.com/dotnet/${RuntimeImageRepo}:10.0-alpine AS final
 ARG WebReferenceEnabled=false
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md
 LABEL org.opencontainers.image.authors="WeihanLi"
