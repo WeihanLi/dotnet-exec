@@ -1,5 +1,10 @@
 # Release Notes
 
+## 0.32.0
+
+- feat: upgrade dependencies and .NET 10 RC 1 update
+- feat: add more default alias(`base64`/`md5`/`sha256`)
+
 ## 0.31.0
 
 - feat: upgrade dependencies and .NET 10 Preview 7 update
