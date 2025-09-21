@@ -15,6 +15,8 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0-rc.1.25451.107" />
+    <PackageVersion Include="ModelContextProtocol" Version="0.3.0-preview.4" />
     <PackageVersion Include="NuGet.Protocol" Version="6.14.0" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-rc.1.25451.107" />
     <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.0-rc.1.25451.107" />
