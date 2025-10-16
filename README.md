@@ -35,16 +35,26 @@ ReferenceResolver | [![ReferenceResolver](https://img.shields.io/nuget/v/Referen
 
 ### Installation
 
+Install latest stable version
 ```sh
-# Install latest stable version
 dotnet tool install -g dotnet-execute
+```
 
-# Install latest preview version
+Install latest preview version
+```sh
 dotnet tool install -g dotnet-execute --prerelease
+```
 
-# Update to latest version
+Update to latest version
+```sh
 dotnet tool update -g dotnet-execute
 ```
+
+Update to latest preview version
+```sh
+dotnet tool update -g dotnet-execute --prerelease
+```
+
 
 ### Basic Usage
 
