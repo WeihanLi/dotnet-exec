@@ -271,6 +271,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         }
 
         // Resolve versions for packages without specified versions
+        // Also handles version conflicts by storing the highest version when the same package is specified multiple times
         var resolvedReferences = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
         foreach (var reference in referenceList)
         {
@@ -300,6 +301,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         }
 
         // Collect all dependencies from all packages
+        // Performs dependency version conflict resolution using the highest version strategy
         var allDependencies = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
         foreach (var resolvedRef in resolvedReferences)
         {
@@ -324,6 +326,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         }
 
         // Merge the top-level packages with their dependencies, handling conflicts
+        // Top-level packages always take precedence over transitive dependencies when versions differ
         foreach (var topLevelPackage in resolvedReferences)
         {
             if (allDependencies.TryGetValue(topLevelPackage.Key, out var dependencyVersion))
