@@ -109,4 +109,67 @@ public class NuGetHelperTest
         var helper = new NuGetHelper(NullLoggerFactory.Instance);
         Assert.NotEmpty(helper.GetSources());
     }
+
+    [Fact]
+    public async Task ResolveMultiplePackageReferences()
+    {
+        var references = new[]
+        {
+            new NuGetReference("WeihanLi.Common", "1.0.72"),
+            new NuGetReference("Newtonsoft.Json", "13.0.3")
+        };
+        var result = await NuGetHelper.ResolvePackageReferences(
+            ExecOptions.DefaultTargetFramework, references, cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.NotEmpty(result);
+        // Should contain assemblies from both packages
+        Assert.Contains(result, r => r.Contains("WeihanLi.Common", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(result, r => r.Contains("Newtonsoft.Json", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task ResolveMultiplePackageReferencesWithoutVersions()
+    {
+        var references = new[]
+        {
+            new NuGetReference("WeihanLi.Common"),
+            new NuGetReference("Newtonsoft.Json")
+        };
+        var result = await NuGetHelper.ResolvePackageReferences(
+            ExecOptions.DefaultTargetFramework, references, cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.NotEmpty(result);
+        // Should contain assemblies from both packages
+        Assert.Contains(result, r => r.Contains("WeihanLi.Common", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(result, r => r.Contains("Newtonsoft.Json", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task ResolveMultiplePackageReferencesWithVersionConflict()
+    {
+        // Test that when same package is specified with different versions, highest version wins
+        var references = new[]
+        {
+            new NuGetReference("Newtonsoft.Json", "12.0.1"),
+            new NuGetReference("Newtonsoft.Json", "13.0.3")
+        };
+        var result = await NuGetHelper.ResolvePackageReferences(
+            ExecOptions.DefaultTargetFramework, references, cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.NotEmpty(result);
+        // Should resolve to version 13.0.3 (higher version)
+        Assert.Contains(result, r => r.Contains("Newtonsoft.Json", StringComparison.OrdinalIgnoreCase) && r.Contains("13.0.3"));
+        // Should not contain 12.0.1
+        Assert.DoesNotContain(result, r => r.Contains("Newtonsoft.Json", StringComparison.OrdinalIgnoreCase) && r.Contains("12.0.1"));
+    }
+
+    [Fact]
+    public async Task ResolveEmptyPackageReferences()
+    {
+        var references = Array.Empty<NuGetReference>();
+        var result = await NuGetHelper.ResolvePackageReferences(
+            ExecOptions.DefaultTargetFramework, references, cancellationToken: TestContext.Current.CancellationToken
+        );
+        Assert.Empty(result);
+    }
 }

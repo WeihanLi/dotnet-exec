@@ -258,6 +258,103 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         return references.Distinct().ToArray();
     }
 
+    public async Task<string[]> ResolvePackageReferences(string targetFramework,
+        IEnumerable<NuGetReference> references, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(targetFramework);
+        ArgumentNullException.ThrowIfNull(references);
+
+        var referenceList = references.ToList();
+        if (referenceList.Count == 0)
+        {
+            return [];
+        }
+
+        // Resolve versions for packages without specified versions
+        var resolvedReferences = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
+        foreach (var reference in referenceList)
+        {
+            var version = reference.PackageVersion;
+            if (version is null)
+            {
+                version = await GetLatestPackageVersion(reference.PackageId, false, null, cancellationToken)
+                    .ConfigureAwait(false);
+                if (version is null)
+                {
+                    throw new InvalidOperationException($"No package version found for package {reference.PackageId}");
+                }
+            }
+
+            // Handle version conflicts: use the highest version if the package is specified multiple times
+            if (resolvedReferences.TryGetValue(reference.PackageId, out var existingVersion))
+            {
+                if (version > existingVersion)
+                {
+                    resolvedReferences[reference.PackageId] = version;
+                }
+            }
+            else
+            {
+                resolvedReferences.Add(reference.PackageId, version);
+            }
+        }
+
+        // Collect all dependencies from all packages
+        var allDependencies = new Dictionary<string, NuGetVersion>(StringComparer.OrdinalIgnoreCase);
+        foreach (var resolvedRef in resolvedReferences)
+        {
+            var dependencies = await GetPackageDependencies(resolvedRef.Key, resolvedRef.Value, targetFramework, cancellationToken)
+                .ConfigureAwait(false);
+
+            // Merge dependencies, preferring higher versions
+            foreach (var dependency in dependencies)
+            {
+                if (allDependencies.TryGetValue(dependency.Key, out var existingVersion))
+                {
+                    if (dependency.Value > existingVersion)
+                    {
+                        allDependencies[dependency.Key] = dependency.Value;
+                    }
+                }
+                else
+                {
+                    allDependencies.Add(dependency.Key, dependency.Value);
+                }
+            }
+        }
+
+        // Merge the top-level packages with their dependencies, handling conflicts
+        foreach (var topLevelPackage in resolvedReferences)
+        {
+            if (allDependencies.TryGetValue(topLevelPackage.Key, out var dependencyVersion))
+            {
+                // If a package is both a top-level reference and a dependency, use the higher version
+                if (topLevelPackage.Value > dependencyVersion)
+                {
+                    allDependencies[topLevelPackage.Key] = topLevelPackage.Value;
+                }
+            }
+            else
+            {
+                allDependencies.Add(topLevelPackage.Key, topLevelPackage.Value);
+            }
+        }
+
+        // Resolve all packages to their assemblies
+        var allReferences = new ConcurrentBag<string>();
+        await Parallel.ForEachAsync(allDependencies, cancellationToken, async (package, ct) =>
+        {
+            var result = await ResolvePackageInternal(targetFramework, package.Key, package.Value, ct)
+                .ConfigureAwait(false);
+            foreach (var item in result)
+            {
+                allReferences.Add(item);
+            }
+        }).ConfigureAwait(false);
+
+        return allReferences.Distinct().ToArray();
+    }
+
     public async Task<string[]> ResolvePackageAnalyzerReferences(string targetFramework, string packageId,
         NuGetVersion? version, bool includePrerelease, CancellationToken cancellationToken = default)
     {

@@ -47,6 +47,9 @@ public interface INuGetHelper
         => ResolvePackageReferences(targetFramework, nugetReference.PackageId, nugetReference.PackageVersion,
             includePrerelease, cancellationToken);
 
+    Task<string[]> ResolvePackageReferences(string targetFramework,
+        IEnumerable<NuGetReference> references, CancellationToken cancellationToken = default);
+
     Task<string[]> ResolvePackageAnalyzerReferences(string targetFramework, string packageId,
         NuGetVersion? version, bool includePrerelease, CancellationToken cancellationToken = default);
 }
