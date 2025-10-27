@@ -20,7 +20,7 @@
     <PackageVersion Include="NuGet.Protocol" Version="6.14.0" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-rc.2.25502.107" />
     <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.0-rc.2.25502.107" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.82" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.83" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="xunit.v3" Version="3.1.0" />
