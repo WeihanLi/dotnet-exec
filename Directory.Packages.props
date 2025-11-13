@@ -4,7 +4,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <!-- Enable Transitive Package Pinning -->
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
-    <RoslynVersion>4.14.0</RoslynVersion>
+    <RoslynVersion>5.0.0-2.final</RoslynVersion>
     <!-- https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages -->
     <NuGetAudit>true</NuGetAudit>
     <NuGetAuditMode>direct</NuGetAuditMode>
