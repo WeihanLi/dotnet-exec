@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.33.0
+
+- feat: upgrade dependencies and .NET 10 Release
+
 ## 0.32.0
 
 - feat: upgrade dependencies and .NET 10 RC 1 update
