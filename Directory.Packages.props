@@ -16,14 +16,14 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
-    <PackageVersion Include="ModelContextProtocol" Version="0.4.0-preview.3" />
-    <PackageVersion Include="NuGet.Protocol" Version="7.0.0" />
-    <PackageVersion Include="System.CommandLine" Version="2.0.0" />
-    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.0" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.84" />
+    <PackageVersion Include="ModelContextProtocol" Version="0.5.0-preview.1" />
+    <PackageVersion Include="NuGet.Protocol" Version="7.0.1" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.1" />
+    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.1" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.85" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="xunit.v3" Version="3.2.0" />
+    <PackageVersion Include="xunit.v3" Version="3.2.1" />
     <PackageVersion Include="Xunit.DependencyInjection" Version="11.1.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
   </ItemGroup>
