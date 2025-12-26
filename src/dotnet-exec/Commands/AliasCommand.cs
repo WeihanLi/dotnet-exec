@@ -19,6 +19,7 @@ internal sealed class AliasCommand : Command
         Add(new AliasListCommand());
         Add(new AliasSetCommand());
         Add(new AliasUnsetCommand());
+        Add(new AliasResetCommand());
     }
 }
 
@@ -47,3 +48,6 @@ file sealed class AliasUnsetCommand : Command
         Add(AliasCommand.AliasNameArg);
     }
 }
+
+
+file sealed class AliasResetCommand(): Command("reset", "Reset alias config");

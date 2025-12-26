@@ -284,6 +284,11 @@ public static class Helper
                                 await appConfigSource.SaveConfigAsync(appConfiguration);
                             }
                             ,
+                            "reset" => async (_, _) =>
+                            {
+                                appConfiguration.Aliases = AppConfiguration.Default.Aliases;
+                                await appConfigSource.SaveConfigAsync(appConfiguration);
+                            },
                             _ => (_, _) =>
                             {
                                 Console.WriteLine(JsonSerializer.Serialize(appConfiguration.Aliases, JsonHelper.WriteIntendedUnsafeEncoderOptions));
