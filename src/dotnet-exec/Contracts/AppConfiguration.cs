@@ -16,6 +16,7 @@ public sealed class AppConfiguration
         { "base64", "System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0])).Dump();" },
         { "base64-decode", "System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(args[0])).Dump();" },
         { "md5", "System.Convert.ToHexString(System.Security.Cryptography.MD5.HashData(System.Text.Encoding.UTF8.GetBytes(args[0]))).Dump();" },
+        { "sha1", "System.Convert.ToHexString(System.Security.Cryptography.SHA1.HashData(System.Text.Encoding.UTF8.GetBytes(args[0]))).Dump();" },
         { "sha256", "System.Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(args[0]))).Dump();" }
     };
 }
