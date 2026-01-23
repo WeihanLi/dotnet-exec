@@ -6,7 +6,6 @@
     <IsTestProject>true</IsTestProject>
     <!-- https://xunit.net/docs/getting-started/v3/microsoft-testing-platform -->
     <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
-    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
   <ItemGroup>
     <Using Include="Exec"/>
@@ -14,6 +13,7 @@
     <Using Include="Xunit"/>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="GitHubActionsTestLogger" />
     <PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
 </Project>
