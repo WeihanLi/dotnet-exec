@@ -120,7 +120,7 @@ dotnet-exec MyScript.cs \
 
 ```sh
 # Reference build output directory
-dotnet-exec TestScript.cs -r 'folder:./bin/Debug/net8.0'
+dotnet-exec TestScript.cs -r 'folder:./bin/Debug/net10.0'
 
 # Reference plugin directory
 dotnet-exec PluginHost.cs \

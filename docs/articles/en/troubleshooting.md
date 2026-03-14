@@ -177,7 +177,7 @@ error CS8400: Feature 'xyz' is not available in C# 8.0
 
 2. **Check target framework:**
    ```sh
-   dotnet-exec MyScript.cs --framework net8.0
+   dotnet-exec MyScript.cs --framework net10.0
    ```
 
 #### Issue: Using directive errors

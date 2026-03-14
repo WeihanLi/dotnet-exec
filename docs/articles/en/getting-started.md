@@ -373,7 +373,7 @@ dotnet-exec script.cs --env 'VAR1=value1' --env 'VAR2=value2'
 dotnet-exec script.cs --timeout 300
 
 # Use specific .NET framework
-dotnet-exec script.cs --framework net8.0
+dotnet-exec script.cs --framework net10.0
 ```
 
 ## Next Steps

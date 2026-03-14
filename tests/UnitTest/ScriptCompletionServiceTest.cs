@@ -77,7 +77,7 @@ public class ScriptCompletionServiceTest
     public async Task ExpectedTest()
     {
         var usings = FrameworkReferenceResolver.GetImplicitUsingsWithoutGlobalSpecified(FrameworkReferenceResolver.FrameworkNames.Default);
-        var defaultReferences = await FrameworkReferenceResolver.ResolveDefaultReferences("net8.0");
+        var defaultReferences = await FrameworkReferenceResolver.ResolveDefaultReferences("net10.0");
         var metadataReferences = defaultReferences.Select(r =>
         {
             try

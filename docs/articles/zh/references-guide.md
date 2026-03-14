@@ -164,7 +164,7 @@ dotnet-exec script.cs \
 # 指定目标框架
 dotnet-exec script.cs \
   --project ./MyProject.csproj \
-  --target-framework net8.0
+  --target-framework net10.0
 
 # 项目属性覆盖
 dotnet-exec script.cs \

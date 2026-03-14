@@ -3,12 +3,12 @@
     "dotnet-exec": {
       "commandName": "Project",
       "commandLineArgs": "\"C:\\projects\\sources\\SamplesInPractice\\net6sample\\RandomSharedSample\\Program.cs\" --debug",
-      "targetFramework": "net8.0"
+      "targetFramework": "net10.0"
     },
     "framework-test": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
-      "commandLineArgs": "typeof(object).Assembly.Location -f net6.0 --wide false --debug"
+      "targetFramework": "net10.0",
+      "commandLineArgs": "typeof(object).Assembly.Location -f net10.0 --wide false --debug"
     },
     "framework-invalid-test": {
       "commandName": "Project",
@@ -17,72 +17,72 @@
     },
     "reference-test": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": "code:typeof(CsvHelper).Assembly.Location.Dump() -r nuget:WeihanLi.Npoi,3.0.0 -u WeihanLi.Npoi --debug"
     },
     "script-test": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": "script:1+1 --debug"
     },
     "help-test": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": "-h"
     },
     "profile-list": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": "profile ls"
     },
     "profile-use-test": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": "WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run(); --profile web --debug"
     },
     "reference-using-remove-test": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": "WebApplication.Create().Chain(_=>_.MapRuntimeInfo()).Run(); --profile web --reference -nuget:WeihanLi.Web.Extensions --using -WeihanLi.Web.Extensions --debug"
     },
     "reference-duplicate-test": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": "'1+2' -r nuget:CsvHelper,30.0.1 -r \"nuget:CsvHelper, 30.0.1\" -r \"nuget: CsvHelper, 30.0.1\" --dry-run"
     },
     "dry-run-test": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": "'1+2' --dry-run"
     },
     "waw-test": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": "'1+2' -- --target hello"
     },
     "repl-test": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": ""
     },
     "alias-test": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": "date"
     },
     "alias-list": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": "alias list"
     },
     "alias-set": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": "alias set guid \"Guid.NewGuid()\""
     },
     "alias-unset": {
       "commandName": "Project",
-      "targetFramework": "net8.0",
+      "targetFramework": "net10.0",
       "commandLineArgs": "alias unset guid"
     },
     "project-compile-test": {

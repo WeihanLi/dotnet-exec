@@ -444,7 +444,7 @@ public static class Helper
                  )
         {
             if (NuGetVersion.TryParse(framework, out var frameworkVersion)
-                && frameworkVersion.Major >= 6)
+                && frameworkVersion.Major >= 10)
             {
                 _supportedFrameworks.Add($"net{frameworkVersion.Major}.{frameworkVersion.Minor}");
             }

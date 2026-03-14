@@ -132,7 +132,7 @@ dotnet-exec script.cs --langversion preview
 
 ```sh
 # 指定目标框架
-dotnet-exec script.cs --framework net8.0
+dotnet-exec script.cs --framework net10.0
 
 # 运行时标识符
 dotnet-exec script.cs --runtime win-x64

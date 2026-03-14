@@ -365,7 +365,7 @@ dotnet-exec deploy-script.cs --reference "nuget:Docker.DotNet"
 | 选项 | 描述 | 示例 |
 |------|------|------|
 | `--configuration`/`-c` | 编译配置 | `--configuration Release` |
-| `--framework` | 目标框架 | `--framework net8.0` |
+| `--framework` | 目标框架 | `--framework net10.0` |
 | `--langversion` | C# 语言版本 | `--langversion 11` |
 
 ### 输出选项
