@@ -23,10 +23,10 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
     private readonly FrameworkReferenceResolver _frameworkReferenceResolver = new();
     private readonly ConcurrentDictionary<string, object> _cache = new();
 
-    public async Task<string[]> ResolveReferences(ExecOptions options, bool compilation)
+    public Task<string[]> ResolveReferences(ExecOptions options, bool compilation)
     {
         var cacheKey = $"{nameof(ResolveReferences)}_{compilation}";
-        return await GetOrSetCache(cacheKey, ResolveReferencesInternal, options.DisableCache);
+        return GetOrSetCache(cacheKey, ResolveReferencesInternal, options.DisableCache);
 
         async Task<string[]> ResolveReferencesInternal()
         {
@@ -38,10 +38,10 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
         }
     }
 
-    public async Task<MetadataReference[]> ResolveMetadataReferences(ExecOptions options, bool compilation)
+    public Task<MetadataReference[]> ResolveMetadataReferences(ExecOptions options, bool compilation)
     {
         var cacheKey = $"{nameof(ResolveMetadataReferences)}_{compilation}";
-        return await GetOrSetCache(cacheKey, ResolveMetadataReferencesInternal, options.DisableCache);
+        return GetOrSetCache(cacheKey, ResolveMetadataReferencesInternal, options.DisableCache);
 
         async Task<MetadataReference[]> ResolveMetadataReferencesInternal()
         {
@@ -203,21 +203,29 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
             .WhenAll();
         return result.Flatten().Distinct();
     }
-    private async Task<T> GetOrSetCache<T>(string cacheKey, Func<Task<T>> factory, bool disableCache)
+    private Task<T> GetOrSetCache<T>(string cacheKey, Func<Task<T>> factory, bool disableCache)
     {
         if (disableCache || DisableCache)
         {
-            return await factory();
+            return factory();
         }
 
-        if (_cache.TryGetValue(cacheKey, out var referencesCache))
-        {
-            return (T)referencesCache;
-        }
+        // Use Lazy<Task<T>> with ExecutionAndPublication to ensure the factory is called
+        // at most once even under concurrent access; the same Task is shared by all callers
+        var lazy = (Lazy<Task<T>>)_cache.GetOrAdd(cacheKey, static (_, f) =>
+            new Lazy<Task<T>>(f, LazyThreadSafetyMode.ExecutionAndPublication), factory);
+        var task = lazy.Value;
+        if (!task.IsFaulted && !task.IsCanceled)
+            return task;
 
-        var refs = await factory();
-        ArgumentNullException.ThrowIfNull(refs);
-        _cache[cacheKey] = refs;
-        return refs;
+        // Remove faulted/cancelled lazy so subsequent callers can retry.
+        // TryRemove(KeyValuePair) is safe: it only removes the entry if the exact
+        // lazy instance is still stored, preventing removal of a concurrent replacement.
+        _cache.TryRemove(new KeyValuePair<string, object>(cacheKey, lazy));
+        // Re-add a new lazy for the retry so that concurrent callers share the retry task
+        // rather than each creating their own (avoids thundering herd on transient failures)
+        var retryLazy = (Lazy<Task<T>>)_cache.GetOrAdd(cacheKey, static (_, f) =>
+            new Lazy<Task<T>>(f, LazyThreadSafetyMode.ExecutionAndPublication), factory);
+        return retryLazy.Value;
     }
 }
