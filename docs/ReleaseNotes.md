@@ -1,5 +1,17 @@
 # Release Notes
 
+## 0.35.0
+
+- feat: .NET 11 Preview support and remove .NET 8/9 support, prefer `net11.0` artifacts
+- refactor: code formatting, refactoring and cleanup
+
+## 0.34.0
+
+- feat: New alias management command: alias reset to restore default aliases.
+- feat: New built-in helpers: base64-decode and sha1.
+- chore: Upgraded dependencies
+- chore: update testing support
+
 ## 0.33.0
 
 - feat: upgrade dependencies and .NET 10 Release
