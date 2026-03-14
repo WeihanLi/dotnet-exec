@@ -15,12 +15,10 @@ namespace Exec;
 public sealed partial class ExecOptions
 {
     public const string DefaultTargetFramework =
-#if NET10_0_OR_GREATER
+#if NET11_0_OR_GREATER
+      "net11.0"
+#else
       "net10.0"
-#elif NET9_0
-      "net9.0"
-#elif NET8_0
-      "net8.0"
 #endif
         ;
 

@@ -9,13 +9,13 @@ public sealed class ConfigProfile
     {
         get;
         init => field = Guard.NotNull(value);
-    } = new(StringComparer.Ordinal);
+    } = [with(StringComparer.Ordinal)];
 
     public HashSet<string> References
     {
         get;
         init => field = Guard.NotNull(value);
-    } = new(StringComparer.Ordinal);
+    } = [with(StringComparer.Ordinal)];
 
     public bool IncludeWebReferences { get; set; }
 

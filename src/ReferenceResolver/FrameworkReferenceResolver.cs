@@ -86,9 +86,8 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
 
     public static string[] GetImplicitUsings(string frameworkName)
     {
-        return GetImplicitUsingsWithoutGlobalSpecified(frameworkName)
-            .Select(x => $"global::{x}")
-            .ToArray();
+        return [..GetImplicitUsingsWithoutGlobalSpecified(frameworkName)
+            .Select(x => $"global::{x}")];
     }
 
     public static string[] GetImplicitUsingsWithoutGlobalSpecified(string frameworkName)

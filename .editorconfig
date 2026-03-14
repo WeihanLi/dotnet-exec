@@ -56,6 +56,7 @@ dotnet_style_collection_initializer = true:suggestion
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion
 dotnet_style_explicit_tuple_names = true:suggestion
+dotnet_style_prefer_collection_expression=true:suggestion
 
 # CSharp code style settings:
 [*.cs]

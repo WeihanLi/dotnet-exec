@@ -16,8 +16,8 @@ public sealed class CustomLoadContext : AssemblyLoadContext, IAnalyzerAssemblyLo
 
     public CustomLoadContext(IEnumerable<string> assemblyPaths) : base(Helper.ApplicationName)
     {
-        _assemblyPaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        AddAssemblyPath(assemblyPaths.ToArray());
+        _assemblyPaths = [with(StringComparer.OrdinalIgnoreCase)];
+        AddAssemblyPath([.. assemblyPaths]);
         Current.Value = this;
     }
 

@@ -288,7 +288,8 @@ public static class Helper
                             {
                                 appConfiguration.Aliases = AppConfiguration.Default.Aliases;
                                 await appConfigSource.SaveConfigAsync(appConfiguration);
-                            },
+                            }
+                            ,
                             _ => (_, _) =>
                             {
                                 Console.WriteLine(JsonSerializer.Serialize(appConfiguration.Aliases, JsonHelper.WriteIntendedUnsafeEncoderOptions));
@@ -438,7 +439,7 @@ public static class Helper
                      .WhereNotNull()
                      .Where(x => x.Length > 0 && char.IsDigit(x[0]))
 #if NET10_0_OR_GREATER
-                     .OrderByDescending(x=> x, StringComparer.Create(System.Globalization.CultureInfo.InvariantCulture, System.Globalization.CompareOptions.NumericOrdering))
+                     .OrderByDescending(x => x, StringComparer.Create(System.Globalization.CultureInfo.InvariantCulture, System.Globalization.CompareOptions.NumericOrdering))
 #endif
                  )
         {

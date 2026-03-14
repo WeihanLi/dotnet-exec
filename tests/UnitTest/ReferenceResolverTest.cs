@@ -41,7 +41,7 @@ public class ReferenceResolverTest
         var references = await RefResolver.InstanceForTest.ResolveReferences(new ExecOptions()
         {
             IncludeWideReferences = includeWide,
-            References = new(reference.Split(';', StringSplitOptions.RemoveEmptyEntries))
+            References = [.. reference.Split(';', StringSplitOptions.RemoveEmptyEntries)]
         }, true);
         Assert.NotEmpty(references);
         Assert.Contains(references, x => x.Contains("WeihanLi.Common.dll"));

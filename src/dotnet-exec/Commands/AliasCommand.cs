@@ -50,4 +50,4 @@ file sealed class AliasUnsetCommand : Command
 }
 
 
-file sealed class AliasResetCommand(): Command("reset", "Reset alias config");
+file sealed class AliasResetCommand() : Command("reset", "Reset alias config");

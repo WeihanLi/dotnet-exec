@@ -26,7 +26,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
     internal const string NuGetOrgSourceUrl = "https://api.nuget.org/v3/index.json";
     public const string NuGetConfigEnvName = "REFERENCE_RESOLVER_NUGET_CONFIG_PATH";
 
-    private readonly HashSet<SourceRepository> _nugetSources = new(new NuGetSourceRepositoryComparer());
+    private readonly HashSet<SourceRepository> _nugetSources = [with(new NuGetSourceRepositoryComparer())];
     private readonly SourceCacheContext _sourceCacheContext = new()
     {
         IgnoreFailedSources = true
@@ -255,7 +255,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
                 references.Add(item);
             }
         }).ConfigureAwait(false);
-        return references.Distinct().ToArray();
+        return [.. references.Distinct()];
     }
 
     public async Task<string[]> ResolvePackageAnalyzerReferences(string targetFramework, string packageId,
@@ -289,7 +289,7 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
                 references.Add(item);
             }
         }).ConfigureAwait(false);
-        return references.Distinct().ToArray();
+        return [.. references.Distinct()];
     }
 
     private async Task<Dictionary<string, NuGetVersion>> GetPackageDependencies(string packageId, NuGetVersion packageVersion, string targetFramework, CancellationToken cancellationToken = default)
@@ -401,31 +401,28 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         var nearestLib = _frameworkReducer.GetNearest(nugetFramework, libItems.Select(x => x.TargetFramework));
         if (nearestLib != null)
         {
-            return libItems.First(x => x.TargetFramework == nearestLib)
+            return [..libItems.First(x => x.TargetFramework == nearestLib)
                 .Items
                 .Where(x => ".dll".EqualsIgnoreCase(Path.GetExtension(x)))
-                .Select(x => Path.Combine(packageDir, x))
-                .ToArray();
+                .Select(x => Path.Combine(packageDir, x))];
         }
 
         var refItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Ref, cancellationToken).ConfigureAwait(false)).ToArray();
         var nearestRef = _frameworkReducer.GetNearest(nugetFramework, refItems.Select(x => x.TargetFramework));
         if (nearestRef != null)
         {
-            return refItems.First(x => x.TargetFramework == nearestRef)
+            return [..refItems.First(x => x.TargetFramework == nearestRef)
                  .Items
                  .Where(x => ".dll".EqualsIgnoreCase(Path.GetExtension(x)))
-                 .Select(x => Path.Combine(packageDir, x))
-                 .ToArray();
+                 .Select(x => Path.Combine(packageDir, x))];
         }
 
         var runtimeItems = (await packageReader.GetItemsAsync(PackagingConstants.Folders.Runtimes, cancellationToken).ConfigureAwait(false)).FirstOrDefault();
         return runtimeItems != null
-            ? runtimeItems
+            ? [..runtimeItems
                 .Items
                 .Where(x => ".dll".EqualsIgnoreCase(Path.GetExtension(x)))
-                .Select(x => Path.Combine(packageDir, x))
-                .ToArray()
+                .Select(x => Path.Combine(packageDir, x))]
             : [];
     }
 
@@ -444,13 +441,12 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
             .ConfigureAwait(false)).ToArray();
         var nearestRef = _frameworkReducer.GetNearest(nugetFramework, analyzerItems.Select(x => x.TargetFramework));
         return nearestRef != null
-            ? analyzerItems.First(x => x.TargetFramework == nearestRef)
+            ? [..analyzerItems.First(x => x.TargetFramework == nearestRef)
                  .Items
                  .Where(x => ".dll".EqualsIgnoreCase(Path.GetExtension(x)))
-                 .Select(x => Path.Combine(packageDir, x))
-                 .ToArray()
+                 .Select(x => Path.Combine(packageDir, x))]
             : analyzerItems.Length > 0
-              ? analyzerItems[0].Items.Select(x => Path.Combine(packageDir, x)).ToArray()
+              ? [.. analyzerItems[0].Items.Select(x => Path.Combine(packageDir, x))]
               : []
               ;
     }
