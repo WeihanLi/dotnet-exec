@@ -2,8 +2,10 @@
 
 ## 0.35.0
 
-- feat: .NET 11 Preview support and remove .NET 8/9 support, prefer `net11.0` artifacts
+- feat: .NET 11 Preview support, update container image to `net11.0` artifacts
+- breaking: remove .NET 8/9 support
 - refactor: code formatting, refactoring and cleanup
+- feat: update dependencies
 
 ## 0.34.0
 
