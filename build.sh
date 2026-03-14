@@ -1,6 +1,6 @@
 #!/bin/sh
 
-dotnet publish ./src/dotnet-exec/dotnet-exec.csproj -p VersionSuffix=dev -f net10.0 -o ./artifacts/tmp -p UseAppHost=true
+dotnet publish ./src/dotnet-exec/dotnet-exec.csproj -p VersionSuffix=dev -f net11.0 -o ./artifacts/tmp -p UseAppHost=true
 
 ls ./artifacts/tmp
 
