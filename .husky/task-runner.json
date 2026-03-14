@@ -25,7 +25,7 @@
     {
       "name": "test",
       "group": "pre-push",
-      "command": "build.sh",
+      "command": "./build.sh",
       "args": [ "--target=test" ],
       "exclude": [
         "**/*.md",
