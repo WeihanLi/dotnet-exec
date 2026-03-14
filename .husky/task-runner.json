@@ -26,7 +26,7 @@
       "name": "test",
       "group": "pre-push",
       "command": "dotnet-exec",
-      "args": [ "./build/build.cs", "--target=test" ],
+      "args": [ "./build/build.cs", "--", "--target=test" ],
       "exclude": [
         "**/*.md",
         "Dockerfile",
