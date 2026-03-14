@@ -19,7 +19,7 @@
     <PackageVersion Include="ModelContextProtocol" Version="1.1.0" />
     <PackageVersion Include="NuGet.Protocol" Version="7.3.0" />
     <PackageVersion Include="System.CommandLine" Version="2.0.5" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.87-preview-20260314-022236" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.87" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.1" />
