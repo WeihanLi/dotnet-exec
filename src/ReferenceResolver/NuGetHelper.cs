@@ -236,10 +236,12 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
                 throw new InvalidOperationException($"No package version found for package {packageId}");
             }
         }
-        var dependencies = await GetPackageDependencies(packageId, version, targetFramework, cancellationToken)
-            .ConfigureAwait(false);
-        var packageReferences = await ResolvePackageInternal(targetFramework, packageId, version, cancellationToken)
-            .ConfigureAwait(false);
+        // Resolve dependencies and the main package in parallel since they are independent
+        var dependenciesTask = GetPackageDependencies(packageId, version, targetFramework, cancellationToken);
+        var packageReferencesTask = ResolvePackageInternal(targetFramework, packageId, version, cancellationToken);
+        await Task.WhenAll(dependenciesTask, packageReferencesTask).ConfigureAwait(false);
+        var dependencies = await dependenciesTask.ConfigureAwait(false);
+        var packageReferences = await packageReferencesTask.ConfigureAwait(false);
         if (dependencies.Count <= 0)
         {
             return packageReferences;
@@ -270,10 +272,12 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
                 throw new InvalidOperationException($"No package version found for package {packageId}");
             }
         }
-        var dependencies = await GetPackageDependencies(packageId, version, targetFramework, cancellationToken)
-            .ConfigureAwait(false);
-        var analyzerReferences = await ResolvePackageAnalyzerInternal(targetFramework, packageId, version, cancellationToken)
-            .ConfigureAwait(false);
+        // Resolve dependencies and the main package analyzer refs in parallel since they are independent
+        var dependenciesTask = GetPackageDependencies(packageId, version, targetFramework, cancellationToken);
+        var analyzerReferencesTask = ResolvePackageAnalyzerInternal(targetFramework, packageId, version, cancellationToken);
+        await Task.WhenAll(dependenciesTask, analyzerReferencesTask).ConfigureAwait(false);
+        var dependencies = await dependenciesTask.ConfigureAwait(false);
+        var analyzerReferences = await analyzerReferencesTask.ConfigureAwait(false);
         if (dependencies.Count <= 0)
         {
             return analyzerReferences;

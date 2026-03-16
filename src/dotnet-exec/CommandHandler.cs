@@ -17,7 +17,8 @@ public sealed class CommandHandler(ILogger logger,
         IConfigProfileManager profileManager,
         IOptionsPreConfigurePipeline optionsPreConfigurePipeline,
         IOptionsConfigurePipeline optionsConfigurePipeline,
-        IRepl repl
+        IRepl repl,
+        IRefResolver refResolver
         )
 {
     public async Task<int> InvokeAsync(ParseResult parseResult, CancellationToken cancellationToken)
@@ -101,6 +102,8 @@ public sealed class CommandHandler(ILogger logger,
         var sourceText = fetchResult.Data;
         var compiler = compilerFactory.GetCompiler(options.CompilerType);
         var compileStartTime = Stopwatch.GetTimestamp();
+        // Pre-warm execution references in parallel with compilation to reduce overall latency
+        var executionRefsTask = refResolver.ResolveReferences(options, false);
         var compileResult = await compiler.Compile(options, sourceText);
         var compileElapsed = Stopwatch.GetElapsedTime(compileStartTime);
         logger.LogDebug("Compile elapsed: {Elapsed}", compileElapsed);
@@ -108,6 +111,15 @@ public sealed class CommandHandler(ILogger logger,
         if (!compileResult.IsSuccess())
         {
             logger.LogError("Compile error:\n{ErrorMsg}", compileResult.Msg);
+            try
+            {
+                // Ensure any exceptions from reference resolution are observed
+                await executionRefsTask;
+            }
+            catch (Exception ex)
+            {
+                logger.LogDebug(ex, "Reference resolution failed after compilation error; ignoring.");
+            }
             return ExitCodes.CompileError;
         }
 
@@ -138,6 +150,17 @@ public sealed class CommandHandler(ILogger logger,
         if (options.DryRun) return ExitCodes.Success;
 
         Guard.NotNull(compileResult.Data);
+        // Await pre-warmed execution references (ran concurrently with compilation);
+        // by this point it is typically already completed so this returns immediately
+        try
+        {
+            await executionRefsTask;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to resolve execution references");
+            return ExitCodes.ExecuteError;
+        }
         // execute
         var executor = executorFactory.GetExecutor(options.ExecutorType);
         try
