@@ -111,6 +111,15 @@ public sealed class CommandHandler(ILogger logger,
         if (!compileResult.IsSuccess())
         {
             logger.LogError("Compile error:\n{ErrorMsg}", compileResult.Msg);
+            try
+            {
+                // Ensure any exceptions from reference resolution are observed
+                await executionRefsTask;
+            }
+            catch (Exception ex)
+            {
+                logger.LogDebug(ex, "Reference resolution failed after compilation error; ignoring.");
+            }
             return ExitCodes.CompileError;
         }
 
