@@ -36,6 +36,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTest" />
     <InternalsVisibleTo Include="IntegrationTest" />
+    <InternalsVisibleTo Include="PerformanceTest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReferenceResolver\ReferenceResolver.csproj" />
