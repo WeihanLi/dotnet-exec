@@ -4,5 +4,5 @@
 using System.Reflection;
 
 // Run all benchmarks when invoked from CLI, otherwise just run with Job.Dry for quick validation
-var summary = BenchmarkRunner.Run(Assembly.GetExecutingAssembly());
-return summary.HasCriticalValidationErrors ? 1 : 0;
+var summaries = BenchmarkRunner.Run(Assembly.GetExecutingAssembly());
+return summaries.Any(s => s.HasCriticalValidationErrors) ? 1 : 0;

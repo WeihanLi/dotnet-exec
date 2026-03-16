@@ -10,7 +10,19 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <!-- Benchmarks must run as release to get accurate results -->
     <Optimize>true</Optimize>
+    <!-- Benchmarks conventionally use underscore-separated names; suppress CA1707 -->
+    <NoWarn>$(NoWarn);CA1707;IDE0028</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" />
+    <!-- Remove packages/usings inherited from tests/Directory.Build.props -->
+    <PackageReference Remove="GitHubActionsTestLogger" />
+    <PackageReference Remove="xunit.v3.mtp-v2" />
+    <Using Remove="Xunit" />
+    <Using Remove="Exec.Abstractions" />
+    <Using Remove="Exec" />
+  </ItemGroup>
 
   <ItemGroup>
     <Using Include="BenchmarkDotNet.Attributes" />
@@ -23,17 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" />
-    <!-- Remove packages inherited from tests/Directory.Build.props -->
-    <PackageReference Remove="GitHubActionsTestLogger" />
-    <PackageReference Remove="xunit.v3.mtp-v2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\dotnet-exec\dotnet-exec.csproj">
-      <!-- Pin to net10.0 since net11.0 SDK is not available in all environments -->
-      <SetTargetFramework>TargetFramework=net10.0</SetTargetFramework>
-    </ProjectReference>
+    <ProjectReference Include="..\..\src\dotnet-exec\dotnet-exec.csproj" />
     <ProjectReference Include="..\..\src\ReferenceResolver\ReferenceResolver.csproj" />
   </ItemGroup>
 
