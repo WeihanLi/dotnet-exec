@@ -276,8 +276,8 @@ public sealed class NuGetHelper : INuGetHelper, IDisposable
         var dependenciesTask = GetPackageDependencies(packageId, version, targetFramework, cancellationToken);
         var analyzerReferencesTask = ResolvePackageAnalyzerInternal(targetFramework, packageId, version, cancellationToken);
         await Task.WhenAll(dependenciesTask, analyzerReferencesTask).ConfigureAwait(false);
-        var dependencies = await dependenciesTask;
-        var analyzerReferences = await analyzerReferencesTask;
+        var dependencies = await dependenciesTask.ConfigureAwait(false);
+        var analyzerReferences = await analyzerReferencesTask.ConfigureAwait(false);
         if (dependencies.Count <= 0)
         {
             return analyzerReferences;
