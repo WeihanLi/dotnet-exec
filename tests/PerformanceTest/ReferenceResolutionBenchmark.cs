@@ -15,8 +15,10 @@ namespace PerformanceTest;
 [SimpleJob(RuntimeMoniker.Net10_0)]
 public class ReferenceResolutionBenchmark
 {
-    // Shared resolver with Lazy<Task<T>> caching ("after" optimisation state)
-    private IRefResolver _cachedResolver = null!;
+    // Cached resolver for framework-only references ("after" optimisation state)
+    private IRefResolver _cachedResolverNoRefs = null!;
+    // Cached resolver for NuGet + framework references (separate cache to avoid cross-contamination)
+    private IRefResolver _cachedResolverWithNuGet = null!;
     // Per-call resolver with DisableCache=true ("before" baseline – full pipeline every time)
     private IRefResolver _uncachedResolver = null!;
     private ExecOptions _optionsNoRefs = null!;
@@ -35,13 +37,17 @@ public class ReferenceResolutionBenchmark
         // Uncached resolver simulates the pre-optimisation path (full pipeline on every call)
         _uncachedResolver = RefResolver.UncachedInstanceForTest;
 
-        // Cached resolver: pre-warm so benchmark iterations measure pure cache-hit cost
-        _cachedResolver = RefResolver.InstanceForTest;
-        await _cachedResolver.ResolveReferences(_optionsNoRefs, compilation: true);
-        await _cachedResolver.ResolveReferences(_optionsNoRefs, compilation: false);
-        await _cachedResolver.ResolveReferences(_optionsWithNuGet, compilation: true);
-        await _cachedResolver.ResolveReferences(_optionsWithNuGet, compilation: false);
-        await _cachedResolver.ResolveMetadataReferences(_optionsNoRefs, compilation: true);
+        // Use separate cached resolver instances per option set so their caches do not interfere.
+        _cachedResolverNoRefs = new RefResolver();
+        _cachedResolverWithNuGet = new RefResolver();
+
+        // Pre-warm cached resolvers so benchmark iterations measure pure cache-hit cost.
+        await _cachedResolverNoRefs.ResolveReferences(_optionsNoRefs, compilation: true);
+        await _cachedResolverNoRefs.ResolveReferences(_optionsNoRefs, compilation: false);
+        await _cachedResolverNoRefs.ResolveMetadataReferences(_optionsNoRefs, compilation: true);
+
+        await _cachedResolverWithNuGet.ResolveReferences(_optionsWithNuGet, compilation: true);
+        await _cachedResolverWithNuGet.ResolveReferences(_optionsWithNuGet, compilation: false);
     }
 
     // ── Framework-only resolution ────────────────────────────────────────────────────
@@ -52,7 +58,7 @@ public class ReferenceResolutionBenchmark
 
     [Benchmark(Description = "Framework refs (compile) — warm [cached]")]
     public Task<string[]> FrameworkRefs_Compile_Warm()
-        => _cachedResolver.ResolveReferences(_optionsNoRefs, compilation: true);
+        => _cachedResolverNoRefs.ResolveReferences(_optionsNoRefs, compilation: true);
 
     [Benchmark(Description = "Framework refs (runtime) — cold")]
     public Task<string[]> FrameworkRefs_Runtime_Cold()
@@ -60,7 +66,7 @@ public class ReferenceResolutionBenchmark
 
     [Benchmark(Description = "Framework refs (runtime) — warm [cached]")]
     public Task<string[]> FrameworkRefs_Runtime_Warm()
-        => _cachedResolver.ResolveReferences(_optionsNoRefs, compilation: false);
+        => _cachedResolverNoRefs.ResolveReferences(_optionsNoRefs, compilation: false);
 
     // ── NuGet + framework resolution ─────────────────────────────────────────────────
 
@@ -70,7 +76,7 @@ public class ReferenceResolutionBenchmark
 
     [Benchmark(Description = "NuGet + framework refs (compile) — warm [cached]")]
     public Task<string[]> NuGetAndFrameworkRefs_Compile_Warm()
-        => _cachedResolver.ResolveReferences(_optionsWithNuGet, compilation: true);
+        => _cachedResolverWithNuGet.ResolveReferences(_optionsWithNuGet, compilation: true);
 
     [Benchmark(Description = "NuGet + framework refs (runtime) — cold")]
     public Task<string[]> NuGetAndFrameworkRefs_Runtime_Cold()
@@ -78,7 +84,7 @@ public class ReferenceResolutionBenchmark
 
     [Benchmark(Description = "NuGet + framework refs (runtime) — warm [cached]")]
     public Task<string[]> NuGetAndFrameworkRefs_Runtime_Warm()
-        => _cachedResolver.ResolveReferences(_optionsWithNuGet, compilation: false);
+        => _cachedResolverWithNuGet.ResolveReferences(_optionsWithNuGet, compilation: false);
 
     // ── Metadata reference creation ──────────────────────────────────────────────────
 
@@ -88,5 +94,5 @@ public class ReferenceResolutionBenchmark
 
     [Benchmark(Description = "Metadata refs (compile) — warm [cached]")]
     public Task<MetadataReference[]> MetadataRefs_Compile_Warm()
-        => _cachedResolver.ResolveMetadataReferences(_optionsNoRefs, compilation: true);
+        => _cachedResolverNoRefs.ResolveMetadataReferences(_optionsNoRefs, compilation: true);
 }
