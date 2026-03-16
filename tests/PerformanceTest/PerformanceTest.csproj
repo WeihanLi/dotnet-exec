@@ -30,7 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\dotnet-exec\dotnet-exec.csproj" />
+    <ProjectReference Include="..\..\src\dotnet-exec\dotnet-exec.csproj">
+      <!-- Pin to net10.0 since net11.0 SDK is not available in all environments -->
+      <SetTargetFramework>TargetFramework=net10.0</SetTargetFramework>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\ReferenceResolver\ReferenceResolver.csproj" />
   </ItemGroup>
 
