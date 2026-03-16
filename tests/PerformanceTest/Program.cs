@@ -4,5 +4,12 @@
 using System.Reflection;
 
 // Run all benchmarks when invoked from CLI, otherwise just run with Job.Dry for quick validation
-var summaries = BenchmarkRunner.Run(Assembly.GetExecutingAssembly());
+var isCliInvocation = Environment.GetCommandLineArgs().Length > 1;
+var config = isCliInvocation
+    ? BenchmarkDotNet.Configs.DefaultConfig.Instance
+    : BenchmarkDotNet.Configs.ManualConfig
+        .Create(BenchmarkDotNet.Configs.DefaultConfig.Instance)
+        .AddJob(BenchmarkDotNet.Jobs.Job.Dry);
+
+var summaries = BenchmarkDotNet.Running.BenchmarkRunner.Run(Assembly.GetExecutingAssembly(), config);
 return summaries.Any(s => s.HasCriticalValidationErrors) ? 1 : 0;
