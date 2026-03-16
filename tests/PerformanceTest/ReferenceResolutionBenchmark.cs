@@ -18,7 +18,7 @@ public class ReferenceResolutionBenchmark
     // Shared resolver with Lazy<Task<T>> caching ("after" optimisation state)
     private IRefResolver _cachedResolver = null!;
     // Per-call resolver with DisableCache=true ("before" baseline – full pipeline every time)
-    private RefResolver _uncachedResolver = null!;
+    private IRefResolver _uncachedResolver = null!;
     private ExecOptions _optionsNoRefs = null!;
     private ExecOptions _optionsWithNuGet = null!;
 
@@ -33,8 +33,7 @@ public class ReferenceResolutionBenchmark
         };
 
         // Uncached resolver simulates the pre-optimisation path (full pipeline on every call)
-        _uncachedResolver = (RefResolver)RefResolver.InstanceForTest;
-        _uncachedResolver.DisableCache = true;
+        _uncachedResolver = RefResolver.UncachedInstanceForTest;
 
         // Cached resolver: pre-warm so benchmark iterations measure pure cache-hit cost
         _cachedResolver = RefResolver.InstanceForTest;
