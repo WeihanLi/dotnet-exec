@@ -28,11 +28,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v6
     - name: dotnet Setup
-      uses: actions/setup-dotnet@v5
+      uses: WeihanLi/dotnet-install@v0.2.0
       with:
-        dotnet-version: |
-          8.x
-          9.x
+        version: |
           10.x
           11.x
     - name: Setup documentation
