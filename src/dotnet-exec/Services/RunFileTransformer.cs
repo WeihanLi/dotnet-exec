@@ -37,12 +37,12 @@ public sealed class RunFileTransformer : IScriptTransformer
                         context.References.Add(reference.ReferenceWithSchema());
                     }
                 }
-                else if (trimmedDirective.StartsWith("project", StringComparison.OrdinalIgnoreCase))
+                else if (trimmedDirective.StartsWith("project ", StringComparison.OrdinalIgnoreCase))
                 {
                     var projectReference = trimmedDirective["project".Length..].Trim('"', ' ', '=');
                     context.References.Add(new ProjectReference(projectReference).ReferenceWithSchema());
                 }
-                else if (trimmedDirective.StartsWith("sdk", StringComparison.OrdinalIgnoreCase))
+                else if (trimmedDirective.StartsWith("sdk ", StringComparison.OrdinalIgnoreCase))
                 {
                     var sdkName = trimmedDirective["sdk".Length..].Trim('"', ' ');
                     var frameworkReference = sdkName switch
@@ -56,10 +56,15 @@ public sealed class RunFileTransformer : IScriptTransformer
                         context.References.Add(new FrameworkReference(frameworkReference).ReferenceWithSchema());
                     }
                 }
-                else if (trimmedDirective.StartsWith("include", StringComparison.OrdinalIgnoreCase))
+                else if (trimmedDirective.StartsWith("include ", StringComparison.OrdinalIgnoreCase))
                 {
                     var includeFile = trimmedDirective["include".Length..].Trim('"', ' ', '=');
                     context.Arguments = [.. context.Arguments, includeFile];
+                }
+                else if (trimmedDirective.StartsWith("exclude ", StringComparison.OrdinalIgnoreCase))
+                {
+                    var excludeFile = trimmedDirective["exclude".Length..].Trim('"', ' ', '=');
+                    context.Arguments = [.. context.Arguments.Where(f => f != excludeFile)];
                 }
             }
             else
