@@ -396,7 +396,7 @@ public class IntegrationTests(
     }
 
     [Theory]
-    [InlineData("8.0")]
+    [InlineData("10.0")]
     public async Task TargetFrameworkTest(string version)
     {
         var targetFramework = $"net{version}";
