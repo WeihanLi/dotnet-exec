@@ -56,6 +56,11 @@ public sealed class RunFileTransformer : IScriptTransformer
                         context.References.Add(new FrameworkReference(frameworkReference).ReferenceWithSchema());
                     }
                 }
+                else if (trimmedDirective.StartsWith("include", StringComparison.OrdinalIgnoreCase))
+                {
+                    var includeFile = trimmedDirective["include".Length..].Trim('"', ' ', '=');
+                    context.Arguments = [.. context.Arguments, includeFile];
+                }
             }
             else
             {
