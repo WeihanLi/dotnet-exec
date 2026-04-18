@@ -59,12 +59,16 @@ public sealed class RunFileTransformer : IScriptTransformer
                 else if (trimmedDirective.StartsWith("include ", StringComparison.OrdinalIgnoreCase))
                 {
                     var includeFile = trimmedDirective["include".Length..].Trim('"', ' ', '=');
-                    context.Arguments = [.. context.Arguments, includeFile];
+                    var dir = File.Exists(context.Script) ? Path.GetDirectoryName(context.Script) : Environment.CurrentDirectory;
+                    var fullPath = string.IsNullOrEmpty(dir) ? includeFile : Path.Combine(dir, includeFile);
+                    context.AdditionalScripts = [.. context.AdditionalScripts ?? [], fullPath];
                 }
                 else if (trimmedDirective.StartsWith("exclude ", StringComparison.OrdinalIgnoreCase))
                 {
                     var excludeFile = trimmedDirective["exclude".Length..].Trim('"', ' ', '=');
-                    context.Arguments = [.. context.Arguments.Where(f => f != excludeFile)];
+                    var dir = File.Exists(context.Script) ? Path.GetDirectoryName(context.Script) : Environment.CurrentDirectory;
+                    var fullPath = string.IsNullOrEmpty(dir) ? excludeFile : Path.Combine(dir, excludeFile);
+                    context.AdditionalScripts = [.. (context.AdditionalScripts ?? []).Where(f => f != fullPath && f != excludeFile)];
                 }
             }
             else
