@@ -1,5 +1,12 @@
 # Release Notes
 
+## 0.36.0
+
+- feat: support `:# include` directive for file-based app
+- feat: support C# preview versions
+- refactor: improve execution performance
+- build: use `dotnet-install` github action for .NET SDK setup
+
 ## 0.35.0
 
 - feat: .NET 11 Preview support, update container image to `net11.0` artifacts
