@@ -371,8 +371,8 @@ public class IntegrationTests(
 
     [Theory]
     // [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/56dda58920fa9921dad50fde4a8333581541cbd2/BalabalaSample/BalabalaSample.csproj")]
-    [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/22dc739b74ea6e58ae06986d518544c9ef4d8d8e/BalabalaSample/BalabalaSample.csproj")]
-    // [InlineData("Issue06Sample.csproj")]
+    // [InlineData("https://github.com/WeihanLi/SamplesInPractice/blob/22dc739b74ea6e58ae06986d518544c9ef4d8d8e/BalabalaSample/BalabalaSample.csproj")]
+    [InlineData("Issue06Sample.csproj")]
     public async Task ProjectFileWithPropertyTest(string projectPath)
     {
         var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "CodeSamples", "Issue06Sample.cs");
