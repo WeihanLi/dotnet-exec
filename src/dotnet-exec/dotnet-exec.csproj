@@ -11,7 +11,7 @@
     <PackageProjectUrl>https://github.com/WeihanLi/dotnet-exec</PackageProjectUrl>
     <IncludeSymbols>false</IncludeSymbols>
     <NuGetAuditMode>all</NuGetAuditMode>
-    <RoslynVersion>5.7.0-1.26217.5</RoslynVersion>
+    <RoslynVersion>5.9.0-1.26301.109</RoslynVersion>
     <NoWarn>$(NoWarn);CA5399</NoWarn>
   </PropertyGroup>
   <ItemGroup>
