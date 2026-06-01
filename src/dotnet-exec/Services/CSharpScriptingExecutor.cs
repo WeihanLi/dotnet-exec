@@ -6,7 +6,6 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting.Hosting;
 using Microsoft.CodeAnalysis.Scripting;
 using System.Globalization;
-using WeihanLi.Common.Extensions;
 using WeihanLi.Common.Models;
 
 namespace Exec.Services;
