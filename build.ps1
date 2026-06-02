@@ -9,4 +9,4 @@ Set-Alias -Name dotnet_exec -Value ./artifacts/tmp/dotnet-exec.exe
 
 dotnet_exec info
 
-dotnet_exec ./build/build.cs --args "$ARGS"
+dotnet_exec ./build/build.cs --args "$ARGS" --debug

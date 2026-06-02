@@ -141,6 +141,7 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
                     typeof(Microsoft.Extensions.Primitives.ChangeToken).Assembly.Location,
                     typeof(Newtonsoft.Json.JsonConvert).Assembly.Location,
                     typeof(DependencyResolver).Assembly.Location,
+                    typeof(WeihanLi.Common.Helpers.DotNetPackageBuildProcess).Assembly.Location,
                 ])
                 .SelectMany(x => x)
                 .Distinct()
