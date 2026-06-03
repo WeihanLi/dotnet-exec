@@ -78,6 +78,27 @@
 - What happens when [boundary condition]?
 - How does system handle [error scenario]?
 
+## Constitution Alignment *(mandatory)*
+
+<!--
+  ACTION REQUIRED: Describe how this feature stays aligned with the repository
+  constitution. Keep the answers concrete so plan.md and tasks.md can turn them
+  into verification and implementation work.
+-->
+
+- **CLI / Workflow Impact**: [Describe the user-visible command, script, REPL,
+  or profile workflow affected, or state "None"]
+- **Execution / Reference Modes Affected**: [List the relevant modes: raw code,
+  local script files, remote or URI-backed scripts, REPL, test execution,
+  config profiles, LinqPad, NetPad, NuGet/file/folder/framework/project
+  references]
+- **Test Coverage Impact**: [State whether unit tests, integration tests, or
+  both are required, and whether `tests/IntegrationTest/CodeSamples` needs
+  updates]
+- **Documentation Impact**: [List the exact files that must change:
+  `README.md`, `README.zh.md`, `docs/articles/en/...`,
+  `docs/articles/zh/...`, `docs/ReleaseNotes.md`, or "None"]
+
 ## Requirements *(mandatory)*
 
 <!--

@@ -40,7 +40,18 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] CLI value is preserved and reusable logic is placed in the appropriate
+      project boundary (`src/dotnet-exec` vs. `src/ReferenceResolver`)
+- [ ] Affected execution and reference modes are identified (raw code, local
+      scripts, remote or URI-backed scripts, REPL/test flows, config profiles,
+      LinqPad, NetPad, and reference-resolution paths when applicable)
+- [ ] Required automated coverage is identified in `tests/UnitTest` and/or
+      `tests/IntegrationTest`, with `tests/IntegrationTest/CodeSamples` updates
+      noted when sample files are part of the workflow
+- [ ] Documentation impact is identified for `README.md`, `README.zh.md`,
+      `docs/articles/en`, `docs/articles/zh`, and `docs/ReleaseNotes.md`
+- [ ] CI and platform impact is evaluated against Windows, Linux, macOS, and
+      .NET 10.x/11.x expectations from `.github/workflows/dotnet.yml`
 
 ## Project Structure
 
@@ -59,45 +70,25 @@ specs/[###-feature]/
 ### Source Code (repository root)
 <!--
   ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
+  for this feature. Delete unused lines and replace them with the real
+  repository paths touched by the work. The delivered plan must not leave
+  generic scaffolding behind.
 -->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
 src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+├── dotnet-exec/
+└── ReferenceResolver/
 
 tests/
-├── contract/
-├── integration/
-└── unit/
+├── UnitTest/
+└── IntegrationTest/
+   └── CodeSamples/
 
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+docs/
+└── articles/
+   ├── en/
+   └── zh/
 ```
 
 **Structure Decision**: [Document the selected structure and reference the real
@@ -105,7 +96,8 @@ directories captured above]
 
 ## Complexity Tracking
 
-> **Fill ONLY if Constitution Check has violations that must be justified**
+> Fill this table for any deviation from the constitution. An empty table means
+> the deviations were checked and none are required.
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|

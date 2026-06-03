@@ -9,7 +9,9 @@ description: "Task list template for feature implementation"
 
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Tests**: Include the test work required by the specification and constitution.
+Behavior changes to parsing, compilation, reference resolution, or public
+workflows require test tasks in the appropriate existing test projects.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -21,10 +23,15 @@ description: "Task list template for feature implementation"
 
 ## Path Conventions
 
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+- **CLI application**: `src/dotnet-exec/`
+- **Reference resolution library**: `src/ReferenceResolver/`
+- **Unit tests**: `tests/UnitTest/`
+- **Integration tests**: `tests/IntegrationTest/`
+- **Integration samples**: `tests/IntegrationTest/CodeSamples/`
+- **Documentation**: `README.md`, `README.zh.md`, `docs/articles/en/`,
+  `docs/articles/zh/`, `docs/ReleaseNotes.md`
+- Paths shown below assume this repository layout - adjust to the concrete files
+  captured in plan.md
 
 <!--
   ============================================================================
@@ -80,21 +87,29 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 1
 
-> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
+> **NOTE**: Write the required tests first and ensure they fail before
+> implementation when the story changes behavior.
 
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T010 [P] [US1] Add or update unit coverage for [behavior] in
+      `tests/UnitTest/[Feature]Tests.cs`
+- [ ] T011 [P] [US1] Add or update integration coverage for [workflow] in
+      `tests/IntegrationTest/[Feature]Tests.cs`
+- [ ] T012 [P] [US1] Add or update required sample inputs in
+      `tests/IntegrationTest/CodeSamples/[sample-name].cs`
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
+- [ ] T013 [P] [US1] Update shared abstractions or resolvers in
+      `src/ReferenceResolver/[file].cs` when the behavior belongs in the library
+- [ ] T014 [P] [US1] Update CLI command, option, or service logic in
+      `src/dotnet-exec/[file].cs`
+- [ ] T015 [US1] Wire the end-to-end workflow in `src/dotnet-exec/[file].cs`
+- [ ] T016 [US1] Add validation and error handling consistent with existing
+      patterns
+- [ ] T017 [US1] Update public documentation in the exact files identified by
+      the specification when this story changes user-facing behavior
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -106,17 +121,22 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 2
 
-- [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T018 [P] [US2] Add or update unit coverage for [behavior] in
+      `tests/UnitTest/[Feature]Tests.cs`
+- [ ] T019 [P] [US2] Add or update integration coverage for [workflow] in
+      `tests/IntegrationTest/[Feature]Tests.cs`
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Create [Entity] model in src/models/[entity].py
-- [ ] T021 [US2] Implement [Service] in src/services/[service].py
-- [ ] T022 [US2] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T023 [US2] Integrate with User Story 1 components (if needed)
+- [ ] T020 [P] [US2] Update shared library behavior in
+      `src/ReferenceResolver/[file].cs` if needed
+- [ ] T021 [US2] Implement the supporting CLI or service behavior in
+      `src/dotnet-exec/[file].cs`
+- [ ] T022 [US2] Integrate with User Story 1 components where required
+- [ ] T023 [US2] Update public documentation if the story changes supported
+      workflows
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -128,16 +148,20 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 3
 
-- [ ] T024 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T025 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T024 [P] [US3] Add or update unit coverage for [behavior] in
+      `tests/UnitTest/[Feature]Tests.cs`
+- [ ] T025 [P] [US3] Add or update integration coverage for [workflow] in
+      `tests/IntegrationTest/[Feature]Tests.cs`
 
 ### Implementation for User Story 3
 
-- [ ] T026 [P] [US3] Create [Entity] model in src/models/[entity].py
-- [ ] T027 [US3] Implement [Service] in src/services/[service].py
-- [ ] T028 [US3] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T026 [P] [US3] Update the relevant library or CLI implementation in
+      `src/ReferenceResolver/[file].cs` or `src/dotnet-exec/[file].cs`
+- [ ] T027 [US3] Complete the end-to-end behavior in `src/dotnet-exec/[file].cs`
+- [ ] T028 [US3] Update public documentation if the story changes supported
+      workflows
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -152,9 +176,11 @@ Examples of foundational tasks (adjust based on your project):
 **Purpose**: Improvements that affect multiple user stories
 
 - [ ] TXXX [P] Documentation updates in docs/
+- [ ] TXXX [P] README.md and README.zh.md updates for top-level usage changes
 - [ ] TXXX Code cleanup and refactoring
 - [ ] TXXX Performance optimization across all stories
-- [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
+- [ ] TXXX [P] Additional unit or integration coverage in
+      `tests/UnitTest/` or `tests/IntegrationTest/`
 - [ ] TXXX Security hardening
 - [ ] TXXX Run quickstart.md validation
 
@@ -179,10 +205,10 @@ Examples of foundational tasks (adjust based on your project):
 
 ### Within Each User Story
 
-- Tests (if included) MUST be written and FAIL before implementation
-- Models before services
-- Services before endpoints
-- Core implementation before integration
+- Required tests MUST be written and FAIL before implementation
+- Shared abstractions before CLI orchestration when both change
+- CLI or library implementation before documentation updates
+- Core implementation before integration validation
 - Story complete before moving to next priority
 
 ### Parallel Opportunities
@@ -190,8 +216,9 @@ Examples of foundational tasks (adjust based on your project):
 - All Setup tasks marked [P] can run in parallel
 - All Foundational tasks marked [P] can run in parallel (within Phase 2)
 - Once Foundational phase completes, all user stories can start in parallel (if team capacity allows)
-- All tests for a user story marked [P] can run in parallel
-- Models within a story marked [P] can run in parallel
+- Required tests for a user story marked [P] can run in parallel
+- Independent library and CLI tasks within a story marked [P] can run in
+  parallel
 - Different user stories can be worked on in parallel by different team members
 
 ---
@@ -199,13 +226,13 @@ Examples of foundational tasks (adjust based on your project):
 ## Parallel Example: User Story 1
 
 ```bash
-# Launch all tests for User Story 1 together (if tests requested):
-Task: "Contract test for [endpoint] in tests/contract/test_[name].py"
-Task: "Integration test for [user journey] in tests/integration/test_[name].py"
+# Launch all required tests for User Story 1 together:
+Task: "Add or update unit coverage for [behavior] in tests/UnitTest/[Feature]Tests.cs"
+Task: "Add or update integration coverage for [workflow] in tests/IntegrationTest/[Feature]Tests.cs"
 
-# Launch all models for User Story 1 together:
-Task: "Create [Entity1] model in src/models/[entity1].py"
-Task: "Create [Entity2] model in src/models/[entity2].py"
+# Launch independent implementation tasks for User Story 1 together:
+Task: "Update shared abstractions in src/ReferenceResolver/[file].cs"
+Task: "Update CLI logic in src/dotnet-exec/[file].cs"
 ```
 
 ---
@@ -246,7 +273,7 @@ With multiple developers:
 - [P] tasks = different files, no dependencies
 - [Story] label maps task to specific user story for traceability
 - Each user story should be independently completable and testable
-- Verify tests fail before implementing
-- Commit after each task or logical group
+- Verify required tests fail before implementing
+- Use Conventional Commit messages when the workflow includes commits
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
