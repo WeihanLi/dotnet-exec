@@ -365,10 +365,6 @@ public static class Helper
         {
             yield return
             [
-                "global::Microsoft.Extensions.Configuration",
-                "global::Microsoft.Extensions.DependencyInjection",
-                "global::Microsoft.Extensions.Logging",
-
                 "global::WeihanLi.Common",
                 "global::WeihanLi.Common.Helpers",
                 "global::WeihanLi.Extensions",

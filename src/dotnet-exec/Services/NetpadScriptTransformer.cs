@@ -25,7 +25,7 @@ internal sealed class NetpadScriptTransformer : IScriptTransformer
             throw new InvalidOperationException("The script is missing #Code identifier.");
 
         var scriptOptions = string.Join("", scriptLines[1..codeIndex]);
-        var scriptData = JsonSerializer.Deserialize<ScriptData>(scriptOptions, JsonHelper.WebOptions);
+        var scriptData = JsonSerializer.Deserialize<ScriptData>(scriptOptions, JsonSerializerOptions.Web);
         ArgumentNullException.ThrowIfNull(scriptData?.Config);
 
         context.IncludeWebReferences = scriptData.Config.UseAspNet;

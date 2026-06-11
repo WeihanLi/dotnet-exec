@@ -131,14 +131,6 @@ public sealed class RefResolver(INuGetHelper nugetHelper, IReferenceResolverFact
         {
             return frameworkReferences.Append(
                 [
-                    typeof(Microsoft.Extensions.Configuration.IConfiguration).Assembly.Location,
-                    typeof(Microsoft.Extensions.Configuration.ConfigurationManager).Assembly.Location,
-                    typeof(ServiceCollection).Assembly.Location,
-                    typeof(ServiceProvider).Assembly.Location,
-                    typeof(ILoggerFactory).Assembly.Location,
-                    typeof(LoggerFactory).Assembly.Location,
-                    typeof(Microsoft.Extensions.Options.Options).Assembly.Location,
-                    typeof(Microsoft.Extensions.Primitives.ChangeToken).Assembly.Location,
                     typeof(Newtonsoft.Json.JsonConvert).Assembly.Location,
                     typeof(DependencyResolver).Assembly.Location,
                     typeof(WeihanLi.Common.Helpers.DotNetPackageBuildProcess).Assembly.Location,
