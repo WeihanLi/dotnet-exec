@@ -16,8 +16,8 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
     <PackageVersion Include="NuGet.Protocol" Version="7.6.0" />
-    <PackageVersion Include="System.CommandLine" Version="2.0.8" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.89" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.9" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.90" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
