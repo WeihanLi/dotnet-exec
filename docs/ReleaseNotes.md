@@ -1,5 +1,13 @@
 # Release Notes
 
+## 0.37.0
+
+- feat: upgrade dependencies
+- build: Improve build and CI workflows, including updated GitHub Actions setup and build script tweaks
+- refactor: update scripting/reference handling and simplified default web-related imports
+- refactor: refreshed integration tests, samples, and docs with newer package versions
+- chore: integrate Spec Kit/Copilot workflow and repository automation files
+
 ## 0.36.0
 
 - feat: support `:# include` directive for file-based app
