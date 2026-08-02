@@ -13,8 +13,6 @@ ReferenceResolver | [![ReferenceResolver](https://img.shields.io/nuget/v/Referen
 
 [![GitHub Release](https://img.shields.io/github/v/release/WeihanLi/dotnet-exec)](https://github.com/WeihanLi/dotnet-exec/releases)
 
-[![BuiltWithDot.Net shield](https://builtwithdot.net/project/5741/dotnet-exec/badge)](https://builtwithdot.net/project/5741/dotnet-exec)
-
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/WeihanLi/dotnet-exec)
 
 [![Ask OpenDeepWiki](https://img.shields.io/badge/Ask-OpenDeepWiki-blue)](https://opendeep.wiki/WeihanLi/dotnet-exec/)
