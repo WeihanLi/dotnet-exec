@@ -4,7 +4,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <!-- Enable Transitive Package Pinning -->
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
-    <RoslynVersion>5.3.0</RoslynVersion>
+    <RoslynVersion>5.6.0</RoslynVersion>
     <!-- https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages -->
     <NuGetAudit>true</NuGetAudit>
     <NuGetAuditMode>direct</NuGetAuditMode>
@@ -16,13 +16,13 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
     <PackageVersion Include="NuGet.Protocol" Version="7.6.0" />
-    <PackageVersion Include="System.CommandLine" Version="2.0.9" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.90" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.10" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.91" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
-    <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.4" />
+    <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.5" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="11.2.1" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="11.3.0" />
   </ItemGroup>
 </Project>
