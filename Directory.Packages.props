@@ -5,10 +5,6 @@
     <!-- Enable Transitive Package Pinning -->
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
     <RoslynVersion>5.6.0</RoslynVersion>
-    <!-- https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages -->
-    <NuGetAudit>true</NuGetAudit>
-    <NuGetAuditMode>direct</NuGetAuditMode>
-    <NuGetAuditLevel>critical</NuGetAuditLevel>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(RoslynVersion)" />
