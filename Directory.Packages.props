@@ -19,6 +19,6 @@
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.5" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="11.3.0" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="11.3.1" />
   </ItemGroup>
 </Project>
