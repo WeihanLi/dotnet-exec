@@ -128,7 +128,8 @@ public sealed partial class ExecOptions
     private static readonly Option<bool> EnableSourceGeneratorOption =
         new("--generator")
         {
-            Description = "Enable the source generator support"
+            Description = "Enable the source generator support",
+            DefaultValueFactory = _ => true
         };
 
     internal static readonly Option<string> ConfigProfileOption =
