@@ -3,9 +3,9 @@
 
 using Exec.Commands;
 using WeihanLi.Common.Models;
+using Xunit.v3;
 
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
-
+[assembly: Parallelization(Mode = Xunit.Sdk.ParallelMode.None)]
 namespace IntegrationTest;
 
 public class IntegrationTests(
