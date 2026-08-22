@@ -1,5 +1,12 @@
 # Release Notes
 
+## 0.38.0
+
+- feat: upgrade dependencies
+- feat: enable generator support by default
+- chore: improved null-safety in NuGet resource access within `ReferenceResolver`
+- chore: update test framework and remove obsolete API
+
 ## 0.37.0
 
 - feat: upgrade dependencies
