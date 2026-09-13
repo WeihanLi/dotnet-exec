@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.39.0
+
+- feat: upgrade dependencies for .NET 11 RC 1
+
 ## 0.38.0
 
 - feat: upgrade dependencies
