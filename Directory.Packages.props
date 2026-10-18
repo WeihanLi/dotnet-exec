@@ -3,7 +3,7 @@
     <!-- Enable central package management -->
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <!-- Enable Transitive Package Pinning -->
-    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
     <RoslynVersion>5.9.0</RoslynVersion>
   </PropertyGroup>
   <ItemGroup>
