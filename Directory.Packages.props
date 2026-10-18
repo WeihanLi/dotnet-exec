@@ -3,7 +3,7 @@
     <!-- Enable central package management -->
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <!-- Enable Transitive Package Pinning -->
-    <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <RoslynVersion>5.9.0</RoslynVersion>
   </PropertyGroup>
   <ItemGroup>
@@ -12,13 +12,16 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(RoslynVersion)" />
     <PackageVersion Include="NuGet.Protocol" Version="7.9.0" />
-    <PackageVersion Include="System.CommandLine" Version="2.0.12" />
-    <PackageVersion Include="WeihanLi.Common" Version="1.0.93" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.13" />
+    <PackageVersion Include="WeihanLi.Common" Version="1.0.94-preview-20261015-143254" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.5" />
-    <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.1" />
+    <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.2" />
     <PackageVersion Include="Xunit.DependencyInjection" Version="12.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
   </ItemGroup>
 </Project>
