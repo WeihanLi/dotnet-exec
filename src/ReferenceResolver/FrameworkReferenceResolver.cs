@@ -151,21 +151,33 @@ public sealed class FrameworkReferenceResolver : IReferenceResolver
         if (FrameworkAliases.TryGetValue(frameworkName, out var fName))
             frameworkName = fName;
 
-        var packsDir = Path.Combine(DotnetDirectory, "packs");
         var referencePackageName = $"{frameworkName}.Ref";
-        var frameworkDir = Path.Combine(packsDir, referencePackageName);
-        if (!Directory.Exists(frameworkDir)) return [];
-
-        IEnumerable<string> versions = Directory.GetDirectories(frameworkDir);
         var versionPrefix = targetFramework["net".Length..];
-        versions = versions.Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x)
-            .StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase));
-        var targetVersionDir = versions.OrderByDescending(x => x).First();
+        var frameworkDirs = new[]
+        {
+            Path.Combine(DotnetDirectory, "packs", referencePackageName),
+            Path.Combine(GetGlobalPackagesFolder(), referencePackageName.ToLowerInvariant())
+        };
+        var targetVersionDir = frameworkDirs
+            .Where(Directory.Exists)
+            .SelectMany(Directory.GetDirectories)
+            .Where(x => Path.GetFileName(x).GetNotEmptyValueOrDefault(x)
+                .StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(x => x)
+            .FirstOrDefault();
+        if (targetVersionDir is null) return [];
+
         var targetDir = Path.Combine([targetVersionDir, .. folder]);
         if (!Directory.Exists(targetDir)) return [];
 
         var dllFiles = Directory.GetFiles(targetDir, "*.dll", SearchOption.AllDirectories);
         return dllFiles;
+    }
+
+    private static string GetGlobalPackagesFolder()
+    {
+        return Environment.GetEnvironmentVariable("NUGET_PACKAGES")
+            ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".nuget", "packages");
     }
 
     private static string[] ResolveFrameworkReferencesViaRuntimeShared(string frameworkName, string targetFramework)
