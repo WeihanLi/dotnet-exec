@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.40.0
+
+- feat: upgrade dependencies for .NET 11 GA
+
 ## 0.39.0
 
 - feat: upgrade dependencies for .NET 11 RC 1
